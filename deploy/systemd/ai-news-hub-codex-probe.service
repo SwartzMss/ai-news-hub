@@ -1,0 +1,27 @@
+[Unit]
+Description=AI News Hub Codex connectivity probe (not the production Backend)
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=600
+StartLimitBurst=2
+
+[Service]
+Type=exec
+User=ai-news-hub
+Group=ai-news-hub
+WorkingDirectory=/var/lib/ai-news-hub/probe-work
+StateDirectory=ai-news-hub
+StateDirectoryMode=0700
+Environment=HOME=/var/lib/ai-news-hub
+Environment=CODEX_HOME=/var/lib/ai-news-hub/.codex
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=/etc/ai-news-hub/codex-probe.env
+ExecStart=/usr/bin/node /opt/ai-news-hub/dist/tools/codex-probe/cli.js
+UMask=0077
+NoNewPrivileges=true
+KillMode=control-group
+TimeoutStopSec=5
+# A successful probe exits. Do not enable automatic inference/retry on boot.
+Restart=no
+StandardOutput=journal
+StandardError=journal
