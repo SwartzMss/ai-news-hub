@@ -285,4 +285,5 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 - 迁移空库后再运行迁移，原数据不变；源码测试覆盖外键、幂等约束、历史 checksum 和失败回滚。
 - 正常停止日志有 `server_stopped`，HTTP 关闭；再次启动原记录保留。异常杀死服务主进程后检查 systemd `NRestarts` 与健康检查恢复，记录脱敏日志，不将运行数据提交到 Git。
 - 当前测试验证普通 Node 进程的停止/重启，CI 使用 Ubuntu 24.04；它们不等于完成 systemd 安装、开机启动或重启主机实测。
+- CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
 - `/health` 只说明基础服务与 Schema 可读，没有管理认证、业务 API、Codex 调用、调度或发布。旧 Run 的执行恢复尚未实现，#2 认证/systemd 问题继续独立跟踪。

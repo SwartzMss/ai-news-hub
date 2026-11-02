@@ -17,4 +17,9 @@ jobs:
       - run: npm run build
       - run: npm test
       - run: bash -n scripts/service.sh
-      - run: systemd-analyze verify deploy/systemd/ai-news-hub.service
+      - name: Verify systemd unit with runner Node path
+        run: |
+          probe_unit_dir=$(mktemp -d)
+          probe_node=$(command -v node)
+          sed "s|^ExecStart=/usr/bin/node |ExecStart=$probe_node |" deploy/systemd/ai-news-hub.service > "$probe_unit_dir/ai-news-hub.service"
+          systemd-analyze verify "$probe_unit_dir/ai-news-hub.service"
