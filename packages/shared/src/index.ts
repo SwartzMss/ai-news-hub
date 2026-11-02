@@ -10,4 +10,3 @@ export interface ErrorResponse {
 export type TaskStatus = 'active' | 'paused';
 export type RunStatus = 'queued' | 'running' | 'waiting_approval' | 'succeeded' | 'failed' | 'cancelled' | 'interrupted';
 export type ContentKind = 'fact' | 'opinion' | 'unverified';
-
