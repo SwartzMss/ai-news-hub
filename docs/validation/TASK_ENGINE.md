@@ -10,7 +10,7 @@
 进程测试实际启动 Backend，执行 SIGKILL 并回收其模拟 Codex 进程组，再启动 Backend，验证失效所有权接管及旧 Run / Turn 标 interrupted。测试自行回收进程组，不能视为已实测 systemd 控制组回收。
 代码审查发现的清理失败后继续调度问题已增加回归：`cleanup_failed` 会冻结调度、拒绝新执行，且不能被 timeout/cancelled 掩盖。正式入口触发非零关闭，交由 systemd 兜底。
 
-本地最终检查：`npm test` 89/89 通过，`npm run lint`、`npm run typecheck` 和测试内的构建通过，`git diff --check` 无输出。Node 22 的 SQLite 实验性提示保留，不作为已稳定 API 的证明。
+本地最终检查：`npm test` 90/90 通过（含完成后的迟到事件不能改写终态），`npm run lint`、`npm run typecheck` 和测试内的构建通过，`git diff --check` 无输出。Node 22 的 SQLite 实验性提示保留，不作为已稳定 API 的证明。
 
 ## 真实开发调用
 

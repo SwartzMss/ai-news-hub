@@ -124,3 +124,14 @@ test('completion with no authoritative Thread or Turn cannot succeed', async () 
     assert.equal(s.engine.detail(run.id).run.error_code, 'protocol_error');
   } finally { await s.close(); }
 });
+test('late Adapter events cannot change an already completed Turn', async () => {
+  const s = setup();
+  try {
+    const { run } = s.engine.start('sample-connectivity', 'late-event'); await tick();
+    s.adapter.succeed(0); await tick();
+    s.adapter.calls[0].emit({ type: 'approval_required' });
+    const detail = s.engine.detail(run.id);
+    assert.equal(detail.run.status, 'succeeded');
+    assert.equal(detail.turns[0].status, 'succeeded');
+  } finally { await s.close(); }
+});

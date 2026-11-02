@@ -179,6 +179,7 @@ export class TaskEngine {
   }
   private async execute(work: Work, slot: Slot): Promise<void> {
     let events = 0, eventBytes = 0;
+    let settled = false;
     const timer = setTimeout(() => { slot.reason ??= 'timeout'; slot.controller.abort(); }, this.options.timeoutMs);
     try {
       this.transaction(() => {
@@ -190,7 +191,7 @@ export class TaskEngine {
         runId: work.runId, threadId: work.threadId, input: work.input, cwd: this.options.cwd,
         model: this.options.model, timeoutMs: this.options.timeoutMs, signal: slot.controller.signal,
       }, (event) => {
-        if (slot.reason) return;
+        if (slot.reason || settled) return;
         eventBytes += Buffer.byteLength(JSON.stringify(event));
         if (++events > 200 || eventBytes > 128 * 1024) throw new AgentError('event_limit');
         this.persist(work, event);
@@ -213,7 +214,7 @@ export class TaskEngine {
       const code = slot.reason ?? (error instanceof AgentError ? error.code : 'event_persistence_failed');
       const status = code === 'cancelled' ? 'cancelled' : code === 'interrupted' || code === 'backend_stopped' ? 'interrupted' : 'failed';
       this.finish(work, status, code);
-    } finally { clearTimeout(timer); }
+    } finally { settled = true; clearTimeout(timer); }
   }
   private persist(work: Work, event: AgentEvent): void {
     this.transaction(() => {
