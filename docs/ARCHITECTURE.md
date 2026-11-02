@@ -4,10 +4,10 @@
 
 ## 1. 系统边界
 
-本项目采用“**本地执行 + 静态公开发布**”模式。
+本项目 v0.1 采用“**Linux 服务端执行 + GitHub 持久归档 + 静态公开发布**”模式。不支持 Windows / WSL 作为部署目标。
 
 ```text
-┌───────────────────── Local Windows Host ─────────────────────┐
+┌───────────────────── Linux Host (systemd service, non-root user) ─────────────────────┐
 │ Scheduler → Collector → Normalize/Deduplicate → Job Queue    │
 │                                                 │             │
 │                                           Agent Adapter       │
@@ -21,9 +21,12 @@
 │                                ├── Web Admin + SSE            │
 │                                └── Static Export              │
 └────────────────────────────────┼──────────────────────────────┘
-                                 │ Upload / git push / deploy
+                                 │ 按日期提交已审核 JSON/Markdown
                                  ▼
-                         Static Hosting / CDN
+                          GitHub repository
+                                 │ 自动构建 / 部署
+                                 ▼
+                         Cloudflare Pages / CDN
                           ├── Web Pages
                           ├── RSS 2.0
                           └── JSON
@@ -48,7 +51,7 @@
 
 ## 3. Codex App Server 生命周期
 
-1. Backend 作为父进程启动本机 `codex app-server`（优先 stdio）。
+1. Linux 的 systemd 管理 Node.js Backend，Backend 在与其相同的非 root 服务账户下启动 `codex app-server --listen stdio://` 子进程。
 2. 与进程进行初始化握手（`initialize`，随后 `initialized`）。
 3. 为任务创建或恢复 Thread（`thread/start` / `thread/resume`）。
 4. 使用 `turn/start` 提交任务，处理事件、工具审批和取消请求。
@@ -64,7 +67,7 @@
 - `articles`：原始标题、URL、canonical URL、来源、发布时间、抓取时间、内容摘要/哈希
 - `topics`：主题分类、合并后的事件、文章关联
 - `jobs`：频道、计划时间、输入范围、状态、重试次数
-- `job_runs`：实际开始/结束时间、线程 ID、状态、错误、摘要日志
+- `job_runs`：实际开始/结束时间、线程 ID、Turn ID、状态、错误、摘要日志；每个 Run 默认一个独立 Thread，继续分析在此 Thread 新增 Turn
 - `reports`：标题、日期、频道、正文、发布状态、生成版本
 - `report_items`：排序、事件摘要、引用文章、置信与核验状态
 - `feeds`：频道 RSS 配置与最近构建状态
@@ -83,7 +86,14 @@
 
 建议定义机器校验的 JSON Schema，至少包含标题、频道、摘要、来源 URL、时间字段、事实/观点标记。发布层只消费校验通过的数据，不解析任意自由格式的 Agent 回复作为事实依据。
 
-## 6. 定时与幂等
+## 6. 任务驱动的管理界面
+
+- 管理入口为 Task 列表 → Task 详情 → Run 列表 → 某次 Run 的 Thread / Turn、事件日志和生成结果。
+- **不提供独立 Agent 工作台**，避免任务与会话脱钩。
+- v0.1 最小管理端包括任务状态、手动触发、执行日志、结果预览；任务编辑、审批和完整多轮交互可逐步完善。
+- 管理 API 默认只绑定 Linux 主机回环地址；网页远程访问需单独完成认证/安全代理方案，不在 v0.1 默认开放公网。
+
+## 7. 定时与幂等
 
 - 按任务 ID + 日期/时间窗口生成幂等键，避免定时重试重复发布。
 - 为同一任务设置运行互斥和超时/取消策略。
@@ -91,7 +101,7 @@
 - v0.1 可用单实例调度；后续再评估持久化队列，不提前引入复杂基础设施。
 - 公共内容采用先完整生成、再原子发布的方式，避免 RSS 与网页版本不一致。
 
-## 7. RSS 与静态发布
+## 8. RSS 与静态发布
 
 规划路径（示意，不是已经上线的 URL）：
 
@@ -103,22 +113,26 @@
 
 RSS 2.0 必须正确转义 XML 字符，提供稳定的 item guid、链接和 pubDate。建议允许“整期日报”和“单条新闻”两种 Feed 模式。仅发布可访问的正式 URL，不将开发机 localhost 链接写入正式 Feed。
 
-## 8. 安全与部署
+## 9. Linux 安全与部署
 
 - App Server 使用本地 stdio；若使用网络传输，只在受控网络、认证与访问隔离后开放。
 - 管理 API 默认仅监听回环地址，远程访问需身份验证、TLS 和审计。
 - Agent 的文件系统和命令执行权限采用最小化配置；未经授权不应自动批准危险操作。
 - 不将密钥、OAuth 凭据、Cookie、原始私人日志或本地数据库推送到静态站点。
-- Cloudflare Pages / GitHub Pages 只承载公开阅读内容；不运行本地 Codex Agent。
+- Linux 单机由 systemd 管理 Backend 的自启动、异常恢复和 journald 日志；Backend 管理自己的 Codex 子进程。
+- SQLite、Codex 认证材料与运行日志保存在 Linux 持久化目录，使用非 root 服务账号及最小权限；绝不提交到 GitHub。
+- GitHub 按日期归档日报 JSON/Markdown 并触发 Cloudflare Pages 构建，Cloudflare Pages 只承载公开阅读内容；不运行 Codex Agent。
 - 对第三方内容遵守来源网站的使用条款、频率限制与版权要求。
 
-## 9. 尚待验证的风险
+## 10. 尚待验证的风险
 
-1. Windows 下 Codex App Server 的稳定启动、重连与审批事件处理。
+1. Linux 无桌面服务器下 Codex CLI 登录/续期，以及 App Server 启动、重连、审批事件处理。
 2. 长时间无人值守时的登录状态、会话有效期和使用额度行为。
 3. 动态网页和社交平台内容的合法可访问性。
 4. 离线或未运行定时器时的漏执行补偿。
 5. RSS 阅读器兼容性、中文摘要排版、静态托管更新一致性。
+
+参见 [Linux 部署设计](DEPLOY_LINUX.md)：服务账户、systemd、认证和持久化目录。
 
 ## 参考文档
 

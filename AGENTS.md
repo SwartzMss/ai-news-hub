@@ -1,22 +1,24 @@
 # AGENTS.md
 
-本仓库是计划中的 AI News Hub，目标为“Codex App Server + 本地调度/采集 + Web 展示 + RSS 发布”，**不是**一个已完成的系统。
+本仓库为 **AI News Hub**，当前只有文档和独立 HTML 交互原型，尚无可运行的真实新闻服务。
 
-## 开发原则
+## v0.1 不可更改的决策
 
-1. 优先完成 v0.1 的端到端最小闭环；除非任务明确要求，不提前扩展复杂的分布式架构。
-2. 主要目标环境是 **Windows 原生**，示例命令默认使用 PowerShell，不强制依赖 WSL。
-3. 以 Codex App Server 作为 Agent 执行引擎；后端负责调度、采集、去重、存储、内容校验及发布。
-4. 优先通过本地子进程 stdio 与 App Server 通信；用独立 Adapter 封装协议，处理初始化、事件、审批、错误和进程重启。
-5. 对每个任务记录最终状态，不能将 interrupted/failed 视为 completed；要保留可核验的原始新闻链接与时间字段。
-6. 对代码、测试、文档的更改应保持一致。未实现的功能必须标为 planned / TODO，禁止虚构运行结果、测试通过情况和可用 API。
-7. 不提交密钥、Cookie、OAuth Token、真实数据库、临时文件和本地日志；不要擅自对外暴露本地服务。
-8. 新闻内容区分事实、引用、观点与推断；来源不明的信息不得自动发布为事实。
-9. 无需为了小功能引入过重依赖；技术方案修改应同步更新 README 与 docs。
-10. 开源许可证未确定，不擅自加入 LICENSE。
+1. **Linux-only**：以 Ubuntu Server 24.04 LTS 为主要开发、测试和部署环境。不要为 v0.1 添加 Windows / PowerShell / WSL 支持、路径处理或安装说明。
+2. **服务端模型**：Linux 单实例 Node.js / TypeScript Backend 由 systemd 管理；Backend 以 stdio 子进程启动 `codex app-server`，通过 JSON-RPC 管理 Thread / Turn 与审批事件，不直接开放 Agent 网络端口。
+3. **任务为中心**：Task → Run → Thread → Turn。Agent 对话、事件、审批与结果都属于具体 Run / Task，不实现独立一级「Agent 工作台」。
+4. **两类前端**：公共新闻阅读站（静态 Web + RSS）与受保护的管理后台（Linux Backend 提供 API，默认只绑定 localhost）。v0.1 要有最小的任务状态、手动触发、执行日志及结果查看界面。
+5. **数据边界**：SQLite 放在 Linux 持久化数据目录（例如 `/var/lib/ai-news-hub`）；GitHub 只归档审核/校验通过的日报 JSON/Markdown；Cloudflare Pages 只负责公开静态站点与 RSS。
+6. **来源真实**：原文 URL、原始发布时间、事件时间、抓取时间要分开存储，区分事实、观点和未证实内容；无有效来源禁止自动发布。
+7. **安全优先**：非 root 运行、最小权限；凭据及 SQLite 不入 Git；管理 API 不默认暴露公网；正确处理 Agent 工具审批与配额、登录过期及进程重启。
+8. **逐步实现**：先通 v0.1 Linux 端到端闭环，避免过早引入 Kubernetes、微服务或消息队列。不要把设计稿/计划描述为已经实现。
+9. **保持一致**：代码或架构调整同步更新 README、docs/ARCHITECTURE.md、docs/ROADMAP.md、docs/DEPLOY_LINUX.md 及关联 Issue。
+10. **许可证**：目前尚未选择，不擅自添加 LICENSE。
 
-## 主要参考
+## 参考文档
 
 - [README.md](README.md)
 - [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md)
 - [docs/ROADMAP.md](docs/ROADMAP.md)
+- [docs/DEPLOY_LINUX.md](docs/DEPLOY_LINUX.md)
+- [docs/UI_DESIGN_SPEC.md](docs/UI_DESIGN_SPEC.md)

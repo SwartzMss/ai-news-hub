@@ -3,11 +3,11 @@
 **版本**：UI Prototype 0.1  
 **状态**：设计原型，非可上线产品  
 **设计方向**：新闻门户首页 + RSS 阅读器频道页 + 深度分析详情页 + 独立本地管理台  
-**目标平台**：桌面 Web / 移动 Web，开发与调度运行于 Windows，本地生成结果可推送至 GitHub Private Repo，由 Cloudflare Pages 构建公开阅读站点。
+**目标平台**：桌面 Web / 移动 Web，后台和定时调度运行于 Linux（Ubuntu Server 24.04 LTS，v0.1 Linux-only），本地生成结果可推送至 GitHub Private Repo，由 Cloudflare Pages 构建公开阅读站点。
 
 ## 1. 原型怎么使用
 
-双击 `index.html`，在 Windows 的 Edge 或 Chrome 中打开。**无需安装 Node.js 或外部前端库。**
+使用任意现代桌面浏览器打开 `prototype/index.html` 即可。原型不依赖 Node.js；正式运行环境仅支持 Linux。
 
 所有内容均是演示数据，不是真实新闻、真实 RSS 或真实任务状态。`index.html` 中内置示例数据和状态机，不会访问外部网络，不会调用 Codex，不会写 SQLite，不会修改 GitHub 仓库。样例 RSS 路径仅是预期路由。
 
@@ -34,7 +34,7 @@
 | 订阅入口 | `/rss/all.xml`、`/rss/ai.xml` 等 | 全站 / 频道 RSS | P0 |
 | 全站搜索 | `/search/` | 搜索静态文章元数据 | P1 |
 | 收藏 | `/saved/` | 浏览器端收藏，跨设备同步后续考虑 | P1 |
-| 本地管理台 | `http://localhost:<port>/admin/` | 任务管理、日志、发布 | P1 |
+| Linux 管理台 | `http://127.0.0.1:<port>/admin/` | 任务详情、Run 状态、日志、报告预览（仅本机/SSH 转发） | P0 |
 
 演示版使用 `#home`、`#channel/ai` 等 hash 路由，避免直接打开单个 HTML 文件时发生路径 404；正式版不必照搬 hash 路由。
 
@@ -44,11 +44,11 @@
 
 **高频 RSS 阅读者**：选择频道 → 日期筛选 → 按重要度排序 → “只看重点” → 打开文章 → 收藏 → 历史搜索。
 
-**管理员**：打开本地管理台 → 查看今日任务 → 手动执行/取消 → 查看 Thread/Turn 事件 → 审核内容 → 发布到 GitHub → Cloudflare Pages 自动构建静态站点与 RSS。
+**管理员**：安全访问 Linux 管理台 → 选择任务 → 查看某次 Run → 查看该 Run 的 Thread/Turn 与日志 → 审核内容 → 发布到 GitHub → Cloudflare Pages 自动构建静态站点与 RSS。
 
 ## 5. 信息架构
 
-导航：今日首页 / AI 科技 / 投资市场 / 开源项目 / 热点话题 / 历史归档 / 收藏 / 管理台。
+公开阅读站导航：今日首页 / AI 科技 / 投资市场 / 开源项目 / 热点话题 / 历史归档 / 收藏。管理员后台单独入口，首页为任务总览；不在公开 Cloudflare 导航中放可访问的管理入口。
 
 首页：顶部品牌与订阅 → 今日主题 → AI 精选头条 → 更多值得关注 → 右侧每日速览 / 关注主题 / RSS CTA。
 
@@ -93,8 +93,11 @@ src/
     SavedPage.tsx
   admin/
     pages/TaskDashboard.tsx
+    pages/TaskDetail.tsx
+    pages/RunDetail.tsx
     components/TaskStatus.tsx
     components/AgentRunLog.tsx
+    components/RunThreadTurns.tsx
   theme/
     tokens.css
 ```
@@ -103,10 +106,10 @@ src/
 
 ## 8. 与 GitHub 和 SQLite 的数据边界
 
-- Windows 本机 SQLite：任务、新闻原始记录、处理产物、运行日志、发布状态。
+- Linux 本地 SQLite（如 `/var/lib/ai-news-hub/news.db`）：任务、新闻原始记录、处理产物、运行日志、发布状态。
 - GitHub Private Repo：只同步审核通过的日报 JSON / Markdown；按日期新增文件，不覆盖旧日报。不要提交 SQLite 主数据库或密钥。
 - Cloudflare Pages：从已发布日报生成 HTML、静态搜索索引和 RSS 2.0。网站通常公开访问，即使源码仓库是 Private。
-- Codex App Server：仅供 Windows Backend 本地调用（建议 stdio）；不要直接暴露到公共网页。
+- Codex App Server：仅供 Linux Backend 本地通过 stdio 调用；不要直接暴露到公共网页。
 
 ## 9. 建议日报数据合同（示例字段）
 
@@ -140,4 +143,14 @@ src/
 - [ ] 手机端可完成频道浏览、阅读详情、订阅入口等核心流程。
 - [ ] 未经认证的公网请求不能触发本地 Codex、任务配置或发布操作。
 
-建议先完成：首页 / 频道 / 详情 / 归档 / RSS。收藏和管理后台可在 v0.1 后续细化；不要让后台管理能力阻塞最小新闻发布闭环。
+v0.1 同时完成：首页 / 频道 / 详情 / 归档 / RSS，以及最小的 Linux 任务后台（任务列表、手动触发、Run 状态、日志、结果预览）。任务编辑、多轮交互和高级审批可在 v0.2 完善。
+
+## 11. 管理后台信息架构（任务为中心）
+
+- 总览：今日任务状态和异常、最近生成日报。
+- 任务列表与任务详情：调度信息、Prompt 摘要、手动运行、Run 历史。
+- Run 详情：对应 Thread / Turn 事件流、日志、继续分析入口、结果预览。
+- 内容及发布管理：审核报告、GitHub 提交记录、Cloudflare 构建状态。
+- **Agent 不是独立一级导航项**；所有对话必须通过任务和某次 Run 进入。
+
+原型中从公开阅读站可点击的「任务控制台」仅是演示时的导航便利，生产版必须从公开站点中隔离；后台地址只在 Linux 主机的 127.0.0.1 监听，远程访问初期可通过 SSH 本地端口转发。

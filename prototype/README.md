@@ -2,7 +2,7 @@
 
 ## 运行方式
 
-下载 [index.html](index.html)，在 Windows 的 Edge 或 Chrome 中打开即可。无需 Node.js、构建工具或外部依赖。
+下载 [index.html](index.html)，在任意现代浏览器中打开即可（无需 Node.js、构建工具或外部依赖）。正式服务端 v0.1 仅面向 Linux，此 HTML 只是平台无关的设计演示。
 
 > GitHub 的文件预览页面不会运行这个 HTML，请下载到本地浏览器打开。
 
