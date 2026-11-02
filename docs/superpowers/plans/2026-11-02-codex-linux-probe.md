@@ -11,4 +11,4 @@
 - [ ] 原生 Ubuntu Server 24.04：真实账户运行两个 Run，检查不同 Thread 与固定输出；临时 systemd 用户 unit 检查退出、重启和 journal。当前仅有开发宿主观察，不能计入验收。
 - [x] 添加 deploy/systemd/ai-news-hub-codex-probe.service 和 .env.example；开发宿主 systemd-analyze verify 已运行，目标服务器复核仍待完成。
 - [x] 同步 README、ARCHITECTURE、ROADMAP、DEPLOY_LINUX 和验证记录，记录实际环境和未验收项目。
-- [ ] 最终 npm test、npm run check、git diff --check；同步 Issue 进展但不提前关闭。
+- [x] 最终 npm test（25/25）、npm run check、git diff --check；Draft PR #9 与 Issue #2 进展已同步，不提前关闭。Ubuntu 24.04 push CI 已通过。

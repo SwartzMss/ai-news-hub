@@ -22,6 +22,8 @@
 
 本地最终检查：`npm test` 25/25 通过、`npm run check` 通过、`git diff --check` 无输出。进程组清理经代码审查及两个后代进程回归用例验证。
 
+首次 [Ubuntu 24.04 GitHub Actions](https://github.com/SwartzMss/ai-news-hub/actions/runs/41445490466) 构建/类型检查/无网络测试通过；CI 不提供 Codex 登录或真实模型调用，也不替代服务部署验收。实现见 [Draft PR #9](https://github.com/SwartzMss/ai-news-hub/pull/9)，[Issue 进展](https://github.com/SwartzMss/ai-news-hub/issues/2#issuecomment-6577240843) 已同步。
+
 ## 开发会话观察（不计入目标验收）
 
 1. `codex login status` 报告已登录。直接运行探针于 12:19:36–12:19:44 UTC 完成真实 Turn；Run `df2b2937-624a-4e16-87e8-612e5fa0254e`，Thread `01a19c33-6ec0-7e20-97ec-c4b75f053616`，Turn `01a19c33-70df-7ad3-9116-59a57ea7b838`。收到固定标记并回收子进程，退出码 0。
