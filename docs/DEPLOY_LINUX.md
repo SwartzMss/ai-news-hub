@@ -1,14 +1,15 @@
-# Linux 部署与运行约束（v0.1 设计草案）
+# Linux 部署与运行约束（v0.1）
 
-> **本项目当前尚未实现可运行的 Backend。** 以下描述的是 v0.1 Linux-only 目标环境及未来交付要求，不是已经验证可一键安装的部署教程。
+> **基础 Backend 已实现，仅含健康检查与 SQLite 初始化。** 新闻、任务执行与发布仍未实现。本文区分现有代码、待验收的部署步骤和后续目标，不是已实测的一键安装教程。
 
 Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
+Issue #3 的基础 Backend 按第 9 节安装；Schema 见 [数据模型](DATA_MODEL.md)。健康检查不验证 Codex 认证。
 
 ## 目标平台与组件
 
 - **唯一 v0.1 服务端目标**：Linux，首选 Ubuntu Server 24.04 LTS（x86_64）；不做 Windows / WSL 的部署和测试。
 - Node.js LTS + TypeScript Backend、SQLite、Codex CLI / App Server。
-- Linux systemd 管理 Backend 进程，由 Backend 启动并监管 `codex app-server --listen stdio://` 子进程。
+- Linux systemd 管理 Backend 进程；后续由 Backend 启动并监管 `codex app-server --listen stdio://` 子进程。当前只有独立探针会启动 Codex。
 - GitHub 按日期保存审核通过的日报 JSON / Markdown；Cloudflare Pages 自动构建公开网站及 RSS。
 - 管理台通过 Linux Backend 提供的 API 访问；默认仅绑定 `127.0.0.1`，远程使用时优先 SSH 端口转发，暂不对公网开放管理 API。
 
@@ -33,7 +34,7 @@ codex app-server --help
 codex login --help
 ```
 
-以上只是环境验证，**目前没有可执行的项目服务启动命令**。
+基础 Backend 使用 Node.js 22.19.0 或更新的 22.x，`npm run build` 后可 `npm start`。Codex 对基础健康检查不是必需依赖；上面的认证检查用于后续 Agent 集成。
 
 ## 2. 运行身份与认证
 
@@ -46,18 +47,20 @@ codex login --help
 
 官方参考：[Codex as a platform](https://developers.openai.com/blog/codex-as-a-platform) 和 [Codex app-server](https://developers.openai.com/siwc/token-sharing-open-source/codex-app-server)。
 
-## 3. 目录设计（提议）
+## 3. 部署目录
 
 ```text
 /opt/ai-news-hub/                  # 应用程序与构建产物（版本化部署）
-  apps/server/                     # 预期 Backend 源码/构建目录（尚不存在）
-  apps/web/                        # 预期公共阅读端
-  apps/admin/                      # 预期管理端
+  dist/apps/server/src/main.js     # 现有 Backend 构建入口
+  dist/packages/shared/            # 共享类型的构建目录
+  node_modules/                    # 生产依赖（Fastify）
+  package.json                     # ESM 声明，须随构建产物部署
 
 /var/lib/ai-news-hub/              # 可写持久目录；服务用户持有
-  news.db                          # SQLite（正式实现后创建）
+  news.db                          # 启动/迁移命令创建，0600
+  news.db-wal / news.db-shm         # SQLite 运行文件，不入 Git
   .codex/                          # Codex 配置/认证持久目录，严格保护
-  exports/                         # 临时生成的已审核日报/静态构建产物
+  exports/                         # 后续生成的已审核日报/静态构建产物
 
 /etc/ai-news-hub/                  # 受限运行配置，不入仓库
   ai-news-hub.env
@@ -69,7 +72,7 @@ journald                           # 服务启动、错误与运行日志
 
 ## 4. 进程和 systemd
 
-预期进程树：
+目标进程树（当前基础 Backend 尚不启动 Codex）：
 
 ```text
 systemd
@@ -78,33 +81,10 @@ systemd
             └── codex app-server --listen stdio://
 ```
 
-**以下 unit 仅为未来的设计示例，路径对应的 Node.js 服务当前不存在，不可直接启用：**
-
-```ini
-[Unit]
-Description=AI News Hub Backend (planned)
-After=network-online.target
-Wants=network-online.target
-
-[Service]
-Type=simple
-User=ai-news-hub
-Group=ai-news-hub
-WorkingDirectory=/opt/ai-news-hub
-Environment=NODE_ENV=production
-Environment=CODEX_HOME=/var/lib/ai-news-hub/.codex
-EnvironmentFile=-/etc/ai-news-hub/ai-news-hub.env
-StateDirectory=ai-news-hub
-ExecStart=/usr/bin/node /opt/ai-news-hub/apps/server/dist/index.js
-Restart=on-failure
-RestartSec=10
-NoNewPrivileges=true
-
-[Install]
-WantedBy=multi-user.target
-```
+现有 Backend unit 为 [`deploy/systemd/ai-news-hub.service`](../deploy/systemd/ai-news-hub.service)，入口是 `/opt/ai-news-hub/dist/apps/server/src/main.js`。使用非 root 用户、私有 StateDirectory、受限环境文件、失败重启、journald 和 `KillMode=control-group`。
 
 验证后才能安装/启用 unit：必须确认 `node` 的绝对路径、实际构建产物、运行账号的 `codex` 可执行路径、必要的 PATH/HOME、服务用户对 SQLite 和 Codex 认证目录的读写权限，并验证 `journalctl -u ai-news-hub` 能定位故障。systemd 的重启仅保证进程可重启，不自动解决额度耗尽、登录失效或业务任务恢复。
+当前 Backend 不依赖 Codex 路径/认证，后续 Adapter 接入时才需要这部分检查；基础服务的部署实测不得描述为 #2 认证验收完成。
 
 ## 5. Codex Adapter 必测场景
 
@@ -169,7 +149,7 @@ sudo install -d -o root -g root -m 0700 /etc/ai-news-hub
 sudo install -o root -g root -m 0600 deploy/systemd/.env.example /etc/ai-news-hub/codex-probe.env
 ```
 
-运行时没有第三方依赖，但 `package.json` 的 `type=module` 必须随构建产物部署。
+独立探针运行时没有第三方依赖，但 `package.json` 的 `type=module` 必须随构建产物部署；第 9 节的 Backend 则需要 Fastify 生产依赖。
 编辑 `/etc/ai-news-hub/codex-probe.env`，将 `CODEX_BIN` 改为全局安装的实际绝对路径；服务用户须可执行该路径及其父目录。
 不要使用个人用户目录里的 nvm 路径作为正式部署依赖。
 如果主机需要代理，在这个受限文件中显式设置 `http_proxy` / `https_proxy` / `no_proxy`；systemd 不会自动继承交互 shell 的网络环境。不要把代理凭据写入仓库或 journal。
@@ -236,3 +216,74 @@ journalctl --user -u ai-news-hub-probe-restart.service -n 40 --no-pager
 真实认证过期、真实服务重启后再次成功 Turn、长期无人值守观察仍须在目标服务器记录，不能用模拟测试替代。
 
 协议与认证参考：[App Server 官方文档](https://developers.openai.com/codex/app-server)、[CLI 认证官方文档](https://developers.openai.com/codex/auth)。使用已安装 CLI 的 `generate-json-schema` 核对字段；不要提交个人配置或原始日志。
+
+## 9. Issue #3 Backend 基础服务部署
+
+以下命令面向原生 Ubuntu Server 24.04 LTS，假设系统级 Node.js 22 与 npm 位于 `/usr/bin`。实际路径不同时先修改 unit 与命令；不要把个人用户的 nvm 安装作为正式服务依赖。目标主机的安装和 systemd 生命周期必须实测后才能验收。
+
+### 构建并准备文件
+
+在源码目录用普通账户运行：
+
+```bash
+npm ci --ignore-scripts
+npm run lint
+npm run typecheck
+npm test
+npm run build
+```
+
+管理员创建独立账户（已存在则跳过 useradd）、私有数据目录并安装产物：
+
+```bash
+sudo useradd --system --home-dir /var/lib/ai-news-hub --shell /usr/sbin/nologin ai-news-hub
+sudo install -d -o ai-news-hub -g ai-news-hub -m 0700 /var/lib/ai-news-hub
+sudo install -d -o root -g root -m 0755 /opt/ai-news-hub
+sudo cp -R dist package.json package-lock.json /opt/ai-news-hub/
+sudo /usr/bin/npm ci --omit=dev --ignore-scripts --prefix /opt/ai-news-hub
+sudo install -d -o root -g root -m 0700 /etc/ai-news-hub
+sudo install -o root -g root -m 0600 .env.example /etc/ai-news-hub/ai-news-hub.env
+```
+
+`/opt/ai-news-hub` 的代码/生产依赖应由 root 持有且服务用户只有读/执行权限，SQLite 留在 `/var/lib/ai-news-hub`。不要在运行中直接覆盖产物；更新前先停服务，备份数据库再部署。
+环境文件默认配置：
+
+| 变量 | 默认值 / 约束 |
+| --- | --- |
+| `AI_NEWS_HUB_HOST` | `127.0.0.1`，也允许 `::1`；拒绝公网/通配监听 |
+| `AI_NEWS_HUB_PORT` | `3000`，整数 1–65535 |
+| `AI_NEWS_HUB_DATA_DIR` | `/var/lib/ai-news-hub`，绝对路径、服务用户所有、0700 |
+| `AI_NEWS_HUB_LOG_LEVEL` | `info`；允许 fatal/error/warn/info/debug/trace/silent |
+
+systemd 读取 `/etc/ai-news-hub/ai-news-hub.env`，不会加载开发目录 `.env`，也不自动继承交互 shell 的 PATH 或代理。当前 Backend 不请求上游网络，不需要登录 Codex。
+目录或已有数据库权限不安全时启动失败，先检查所有权及 0700/0600 权限；不要把个人 HOME 改为服务账户的数据目录，也不要通过删库解决错误。
+
+### 迁移、启动和健康检查
+
+可先显式执行迁移；启动也会重复核对并迁移，重复执行不会清除数据：
+
+```bash
+sudo -u ai-news-hub env HOME=/var/lib/ai-news-hub AI_NEWS_HUB_DATA_DIR=/var/lib/ai-news-hub /usr/bin/node /opt/ai-news-hub/dist/apps/server/src/migrate.js
+sudo install -o root -g root -m 0644 deploy/systemd/ai-news-hub.service /etc/systemd/system/
+sudo systemd-analyze verify /etc/systemd/system/ai-news-hub.service
+sudo systemctl daemon-reload
+sudo systemctl start ai-news-hub.service
+sudo systemctl status ai-news-hub.service --no-pager
+curl --fail --silent --show-error http://127.0.0.1:3000/health
+sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
+```
+
+端口或监听地址修改后，健康检查 URL 同步调整。也可用 `AI_NEWS_HUB_PORT=3000 node /opt/ai-news-hub/dist/scripts/health.js`，它有 3 秒超时且拒绝重定向，失败非零退出。
+预期：HTTP 200、`{"status":"ok","database":"ok"}`；日志有 `server_ready`，SQLite 迁移表和业务表存在，数据库 0600。Node 22 的 SQLite 实验性提示是已知 API 状态，不屏蔽它来冒充稳定接口。
+
+启动/停止/重启可直接 `sudo systemctl start|stop|restart ai-news-hub.service`（选择一个动作），或在源码目录用 `sudo bash scripts/service.sh start` / `stop` / `restart` / `status`。前台开发使用 `npm start`，Ctrl+C 会关闭 HTTP 和数据库。
+验证完成后才启用开机启动：`sudo systemctl enable ai-news-hub.service`。
+
+### 目标主机验收与当前限制
+
+- 记录发行版、Node、SQLite、systemd 版本、服务 UID、实际可执行路径；确认只监听回环地址，root 启动会被拒绝。
+- 迁移空库后再运行迁移，原数据不变；源码测试覆盖外键、幂等约束、历史 checksum 和失败回滚。
+- 正常停止日志有 `server_stopped`，HTTP 关闭；再次启动原记录保留。异常杀死服务主进程后检查 systemd `NRestarts` 与健康检查恢复，记录脱敏日志，不将运行数据提交到 Git。
+- 当前测试验证普通 Node 进程的停止/重启，CI 使用 Ubuntu 24.04；它们不等于完成 systemd 安装、开机启动或重启主机实测。
+- CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
+- `/health` 只说明基础服务与 Schema 可读，没有管理认证、业务 API、Codex 调用、调度或发布。旧 Run 的执行恢复尚未实现，#2 认证/systemd 问题继续独立跟踪。

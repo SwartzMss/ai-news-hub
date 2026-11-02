@@ -1,8 +1,9 @@
 # 架构设计（草案）
 
-> 当前为规划文档；接口、进程模型和数据表结构以 v0.1 实现与验证结果为准。
+> 包含已实现的基础骨架与 v0.1 目标架构；各模块的实现范围如下，不能将目标链路理解为已经上线。
 
-Issue #2 已新增独立的 TypeScript 接入探针（`tools/codex-probe/`），用于验证 stdio 握手及单次 Turn，不代表下述 Backend、数据库或调度模块已经实现。
+Issue #3 已实现 `apps/server/src` 的 Fastify 基础服务及 SQLite 迁移，只提供回环 `/health`、配置、日志与进程生命周期；尚无调度、业务 API、采集或发布。
+Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）用于验证 stdio 握手及单次 Turn，尚未集成进 Backend。
 探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
 ## 1. 系统边界
@@ -72,16 +73,18 @@ Issue #2 已新增独立的 TypeScript 接入探针（`tools/codex-probe/`），
 - 结束时关闭 stdio，回收独立进程组，发送 SIGTERM，必要时发送 SIGKILL；清理等待上限 2.5 秒，超限报告 `cleanup_failed`。systemd 以 `KillMode=control-group` 兜底。不会自动续跑失败 Run。
 - 暂无持久化、重连/恢复和生产 Adapter；重启后新建 Run，不把初始化、进程退出或空回复当作成功。
 
-## 4. 数据模型（提议）
+## 4. 数据模型与基础服务
 
-- `sources`：来源 ID、类型、名称、URL、更新策略、启用状态
-- `articles`：原始标题、URL、canonical URL、来源、发布时间、抓取时间、内容摘要/哈希
-- `topics`：主题分类、合并后的事件、文章关联
-- `jobs`：频道、计划时间、输入范围、状态、重试次数
-- `job_runs`：实际开始/结束时间、线程 ID、Turn ID、状态、错误、摘要日志；每个 Run 默认一个独立 Thread，继续分析在此 Thread 新增 Turn
-- `reports`：标题、日期、频道、正文、发布状态、生成版本
-- `report_items`：排序、事件摘要、引用文章、置信与核验状态
-- `feeds`：频道 RSS 配置与最近构建状态
+已实现的初始 Schema 为 `tasks`、`task_runs`、`articles`、`reports`、`report_articles`、`publication_records` 与内部 `schema_migrations`。原草案的 `jobs` / `job_runs` 分别统一为 `tasks` / `task_runs`。
+任务与 Run 状态、Run 的 Thread / Turn 标识、来源三类时间、报告版本与来源关联、发布幂等键均有存储字段；当前未提供 CRUD 或执行这些业务的接口。字段、外键、状态及迁移规则详见 [数据模型](DATA_MODEL.md)。
+
+`openDatabase` 检查专用数据目录与数据库权限，开启外键、WAL 与 5 秒 busy timeout。启动时在事务内核对迁移历史并应用新版本，校验失败或 SQL 失败则启动失败；不自动重建或清空旧数据库。
+SQLite 使用 Node 22 内置实验性 `node:sqlite`，同步访问只用于当前短小的初始化与健康查询。未来业务需按实际负载评估，暂不增加 ORM 或独立数据库服务。
+
+Fastify 只允许绑定 `127.0.0.1` / `::1`；`/health` 检查已应用 Schema 可读，失败返回 503，不检测 Codex 认证。统一错误体保留 requestId，日志不记录请求体、头部、查询串或任意异常文本。
+SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` / `apps/admin` 当前仅有职责说明，共享接口类型放在 `packages/shared/src/`。
+
+来源配置 `sources`、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只保留旧 Run 状态，执行恢复与状态对账尚未实现，不会擅自将旧 Run 改为成功。
 
 推荐时区：任务配置使用 IANA 时区（如 `Asia/Singapore`），内部存储 UTC 时间戳，渲染时按频道设置转换。报告日期与新闻事件发生日期分开记录。
 

@@ -2,15 +2,33 @@
   "name": "ai-news-hub",
   "private": true,
   "type": "module",
-  "engines": { "node": ">=22.19.0 <23" },
+  "engines": {
+    "node": ">=22.19.0 <23"
+  },
   "scripts": {
     "build": "tsc",
     "check": "tsc --noEmit",
+    "typecheck": "tsc --noEmit",
+    "lint": "eslint .",
     "test": "npm run build && node --test tests/*.test.mjs",
+    "start": "node --env-file-if-exists=.env dist/apps/server/src/main.js",
+    "db:migrate": "node --env-file-if-exists=.env dist/apps/server/src/migrate.js",
+    "health": "node --env-file-if-exists=.env dist/scripts/health.js",
+    "service:start": "bash scripts/service.sh start",
+    "service:stop": "bash scripts/service.sh stop",
     "probe:codex": "node dist/tools/codex-probe/cli.js"
   },
   "devDependencies": {
+    "@eslint/js": "10.0.1",
     "@types/node": "22.19.0",
-    "typescript": "5.9.3"
+    "eslint": "10.14.0",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.72.1"
+  },
+  "dependencies": {
+    "fastify": "5.12.8"
+  },
+  "overrides": {
+    "minimatch": "11.0.1"
   }
 }
