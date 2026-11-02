@@ -1,0 +1,20 @@
+# AI News Hub — 可交互前端原型
+
+## 运行方式
+
+下载 [index.html](index.html)，在 Windows 的 Edge 或 Chrome 中打开即可。无需 Node.js、构建工具或外部依赖。
+
+> GitHub 的文件预览页面不会运行这个 HTML，请下载到本地浏览器打开。
+
+## 原型内容
+
+- 新闻门户式首页、重点新闻及频道导航
+- RSS 阅读器式高密度频道列表、日期筛选与排序
+- AI 文章详情：事实、分析、争议、来源展示区域
+- 历史归档、关键词搜索、收藏和 RSS 订阅弹窗
+- 任务控制台与运行日志的 **模拟交互**
+- 响应式桌面 / 手机布局、浅色 / 深色主题
+
+**所有新闻和任务均为演示数据。** 原型不具备真实新闻抓取、后台运行、Codex App Server 调用、SQLite 持久化、RSS Feed 输出或 GitHub 发布功能。
+
+生产实现规范请参见 [docs/UI_DESIGN_SPEC.md](../docs/UI_DESIGN_SPEC.md)。

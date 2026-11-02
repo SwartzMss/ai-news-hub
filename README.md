@@ -129,3 +129,13 @@ codex app-server --help
 ## License
 
 **待确定。** 尚未添加许可证；在选定明确的开源协议前，不应假定本仓库已授予额外的复制、修改或分发权限。
+
+## UI 交互原型（设计预览）
+
+已提交 **混合风格 UI Prototype 0.1**，包含新闻门户首页、RSS 阅读器式频道页、AI 深度文章详情、历史归档、搜索、收藏、RSS 入口及本地任务控制台（模拟）。
+
+- [打开原型源文件](prototype/index.html)（下载后在 Windows Edge / Chrome 中打开）
+- [原型使用说明](prototype/README.md)
+- [前端交互与设计规范](docs/UI_DESIGN_SPEC.md)
+
+**注意**：这是独立 HTML 演示，不含真实新闻、RSS、Codex、SQLite 或生产后台。正式前端仍需按路线图开发。
