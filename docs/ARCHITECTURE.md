@@ -2,8 +2,8 @@
 
 > 包含已实现的基础骨架与 v0.1 目标架构；各模块的实现范围如下，不能将目标链路理解为已经上线。
 
-Issue #3 已实现 `apps/server/src` 的 Fastify 基础服务及 SQLite 迁移，只提供回环 `/health`、配置、日志与进程生命周期；尚无调度、业务 API、采集或发布。
-Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）用于验证 stdio 握手及单次 Turn，尚未集成进 Backend。
+Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。尚无定时调度、新闻采集、日报或发布。
+Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于诊断，正式 Adapter 位于 `apps/server/src/agent/`。
 探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
 ## 1. 系统边界
@@ -65,26 +65,37 @@ Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）用于验证
 
 注意：App Server 的协议与可用功能可能随版本演化，应放在独立 Adapter 内隔离。Agent 的认证与使用限额依赖实际安装与账户配置，不能将 ChatGPT 套餐视为无限制公共 API。
 
-### 已实现的验证边界
+### 独立探针边界
 
 - `client.ts`：按行解析 stdio，初始化后读取账户状态；每次 Run 新建只读 Thread，再启动固定提示词 Turn。仅匹配 Thread / Turn 的成功终态和预期输出算通过。
 - `cli.ts`：拒绝 root 和非 Linux 运行；设置总超时，响应 SIGTERM / SIGINT；JSON 日志仅保留 Run / Thread / Turn、阶段、错误类别及时间，不转发原始 RPC 或 stderr。
 - 服务器主动请求（包括审批）一律拒绝并失败退出；不为无人值守请求自动授权。此探针没有交互审批 UI。
 - 结束时关闭 stdio，回收独立进程组，发送 SIGTERM，必要时发送 SIGKILL；清理等待上限 2.5 秒，超限报告 `cleanup_failed`。systemd 以 `KillMode=control-group` 兜底。不会自动续跑失败 Run。
-- 暂无持久化、重连/恢复和生产 Adapter；重启后新建 Run，不把初始化、进程退出或空回复当作成功。
+- 探针本身不持久化业务历史，不提供 Run 继续；正式引擎的历史与恢复语义见下节。
+
+### 已实现的任务执行引擎
+
+- `tasks/engine.ts` 管理有限内存队列、并发、任务互斥、幂等和超时。每个 Turn 启动一个 `codex app-server --listen stdio://`，依次握手、读取账户、创建/恢复 Thread、启动 Turn；退出后回收进程组。
+- Run 的 Thread 不可换成其他 Thread；`run_threads` 的唯一约束阻止不同 Run 共用 Thread。每个 Turn 单独保存本地记录 ID 与服务器 Turn ID，Run 状态反映最近一次 Turn，旧 Turn 终态和输出保留。
+- 仅匹配 Thread / Turn 的 `turn/completed`、状态 completed 且有非空回复时成功；失败、打断、空结果、退出和审批拒绝均非成功。子进程回收不确定时引擎停止调度，正式进程非零退出，由 systemd 清理控制组并恢复服务。
+- 新请求通过 `/api` Bearer Token 认证；Token 未配置时管理 API 关闭，`/health` 保持公开。Token、请求体/头部与原始 RPC/stderr 不进入 journald；有大小限制的输入、Agent 正文和事件仅存私有 SQLite，供授权查询。
+- Codex 使用环境允许列表，保留运行环境、代理与模型认证，不继承 Backend 管理或 GitHub/Cloudflare 发布凭据。工作目录私有；Thread 采用 read-only sandbox / untrusted 审批策略，所有服务器主动请求拒绝，不提供审批自动授权。
+- 同一数据目录以事务记录 PID、进程启动时间与系统 boot ID，阻止第二个 Backend 误恢复活跃任务；启动时旧的 queued/running/waiting_approval Run / Turn 标为 interrupted，不自动重跑。任务定义和历史均保留。
+
+完整接口、状态与配额限制见 [任务引擎](TASK_ENGINE.md)，实测边界见 [验证记录](validation/TASK_ENGINE.md)。
 
 ## 4. 数据模型与基础服务
 
 已实现的初始 Schema 为 `tasks`、`task_runs`、`articles`、`reports`、`report_articles`、`publication_records` 与内部 `schema_migrations`。原草案的 `jobs` / `job_runs` 分别统一为 `tasks` / `task_runs`。
-任务与 Run 状态、Run 的 Thread / Turn 标识、来源三类时间、报告版本与来源关联、发布幂等键均有存储字段；当前未提供 CRUD 或执行这些业务的接口。字段、外键、状态及迁移规则详见 [数据模型](DATA_MODEL.md)。
+迁移 2 追加 `run_threads`、`run_turns`、`run_events`、`backend_owner`；迁移 1 的 SQL 不变。Task / Run 提供手动执行和历史查询，其余内容表暂不提供业务接口。字段、外键、状态及迁移规则详见 [数据模型](DATA_MODEL.md)。
 
 `openDatabase` 检查专用数据目录与数据库权限，开启外键、WAL 与 5 秒 busy timeout。启动时在事务内核对迁移历史并应用新版本，校验失败或 SQL 失败则启动失败；不自动重建或清空旧数据库。
-SQLite 使用 Node 22 内置实验性 `node:sqlite`，同步访问只用于当前短小的初始化与健康查询。未来业务需按实际负载评估，暂不增加 ORM 或独立数据库服务。
+SQLite 使用 Node 22 内置实验性 `node:sqlite`，当前同步访问用于初始化、状态与有限事件事务。未来业务需按实际负载评估，暂不增加 ORM 或独立数据库服务。
 
 Fastify 只允许绑定 `127.0.0.1` / `::1`；`/health` 检查已应用 Schema 可读，失败返回 503，不检测 Codex 认证。统一错误体保留 requestId，日志不记录请求体、头部、查询串或任意异常文本。
 SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` / `apps/admin` 当前仅有职责说明，共享接口类型放在 `packages/shared/src/`。
 
-来源配置 `sources`、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只保留旧 Run 状态，执行恢复与状态对账尚未实现，不会擅自将旧 Run 改为成功。
+来源配置 `sources`、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只恢复历史可查询性并标记中断，不自动恢复执行，不会擅自将旧 Run 改为成功。
 
 推荐时区：任务配置使用 IANA 时区（如 `Asia/Singapore`），内部存储 UTC 时间戳，渲染时按频道设置转换。报告日期与新闻事件发生日期分开记录。
 

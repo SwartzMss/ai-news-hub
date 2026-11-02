@@ -2,6 +2,10 @@ export class AppError extends Error {
   constructor(public readonly code: string, message = code) { super(message); }
 }
 
+export class HttpError extends AppError {
+  constructor(public readonly statusCode: number, code: string) { super(code); }
+}
+
 export function errorCode(error: unknown): string {
   if (error instanceof AppError) return error.code;
   if (error instanceof Error && 'code' in error && typeof error.code === 'string'

@@ -1,15 +1,16 @@
 # Linux 部署与运行约束（v0.1）
 
-> **基础 Backend 已实现，仅含健康检查与 SQLite 初始化。** 新闻、任务执行与发布仍未实现。本文区分现有代码、待验收的部署步骤和后续目标，不是已实测的一键安装教程。
+> **Backend 基础与手动任务执行引擎已实现。** 新闻采集、日报和发布仍未实现。本文区分现有代码、待验收的部署步骤和后续目标，不是已实测的一键安装教程。
 
 Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 Issue #3 的基础 Backend 按第 9 节安装；Schema 见 [数据模型](DATA_MODEL.md)。健康检查不验证 Codex 认证。
+Issue #4 的管理 Token、Codex 运行环境与样例执行见第 10 节及 [任务引擎/API](TASK_ENGINE.md)。
 
 ## 目标平台与组件
 
 - **唯一 v0.1 服务端目标**：Linux，首选 Ubuntu Server 24.04 LTS（x86_64）；不做 Windows / WSL 的部署和测试。
 - Node.js LTS + TypeScript Backend、SQLite、Codex CLI / App Server。
-- Linux systemd 管理 Backend 进程；后续由 Backend 启动并监管 `codex app-server --listen stdio://` 子进程。当前只有独立探针会启动 Codex。
+- Linux systemd 管理 Backend 进程；手动任务经 Backend 启动并监管 `codex app-server --listen stdio://` 子进程，每个 Turn 一个子进程，不对外监听 Agent 端口。
 - GitHub 按日期保存审核通过的日报 JSON / Markdown；Cloudflare Pages 自动构建公开网站及 RSS。
 - 管理台通过 Linux Backend 提供的 API 访问；默认仅绑定 `127.0.0.1`，远程使用时优先 SSH 端口转发，暂不对公网开放管理 API。
 
@@ -34,7 +35,7 @@ codex app-server --help
 codex login --help
 ```
 
-基础 Backend 使用 Node.js 22.19.0 或更新的 22.x，`npm run build` 后可 `npm start`。Codex 对基础健康检查不是必需依赖；上面的认证检查用于后续 Agent 集成。
+Backend 使用 Node.js 22.19.0 或更新的 22.x，`npm run build` 后可 `npm start`。Codex 对健康检查不是必需依赖，但真实任务执行须先通过上述服务账户认证检查。
 
 ## 2. 运行身份与认证
 
@@ -72,7 +73,7 @@ journald                           # 服务启动、错误与运行日志
 
 ## 4. 进程和 systemd
 
-目标进程树（当前基础 Backend 尚不启动 Codex）：
+任务执行时的目标进程树：
 
 ```text
 systemd
@@ -84,7 +85,7 @@ systemd
 现有 Backend unit 为 [`deploy/systemd/ai-news-hub.service`](../deploy/systemd/ai-news-hub.service)，入口是 `/opt/ai-news-hub/dist/apps/server/src/main.js`。使用非 root 用户、私有 StateDirectory、受限环境文件、失败重启、journald 和 `KillMode=control-group`。
 
 验证后才能安装/启用 unit：必须确认 `node` 的绝对路径、实际构建产物、运行账号的 `codex` 可执行路径、必要的 PATH/HOME、服务用户对 SQLite 和 Codex 认证目录的读写权限，并验证 `journalctl -u ai-news-hub` 能定位故障。systemd 的重启仅保证进程可重启，不自动解决额度耗尽、登录失效或业务任务恢复。
-当前 Backend 不依赖 Codex 路径/认证，后续 Adapter 接入时才需要这部分检查；基础服务的部署实测不得描述为 #2 认证验收完成。
+健康检查不依赖 Codex 路径/认证；基础服务启动或 API 测试不得描述为 #2 认证验收完成。
 
 ## 5. Codex Adapter 必测场景
 
@@ -255,7 +256,7 @@ sudo install -o root -g root -m 0600 .env.example /etc/ai-news-hub/ai-news-hub.e
 | `AI_NEWS_HUB_DATA_DIR` | `/var/lib/ai-news-hub`，绝对路径、服务用户所有、0700 |
 | `AI_NEWS_HUB_LOG_LEVEL` | `info`；允许 fatal/error/warn/info/debug/trace/silent |
 
-systemd 读取 `/etc/ai-news-hub/ai-news-hub.env`，不会加载开发目录 `.env`，也不自动继承交互 shell 的 PATH 或代理。当前 Backend 不请求上游网络，不需要登录 Codex。
+systemd 读取 `/etc/ai-news-hub/ai-news-hub.env`，不会加载开发目录 `.env`，也不自动继承交互 shell 的 PATH 或代理。未启动任务时 Backend 不请求模型；管理 API 默认关闭，第 10 节说明如何按需启用。
 目录或已有数据库权限不安全时启动失败，先检查所有权及 0700/0600 权限；不要把个人 HOME 改为服务账户的数据目录，也不要通过删库解决错误。
 
 ### 迁移、启动和健康检查
@@ -286,4 +287,39 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 - 正常停止日志有 `server_stopped`，HTTP 关闭；再次启动原记录保留。异常杀死服务主进程后检查 systemd `NRestarts` 与健康检查恢复，记录脱敏日志，不将运行数据提交到 Git。
 - 当前测试验证普通 Node 进程的停止/重启，CI 使用 Ubuntu 24.04；它们不等于完成 systemd 安装、开机启动或重启主机实测。
 - CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
-- `/health` 只说明基础服务与 Schema 可读，没有管理认证、业务 API、Codex 调用、调度或发布。旧 Run 的执行恢复尚未实现，#2 认证/systemd 问题继续独立跟踪。
+- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例，暂无调度、新闻或发布；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
+
+## 10. Issue #4 管理 API 与真实任务
+
+先完成第 9 节的安装，再以同一个非 root 服务账户按第 8 节登录 Codex。认证目录 0700、文件式凭据 0600，位于 `CODEX_HOME=/var/lib/ai-news-hub/.codex`，不复制个人账号目录，不以 root 执行模型。
+编辑 root 持有的 0600 环境文件 `/etc/ai-news-hub/ai-news-hub.env`：
+
+```ini
+AI_NEWS_HUB_CODEX_BIN=/usr/local/bin/codex
+AI_NEWS_HUB_RUN_TIMEOUT_MS=120000
+AI_NEWS_HUB_CONCURRENCY=1
+AI_NEWS_HUB_MAX_QUEUE=20
+```
+
+另外添加本机生成的 `AI_NEWS_HUB_ADMIN_TOKEN`（例如 `openssl rand -hex 32` 的结果），不要把实际 Token 提交到仓库、Issue 或 shell 历史。可选 `AI_NEWS_HUB_MODEL` 选择实际有权使用的模型；路径按实际安装修改，确保 CLI 及父目录可由服务账户执行。
+若主机需代理，在同一受限文件显式配置相应代理变量。Codex 子进程只接收允许的运行、代理/CA 与模型认证环境，不继承 Backend 管理 Token 或发布凭据；额外自定义 provider 环境变量需单独评估。
+
+```bash
+sudo systemctl restart ai-news-hub.service
+sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
+```
+
+服务启动仅创建默认样例记录，不会自动调用 Codex。按 [API 说明](TASK_ENGINE.md#手动触发样例) 用 Bearer Token 触发 `sample-connectivity`，保存返回的 Run ID，通过详情与事件接口确认最终状态、Thread / Turn 标识和固定回复。真实请求会使用账户额度。
+继续该 Run 时使用新的 Turn 幂等键；新 Run 使用新的启动幂等键，应有不同 Thread。不要把幂等重试返回旧 Run 误认为又执行了一次。
+
+启动会应用迁移 2，不修改迁移 1 或删除旧库。每个数据目录只允许一个 Backend，Linux `/proc` 的 PID、进程启动时间与 boot ID 用于识别活跃/失效所有者；不要让多个主机共用该 SQLite。
+工作目录为 `/var/lib/ai-news-hub/work`，由服务用户持有且 0700。原始 RPC/stderr/工具参数不入 journal 或事件表；受限 Agent 正文属于私有运行记录，不可直接导出为公开内容。
+
+### 生命周期验收
+
+- 确认无 Token 时管理端点不可用、错误 Token 返回 401；只有回环地址监听。
+- 同一 Task 活跃时新键返回 task_busy；相同键返回旧 Run；不同 Task 按并发与队列上限执行。
+- 测试取消与超时，确认 finished/error_code、历史 Turn 和事件一致；审批请求拒绝并以 needs_approval 失败，不驻留等待人工输入。
+- 正常停服务后旧未完成记录为 interrupted / backend_stopped。异常杀死主进程后，确认 systemd 已清理整个控制组，再观察自动重启；旧未完成记录应为 interrupted / backend_restarted，不自动重跑。
+- 无法确认子进程已清理时，Run 记录 cleanup_failed；引擎冻结调度并触发 Backend 非零关闭，由 systemd 控制组兜底。不得在旧子进程仍运行时手动删除所有权记录或并行重启执行同一 Thread。
+- 服务重新启动后仍可查询历史；仅成功 Turn 不是新闻校验或发布许可。长期登录有效性、真实额度/过期故障和原生 Ubuntu Server 24.04 生命周期仍须记录实测结果，见 [验证记录](validation/TASK_ENGINE.md)。

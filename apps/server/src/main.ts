@@ -19,7 +19,8 @@ async function shutdown(): Promise<void> {
     await app?.close();
     app?.log.info({ event: 'server_stopped' }, 'server_stopped');
   } catch {
-    process.exitCode = 1;
+    process.stderr.write(JSON.stringify({ event: 'shutdown_failed', code: 'shutdown_error' }) + '\n');
+    process.exit(1);
   } finally { clearTimeout(deadline); }
 }
 
@@ -27,7 +28,7 @@ try {
   assertServiceUser();
   const config = loadConfig();
   stage = 'database';
-  app = buildServer(config);
+  app = buildServer(config, { onFatal: () => { process.exitCode = 1; void shutdown(); } });
   stage = 'listen';
   process.once('SIGTERM', () => { void shutdown(); });
   process.once('SIGINT', () => { void shutdown(); });

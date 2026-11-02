@@ -43,10 +43,10 @@ test('failed new migrations roll back SQL and version records together', () => {
   const db = new DatabaseSync(':memory:');
   try {
     migrate(db);
-    const broken = { version: 2, name: 'broken', sql: 'CREATE TABLE temporary_change (id TEXT); INVALID SQL;' };
+    const broken = { version: migrations.length + 1, name: 'broken', sql: 'CREATE TABLE temporary_change (id TEXT); INVALID SQL;' };
     assert.throws(() => migrate(db, [...migrations, broken]));
     assert.equal(db.prepare("SELECT name FROM sqlite_master WHERE name = 'temporary_change'").get(), undefined);
-    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, 1);
+    assert.equal(db.prepare('SELECT count(*) n FROM schema_migrations').get().n, migrations.length);
     migrate(db);
   } finally { db.close(); }
 });
@@ -90,5 +90,18 @@ test('report provenance and publication idempotency survive SQLite constraints',
     assert.throws(() => db.exec("INSERT INTO publication_records (id, report_id, target, idempotency_key) VALUES ('p2', 'report', 'github', 'github/report/v1')"));
     assert.throws(() => db.exec("UPDATE reports SET content_json = 'not-json' WHERE id = 'report'"));
     assert.throws(() => db.exec("DELETE FROM articles WHERE id = 'a'"));
+  } finally { db.close(); }
+});
+
+test('v1 database upgrades by appending migration without losing existing history', () => {
+  const db = new DatabaseSync(':memory:');
+  try {
+    migrate(db, migrations.slice(0, 1));
+    const checksum = db.prepare('SELECT checksum FROM schema_migrations WHERE version=1').get().checksum;
+    db.exec("INSERT INTO tasks(id,name,channel,prompt) VALUES ('legacy','old','test','test')");
+    migrate(db);
+    assert.equal(db.prepare('SELECT checksum FROM schema_migrations WHERE version=1').get().checksum, checksum);
+    assert.equal(db.prepare("SELECT name FROM tasks WHERE id='legacy'").get().name, 'old');
+    assert.ok(db.prepare("SELECT name FROM sqlite_master WHERE name='run_turns'").get());
   } finally { db.close(); }
 });

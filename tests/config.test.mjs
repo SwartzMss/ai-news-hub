@@ -13,6 +13,8 @@ for (const env of [
   { AI_NEWS_HUB_PORT: '0' }, { AI_NEWS_HUB_PORT: '3000junk' },
   { AI_NEWS_HUB_PORT: '65536' }, { AI_NEWS_HUB_PORT: '' },
   { AI_NEWS_HUB_DATA_DIR: './data' }, { AI_NEWS_HUB_LOG_LEVEL: 'garbage' },
+  { AI_NEWS_HUB_ADMIN_TOKEN: 'short' }, { AI_NEWS_HUB_CONCURRENCY: '0' },
+  { AI_NEWS_HUB_RUN_TIMEOUT_MS: 'infinite' }, { AI_NEWS_HUB_MAX_QUEUE: '100000' },
 ]) {
   test(`reject invalid configuration ${JSON.stringify(env)}`, () => {
     assert.throws(() => loadConfig(env), { code: 'invalid_config' });

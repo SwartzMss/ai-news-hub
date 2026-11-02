@@ -4,7 +4,7 @@ import { spawn, execFile } from 'node:child_process';
 import { createServer } from 'node:net';
 import { mkdtempSync, rmSync, existsSync } from 'node:fs';
 import { tmpdir } from 'node:os';
-import { join } from 'node:path';
+import { join, resolve } from 'node:path';
 import { once } from 'node:events';
 import { promisify } from 'node:util';
 import { DatabaseSync } from 'node:sqlite';
@@ -83,4 +83,38 @@ test('invalid public-bind configuration fails before creating a database', async
     }), (error) => error.code === 1 && error.stderr.includes('invalid_config'));
     assert.equal(existsSync(join(dir, 'news.db')), false);
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test('crash leaves history interrupted and stale ownership can be recovered', { timeout: 20000 }, async () => {
+  const dir = mkdtempSync(join(tmpdir(), 'news-crash-'));
+  const port = await freePort();
+  const token = 'test_only_0123456789_abcdefghijklmnop';
+  const headers = { authorization: `Bearer ${token}`, 'content-type': 'application/json' };
+  const env = { ...process.env, AI_NEWS_HUB_DATA_DIR: dir, AI_NEWS_HUB_HOST: '127.0.0.1', AI_NEWS_HUB_PORT: String(port), AI_NEWS_HUB_LOG_LEVEL: 'info', AI_NEWS_HUB_ADMIN_TOKEN: token,
+    AI_NEWS_HUB_CODEX_BIN: resolve('tests/fixtures/hanging-codex.mjs') };
+  const url = `http://127.0.0.1:${port}`;
+  let server, codexPid;
+  try {
+    server = await startBackend(env);
+    const response = await fetch(url + '/api/tasks/sample-connectivity/runs', { method: 'POST', headers, body: JSON.stringify({ idempotencyKey: 'crash-test' }) });
+    assert.equal(response.status, 202);
+    const runId = (await response.json()).run.id;
+    const events = await fetch(url + `/api/runs/${runId}/events`, { headers });
+    codexPid = (await events.json()).events.find((e) => e.kind === 'process_spawned')?.data.pid;
+    assert.ok(codexPid);
+    server.child.kill('SIGKILL'); await server.exited;
+    // The test owns this group. Production systemd KillMode performs this cleanup.
+    try { process.kill(-codexPid, 'SIGKILL'); } catch (error) { if (error.code !== 'ESRCH') throw error; }
+    codexPid = undefined;
+    server = await startBackend(env);
+    const history = await fetch(url + `/api/runs/${runId}`, { headers });
+    const detail = await history.json();
+    assert.equal(detail.run.status, 'interrupted');
+    assert.equal(detail.run.error_code, 'backend_restarted');
+    assert.equal(detail.turns[0].status, 'interrupted');
+  } finally {
+    await server?.stop();
+    if (codexPid) { try { process.kill(-codexPid, 'SIGKILL'); } catch {} }
+    rmSync(dir, { recursive: true, force: true });
+  }
 });
