@@ -1,0 +1,36 @@
+# Dependencies / build
+node_modules/
+dist/
+build/
+coverage/
+.vite/
+.cache/
+.turbo/
+
+# Environment / secrets
+.env
+.env.*
+!.env.example
+*.pem
+*.key
+
+# Local runtime data
+data/
+*.db
+*.db-*
+*.sqlite
+*.sqlite-*
+logs/
+*.log
+tmp/
+temp/
+
+# Editors / OS
+.vscode/
+.idea/
+.DS_Store
+Thumbs.db
+
+# Test / local output
+.playwright/
+test-results/
