@@ -4,16 +4,19 @@
 
 Issue #2：独立接入探针与故障测试已实现；原生 Ubuntu Server 24.04、独立服务账户、真实 systemd Turn 与长期认证仍待验收。见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
+Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、进程测试和 systemd unit 已实现；目标主机安装与 systemd 实际验收仍需完成。前端仅预留目录，暂无业务接口。
+
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
 ### A. Linux 服务骨架
 - [x] 独立 Node.js / TypeScript Codex 验证工具与无网络故障测试
 - [x] 添加 Ubuntu 24.04 GitHub Actions 验证配置（仅探针构建/测试；远端结果另行查看）
 - [ ] 在 Linux 上初始化 Node.js + TypeScript Backend、React + Vite 的公共 Web 与 Admin 基础结构
-- [ ] 准备 Linux `.env.example`、SQLite 数据目录和数据库迁移方案
+- [x] 初始化 TypeScript / Fastify Backend 与共享类型位置；预留公共 Web / Admin 目录
+- [x] 准备 Linux `.env.example`、SQLite 私有数据目录与可重复/可回滚迁移
 - [ ] 验证 Linux CLI 的 `codex --version`、`codex app-server --help` 及服务账户认证
 - [ ] 编写并验证 systemd 单实例服务配置，支持开机启动、故障重启、journald 日志
-- [ ] 建立 Linux CI 测试与基础构建流程
+- [x] 建立 Ubuntu 24.04 CI：lint、typecheck、测试、构建与 unit 静态检查（实际结果查看 Actions）
 
 ### B. Codex App Server Adapter
 - [x] 验证工具支持 stdio 握手、独立 Thread / Turn、终态关联和失败退出；不替代以下生产 Adapter

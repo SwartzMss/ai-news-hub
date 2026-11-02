@@ -1,9 +1,9 @@
-name: Codex probe checks
+name: Linux checks
 on: [push, pull_request]
 permissions:
   contents: read
 jobs:
-  probe:
+  foundation:
     runs-on: ubuntu-24.04
     steps:
       - uses: actions/checkout@v4
@@ -12,5 +12,9 @@ jobs:
           node-version: 22.19.0
           cache: npm
       - run: npm ci --ignore-scripts
-      - run: npm run check
+      - run: npm run lint
+      - run: npm run typecheck
+      - run: npm run build
       - run: npm test
+      - run: bash -n scripts/service.sh
+      - run: systemd-analyze verify deploy/systemd/ai-news-hub.service

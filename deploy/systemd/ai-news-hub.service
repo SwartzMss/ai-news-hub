@@ -1,0 +1,31 @@
+[Unit]
+Description=AI News Hub Backend
+Wants=network-online.target
+After=network-online.target
+StartLimitIntervalSec=60
+StartLimitBurst=3
+
+[Service]
+Type=exec
+User=ai-news-hub
+Group=ai-news-hub
+WorkingDirectory=/opt/ai-news-hub
+Environment=NODE_ENV=production
+Environment=HOME=/var/lib/ai-news-hub
+Environment=CODEX_HOME=/var/lib/ai-news-hub/.codex
+Environment=PATH=/usr/local/bin:/usr/bin:/bin
+EnvironmentFile=/etc/ai-news-hub/ai-news-hub.env
+StateDirectory=ai-news-hub
+StateDirectoryMode=0700
+ExecStart=/usr/bin/node /opt/ai-news-hub/dist/apps/server/src/main.js
+Restart=on-failure
+RestartSec=5
+KillMode=control-group
+TimeoutStopSec=15
+UMask=0077
+NoNewPrivileges=true
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target
