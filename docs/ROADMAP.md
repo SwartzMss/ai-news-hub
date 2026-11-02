@@ -4,13 +4,15 @@
 
 Issue #2：独立接入探针与故障测试已实现；原生 Ubuntu Server 24.04、独立服务账户、真实 systemd Turn 与长期认证仍待验收。见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
-Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、进程测试和 systemd unit 已实现；目标主机安装与 systemd 实际验收仍需完成。前端仅预留目录，暂无业务接口。
+Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、进程测试和 systemd unit 已实现；目标主机安装与 systemd 实际验收仍需完成。前端仅预留目录。
+
+Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件、取消和继续 Turn 已实现；开发会话完成真实样例调用，目标服务账户的 systemd 与长期认证仍待 #2 验收。见 [引擎与 API](TASK_ENGINE.md)。
 
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
 ### A. Linux 服务骨架
 - [x] 独立 Node.js / TypeScript Codex 验证工具与无网络故障测试
-- [x] 添加 Ubuntu 24.04 GitHub Actions 验证配置（仅探针构建/测试；远端结果另行查看）
+- [x] 添加 Ubuntu 24.04 GitHub Actions 验证配置（Backend / 探针构建与测试；远端结果另行查看）
 - [ ] 在 Linux 上初始化 Node.js + TypeScript Backend、React + Vite 的公共 Web 与 Admin 基础结构
 - [x] 初始化 TypeScript / Fastify Backend 与共享类型位置；预留公共 Web / Admin 目录
 - [x] 准备 Linux `.env.example`、SQLite 私有数据目录与可重复/可回滚迁移
@@ -20,10 +22,12 @@ Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、�
 
 ### B. Codex App Server Adapter
 - [x] 验证工具支持 stdio 握手、独立 Thread / Turn、终态关联和失败退出；不替代以下生产 Adapter
-- [ ] 由 Backend 以 stdio 启动并管理 Codex 子进程
-- [ ] 实现 initialize / initialized 及 Thread / Turn 生命周期
+- [x] 由 Backend 以 stdio 启动并管理 Codex 子进程
+- [x] 实现 initialize / initialized、thread/start / resume 与 Turn 生命周期
 - [ ] 正确处理完成、失败、中断、审批、超时、子进程退出及重试
-- [ ] 每次 Run 默认使用独立 Thread，保存 Thread / Turn ID 并支持继续当前 Run
+- [x] 完成、失败、中断、拒绝审批、超时、退出、取消与重启标记；自动重试和交互审批后续实现
+- [x] 每次 Run 默认使用独立 Thread，保存 Thread / Turn ID 并支持继续当前 Run
+- [x] 有限队列/并发、任务互斥、请求幂等、Token 管理 API、SQLite 历史与事件
 
 ### C. 真实新闻 → 已验证日报
 - [ ] 采集至少一个合法可访问的 RSS 真实来源
@@ -38,7 +42,7 @@ Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、�
 - [ ] **Linux 本地管理后台**：任务列表/详情、手动执行、当前状态、执行日志与日报预览
 - [ ] Agent 会话展示内嵌于具体 Run 详情，**不实现独立 Agent 工作台**
 - [ ] GitHub 更新触发 Cloudflare Pages 构建和发布（部署作为可配置环节）
-- [ ] 默认管理员 API 只在 localhost 监听，不对公网裸露
+- [x] 管理员 API 只在回环地址监听，配置 Bearer Token 才启用
 
 ### v0.1 验收标准
 在 Linux 上，以非 root 服务账号启动单实例 Backend 并通过 systemd 管理：真实 RSS → Codex App Server → 结构化校验 → SQLite → GitHub 日报文件 → Web / RSS。可以在本地后台查看某次 Run 状态、日志及结果。失败不可误报为成功，历史日报不被覆盖。无 GUI 时能完成受控认证并有失效告警/处理方法。

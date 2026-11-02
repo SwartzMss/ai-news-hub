@@ -3,9 +3,37 @@ import type { HealthResponse, ErrorResponse } from '../../../packages/shared/src
 import type { Config } from './config.js';
 import { openDatabase } from './db/database.js';
 import { migrations } from './db/migrations.js';
+import { lstatSync, mkdirSync } from 'node:fs';
+import { join } from 'node:path';
+import { AppError, HttpError } from './errors.js';
+import { StdioAdapter } from './agent/stdio-adapter.js';
+import type { AgentAdapter } from './agent/types.js';
+import { TaskEngine } from './tasks/engine.js';
+import { acquireBackendLock } from './tasks/lock.js';
+import { registerTaskRoutes } from './tasks/routes.js';
 
-export function buildServer(config: Config) {
+export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void } = {}) {
   const db = openDatabase(config.dataDir);
+  let release: () => void;
+  try { release = acquireBackendLock(db); }
+  catch (error) { db.close(); throw error; }
+  const cwd = join(config.dataDir, 'work');
+  let engine: TaskEngine;
+  try {
+    mkdirSync(cwd, { recursive: true, mode: 0o700 });
+    const workspace = lstatSync(cwd);
+    if (!workspace.isDirectory() || workspace.uid !== process.getuid?.() || (workspace.mode & 0o077) !== 0) throw new AppError('unsafe_workspace_permissions');
+    engine = new TaskEngine(db, {
+      adapter: options.adapter ?? new StdioAdapter(config.codexBin),
+      concurrency: config.concurrency, maxQueue: config.maxQueue, timeoutMs: config.runTimeoutMs,
+      cwd, model: config.model,
+      onFatal: () => {
+        app.log.error({ code: 'engine_unavailable' }, 'task_engine_unavailable');
+        if (options.onFatal) options.onFatal();
+        else void app.close().catch(() => {});
+      },
+    });
+  } catch (error) { release(); db.close(); throw error; }
   const app = Fastify({
     logger: {
       level: config.logLevel,
@@ -21,17 +49,19 @@ export function buildServer(config: Config) {
     requestTimeout: 10000,
     forceCloseConnections: true,
   });
-  app.addHook('onClose', async () => { db.close(); });
+  app.addHook('preClose', async () => { await engine.close(); });
+  app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
+  app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken); }, { prefix: '/api' });
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');
   });
   app.setErrorHandler((error, request, reply) => {
     const errorStatus = error instanceof Error && 'statusCode' in error && typeof error.statusCode === 'number' ? error.statusCode : 500;
     const badRequest = errorStatus >= 400 && errorStatus < 500;
-    const status = badRequest ? errorStatus : 500;
+    const status = error instanceof HttpError ? error.statusCode : badRequest ? errorStatus : 500;
     const body: ErrorResponse = { error: {
-      code: badRequest ? 'bad_request' : 'internal_error',
-      message: badRequest ? 'Invalid request' : 'Internal server error', requestId: request.id,
+      code: error instanceof HttpError ? error.code : badRequest ? 'bad_request' : 'internal_error',
+      message: error instanceof HttpError ? error.code : badRequest ? 'Invalid request' : 'Internal server error', requestId: request.id,
     } };
     request.log.error({ code: body.error.code, statusCode: status }, 'request_failed');
     void reply.code(status).send(body);
@@ -44,7 +74,7 @@ export function buildServer(config: Config) {
     reply.header('cache-control', 'no-store');
     try {
       const row = db.prepare('SELECT max(version) version FROM schema_migrations').get();
-      if (row?.version !== migrations.at(-1)?.version) throw new Error('schema_unavailable');
+      if (row?.version !== migrations.at(-1)?.version || !engine.healthy()) throw new Error('schema_unavailable');
       return { status: 'ok', database: 'ok' };
     } catch {
       reply.code(503);

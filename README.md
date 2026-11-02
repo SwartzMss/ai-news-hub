@@ -2,9 +2,9 @@
 
 > 基于 Codex App Server 的 AI 信息聚合、定时分析与多渠道订阅平台。
 
-**项目状态：Backend 基础骨架可运行，真实新闻服务尚未实现。**
+**项目状态：Backend 任务执行引擎可运行，真实新闻服务尚未实现。**
 
-已实现 Fastify 健康检查、配置校验、SQLite 初始化/迁移、结构化日志和停止处理；尚无任务执行、新闻采集或发布接口。Issue #2 的 Codex 验证工具独立保留，目标服务器认证验收见 [验证记录](docs/validation/CODEX_LINUX_PROBE.md)。
+已实现 Fastify、SQLite、Task → Run → Thread → Turn 执行、受保护的管理 API、历史事件与取消/继续 Turn；尚无新闻采集、日报或发布。Issue #2 的独立探针保留，目标服务器认证验收见 [探针记录](docs/validation/CODEX_LINUX_PROBE.md)，引擎实测见 [任务引擎记录](docs/validation/TASK_ENGINE.md)。
 
 **v0.1 平台决策：仅支持 Linux（首选 Ubuntu Server 24.04 LTS）；不开发或测试 Windows / WSL 部署。**
 
@@ -92,14 +92,14 @@ AI News Hub 旨在将新闻采集、AI 研究与分析、任务调度、内容�
 | 内容归档 | GitHub（每日按日期提交 JSON / Markdown，保留历史数据） |
 | 网站发布 | GitHub 触发 Cloudflare Pages 静态构建；公开 Web / RSS |
 
-Node.js / TypeScript、Fastify 与 SQLite 已用于基础 Backend；表中调度、正式 Codex Adapter、前端、RSS 和发布仍为计划。
+Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；表中定时调度、前端、RSS 和发布仍为计划。
 
 ## 开发与基础服务
 
 使用非 root Linux 账户、Node.js 22.19.0 或更新的 22.x。依赖由根目录统一管理：
 
 ```text
-apps/server/src/       Fastify、配置、SQLite、迁移与进程入口
+apps/server/src/       Fastify、任务引擎、Codex Adapter、SQLite 与进程入口
 apps/web/              公共阅读站预留位置（尚未实现）
 apps/admin/            管理前端预留位置（尚未实现）
 packages/shared/src/   健康检查、错误与状态类型
@@ -123,7 +123,7 @@ npm run db:migrate
 npm start
 ```
 
-启动也会自动执行迁移。另一个终端运行 `npm run health`，默认访问 `http://127.0.0.1:3000/health`，健康时返回 `{"status":"ok","database":"ok"}`；当前只提供该只读端点，允许的监听地址为 `127.0.0.1` 或 `::1`。
+启动也会自动执行迁移。另一个终端运行 `npm run health`，默认访问 `http://127.0.0.1:3000/health`，健康时返回 `{"status":"ok","database":"ok"}`；允许的监听地址为 `127.0.0.1` 或 `::1`。健康检查不检测 Codex 登录或额度。
 前台服务用 Ctrl+C 停止；安装正式 unit 后可用 `npm run service:start` / `npm run service:stop`（需要主机服务管理权限）。
 `npm test` 包含回环 HTTP、停止/重启、迁移及探针模拟测试，不访问外部新闻源或模型。
 
@@ -131,6 +131,14 @@ SQLite 使用 Node 内置的 `node:sqlite`，在 Node 22 中仍为实验性 API�
 迁移按版本与 SHA-256 校验历史，失败整体回滚，重复运行保留数据；字段和约束见 [数据模型](docs/DATA_MODEL.md)。
 
 开发工具链暂用 `overrides` 将 minimatch 锁定到 11.0.1，修复 [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)；已验证与当前 Node、ESLint 和 TypeScript 插件兼容，上游依赖更新后可复核移除覆盖。
+
+## 手动任务执行
+
+管理 API 位于 `/api`，默认关闭。先在私有 `.env` 或 systemd 环境文件中配置 `AI_NEWS_HUB_ADMIN_TOKEN`（32–256 位字母、数字、下划线或连字符；可用 `openssl rand -hex 32` 在本机生成），重启 Backend 后通过 `Authorization: Bearer ...` 访问。
+Backend 会保存预定义样例 `sample-connectivity`，仅手动触发时调用真实 Codex 并使用额度。服务账户须已完成 Codex 登录，`AI_NEWS_HUB_CODEX_BIN` 指向可执行 CLI；工作目录为私有数据目录下的 `work/`。
+
+支持启动 Run、查询状态/历史/事件、取消，以及在同一 Run 中继续 Turn。每个新 Run 默认创建 Thread，继续时恢复原 Thread；失败不自动重试，幂等键相同返回原记录。进程重启把未完成记录标为 interrupted，保留历史。
+详见 [任务引擎与 API](docs/TASK_ENGINE.md)。目前没有任务编辑 UI、交互审批、定时调度或独立 Agent 工作台。
 
 ## Codex 接入验证工具
 
@@ -170,7 +178,7 @@ codex app-server --help
 codex login status
 ```
 
-Backend 拒绝 root 运行，由 `systemd` 守护。当前 Backend 不启动 Codex，健康检查也不代表认证有效；正式 Adapter 后续以 stdio 子进程方式接入。无图形界面的服务器需完成合适的 Codex 认证和凭据续期验证，不能假定无人值守会永久有效。
+Backend 拒绝 root 运行，由 `systemd` 守护。只有收到授权的任务启动/继续请求才以 stdio 启动 Codex；健康检查不代表认证有效。无图形界面的服务器需完成合适的 Codex 认证和凭据续期验证，不能假定无人值守会永久有效。
 
 详见 [Linux 部署设计](docs/DEPLOY_LINUX.md)。使用额度受登录方式及计划限制，不能视为无限免费调用。
 

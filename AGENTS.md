@@ -1,13 +1,16 @@
 # AGENTS.md
 
-本仓库为 **AI News Hub**，当前包含 Fastify / SQLite Backend 基础骨架、独立 HTML 交互原型和 Codex 接入验证工具，尚无可运行的真实新闻服务。
+本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，尚无可运行的真实新闻服务。
 
 ## 当前工程结构与检查
 
 - 根目录统一管理 Node.js 22 / TypeScript 依赖；`apps/server/src` 为 Backend，`packages/shared/src` 为共享类型。
 - `apps/web` / `apps/admin` 仅预留位置，不代表 React/Vite 或后台界面已实现。
 - 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程。
-- Backend 目前只提供 `/health`；启动自动迁移，也可 `npm run db:migrate`。配置见 `.env.example`，数据模型见 `docs/DATA_MODEL.md`。
+- Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未配置管理 Token 时 `/api` 关闭。接口见 `docs/TASK_ENGINE.md`。
+- 启动自动迁移，也可 `npm run db:migrate`。配置见 `.env.example`，数据模型见 `docs/DATA_MODEL.md`。
+- 每个 Turn 使用独立 stdio App Server 子进程，新 Run 新建 Thread，继续 Turn 恢复原 Thread；不将 Backend 管理/发布凭据继承给 Agent。
+- 每个数据目录只允许一个 Backend；重启将未完成 Run / Turn 标为 interrupted，不自动重跑。审批一律拒绝并失败退出，交互审批暂未实现。
 - SQLite 迁移只追加新版本，不修改已应用 SQL；历史 checksum 不符必须失败，不删除数据库规避错误。
 - 不将代理配置、凭据、SQLite 或本地验证日志入库；不要创建 `docs/superpowers/` 工作流文档。
 
