@@ -2,6 +2,8 @@
 
 > **本项目当前尚未实现可运行的 Backend。** 以下描述的是 v0.1 Linux-only 目标环境及未来交付要求，不是已经验证可一键安装的部署教程。
 
+Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
+
 ## 目标平台与组件
 
 - **唯一 v0.1 服务端目标**：Linux，首选 Ubuntu Server 24.04 LTS（x86_64）；不做 Windows / WSL 的部署和测试。
@@ -134,3 +136,103 @@ Linux Backend + SQLite + 管理 API（仅 localhost）
 - 管理后台能显示任务列表、手动运行、Run 状态、日志和结果预览。
 - 采集真实来源 → Codex → SQLite → GitHub → 网站 / RSS 的链路可被验证。
 - 没有实时连接或认证无效时，不会发布假数据或伪成功的报告。
+
+## 8. Issue #2 独立探针验证步骤
+
+以下步骤面向原生 Ubuntu Server 24.04 LTS，需由主机管理员执行。当前开发环境结果不能替代目标主机验收。
+
+### 构建与服务账户
+
+使用受支持的 Node.js 22，确保 `node` 在 `/usr/bin/node`（否则修改 unit 的绝对路径），并确认 `codex` 的实际路径与版本。
+在仓库运行：
+
+```bash
+npm ci --ignore-scripts
+npm run check
+npm test
+node --version
+codex --version
+codex app-server --help
+codex login --help
+```
+
+以管理员身份准备独立用户与目录；若用户已存在则跳过 `useradd`：
+
+```bash
+sudo useradd --system --home-dir /var/lib/ai-news-hub --shell /usr/sbin/nologin ai-news-hub
+sudo install -d -o ai-news-hub -g ai-news-hub -m 0700 /var/lib/ai-news-hub
+sudo install -d -o ai-news-hub -g ai-news-hub -m 0700 /var/lib/ai-news-hub/.codex /var/lib/ai-news-hub/probe-work
+sudo install -d -o root -g root -m 0755 /opt/ai-news-hub/dist/tools/codex-probe
+sudo install -o root -g root -m 0644 dist/tools/codex-probe/*.js /opt/ai-news-hub/dist/tools/codex-probe/
+sudo install -o root -g root -m 0644 package.json /opt/ai-news-hub/package.json
+sudo install -d -o root -g root -m 0700 /etc/ai-news-hub
+sudo install -o root -g root -m 0600 deploy/systemd/.env.example /etc/ai-news-hub/codex-probe.env
+```
+
+运行时没有第三方依赖，但 `package.json` 的 `type=module` 必须随构建产物部署。
+编辑 `/etc/ai-news-hub/codex-probe.env`，将 `CODEX_BIN` 改为全局安装的实际绝对路径；服务用户须可执行该路径及其父目录。
+不要使用个人用户目录里的 nvm 路径作为正式部署依赖。
+如果主机需要代理，在这个受限文件中显式设置 `http_proxy` / `https_proxy` / `no_proxy`；systemd 不会自动继承交互 shell 的网络环境。不要把代理凭据写入仓库或 journal。
+
+### 认证与单次运行
+
+用服务用户完成认证（按实际 CLI 及账户策略选择认证方式，设备码流程需要人工在浏览器授权）：
+
+```bash
+sudo -u ai-news-hub env HOME=/var/lib/ai-news-hub CODEX_HOME=/var/lib/ai-news-hub/.codex /usr/local/bin/codex login --device-auth
+sudo -u ai-news-hub env HOME=/var/lib/ai-news-hub CODEX_HOME=/var/lib/ai-news-hub/.codex /usr/local/bin/codex login status
+sudo stat -c '%a %U %n' /var/lib/ai-news-hub/.codex /var/lib/ai-news-hub/.codex/auth.json
+```
+
+上面的 Codex 路径同样要按实际安装修改。文件式凭据要求目录 0700、凭据文件 0600，归服务用户所有；若使用其他凭据存储，应验证其在无桌面会话下也可用。
+`login status` 只证明本地登录状态，成功 Turn 才证明该次模型调用可用。
+探针不会替用户续期或改变认证模式；访问失败后先恢复服务用户认证，再手动重试。
+
+```bash
+sudo install -o root -g root -m 0644 deploy/systemd/ai-news-hub-codex-probe.service /etc/systemd/system/
+sudo systemd-analyze verify /etc/systemd/system/ai-news-hub-codex-probe.service
+sudo systemctl daemon-reload
+sudo systemctl start ai-news-hub-codex-probe.service
+sudo journalctl -u ai-news-hub-codex-probe.service --since '10 minutes ago' --no-pager
+sudo systemctl show ai-news-hub-codex-probe.service -p Result -p ExecMainStatus
+```
+
+通过条件：日志依次包含 `initialized`、`account_available`、`thread_started`、`turn_started`、`completed`、`child_closed`，且 `ExecMainStatus=0`、`Result=success`。这是一次性探针，成功后进入 inactive 是正常现象。
+再启动一次，比较不同的 Run / Thread 标识；同一 Run 内的 Thread / Turn 应一致。
+unit 刻意没有 `[Install]` 且 `Restart=no`，不执行 `enable`，避免开机或故障时自动重复消耗额度。正式 Backend 的自动恢复须另行实现。
+
+### 失败与生命周期验收
+
+| 日志 code | 含义与处理 |
+| --- | --- |
+| `auth_required` | 无有效账户或终态报告认证/权限错误；以服务用户恢复认证 |
+| `quota_exceeded` / `rate_limited` | 额度不足或限流；等待恢复/调整计划，不紧密重试 |
+| `needs_approval` | 收到服务器主动请求，探针拒绝并退出；正式 Backend 需提供任务内审批 |
+| `rpc_error` | RPC 失败；查看 `rpc_failed.method`、数字 `rpcCode` 与脱敏 `hints`，检查认证/网络/版本 |
+| `timeout` / `process_exit` / `spawn_failed` | 总超时、子进程退出或可执行文件问题；核对环境、路径、运行身份 |
+| `agent_failed` / `interrupted` / `invalid_output` | Agent 未成功完成或回复不符；不可进入发布路径 |
+| `protocol_error` | 格式或大小异常、标识无效；核对已记录 CLI 版本及生成的 Schema |
+| `cancelled` | 服务停止或进程收到 SIGTERM/SIGINT；该次 Run 未成功 |
+| `cleanup_failed` | 进程组清理超过 2.5 秒上限；探针失败退出，由 systemd 控制组兜底并检查残留进程 |
+
+无网络测试用 `npm test` 验证错误分支；模拟认证/额度失败不能描述为真实令牌过期或配额耗尽。
+`tests/fixtures/systemd-probe.mjs` 是仅供故障注入的包装器，不得代替真实探针部署；在目标机的源码目录可用以下临时用户 unit 验证重启：
+
+```bash
+probe_node=$(command -v node)
+probe_repo=$(pwd)
+probe_tmp=$(mktemp -d /tmp/ai-news-hub-probe.XXXXXXXX)
+probe_marker="$probe_tmp/restarted"
+systemd-run --user --unit=ai-news-hub-probe-restart --wait --collect \
+  --property=Restart=on-failure --property=RestartSec=1 \
+  --property=StartLimitIntervalSec=60 --property=StartLimitBurst=3 \
+  --property=KillMode=control-group --working-directory="$probe_repo" \
+  "$probe_node" "$probe_repo/tests/fixtures/systemd-probe.mjs" restart "$probe_marker"
+journalctl --user -u ai-news-hub-probe-restart.service -n 40 --no-pager
+```
+
+用户 systemd 管理器须可用；此测试不要求正式服务使用用户 unit。预期首次 `process_exit`、重启计数 1、第二次模拟成功且 Run / Thread 不同。它不证明真实模型会在服务重启后恢复。
+另起同样的临时 unit，把最后的 `restart "$probe_marker"` 改成 `timeout`，unit 名改为 `ai-news-hub-probe-stop`，去掉 `--wait` 和自动重启属性，然后 `systemctl --user stop ai-news-hub-probe-stop.service`；journal 应有 `cancelled` 与 `child_closed`，停止后控制组内无残留进程。
+真实认证过期、真实服务重启后再次成功 Turn、长期无人值守观察仍须在目标服务器记录，不能用模拟测试替代。
+
+协议与认证参考：[App Server 官方文档](https://developers.openai.com/codex/app-server)、[CLI 认证官方文档](https://developers.openai.com/codex/auth)。使用已安装 CLI 的 `generate-json-schema` 核对字段；不要提交个人配置或原始日志。

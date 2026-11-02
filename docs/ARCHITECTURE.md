@@ -2,6 +2,9 @@
 
 > 当前为规划文档；接口、进程模型和数据表结构以 v0.1 实现与验证结果为准。
 
+Issue #2 已新增独立的 TypeScript 接入探针（`tools/codex-probe/`），用于验证 stdio 握手及单次 Turn，不代表下述 Backend、数据库或调度模块已经实现。
+探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
+
 ## 1. 系统边界
 
 本项目 v0.1 采用“**Linux 服务端执行 + GitHub 持久归档 + 静态公开发布**”模式。不支持 Windows / WSL 作为部署目标。
@@ -60,6 +63,14 @@
 7. 进程退出或协议错误时标记任务失败并允许安全重试，不默默当作成功。
 
 注意：App Server 的协议与可用功能可能随版本演化，应放在独立 Adapter 内隔离。Agent 的认证与使用限额依赖实际安装与账户配置，不能将 ChatGPT 套餐视为无限制公共 API。
+
+### 已实现的验证边界
+
+- `client.ts`：按行解析 stdio，初始化后读取账户状态；每次 Run 新建只读 Thread，再启动固定提示词 Turn。仅匹配 Thread / Turn 的成功终态和预期输出算通过。
+- `cli.ts`：拒绝 root 和非 Linux 运行；设置总超时，响应 SIGTERM / SIGINT；JSON 日志仅保留 Run / Thread / Turn、阶段、错误类别及时间，不转发原始 RPC 或 stderr。
+- 服务器主动请求（包括审批）一律拒绝并失败退出；不为无人值守请求自动授权。此探针没有交互审批 UI。
+- 结束时关闭 stdio，回收独立进程组，发送 SIGTERM，必要时发送 SIGKILL；清理等待上限 2.5 秒，超限报告 `cleanup_failed`。systemd 以 `KillMode=control-group` 兜底。不会自动续跑失败 Run。
+- 暂无持久化、重连/恢复和生产 Adapter；重启后新建 Run，不把初始化、进程退出或空回复当作成功。
 
 ## 4. 数据模型（提议）
 

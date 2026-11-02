@@ -1,10 +1,14 @@
 # 开发路线图（Linux-only）
 
-> v0.1 唯一目标平台：**Linux（首选 Ubuntu Server 24.04 LTS）**。不考虑 Windows 或 WSL 的实现与测试。所有复选框均表示待实现。
+> v0.1 唯一目标平台：**Linux（首选 Ubuntu Server 24.04 LTS）**。不考虑 Windows 或 WSL 的实现与测试。复选框按实际交付状态标记，验证工具完成不等于业务服务完成。
+
+Issue #2：独立接入探针与故障测试已实现；原生 Ubuntu Server 24.04、独立服务账户、真实 systemd Turn 与长期认证仍待验收。见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
 ### A. Linux 服务骨架
+- [x] 独立 Node.js / TypeScript Codex 验证工具与无网络故障测试
+- [x] 添加 Ubuntu 24.04 GitHub Actions 验证配置（仅探针构建/测试；远端结果另行查看）
 - [ ] 在 Linux 上初始化 Node.js + TypeScript Backend、React + Vite 的公共 Web 与 Admin 基础结构
 - [ ] 准备 Linux `.env.example`、SQLite 数据目录和数据库迁移方案
 - [ ] 验证 Linux CLI 的 `codex --version`、`codex app-server --help` 及服务账户认证
@@ -12,6 +16,7 @@
 - [ ] 建立 Linux CI 测试与基础构建流程
 
 ### B. Codex App Server Adapter
+- [x] 验证工具支持 stdio 握手、独立 Thread / Turn、终态关联和失败退出；不替代以下生产 Adapter
 - [ ] 由 Backend 以 stdio 启动并管理 Codex 子进程
 - [ ] 实现 initialize / initialized 及 Thread / Turn 生命周期
 - [ ] 正确处理完成、失败、中断、审批、超时、子进程退出及重试

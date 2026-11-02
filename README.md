@@ -4,6 +4,8 @@
 
 **项目状态：规划 / 初始搭建阶段（尚不可运行）**
 
+已提供 Issue #2 的独立 Codex stdio 验证工具与故障测试；真实新闻服务仍不可运行。目标服务器验收尚未完成，详见 [验证记录](docs/validation/CODEX_LINUX_PROBE.md)。
+
 **v0.1 平台决策：仅支持 Linux（首选 Ubuntu Server 24.04 LTS）；不开发或测试 Windows / WSL 部署。**
 
 AI News Hub 旨在将新闻采集、AI 研究与分析、任务调度、内容发布组合成一套可自托管的系统。支持通过网页浏览日报，也支持使用标准 RSS 订阅。核心设计是 **Linux 主机运行 Codex Agent 和管理后台，GitHub 归档日报，Cloudflare Pages 公开发布静态阅读内容**。
@@ -91,6 +93,25 @@ AI News Hub 旨在将新闻采集、AI 研究与分析、任务调度、内容�
 | 网站发布 | GitHub 触发 Cloudflare Pages 静态构建；公开 Web / RSS |
 
 以上是初步方案，不代表依赖已经安装，也不代表相关功能已实现。
+
+目前仅验证工具已有 Node.js / TypeScript 实现，不包含 Fastify、SQLite 或业务服务。
+
+## Codex 接入验证工具
+
+在非 root Linux 账户下，准备 Node.js 22（本次开发版本 22.19.0）及已认证的 Codex CLI：
+
+```bash
+npm ci --ignore-scripts
+npm run check
+npm test
+npm run probe:codex
+```
+
+`npm test` 会构建工具并运行无网络故障测试，不调用模型。`probe:codex` 会执行一次真实请求并使用账户额度；单独执行前需先 `npm run build`。
+探针经 stdio 完成初始化、认证状态读取、新建 Thread 和 Turn，只在收到匹配的成功终态及固定输出后返回零退出码。
+它不运行新闻任务或发布内容，不启动管理 API；每次调用产生新的 Run / Thread。
+可用 `CODEX_BIN`、`CODEX_MODEL`、`PROBE_CWD`、`PROBE_TIMEOUT_MS` 配置路径、模型与总超时，认证仍由 `HOME` / `CODEX_HOME` 下的 Codex 配置管理。
+systemd 使用步骤见 [Linux 部署文档](docs/DEPLOY_LINUX.md#8-issue-2-独立探针验证步骤)。
 
 ## 开发路线
 
