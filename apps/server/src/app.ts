@@ -1,6 +1,6 @@
 import Fastify, { LogController } from 'fastify';
 import type { HealthResponse, ErrorResponse } from '../../../packages/shared/src/index.js';
-import type { Config } from './config.js';
+import { legacyAdminToken,type Config } from './config.js';
 import { openDatabase } from './db/database.js';
 import { migrations } from './db/migrations.js';
 import { lstatSync, mkdirSync } from 'node:fs';
@@ -17,6 +17,9 @@ import { registerAdmin } from './admin.js';
 import { PublicationService, type GitHubAdapter } from './publish/service.js';
 import { GitHubArchive } from './publish/github.js';
 import { NEWS_TASK_ID } from './news/source.js';
+import {SettingsStore} from './settings/store.js';
+import {AuthStore} from './auth/store.js';
+import {registerAuthRoutes} from './auth/routes.js';
 
 export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: SourceFetch; now?: () => Date; githubAdapter?: GitHubAdapter } = {}) {
   const db = openDatabase(config.dataDir);
@@ -26,14 +29,18 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
   const cwd = join(config.dataDir, 'work');
   const http = options.newsFetcher ? { fetcher: options.newsFetcher, close: async () => {} } : sourceHttpClient();
   let engine: TaskEngine;
+  let settings:SettingsStore,authentication:AuthStore;
   try {
+    settings=new SettingsStore(db,config);
+    authentication=new AuthStore(db,config.dataDir,()=>legacyAdminToken(config.legacyEnv));
+    const runtime=settings.runtime();
     mkdirSync(cwd, { recursive: true, mode: 0o700 });
     const workspace = lstatSync(cwd);
     if (!workspace.isDirectory() || workspace.uid !== process.getuid?.() || (workspace.mode & 0o077) !== 0) throw new AppError('unsafe_workspace_permissions');
     engine = new TaskEngine(db, {
-      adapter: options.adapter ?? new StdioAdapter(config.codexBin),
-      concurrency: config.concurrency, maxQueue: config.maxQueue, timeoutMs: config.runTimeoutMs,
-      cwd, model: config.model,
+      adapter: options.adapter ?? {execute:(input,emit)=>new StdioAdapter(settings.runtime().codex.binary).execute(input,emit)},
+      concurrency: runtime.execution.concurrency, maxQueue: runtime.execution.maxQueue, timeoutMs: runtime.execution.timeoutMs,
+      cwd, model: runtime.codex.model||undefined,
       workflows: new Map([[NEWS_TASK_ID, new NewsWorkflow(db, http.fetcher, options.now)]]),
       onFatal: () => {
         app.log.error({ code: 'engine_unavailable' }, 'task_engine_unavailable');
@@ -44,7 +51,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
   } catch (error) { release(); db.close(); throw error; }
   const app = Fastify({
     logger: {
-      level: config.logLevel,
+      level: settings.runtime().logLevel,
       serializers: {
         // Log no headers, body, query string or arbitrary Error message/stack.
         req: (req: { method?: string }) => ({ method: req.method }),
@@ -57,12 +64,23 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     requestTimeout: 10000,
     forceCloseConnections: true,
   });
-  const github=options.githubAdapter ?? (config.publication ? new GitHubArchive(config.publication,config.publication.token):undefined);
-  const publications=new PublicationService(db,config.publication,github);
+  const github:GitHubAdapter=options.githubAdapter??{async publish(artifact,signal){
+    const target=settings.publication();if(!target)throw new AppError('publication_disabled');
+    const client=new GitHubArchive(target,target.token);try{return await client.publish(artifact,signal);}finally{await client.close();}
+  }};
+  const publications=new PublicationService(db,settings.publication(),settings.publication()?github:undefined);
+  const applySettings=()=>{
+    const runtime=settings.runtime(),target=settings.publication();
+    engine.configure({...runtime.execution,model:runtime.codex.model||undefined});
+    publications.configure(target,target?github:undefined);
+    app.log.level=runtime.logLevel;
+  };
   registerAdmin(app);
-  app.addHook('preClose', async () => { await engine.close(); await publications.close(); if(github instanceof GitHubArchive)await github.close(); await http.close(); });
+  app.addHook('preClose', async () => { await engine.close(); await publications.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
-  app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken, db, publications); }, { prefix: '/api' });
+  app.register(async scope=>{registerAuthRoutes(scope,authentication);},{prefix:'/api'});
+  app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings); }, { prefix: '/api' });
+  if(!authentication.status().initialized)app.log.info({event:'admin_setup_required',setupCodePath:authentication.setupPath},'admin_setup_required');
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');
   });

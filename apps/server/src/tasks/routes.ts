@@ -1,4 +1,3 @@
-import { createHash, timingSafeEqual } from 'node:crypto';
 import type { FastifyInstance } from 'fastify';
 import { HttpError } from '../errors.js';
 import type { TaskEngine } from './engine.js';
@@ -6,6 +5,10 @@ import type { DatabaseSync } from 'node:sqlite';
 import { registerPublicationRoutes } from '../publish/routes.js';
 import type { PublicationService } from '../publish/service.js';
 import { registerNewsRoutes } from '../news/routes.js';
+import type {AuthStore} from '../auth/store.js';
+import {registerCredentialRoutes} from '../auth/routes.js';
+import type {SettingsStore} from '../settings/store.js';
+import {SETTINGS_SCHEMA} from '../settings/schema.js';
 
 const id = { type: 'string', minLength: 1, maxLength: 256 };
 const idempotencyKey = { type: 'string', pattern: '^[A-Za-z0-9._:-]{1,128}$' };
@@ -13,19 +16,25 @@ const integer = (minimum: number, maximum: number, defaultValue: number) => ({ t
 const params = (name: string) => ({ type: 'object', required: [name], properties: { [name]: id }, additionalProperties: false });
 type TaskParams = { taskId: string };
 type RunParams = { runId: string };
-const digest = (value: string) => createHash('sha256').update(value).digest();
 
-export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, token?: string, newsDb?: DatabaseSync, publications?: PublicationService): Promise<void> {
-  const expected = token ? digest(token) : undefined;
+export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, auth: AuthStore, newsDb?: DatabaseSync, publications?: PublicationService, settings?: SettingsStore, applySettings?:()=>void): Promise<void> {
   app.addHook('onRequest', async (request, reply) => {
     reply.header('cache-control', 'no-store');
-    if (!expected) throw new HttpError(503, 'management_disabled');
+    if (!auth.status().initialized) throw new HttpError(503, 'management_disabled');
     const match = /^Bearer ([A-Za-z0-9_-]{32,256})$/.exec(request.headers.authorization ?? '');
-    if (!match || !timingSafeEqual(digest(match[1]), expected)) {
+    if (!match || !auth.authorize(match[1])) {
       reply.header('www-authenticate', 'Bearer');
       throw new HttpError(401, 'unauthorized');
     }
   });
+  registerCredentialRoutes(app,auth);
+  if(settings){
+    app.get('/settings',async()=>settings.view());
+    app.put<{Body:unknown}>('/settings',{schema:{body:SETTINGS_SCHEMA}},async request=>{
+      if(engine.busy()||publications?.busy())throw new HttpError(409,'settings_busy');
+      const result=settings.update(request.body);applySettings?.();return result;
+    });
+  }
   if (newsDb) registerNewsRoutes(app, newsDb);
   if (publications) registerPublicationRoutes(app,publications);
   app.get('/tasks', async () => ({ tasks: engine.listTasks() }));

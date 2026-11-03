@@ -11,11 +11,12 @@ export function client(token: string, expired: (error: ApiError) => void) {
     path: string,
     signal?: AbortSignal,
     body?: unknown,
+    method?: 'POST'|'PUT',
   ): Promise<T> {
     let response: Response;
     try {
       response = await fetch("/api" + path, {
-        method: body ? "POST" : "GET",
+        method: body ? method??"POST" : "GET",
         signal,
         cache: "no-store",
         redirect: "error",
@@ -54,6 +55,15 @@ export function errorText(error: unknown): string {
     task_busy: "任务已有执行中的 Run，请等待完成。",
     queue_full: "执行队列已满，请稍后重试。",
     auth_required: "Codex 认证失效，需要在服务账户下重新登录。",
+    invalid_setup_code: "初始化码不正确，请从服务主机的数据目录读取。",
+    invalid_password: "管理员密码必须为 12–128 个字符。",
+    password_mismatch: "两次输入的密码不一致。",
+    incorrect_password: "当前密码或旧 Token 不正确。",
+    auth_rate_limited: "认证请求过于频繁，请一分钟后重试。",
+    settings_busy: "有任务或归档正在执行，请完成后保存设置。",
+    settings_changed: "设置已被其他页面更新，请重新进入设置页核对。",
+    invalid_settings: "配置格式不正确，请检查路径、模型和执行参数。",
+    invalid_publication_config: "GitHub 归档配置不完整或格式不正确。",
     workflow_run_finalized: "本 Run 已生成日报，请新建研究以调整内容。",
     turn_limit: "已达到每个 Run 20 轮的上限，请开始新的研究。",
   };

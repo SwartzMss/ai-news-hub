@@ -32,6 +32,7 @@ afterEach(() => {
 });
 function mockFetch(fail?: number) {
   const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
+    if(url === "/api/auth/status") return Response.json({initialized:true,mode:"token"});
     if (fail)
       return new Response(
         JSON.stringify({
@@ -41,6 +42,7 @@ function mockFetch(fail?: number) {
         }),
         { status: fail },
       );
+    if(url === "/api/auth/login") return Response.json({token:"test_only_0123456789_abcdefghijklmnop"});
     if (url === "/api/tasks") return Response.json({ tasks: [task] });
     if (url.includes("/events"))
       return Response.json({
@@ -75,7 +77,7 @@ function mockFetch(fail?: number) {
   return fetcher;
 }
 async function login() {
-  fireEvent.change(screen.getByLabelText("管理 Token"), {
+  fireEvent.change(await screen.findByLabelText("管理 Token"), {
     target: { value: "test_only_0123456789_abcdefghijklmnop" },
   });
   fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
@@ -103,7 +105,7 @@ test("authenticated Task → Run navigation renders real metadata, safe output a
 test("wrong Token and disabled management are explicit and do not show private data", async () => {
   mockFetch(401);
   render(<App />);
-  fireEvent.change(screen.getByLabelText("管理 Token"), {
+  fireEvent.change(await screen.findByLabelText("管理 Token"), {
     target: { value: "wrong-token" },
   });
   fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
@@ -113,11 +115,8 @@ test("wrong Token and disabled management are explicit and do not show private d
 test("unavailable service displays a retryable connection error", async () => {
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network")));
   render(<App />);
-  fireEvent.change(screen.getByLabelText("管理 Token"), {
-    target: { value: "token" },
-  });
-  fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
   await screen.findByText(/无法连接后台/);
+  expect(screen.getByRole('button',{name:'重新连接'})).toBeTruthy();
 });
 test("manual trigger uses idempotency key and enters the Run belonging to the selected Task", async () => {
   const fetcher = mockFetch();
@@ -130,13 +129,13 @@ test("manual trigger uses idempotency key and enters the Run belonging to the se
   await screen.findByText("thread-1");
   await waitFor(() =>
     expect(
-      fetcher.mock.calls.filter(([, init]) => init?.method === "POST"),
+      fetcher.mock.calls.filter(([url, init]) => init?.method === "POST" && !url.includes("/auth/")),
     ).toHaveLength(1),
   );
   expect(
     JSON.parse(
       String(
-        fetcher.mock.calls.find(([, init]) => init?.method === "POST")![1]!
+        fetcher.mock.calls.find(([url, init]) => init?.method === "POST" && !url.includes("/auth/"))![1]!
           .body,
       ),
     ).idempotencyKey,
@@ -146,7 +145,7 @@ test("manual trigger uses idempotency key and enters the Run belonging to the se
 test("management disabled message is distinct from wrong Token", async () => {
   mockFetch(503);
   render(<App />);
-  fireEvent.change(screen.getByLabelText("管理 Token"), {
+  fireEvent.change(await screen.findByLabelText("管理 Token"), {
     target: { value: "token" },
   });
   fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
@@ -158,8 +157,8 @@ test("session expiration removes private results during polling", async () => {
   await login();
   await screen.findByRole("link", { name: "连接检查" });
   fetcher.mockImplementation(
-    async () =>
-      new Response(JSON.stringify({ error: { code: "unauthorized" } }), {
+    async (url) =>
+      url === "/api/auth/status" ? Response.json({initialized:true,mode:"token"}) : new Response(JSON.stringify({ error: { code: "unauthorized" } }), {
         status: 401,
       }),
   );
@@ -175,7 +174,7 @@ test("late manual execution response cannot navigate after leaving the Task", as
   let complete!: (response: Response) => void;
   const previous = fetcher.getMockImplementation()!;
   fetcher.mockImplementation((url, init) =>
-    init?.method === "POST"
+    init?.method === "POST" && !url.includes("/auth/")
       ? new Promise<Response>((resolve) => {
           complete = resolve;
         })
@@ -218,6 +217,8 @@ test('news prompt and uncertain retry survive log pagination without replacing t
   const newsRun={...run,task_id:newsTask.id};
   const posts: unknown[]=[];
   vi.stubGlobal('fetch',vi.fn(async (url:string,init?:RequestInit)=>{
+    if(url==='/api/auth/status')return Response.json({initialized:true,mode:'token'});
+    if(url==='/api/auth/login')return Response.json({token:'test_only_0123456789_abcdefghijklmnop'});
     if(init?.method==='POST') {posts.push(JSON.parse(String(init.body)));throw new TypeError('lost response');}
     if(url==='/api/tasks')return Response.json({tasks:[newsTask]});
     if(url.includes('/events'))return Response.json({events:Array.from({length:100},(_,i)=>({id:i+1,kind:'message',data:{},created_at:run.created_at}))});
@@ -226,7 +227,7 @@ test('news prompt and uncertain retry survive log pagination without replacing t
     return Response.json({runs:[newsRun],task:newsTask});
   }));
   location.hash='#/tasks/news-research/runs/run-1';render(<App/>);
-  fireEvent.change(screen.getByLabelText('管理 Token'),{target:{value:'test_only_0123456789_abcdefghijklmnop'}});
+  fireEvent.change(await screen.findByLabelText('管理 Token'),{target:{value:'test_only_0123456789_abcdefghijklmnop'}});
   fireEvent.click(screen.getByRole('button',{name:'连接后台'}));
   fireEvent.change(await screen.findByLabelText('下一轮 prompt'),{target:{value:'补查原始公告'}});
   fireEvent.click(await screen.findByRole('button',{name:'后续日志'}));

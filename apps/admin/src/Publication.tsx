@@ -106,7 +106,7 @@ export function Publication({
               {data.target.repository} · {data.target.branch}
             </p>
           ) : (
-            <p>尚未配置 GitHub 目标，归档功能关闭。</p>
+            <p>尚未配置 GitHub 目标，归档功能关闭。<a href="#/settings">前往系统设置</a></p>
           )}
           {data.status === "validated" ? (
             <>

@@ -48,6 +48,11 @@ export class TaskEngine {
   }
 
   healthy(): boolean { return !this.fatal; }
+  busy():boolean{return this.active.size>0||this.queue.length>0;}
+  configure(value:{concurrency:number;maxQueue:number;timeoutMs:number;model?:string}):void {
+    if(this.busy())throw new HttpError(409,'settings_busy');
+    Object.assign(this.options,value);
+  }
   listTasks(): TaskRecord[] { return this.db.prepare('SELECT * FROM tasks ORDER BY id').all() as unknown as TaskRecord[]; }
   task(id: string): TaskRecord {
     const row = this.db.prepare('SELECT * FROM tasks WHERE id=?').get(id);

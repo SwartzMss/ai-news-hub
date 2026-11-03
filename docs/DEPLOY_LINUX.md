@@ -4,7 +4,7 @@
 
 Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 Issue #3 的基础 Backend 按第 9 节安装；Schema 见 [数据模型](DATA_MODEL.md)。健康检查不验证 Codex 认证。
-Issue #4 的管理 Token、Codex 运行环境与样例执行见第 10 节及 [任务引擎/API](TASK_ENGINE.md)。
+管理员初始化、Codex 运行环境与样例执行见第 10 节及 [任务引擎/API](TASK_ENGINE.md)。
 
 ## 目标平台与组件
 
@@ -255,9 +255,8 @@ sudo install -o root -g root -m 0600 .env.example /etc/ai-news-hub/ai-news-hub.e
 | `AI_NEWS_HUB_HOST` | `127.0.0.1`，也允许 `::1`；拒绝公网/通配监听 |
 | `AI_NEWS_HUB_PORT` | `3000`，整数 1–65535 |
 | `AI_NEWS_HUB_DATA_DIR` | `/var/lib/ai-news-hub`，绝对路径、服务用户所有、0700 |
-| `AI_NEWS_HUB_LOG_LEVEL` | `info`；允许 fatal/error/warn/info/debug/trace/silent |
 
-systemd 读取 `/etc/ai-news-hub/ai-news-hub.env`，不会加载开发目录 `.env`，也不自动继承交互 shell 的 PATH 或代理。未启动任务时 Backend 不请求模型；管理 API 默认关闭，第 10 节说明如何按需启用。
+systemd 读取 `/etc/ai-news-hub/ai-news-hub.env`，不会加载开发目录 `.env`，也不自动继承交互 shell 的 PATH 或代理。未启动任务时 Backend 不请求模型；未初始化时业务管理 API 关闭，第 10 节说明首次设置。
 目录或已有数据库权限不安全时启动失败，先检查所有权及 0700/0600 权限；不要把个人 HOME 改为服务账户的数据目录，也不要通过删库解决错误。
 
 ### 迁移、启动和健康检查
@@ -290,40 +289,19 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 - CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
 - `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例/新闻并独立批准、归档，暂无定时调度；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
 
-## 10. Issue #4 管理 API 与真实任务
+## 10. 管理员初始化、配置与真实任务
 
-先完成第 9 节的安装，再以同一个非 root 服务账户按第 8 节登录 Codex。认证目录 0700、文件式凭据 0600，位于 `CODEX_HOME=/var/lib/ai-news-hub/.codex`，不复制个人账号目录，不以 root 执行模型。
-编辑 root 持有的 0600 环境文件 `/etc/ai-news-hub/ai-news-hub.env`：
+业务环境文件仅配置 HOST/PORT/DATA_DIR，使用第 9 节安装的 `.env.example`。启动后，首次从 `/var/lib/ai-news-hub/setup-code`（以实际数据目录为准）读取本机初始化码；例如 `sudo -u ai-news-hub cat /var/lib/ai-news-hub/setup-code`。日志仅给文件路径，不打印初始化码。
 
-```ini
-AI_NEWS_HUB_CODEX_BIN=/usr/local/bin/codex
-AI_NEWS_HUB_RUN_TIMEOUT_MS=120000
-AI_NEWS_HUB_CONCURRENCY=1
-AI_NEWS_HUB_MAX_QUEUE=20
-```
+打开 `/admin/`，填写码并设置至少 12 字符的管理员密码；成功后码失效，后续用密码登录。后台“系统设置”保存 Codex 实际路径/模型、超时/并发/队列、日志和 GitHub 目标，SQLite 持久化，空闲时无需重启生效。任务或归档忙碌时先等待完成。
 
-另外添加本机生成的 `AI_NEWS_HUB_ADMIN_TOKEN`（例如 `openssl rand -hex 32` 的结果），不要把实际 Token 提交到仓库、Issue 或 shell 历史。可选 `AI_NEWS_HUB_MODEL` 选择实际有权使用的模型；路径按实际安装修改，确保 CLI 及父目录可由服务账户执行。
-若主机需代理，在同一受限文件显式配置相应代理变量。Codex 子进程只接收允许的运行、代理/CA 与模型认证环境，不继承 Backend 管理 Token 或发布凭据；额外自定义 provider 环境变量需单独评估。
+同一非 root 服务账户完成 Codex 认证，HOME/CODEX_HOME 与 systemd 配置保持一致。操作系统 PATH、代理和 CA 属主机环境，按网络要求配置；Codex 子进程只继承允许列表，不接收 Backend 管理/发布凭据。Web 不管理 Codex OAuth 文件。
 
-```bash
-sudo systemctl restart ai-news-hub.service
-sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
-```
+按 [API 说明](TASK_ENGINE.md#手动触发样例) 获取临时 Bearer 会话并触发 sample-connectivity，核对 Run 的状态、Thread/Turn 和结果；启动本身不调用模型。每个数据目录只允许一个 Backend，重启把未完成记录标 interrupted，不自动重跑。失败/取消/审批/超时等语义见任务引擎。
 
-服务启动仅创建预定义任务和来源记录，不会自动调用 Codex。按 [API 说明](TASK_ENGINE.md#手动触发样例) 用 Bearer Token 触发 `sample-connectivity`，保存返回的 Run ID，通过详情与事件接口确认最终状态、Thread / Turn 标识和固定回复。真实请求会使用账户额度。
-继续该 Run 时使用新的 Turn 幂等键；新 Run 使用新的启动幂等键，应有不同 Thread。不要把幂等重试返回旧 Run 误认为又执行了一次。
+旧环境配置仅在相应数据库记录缺失时一次性导入，已有 DB 后忽略旧值。旧 Token 用户可在系统设置改设密码，之后旧 Token 失效。迁移只追加到当前版本 6，不删除旧库。
 
-启动会顺序应用所有新增迁移（当前至 5），不修改历史迁移或删除旧库。每个数据目录只允许一个 Backend，Linux `/proc` 的 PID、进程启动时间与 boot ID 用于识别活跃/失效所有者；不要让多个主机共用该 SQLite。
-工作目录为 `/var/lib/ai-news-hub/work`，由服务用户持有且 0700。原始 RPC/stderr/工具参数不入 journal 或事件表；受限 Agent 正文属于私有运行记录，不可直接导出为公开内容。
-
-### 生命周期验收
-
-- 确认无 Token 时管理端点不可用、错误 Token 返回 401；只有回环地址监听。
-- 同一 Task 活跃时新键返回 task_busy；相同键返回旧 Run；不同 Task 按并发与队列上限执行。
-- 测试取消与超时，确认 finished/error_code、历史 Turn 和事件一致；审批请求拒绝并以 needs_approval 失败，不驻留等待人工输入。
-- 正常停服务后旧未完成记录为 interrupted / backend_stopped。异常杀死主进程后，确认 systemd 已清理整个控制组，再观察自动重启；旧未完成记录应为 interrupted / backend_restarted，不自动重跑。
-- 无法确认子进程已清理时，Run 记录 cleanup_failed；引擎冻结调度并触发 Backend 非零关闭，由 systemd 控制组兜底。不得在旧子进程仍运行时手动删除所有权记录或并行重启执行同一 Thread。
-- 服务重新启动后仍可查询历史；仅成功 Turn 不是新闻校验或发布许可。长期登录有效性、真实额度/过期故障和原生 Ubuntu Server 24.04 生命周期仍须记录实测结果，见 [验证记录](validation/TASK_ENGINE.md)。
+备份必须停服务后保留一致的 SQLite 和私有 settings.key；密钥自动生成、0600，不写入环境文件。丢失/错误密钥导致启动失败，不自动清空配置。认证、设置 API、恢复边界见 [设置说明](SETTINGS.md)。原生 Ubuntu Server 服务账户/systemd 与长期认证仍由 #2 验收。
 
 ## 11. Codex 主题研究与多轮日报
 
@@ -335,13 +313,13 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 
 最终生成时 Backend 只核对 Codex 提供的公开 HTTPS 原文，不采集外部 RSS。原文校验必须能直接出站访问来源，不使用 HTTP_PROXY/HTTPS_PROXY、不继承 Cookie/认证、不跟随重定向；核对并固定 DNS 公网地址。每来源 15 秒/2 MiB、UTF-8 HTML，不执行 JavaScript。GitHub 发布客户端仍可使用私有环境中的代理配置；两者职责不同。
 
-来源不可访问、引文不匹配、认证过期或搜索不支持时，检查 Run 错误并修正来源/prompt，不添加假内容。可按研究量调整单 Turn 总超时 AI_NEWS_HUB_RUN_TIMEOUT_MS（默认 120 秒），它同时包含模型执行和来源验证。生成的 validated 仍待人工审核，不自动归档。历史 RSS 验证不能替代当前研究验证，见 [当前记录](validation/CODEX_RESEARCH.md)。原生服务账户/systemd/长期认证仍由 #2 验收。
+来源不可访问、引文不匹配、认证过期或搜索不支持时，检查 Run 错误并修正来源/prompt，不添加假内容。可按研究量调整单 Turn 总超时 后台“系统设置”的每轮超时（默认 120 秒），它同时包含模型执行和来源验证。生成的 validated 仍待人工审核，不自动归档。历史 RSS 验证不能替代当前研究验证，见 [当前记录](validation/CODEX_RESEARCH.md)。原生服务账户/systemd/长期认证仍由 #2 验收。
 
 ## 12. Issue #6 本地管理后台
 
 在源码安装依赖并运行 `npm run build`，它同时生成 Backend 与独立 `dist/admin`。部署时保留整个 `dist`，不能只拷贝 server；重启服务后打开 `http://127.0.0.1:3000/admin/`。后台构建缺失时入口返回 503 `admin_build_missing`，不会影响原有健康/API 路由。构建需要开发依赖；正式运行仍通过单个 Backend/systemd，不需额外 Vite 服务。
 
-输入第 10 节配置的管理 Token，页面内存持有，不使用 Cookie/localStorage/sessionStorage。刷新后重新输入 Token，Task/Run 导航与服务端历史保留。页面壳和 JS/CSS 不含私有数据，可以在认证前加载；任何任务、日志、报告读取或执行仍须 Bearer Token。退出、401 或管理 API 被关闭时移除私有视图。
+按第 10 节初始化后用密码登录，临时会话仅页面内存持有，不使用 Cookie/localStorage/sessionStorage。刷新后重新登录，Task/Run 导航与服务端历史保留。页面壳和 JS/CSS 不含私有数据，可以在认证前加载；任何任务、日志、报告读取或执行仍须 Bearer Token。退出、401 或管理 API 被关闭时移除私有视图。
 
 在同一台 Linux 主机上直接本地访问。只有 Backend 部署在另一台机器时才需安全通道，例如在访问端运行 `ssh -L 8080:127.0.0.1:3000 user@server`，然后浏览器打开 `http://localhost:8080/admin/`；Token 认证仍必需。SSH 是远程访问方式，不是本机访问的前置条件，不要为管理界面改成公网监听。
 
@@ -351,7 +329,7 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 
 先停服务并备份 SQLite，升级代码、`npm ci --ignore-scripts`、`npm run build`，由同一非 root 服务账户启动；迁移 4 自动追加，不修改历史 SQL。不要删除旧库。发布默认关闭，不影响新闻生成/预览。
 
-在 root 持有的 0600 环境文件设置 `AI_NEWS_HUB_GITHUB_REPOSITORY=owner/repository`、`AI_NEWS_HUB_GITHUB_BRANCH=reports` 及 `AI_NEWS_HUB_GITHUB_TOKEN`。三者必须同时设置，目标分支须预先创建；推荐专用归档仓库/分支。Token 使用限定该仓库的 fine-grained PAT（Contents read/write），或由外部安全机制注入短期 GitHub App token；本版本不自动换取/刷新凭据。轮换后重启服务，历史幂等记录不变。
+在后台“系统设置”启用 GitHub 归档，填写仓库、分支和 Token，保存至 SQLite。目标分支须预先创建，推荐专用归档仓库/分支。Token 使用限定该仓库的 fine-grained PAT（Contents read/write），也可填写外部获取的短期 GitHub App token；不自动刷新。Token 加密且不回显，轮换后空闲时立即生效，历史幂等记录不变。
 
 凭据仅放私有环境文件，不配置在 Codex HOME/CODEX_HOME、Agent 工作目录、浏览器 `VITE_*` 或 Git；Backend 不把这些变量传给 Codex。HTTP 仅访问固定 api.github.com，拒绝重定向，单次发布网络操作总上限 20 秒，响应解码限额 2 MiB，归档 JSON 上限 256 KiB。HTTP_PROXY/HTTPS_PROXY/NO_PROXY 沿用受限环境配置，不入库。
 

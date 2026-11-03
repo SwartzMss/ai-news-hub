@@ -54,15 +54,15 @@ validated/source_only 只表示结构与引文关联，仍需人工核对摘要�
 
 SQLite 在 Linux 持久目录（如 `/var/lib/ai-news-hub`），目录 0700、数据库 0600，启用外键/WAL/busy timeout。迁移只追加，核对 checksum，冲突必须失败，不能删库规避。
 
-迁移 1 为基础数据，2 为执行历史/锁，3 的 RSS 表仅留历史，4 为批准/归档；5 新增 codex_news_runs、Turn mode 并停用旧 RSS 任务。归档 v1 保持 `opensource` 频道键，主题可自由填写；新发布频道另行扩展合同。
+迁移 1 为基础数据，2 为执行历史/锁，3 的 RSS 表仅留历史，4 为批准/归档；5 新增 codex_news_runs、Turn mode 并停用旧 RSS 任务；6 新增数据库设置、管理员凭据和会话。归档 v1 保持 `opensource` 频道键，主题可自由填写；新发布频道另行扩展合同。
 
 人工批准绑定文档、版本、来源快照和关联 ID 哈希；原始生成文档仍为 pending。发布重新核对成功 Run 和快照，archive v1 不导出 Run/Thread、日志、SQLite 或凭据。Markdown 仅留 SQLite。
 
-GitHub 路径 `reports/YYYY/MM/DD/opensource/vNNNNNN.json` 只追加；相同字节复用提交，不同字节拒绝。网络不占事务，发布串行；响应丢失后显式重试。repository/branch/token 必须显式配置，默认关闭。见 [数据模型](DATA_MODEL.md)、[归档协议](PUBLISHING.md)。
+GitHub 路径 `reports/YYYY/MM/DD/opensource/vNNNNNN.json` 只追加；相同字节复用提交，不同字节拒绝。网络不占事务，发布串行；响应丢失后显式重试。repository/branch/token 由受保护后台显式配置到 SQLite，默认关闭。见 [数据模型](DATA_MODEL.md)、[归档协议](PUBLISHING.md)。
 
 ## 管理和公开站
 
-Admin 独立构建到 dist/admin，Backend 只提供 `/admin/` 壳和有限 JS/CSS，私有读写均经 Bearer `/api`。Token 仅在页面内存，刷新重新认证。每 2 秒顺序轮询，导航/退出中断旧请求。研究请求保存页面内幂等 payload，不确定时锁定输入并重试原请求；刷新后先查历史。
+Admin 独立构建到 dist/admin，Backend 只提供 `/admin/` 壳和有限 JS/CSS，私有读写均经 Bearer `/api`。初始化后用密码登录，临时 Bearer 会话仅在页面内存，刷新重新认证。每 2 秒顺序轮询，导航/退出中断旧请求。研究请求保存页面内幂等 payload，不确定时锁定输入并重试原请求；刷新后先查历史。
 
 公开站唯一输出 dist/web，构建模块 dist/web-render 不公开。正式构建读取 checkout 的 approved reports/；无数据为空状态；demo 独立并标记 DEMO/noindex，正式拒绝测试标记。HTML 包括首页、频道、来源详情、日期/版本页；无 JS 可阅读，浏览器脚本仅切主题。同日最高版本进入列表，历史页保留版本。
 
@@ -70,8 +70,10 @@ Admin 独立构建到 dist/admin，Backend 只提供 `/admin/` 壳和有限 JS/C
 
 ## Linux 安全与未完成事项
 
-部署目标 Linux，首选 Ubuntu Server 24.04 LTS；Node.js 22 / TypeScript Backend 由 systemd 管理。Agent RPC 只用 stdio，不开放网络端口。管理 API 仅回环，未配置 Token 则关闭；health 只检查服务/Schema，不验证 Codex 登录。
+部署目标 Linux，首选 Ubuntu Server 24.04 LTS；Node.js 22 / TypeScript Backend 由 systemd 管理。Agent RPC 只用 stdio，不开放网络端口。管理 API 仅回环，未初始化管理员则关闭业务接口；health 只检查服务/Schema，不验证 Codex 登录。
 
 Agent 与探针使用环境允许列表，不继承 Backend 管理/发布凭据。来源校验直接连接无代理；GitHub 客户端可使用服务端私有代理。日志不输出请求头/正文、原始 RPC/stderr、工具参数或任意错误。凭据、SQLite 和私人日志不得入 Git 或公开站。
 
 原生服务账户认证/systemd/长期使用由 #2 跟踪，Cloudflare 由 #8 跟踪。持久调度、自动退避、SSE、工具审批交互、跨源事实核验尚未实现。见 [部署](DEPLOY_LINUX.md)、[路线图](ROADMAP.md)。
+
+环境文件仅提供监听地址、端口和数据目录。运行参数由系统设置页保存 SQLite，空闲时立即应用；任务/归档忙碌时拒绝修改。GitHub Token 以 AES-GCM 加密，私有 settings.key 自动生成，API 仅返回是否配置。首次本机一次性码建立 scrypt 管理密码，DB 保存会话哈希/到期时间，改密码撤销旧会话。旧环境配置只在记录缺失时导入，之后数据库优先。见 [设置与认证](SETTINGS.md)。

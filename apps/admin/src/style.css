@@ -21,7 +21,8 @@ a:hover {
 }
 button,
 input,
-textarea {
+textarea,
+select {
   font: inherit;
 }
 button {
@@ -407,3 +408,8 @@ blockquote {
 .research input, .research textarea { width: 100%; border: 1px solid #bac9be; border-radius: 8px; padding: 12px; background: white; }
 .research textarea { resize: vertical; }
 .research-actions { display: flex; flex-wrap: wrap; gap: 12px; }
+.settings-form { max-width: 760px; }
+.settings-form fieldset, .settings-form form { display: flex; flex-direction: column; gap: 12px; }
+.settings-form legend { font-size: 18px; font-weight: 600; }
+.settings-form input:not([type=checkbox]), .settings-form select { width: 100%; padding: 10px; border: 1px solid #bac9be; border-radius: 8px; background: white; }
+.settings-form .check { display: flex; align-items: center; gap: 8px; }

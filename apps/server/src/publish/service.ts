@@ -37,6 +37,11 @@ export class PublicationService {
       "UPDATE publication_records SET status='failed',error_code='publication_interrupted',updated_at=? WHERE target='github' AND status='publishing'",
     ).run(new Date().toISOString());
   }
+  busy():boolean{return !!this.active;}
+  configure(target:PublishTarget|undefined,adapter:GitHubAdapter|undefined):void {
+    if(this.active)throw new HttpError(409,'settings_busy');
+    this.target=target;this.adapter=adapter;
+  }
   inspect(id: string) {
     const report = reviewedReport(this.db, id);
     return {

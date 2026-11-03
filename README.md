@@ -39,18 +39,24 @@ npm ci --ignore-scripts
 cp .env.example .env
 ```
 
-编辑私有 `.env`：
+`.env` 只保留监听地址、端口和数据库目录：
 
-- `AI_NEWS_HUB_DATA_DIR`：仓库外、当前用户拥有的绝对路径，目录权限 0700；不存在时自动创建。默认 `/var/lib/ai-news-hub` 用于正式服务账户。
-- `AI_NEWS_HUB_ADMIN_TOKEN`：本机生成的 32–256 位字母/数字/下划线/连字符，可用 `openssl rand -hex 32`；不要提交真实值。
-- `AI_NEWS_HUB_CODEX_BIN`：当前账户可执行的 Codex CLI 路径。
+```dotenv
+AI_NEWS_HUB_HOST=127.0.0.1
+AI_NEWS_HUB_PORT=3000
+AI_NEWS_HUB_DATA_DIR=/home/your-user/.local/share/ai-news-hub
+```
+
+数据目录使用当前用户有权限的仓库外绝对路径，权限 0700；正式服务默认 `/var/lib/ai-news-hub`。
 
 ```bash
 npm run build
 npm start
 ```
 
-打开 **http://127.0.0.1:3000/admin/**，输入管理 Token。Token 仅保存在页面内存，刷新需重输；服务端历史保存在 SQLite。管理 API 只允许回环地址，未配置 Token 时关闭。
+打开 **http://127.0.0.1:3000/admin/**。首次从数据目录的 `setup-code` 文件读取初始化码，在页面设置管理员密码；之后使用密码登录。进入“系统设置”管理 Codex 路径/模型、超时/并发、日志及 GitHub 归档目标，无需修改环境文件或重启。
+
+会话只保存在页面内存，刷新重新登录。配置保存在 SQLite，GitHub Token 加密且不回显，密钥自动保存在私有数据目录。备份、旧版本一次性迁移与 API 见 [设置说明](docs/SETTINGS.md)。任务或归档执行中暂不允许保存设置。
 
 手动运行 `sample-connectivity` 验证接入。选择 `news-research`，填写主题（如“AI 开源模型”）和初始 prompt；在 Run 页面继续追问，最后填写整理要求并点击“生成待审核日报”。每轮都会使用账户额度。生成成功后本 Run 固定，修改需新建研究；审核后单独批准、归档。发布默认关闭，配置见 [GitHub 归档](docs/PUBLISHING.md)。
 
@@ -100,6 +106,7 @@ npm run build
 | --- | --- |
 | 架构与数据边界 | [ARCHITECTURE](docs/ARCHITECTURE.md)、[DATA_MODEL](docs/DATA_MODEL.md) |
 | Linux 安装、systemd 与认证 | [DEPLOY_LINUX](docs/DEPLOY_LINUX.md) |
+| 系统配置与认证 | [SETTINGS](docs/SETTINGS.md) |
 | 任务 API / 管理后台 | [TASK_ENGINE](docs/TASK_ENGINE.md)、[ADMIN](docs/ADMIN.md) |
 | Codex 研究与日报 / GitHub 归档 | [NEWS_PIPELINE](docs/NEWS_PIPELINE.md)、[PUBLISHING](docs/PUBLISHING.md) |
 | 静态站、RSS 与 Pages 配置 | [PUBLIC_WEB](docs/PUBLIC_WEB.md) |
@@ -110,7 +117,7 @@ npm run build
 ## 数据与安全
 
 - 非 root、最小权限；Backend 和 Agent RPC 不默认开放公网。
-- 发布凭据只在 Backend 运行时配置，不继承给 Codex；管理 Token 不进入浏览器持久存储。
+- 发布凭据由后台加密保存，不继承给 Codex；管理会话不进入浏览器持久存储。
 - SQLite、OAuth 凭据、Cookie、代理配置和私密运行日志不入 Git，不导出到公开站。
 - 无有效来源不发布；原文更正刷新当前来源，已生成报告与候选快照保留历史。
 - GitHub 只归档人工允许发布的内容；公共页面清楚标注来源与推断，不伪造评论、点赞或热度。
