@@ -344,7 +344,7 @@ API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端�
 
 在同一台 Linux 主机上直接本地访问。只有 Backend 部署在另一台机器时才需安全通道，例如在访问端运行 `ssh -L 8080:127.0.0.1:3000 user@server`，然后浏览器打开 `http://localhost:8080/admin/`；Token 认证仍必需。SSH 是远程访问方式，不是本机访问的前置条件，不要为管理界面改成公网监听。
 
-`dist/admin` 仅部署到私有 Backend。公共阅读站应使用独立构建目录，禁止将整个 `dist` 或仓库根目录作为 Cloudflare Pages 发布目录；公开站当前尚未实现。后台操作与限制见 [使用说明](ADMIN.md)。
+`dist/admin` 仅部署到私有 Backend。公共阅读站应使用独立构建目录，禁止将整个 `dist` 或仓库根目录作为 Cloudflare Pages 发布目录；公开站已由 Issue #8 独立构建到 dist/web，Cloudflare 真实部署仍待验收。后台操作与限制见 [使用说明](ADMIN.md)。
 
 ## 13. Issue #7 人工批准与 GitHub 归档
 
@@ -357,3 +357,11 @@ API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端�
 在 `/admin/` 的新闻 Run 中核对来源后勾选确认并批准，再单独点击归档。发布目标、状态、错误及 Commit SHA 可查看；401/403 可能为凭据过期、权限或 GitHub 限流，修复后显式重试。没有自动调度/重试/Cloudflare 构建触发配置；若目标仓库自行配置 Actions，GitHub 提交可能触发其已有工作流。
 
 具体 API、归档路径/Schema、冲突和恢复步骤见 [发布说明](PUBLISHING.md)，实测见 [发布验证](validation/PUBLISHING.md)。真实验证使用专用测试分支，不要把该测试分支作为正式公开站内容来源。#2 原生 Ubuntu Server/systemd/长期认证验收仍独立跟踪。
+
+## 14. Issue #8 公共站构建与 Pages
+
+公共站不运行 Linux Backend，不需要 Codex、管理 Token、SQLite 或发布 Token。根目录安装锁文件依赖后，运行 `SITE_URL=https://your-project.pages.dev npm run build:web`，仅上传 `dist/web`。不得将 `dist` 根目录、`dist/admin` 或 SSR 构建模块 `dist/web-render` 设为公开输出。
+
+Cloudflare Pages 从本 GitHub 仓库 main 集成，根目录留空、命令 `npm run build:web`、输出 `dist/web`、`NODE_VERSION=22.19.0`、`SITE_URL` 为真实稳定 HTTPS origin。同分支正式 reports 提交触发自动构建；另一归档仓库/分支必须另外安全检出并触发部署，默认不会自动跨分支读取。初次没有正式日报时正常展示空状态。不要将测试归档分支或 demo fixture 当正式新闻。
+
+详细账户/GitHub App 授权、Private Repo、路径与数据边界见 [公共站部署说明](PUBLIC_WEB.md)。当前代码与本地浏览器验证不等于 Cloudflare 已上线；实际账户接入、URL 和一次 Git 自动部署成功后才能完成 #8 上线验收。开发阶段的两日期样本仅在显式 demo 模式使用。

@@ -1,11 +1,11 @@
 # AGENTS.md
 
-本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，已支持手动真实 RSS → Codex → SQLite 待审核日报，已提供独立 React/Vite 管理后台，支持人工批准后归档 GitHub，尚无 Cloudflare 发布或公共阅读前端。
+本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，已支持手动真实 RSS → Codex → SQLite 待审核日报，已提供独立 React/Vite 管理后台，支持人工批准后归档 GitHub，公共 React/Vite 静态阅读站与 RSS 已可独立构建，Cloudflare 真实上线待账户接入验收。
 
 ## 当前工程结构与检查
 
 - 根目录统一管理 Node.js 22 / TypeScript 依赖；`apps/server/src` 为 Backend，`packages/shared/src` 为共享类型。
-- `apps/web` 仍为预留位置；`apps/admin` 为独立 React/Vite 后台，经 Backend `/admin/` 提供，仅页面内存保存 Token。见 `docs/ADMIN.md`。
+- `apps/web` 为独立静态公共站（见 `docs/PUBLIC_WEB.md`），源码构建器在 `generator/`，唯一公开输出 `dist/web`；`apps/admin` 为独立 React/Vite 后台，经 Backend `/admin/` 提供，仅页面内存保存 Token。见 `docs/ADMIN.md`。
 - 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程；`npm test` 包含 Backend 与 Admin 交互测试，构建产物分别为 `dist/apps/server` 与 `dist/admin`。
 - Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未配置管理 Token 时 `/api` 关闭。接口见 `docs/TASK_ENGINE.md`。
 - 固定新闻任务 `news-github` 与受保护查询接口见 `docs/NEWS_PIPELINE.md`；Schema/来源关联校验不等于事实审核，不自动发布。人工批准与 GitHub 归档见 `docs/PUBLISHING.md`，发布配置默认关闭，凭据不能传给 Codex。

@@ -14,6 +14,8 @@ Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务�
 
 Issue #7：人工批准绑定内容哈希，GitHub 日期/频道/版本 JSON 归档、幂等核对、失败重试与 SHA 持久化已实现；真实测试分支端到端验证成功。Cloudflare/公开 Web 与 RSS 留给 #8。见 [归档说明](PUBLISHING.md)。
 
+Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历史版本归档、RSS 2.0 和两日期演示构建已实现；Cloudflare Pages 账户授权、HTTPS 上线及 Git 自动部署实测尚未完成，Issue 保持打开。见 [公共站](PUBLIC_WEB.md)。
+
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
 ### A. Linux 服务骨架
@@ -43,8 +45,8 @@ Issue #7：人工批准绑定内容哈希，GitHub 日期/频道/版本 JSON 归
 - [x] 将人工批准的日报按日期/频道/版本输出为严格 JSON 并归档 GitHub，幂等重试无重复提交（Markdown 仍保留私有 SQLite 预览）
 
 ### D. Web / RSS 和最小管理端
-- [ ] 公共网站：当天日报、频道、文章详情、历史归档
-- [ ] RSS 2.0：全站和频道 Feed、稳定 GUID、有效 XML
+- [x] 公共网站：当天日报、频道、文章详情、历史归档
+- [x] RSS 2.0：全站和频道 Feed、稳定 GUID、有效 XML
 - [x] **Linux 本地管理后台**：任务列表/详情、手动执行、当前状态、执行日志与日报预览
 - [x] Agent 会话展示内嵌于具体 Run 详情，**不实现独立 Agent 工作台**
 - [ ] GitHub 更新触发 Cloudflare Pages 构建和发布（部署作为可配置环节）

@@ -1,0 +1,31 @@
+{
+  "schema_version": 1,
+  "report_id": "demo-report-20261103",
+  "report_date": "2026-11-03",
+  "channel": "opensource",
+  "version": 1,
+  "title": "[DEMO] 开源生态演示日报 · 2026-11-03",
+  "collected_at": "2026-11-03T00:37:00Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-03T12:00:00Z",
+  "reviewed_content_sha256": "0000000000000000000000000000000000000000000000000000000000000000",
+  "items": [
+    {
+      "id": "demo-game-off-03",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "演示数据：本条仅引用 GitHub Blog 的公开 Game Off 2026 主题公告，用于验证网站布局、历史日期和 RSS，不构成当日新闻报道。",
+      "analysis": "演示推断：主题式活动可能为开发者提供共同的创作起点；这里不评估实际参与情况。",
+      "evidence_quote": "Game Off 2026: The theme is SHIFT",
+      "verification": "source_only",
+      "source": {
+        "name": "GitHub Blog",
+        "original_url": "https://github.blog/open-source/gaming/game-off-2026-the-theme-is-shift/",
+        "canonical_url": "https://github.blog/open-source/gaming/game-off-2026-the-theme-is-shift/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": "2026-11-03T00:37:00Z"
+      }
+    }
+  ]
+}

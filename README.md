@@ -2,9 +2,9 @@
 
 > 基于 Codex App Server 的 AI 信息聚合、定时分析与多渠道订阅平台。
 
-**项目状态：可手动采集真实 RSS，经 Codex 生成待审核日报；已提供本地管理后台，人工批准后可按版本归档 GitHub，公开阅读站仍未实现。**
+**项目状态：可手动采集真实 RSS，经 Codex 生成待审核日报；已提供本地管理后台，人工批准后可按版本归档 GitHub，公共阅读站与 RSS 已可独立静态构建，Cloudflare Git 集成上线尚待验收。**
 
-已实现 Fastify、SQLite、Task → Run → Thread → Turn 执行、受保护的管理 API、历史事件与取消/继续 Turn；已接通固定 GitHub Blog RSS、最小去重、严格结构化日报及私有查询；已提供任务/Run/日报预览管理界面，已支持人工批准与幂等 GitHub 归档，尚无调度和公开阅读站。Issue #2 的独立探针保留，目标服务器认证验收见 [探针记录](docs/validation/CODEX_LINUX_PROBE.md)，引擎实测见 [任务引擎记录](docs/validation/TASK_ENGINE.md)。
+已实现 Fastify、SQLite、Task → Run → Thread → Turn 执行、受保护的管理 API、历史事件与取消/继续 Turn；已接通固定 GitHub Blog RSS、最小去重、严格结构化日报及私有查询；已提供任务/Run/日报预览管理界面，已支持人工批准与幂等 GitHub 归档，公共阅读站/RSS 已提供独立静态构建，尚无调度，Cloudflare 部署仍待账户接入验收。Issue #2 的独立探针保留，目标服务器认证验收见 [探针记录](docs/validation/CODEX_LINUX_PROBE.md)，引擎实测见 [任务引擎记录](docs/validation/TASK_ENGINE.md)。
 
 **v0.1 平台决策：仅支持 Linux（首选 Ubuntu Server 24.04 LTS）；不开发或测试 Windows / WSL 部署。**
 
@@ -92,7 +92,7 @@ AI News Hub 旨在将新闻采集、AI 研究与分析、任务调度、内容�
 | 内容归档 | GitHub（每日按日期提交 JSON / Markdown，保留历史数据） |
 | 网站发布 | GitHub 触发 Cloudflare Pages 静态构建；公开 Web / RSS |
 
-Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；真实 RSS 采集与待审核日报已实现；表中定时调度、公共阅读前端、对外 RSS 和 Cloudflare 发布仍为计划。
+Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；真实 RSS 采集与待审核日报已实现；表中定时调度、公共 React/Vite 静态阅读页与 RSS 已实现；Cloudflare 真实部署验收仍待完成。
 
 ## 开发与基础服务
 
@@ -100,7 +100,7 @@ Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；真�
 
 ```text
 apps/server/src/       Fastify、任务引擎、Codex Adapter、SQLite 与进程入口
-apps/web/              公共阅读站预留位置（尚未实现）
+apps/web/              独立 React / Vite 静态公共站与 RSS 生成器
 apps/admin/            独立 React / Vite 管理后台
 packages/shared/src/   健康检查、错误与状态类型
 tools/codex-probe/     独立 Codex 接入验证工具
@@ -141,6 +141,12 @@ Backend 会保存预定义样例 `sample-connectivity`，仅手动触发时调�
 新闻任务 `news-github` 使用相同启动接口；采集 RSS 并调用真实 Codex，结果仅存为待审核 JSON / Markdown，来源链接和时间由 Backend 补充。配置、查询和限制见 [新闻流水线](docs/NEWS_PIPELINE.md)，实测见 [新闻验证记录](docs/validation/NEWS_PIPELINE.md)。
 详见 [任务引擎与 API](docs/TASK_ENGINE.md)。本地管理后台入口为 `http://127.0.0.1:3000/admin/`，输入管理 Token 后查看任务、手动执行、Run 日志和待审核日报；刷新需重新输入 Token，历史记录保留。见 [后台使用说明](docs/ADMIN.md)。目前没有任务编辑、交互审批、定时调度或独立 Agent 工作台。
 新闻报告可先人工批准，再显式归档到配置的 GitHub 仓库/分支；按日期、频道、版本保存不可覆盖的 JSON，支持失败重试和提交 SHA 查询。默认关闭发布，凭据只在 Backend 运行时配置。见 [GitHub 归档](docs/PUBLISHING.md)。
+
+## 公共新闻站与 RSS
+
+正式静态构建：`SITE_URL=https://your-project.pages.dev npm run build:web`，只读取当前 checkout 的 `reports/`，输出 `dist/web`。首次没有日报时展示空状态，不自动生成假新闻。显式演示构建用 `npm run build:web:demo`，两日期样本标记 DEMO，禁止混入生产。
+
+首页、开源频道、来源详情、日期/版本归档及 RSS 均为静态文件，不依赖 Backend 在线。Pages 必须只发布 `dist/web`；不能上传整个 dist、Admin 或数据库。Cloudflare 账户/GitHub App 授权与真实 HTTPS 自动部署仍需完成，见 [公共站与部署配置](docs/PUBLIC_WEB.md)。
 
 ## Codex 接入验证工具
 
