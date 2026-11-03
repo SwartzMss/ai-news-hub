@@ -13,8 +13,8 @@ function localOrigin(request:FastifyRequest):void {
 }
 export function registerAuthRoutes(app:FastifyInstance,store:AuthStore):void {
   app.addHook('onRequest',async(request,reply)=>{reply.header('cache-control','no-store');localOrigin(request);});
-  app.get('/auth/status',async()=>store.status());
-  app.post<{Body:{code:string;password:string}}>('/auth/setup',{schema:body({code:{type:'string',minLength:1,maxLength:128},password})},async(request,reply)=>{const result=await store.setup(request.body.code,request.body.password);reply.code(201);return result;});
+  app.get('/auth/status',async()=>store.status(true));
+  app.post<{Body:{setupToken:string;password:string}}>('/auth/setup',{schema:body({setupToken:{type:'string',minLength:1,maxLength:128},password})},async(request,reply)=>{const result=await store.setup(request.body.setupToken,request.body.password);reply.code(201);return result;});
   app.post<{Body:{password:string}}>('/auth/login',{schema:body({password})},async request=>store.login(request.body.password));
 }
 export function registerCredentialRoutes(app:FastifyInstance,store:AuthStore):void {

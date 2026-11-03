@@ -12,4 +12,4 @@ export interface SettingsUpdate extends Omit<RuntimeSettings,'github'> {
   revision: number;
   github: RuntimeSettings['github'] & { token?: string; clearToken?: boolean };
 }
-export interface AuthStatus { initialized: boolean; mode: 'setup' | 'password' | 'token' }
+export interface AuthStatus { initialized: boolean; mode: 'setup' | 'password' | 'token'; setupToken?: string }

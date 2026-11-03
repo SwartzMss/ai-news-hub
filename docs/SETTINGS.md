@@ -13,11 +13,11 @@ HOST 仅允许 127.0.0.1 / ::1；端口 1–65535；数据目录须为当前非 
 ## 首次使用
 
 1. 构建并启动 Backend，打开 `/admin/`。后台未初始化时，业务 API 返回 503 management_disabled。
-2. 从服务主机的 `AI_NEWS_HUB_DATA_DIR/setup-code` 读取一次性初始化码；文件权限 0600，启动日志只记录路径，不记录码。
-3. 在页面填写初始化码、至少 12 字符的管理员密码及确认密码。初始化成功后码失效，进入后台。
+2. 页面只有“设置密码”和“确认密码”，填写至少 12 字符的密码，两次一致后提交。
+3. 页面自动获取并提交本次启动的初始化校验，成功后进入后台；不需要初始密码、终端操作或手动复制初始化码。
 4. 在“系统设置”保存 Codex 与 GitHub 配置；不再维护其他应用环境变量。
 
-单管理员模式，不需要创建用户名。密码用带随机盐的 scrypt 哈希保存，不能读回。登录返回 12 小时临时 Bearer 会话，浏览器仅保留在页面内存；刷新重新登录，退出撤销当前会话，改密码会使其他会话及旧 Token 全部失效。认证入口限制本机 Host/同源访问，初始化/登录/密码更新总计每进程每分钟最多 5 次尝试。
+单管理员模式，不需要创建用户名。密码用带随机盐的 scrypt 哈希保存，不能读回。登录返回 12 小时临时 Bearer 会话，浏览器仅保留在页面内存；刷新重新登录，退出撤销当前会话，改密码会使其他会话及旧 Token 全部失效。认证入口限制本机 Host/同源访问，初始化校验仅在未设置管理员时向本机页面提供；重启换新、成功后失效，并发请求只能一个完成初始化。此流程允许能访问本机服务的用户首次设置，不校验其 Linux 账户身份；服务仍只绑定回环。初始化/登录/密码更新总计每进程每分钟最多 5 次尝试。
 
 ## 可保存的设置
 
@@ -46,8 +46,8 @@ Token 在 SQLite 中以 AES-256-GCM 加密，密钥由 Backend 自动生成于 `
 
 | 路径 | 认证 / 语义 |
 | --- | --- |
-| GET /api/auth/status | 公开，仅 initialized 和 setup/password/token 模式 |
-| POST /api/auth/setup | 初始化码 + password；仅首次，成功 201，返回 token/expiresAt |
+| GET /api/auth/status | 本机同源；initialized/mode，未初始化时额外返回 setupToken，由页面自动使用 |
+| POST /api/auth/setup | 自动的 setupToken + password；仅首次，成功 201，返回 token/expiresAt |
 | POST /api/auth/login | password 字段；旧迁移模式传原 Token；返回临时会话 |
 | POST /api/auth/logout | Bearer；空对象，撤销当前会话 |
 | POST /api/auth/password | Bearer；currentPassword/newPassword，返回替换会话 |
@@ -65,3 +65,5 @@ PUT 的 GitHub 对象含 enabled/repository/branch，可选 token 或 clearToken
 备份应停止 Backend 后保存整个私有数据目录，至少包含一致的 SQLite 和 settings.key；同机权限须保持。不应只备份 DB 而丢失密钥。有加密凭据时缺少/错误密钥将拒绝启动，不自动创建新密钥或丢弃旧数据。恢复时不删除数据库规避错误。当前不提供匿名密码重置或多用户管理，密码与本机恢复资料需妥善保管。
 
 本次自动化、浏览器及独立审查证据见 [设置验证](validation/SETTINGS.md)。
+
+旧版本 setup-code 文件不再生成或接受为初始化凭据；升级无需删除数据库或重设已有密码。未初始化实例在新页面完成设置后会清理该旧文件。

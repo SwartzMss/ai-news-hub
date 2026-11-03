@@ -85,6 +85,6 @@ Run 中的 `thread_id` / `turn_id` 是查询用摘要；继续 Turn 时清除旧
 
 app_settings 单行保存 revision、严格 runtime config JSON、加密 GitHub Token 和更新时间；revision 防止不同页面互相覆盖。私有 settings.key 为自动生成的 AES-256-GCM 密钥，数据库与密钥需一起备份。读取设置不包含原始 Token。
 
-admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历史 Token 哈希；admin_sessions 只保存会话 SHA-256 和创建/到期时间。首次初始化需要本机 0600 setup-code，成功后失效。登录会话 12 小时，密码轮换事务更新凭据、撤销所有旧会话并返回替换会话。旧 env 仅在对应记录缺失时导入，已有 DB 时不重新解析/覆盖旧值。
+admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历史 Token 哈希；admin_sessions 只保存会话 SHA-256 和创建/到期时间。首次初始化仅由本机同源页面设置并确认密码；自动请求校验保存在进程内，重启换新、成功后失效，不写入数据库或码文件。登录会话 12 小时，密码轮换事务更新凭据、撤销所有旧会话并返回替换会话。旧 env 仅在对应记录缺失时导入，已有 DB 时不重新解析/覆盖旧值。
 
 监听地址/端口/数据目录仍在启动配置。其余参数由 [系统设置](SETTINGS.md) 保存；执行或发布忙碌时拒绝修改，空闲时立即应用，不改变已完成 Run/报告或归档历史。

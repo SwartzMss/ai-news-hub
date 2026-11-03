@@ -291,9 +291,9 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 ## 10. 管理员初始化、配置与真实任务
 
-业务环境文件仅配置 HOST/PORT/DATA_DIR，使用第 9 节安装的 `.env.example`。启动后，首次从 `/var/lib/ai-news-hub/setup-code`（以实际数据目录为准）读取本机初始化码；例如 `sudo -u ai-news-hub cat /var/lib/ai-news-hub/setup-code`。日志仅给文件路径，不打印初始化码。
+业务环境文件仅配置 HOST/PORT/DATA_DIR，使用第 9 节安装的 `.env.example`。启动后打开本机管理页面，首次仅需填写“设置密码”和“确认密码”，无需在终端读取初始化码。
 
-打开 `/admin/`，填写码并设置至少 12 字符的管理员密码；成功后码失效，后续用密码登录。后台“系统设置”保存 Codex 实际路径/模型、超时/并发/队列、日志和 GitHub 目标，SQLite 持久化，空闲时无需重启生效。任务或归档忙碌时先等待完成。
+打开 `/admin/`，设置并确认至少 12 字符的管理员密码；成功后不再允许重新初始化，后续用密码登录。后台“系统设置”保存 Codex 实际路径/模型、超时/并发/队列、日志和 GitHub 目标，SQLite 持久化，空闲时无需重启生效。任务或归档忙碌时先等待完成。
 
 同一非 root 服务账户完成 Codex 认证，HOME/CODEX_HOME 与 systemd 配置保持一致。操作系统 PATH、代理和 CA 属主机环境，按网络要求配置；Codex 子进程只继承允许列表，不接收 Backend 管理/发布凭据。Web 不管理 Codex OAuth 文件。
 

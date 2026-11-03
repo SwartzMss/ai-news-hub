@@ -5,26 +5,25 @@ import {unlinkSync} from 'node:fs';
 import type {DatabaseSync} from 'node:sqlite';
 import type {AuthStatus} from '../../../../packages/shared/src/settings.js';
 import {AppError,HttpError} from '../errors.js';
-import {privateFile} from '../settings/private-file.js';
 
 const derive=promisify(scrypt), digest=(value:string)=>createHash('sha256').update(value).digest('hex');
 type Credentials={kind:'password'|'token';secret_hash:string;salt:string|null};
 export class AuthStore {
-  readonly setupPath:string;
-  private setupHash?:string;
+  private readonly legacySetupPath:string;
+  private setupToken?:string;
   private attempts=0;
   private failureWindow=Date.now();
   constructor(private db:DatabaseSync,dataDir:string,readLegacyToken?:()=>string|undefined) {
-    this.setupPath=join(dataDir,'setup-code');
+    this.legacySetupPath=join(dataDir,'setup-code');
     if(!this.credentials()){
       const legacyToken=readLegacyToken?.();
       if(legacyToken)db.prepare("INSERT INTO admin_credentials(id,kind,secret_hash,updated_at) VALUES(1,'token',?,?)").run(digest(legacyToken),new Date().toISOString());
     }
-    if(!this.credentials())this.setupHash=digest(privateFile(this.setupPath,()=>randomBytes(24).toString('hex')));
+    if(!this.credentials())this.setupToken=randomBytes(24).toString('hex');
     db.prepare('DELETE FROM admin_sessions WHERE expires_at<=?').run(new Date().toISOString());
   }
   private credentials():Credentials|undefined{return this.db.prepare('SELECT * FROM admin_credentials WHERE id=1').get() as Credentials|undefined;}
-  status():AuthStatus{const c=this.credentials();return {initialized:!!c,mode:c?.kind??'setup'};}
+  status(includeSetupToken=false):AuthStatus{const c=this.credentials();return {initialized:!!c,mode:c?.kind??'setup',...(!c&&includeSetupToken?{setupToken:this.setupToken}:{})};}
   authorize(token?:string):boolean {
     if(!token || !/^[A-Za-z0-9_-]{32,256}$/.test(token))return false;
     const hash=digest(token),c=this.credentials();
@@ -43,16 +42,16 @@ export class AuthStore {
     this.db.prepare('INSERT INTO admin_sessions(token_hash,expires_at,created_at) VALUES(?,?,?)').run(digest(token),expiresAt,new Date().toISOString());
     return {token,expiresAt};
   }
-  async setup(code:string,password:string) {
+  async setup(setupToken:string,password:string) {
     if(this.credentials())throw new HttpError(409,'admin_already_initialized');this.limit();
-    if(!this.setupHash||!this.equal(digest(code),this.setupHash))throw new HttpError(401,'invalid_setup_code');
+    if(!this.setupToken||!this.equal(digest(setupToken),digest(this.setupToken)))throw new HttpError(401,'invalid_setup_token');
     const stored=await this.password(password);
     this.db.exec('BEGIN IMMEDIATE');
     try {
       if(this.credentials())throw new HttpError(409,'admin_already_initialized');
       this.db.prepare("INSERT INTO admin_credentials(id,kind,secret_hash,salt,updated_at) VALUES(1,'password',?,?,?)").run(stored.hash,stored.salt,new Date().toISOString());
-      const session=this.session();this.db.exec('COMMIT');this.setupHash=undefined;
-      try{unlinkSync(this.setupPath);}catch{/* Code is invalidated by the committed credential even if cleanup fails. */}
+      const session=this.session();this.db.exec('COMMIT');this.setupToken=undefined;
+      try{unlinkSync(this.legacySetupPath);}catch{/* Obsolete file is never accepted as an initialization credential. */}
       return session;
     }catch(error){this.db.exec('ROLLBACK');throw error;}
   }
