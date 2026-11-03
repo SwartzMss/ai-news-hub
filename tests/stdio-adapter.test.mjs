@@ -56,3 +56,8 @@ test('Codex child never inherits Backend control or publishing credentials', asy
 test('news execution fails when a tool starts instead of accepting a report', async () => {
   await assert.rejects(execute('tool', { forbidTools: true }), { code: 'unexpected_tool' });
 });
+test('runtime archive token is excluded from Codex environment',async()=>{
+ const {codexEnvironment}=await import('../dist/apps/server/src/agent/environment.js');
+ const env=codexEnvironment({PATH:'/usr/bin',AI_NEWS_HUB_GITHUB_TOKEN:'DO_NOT_INHERIT',AI_NEWS_HUB_GITHUB_REPOSITORY:'owner/private',GH_TOKEN:'DO_NOT_INHERIT'});
+ assert.equal(env.AI_NEWS_HUB_GITHUB_TOKEN,undefined);assert.equal(env.AI_NEWS_HUB_GITHUB_REPOSITORY,undefined);assert.equal(env.GH_TOKEN,undefined);
+});

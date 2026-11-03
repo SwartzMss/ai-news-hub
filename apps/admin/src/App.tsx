@@ -7,6 +7,7 @@ import type {
 } from "../../../packages/shared/src";
 import { ApiError, client, errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
+import { Publication } from "./Publication";
 import { Report, type ReportRecord } from "./Report";
 const active = (status: string) =>
   ["queued", "running", "waiting_approval"].includes(status);
@@ -515,7 +516,7 @@ function RunDetail({
             </div>
           </section>
           {data.report ? (
-            <Report report={data.report} />
+            <><Report report={data.report} /><Publication api={api} reportId={data.report.id} /></>
           ) : (
             <section className="panel">
               <h2>此 Run 尚无日报</h2>

@@ -1,0 +1,182 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "type": "object",
+  "additionalProperties": false,
+  "required": [
+    "schema_version",
+    "report_id",
+    "report_date",
+    "channel",
+    "version",
+    "title",
+    "collected_at",
+    "review_status",
+    "approved_at",
+    "reviewed_content_sha256",
+    "items"
+  ],
+  "properties": {
+    "schema_version": {
+      "const": 1
+    },
+    "report_id": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 256
+    },
+    "report_date": {
+      "type": "string",
+      "format": "date"
+    },
+    "channel": {
+      "const": "opensource"
+    },
+    "version": {
+      "type": "integer",
+      "minimum": 1,
+      "maximum": 999999
+    },
+    "title": {
+      "type": "string",
+      "minLength": 1,
+      "maxLength": 180
+    },
+    "collected_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "review_status": {
+      "const": "approved"
+    },
+    "approved_at": {
+      "type": "string",
+      "format": "date-time"
+    },
+    "reviewed_content_sha256": {
+      "type": "string",
+      "pattern": "^[a-f0-9]{64}$"
+    },
+    "items": {
+      "type": "array",
+      "minItems": 1,
+      "maxItems": 10,
+      "items": {
+        "type": "object",
+        "additionalProperties": false,
+        "required": [
+          "id",
+          "category",
+          "importance",
+          "fact_summary",
+          "analysis",
+          "evidence_quote",
+          "verification",
+          "source"
+        ],
+        "properties": {
+          "id": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 256
+          },
+          "category": {
+            "type": "string",
+            "enum": [
+              "ai",
+              "opensource",
+              "developer_tools",
+              "security",
+              "industry",
+              "other"
+            ]
+          },
+          "importance": {
+            "type": "integer",
+            "minimum": 1,
+            "maximum": 5
+          },
+          "fact_summary": {
+            "type": "string",
+            "minLength": 1,
+            "maxLength": 600
+          },
+          "analysis": {
+            "anyOf": [
+              {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 600
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "evidence_quote": {
+            "type": "string",
+            "minLength": 8,
+            "maxLength": 240
+          },
+          "verification": {
+            "const": "source_only"
+          },
+          "source": {
+            "type": "object",
+            "additionalProperties": false,
+            "required": [
+              "name",
+              "original_url",
+              "canonical_url",
+              "published_at",
+              "event_at",
+              "fetched_at"
+            ],
+            "properties": {
+              "name": {
+                "type": "string",
+                "minLength": 1,
+                "maxLength": 200
+              },
+              "original_url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "canonical_url": {
+                "type": "string",
+                "format": "uri",
+                "maxLength": 2048
+              },
+              "published_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "event_at": {
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
+              },
+              "fetched_at": {
+                "type": "string",
+                "format": "date-time"
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

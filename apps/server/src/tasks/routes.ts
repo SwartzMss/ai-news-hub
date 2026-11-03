@@ -3,6 +3,8 @@ import type { FastifyInstance } from 'fastify';
 import { HttpError } from '../errors.js';
 import type { TaskEngine } from './engine.js';
 import type { DatabaseSync } from 'node:sqlite';
+import { registerPublicationRoutes } from '../publish/routes.js';
+import type { PublicationService } from '../publish/service.js';
 import { registerNewsRoutes } from '../news/routes.js';
 
 const id = { type: 'string', minLength: 1, maxLength: 256 };
@@ -13,7 +15,7 @@ type TaskParams = { taskId: string };
 type RunParams = { runId: string };
 const digest = (value: string) => createHash('sha256').update(value).digest();
 
-export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, token?: string, newsDb?: DatabaseSync): Promise<void> {
+export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, token?: string, newsDb?: DatabaseSync, publications?: PublicationService): Promise<void> {
   const expected = token ? digest(token) : undefined;
   app.addHook('onRequest', async (request, reply) => {
     reply.header('cache-control', 'no-store');
@@ -25,6 +27,7 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
     }
   });
   if (newsDb) registerNewsRoutes(app, newsDb);
+  if (publications) registerPublicationRoutes(app,publications);
   app.get('/tasks', async () => ({ tasks: engine.listTasks() }));
   app.get<{ Params: TaskParams }>('/tasks/:taskId', { schema: { params: params('taskId') } }, async (request) => ({ task: engine.task(request.params.taskId) }));
   app.get<{ Params: TaskParams; Querystring: { limit: number; offset: number } }>('/tasks/:taskId/runs', {

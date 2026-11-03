@@ -14,9 +14,11 @@ import { registerTaskRoutes } from './tasks/routes.js';
 import { NewsWorkflow } from './news/workflow.js';
 import { feedHttpClient, type FeedFetch } from './news/http.js';
 import { registerAdmin } from './admin.js';
+import { PublicationService, type GitHubAdapter } from './publish/service.js';
+import { GitHubArchive } from './publish/github.js';
 import { NEWS_TASK_ID } from './news/source.js';
 
-export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: FeedFetch; now?: () => Date } = {}) {
+export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: FeedFetch; now?: () => Date; githubAdapter?: GitHubAdapter } = {}) {
   const db = openDatabase(config.dataDir);
   let release: () => void;
   try { release = acquireBackendLock(db); }
@@ -55,10 +57,12 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     requestTimeout: 10000,
     forceCloseConnections: true,
   });
+  const github=options.githubAdapter ?? (config.publication ? new GitHubArchive(config.publication,config.publication.token):undefined);
+  const publications=new PublicationService(db,config.publication,github);
   registerAdmin(app);
-  app.addHook('preClose', async () => { await engine.close(); await http.close(); });
+  app.addHook('preClose', async () => { await engine.close(); await publications.close(); if(github instanceof GitHubArchive)await github.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
-  app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken, db); }, { prefix: '/api' });
+  app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken, db, publications); }, { prefix: '/api' });
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');
   });

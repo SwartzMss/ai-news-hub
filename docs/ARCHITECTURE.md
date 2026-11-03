@@ -2,7 +2,7 @@
 
 > 包含已实现的基础骨架与 v0.1 目标架构；各模块的实现范围如下，不能将目标链路理解为已经上线。
 
-Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；Issue #6 增加本地 React/Vite 管理后台，按 Task → Run 查看状态、日志和待审核日报；尚无定时调度、审核操作或发布。
+Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；Issue #6 增加本地 React/Vite 管理后台，按 Task → Run 查看状态、日志和待审核日报；Issue #7 增加人工批准、GitHub 按日期/频道/版本 JSON 归档、持久化状态与失败重试。尚无定时调度、Cloudflare 发布或公开阅读站。
 Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于诊断，正式 Adapter 位于 `apps/server/src/agent/`。
 探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
@@ -112,6 +112,10 @@ SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 �
 Issue #5 已实现严格 JSON Schema：分类、重要性、事实摘要、独立推断、精确依据引文；未知 ID、额外字段和重复条目拒绝。来源 URL/时间只由 Backend 从候选快照补充。报告与 Run 成功在同一事务保存；失败不生成可发布记录。`validated` 仅代表格式与来源关联，JSON 标记 `reviewStatus=pending`、`verification=source_only`，需人工核实摘要是否忠实及来源事实。
 
 固定来源 GitHub Blog RSS 由 Backend 拉取；5 分钟上游频率限制、15 秒超时、2 MiB 限额、仅同源 HTTPS 重定向、禁用 DTD。按 canonical URL、来源 GUID、当前内容指纹去重。原文更正会刷新当前文章，保留首次抓取时间；历史 Run 候选快照及日报文档不变。新闻任务不继续原 Thread，显式新建 Run 产生新版本。来源列表顺序最多取 10 条分析，非完整当日新闻索引。具体边界见 [新闻流水线](NEWS_PIPELINE.md)。发布层只消费校验通过的数据，不解析任意自由格式的 Agent 回复作为事实依据。
+
+Issue #7 发布层已启用：重新构建报告并核对来源快照/关联、成功 Run、原始 URL 的来源白名单后，显式人工批准绑定内容哈希；生成独立 archive v1 Schema JSON，不导出 Run/Thread、事件、SQLite 或凭据。历史生成 JSON 保持 pending 不变，批准与 published 是关系状态及归档文档字段，不改写来源真实性标记。
+
+路径为 `reports/YYYY/MM/DD/opensource/vNNNNNN.json`，新版本追加而不覆盖。GitHub Contents API 创建文件不带更新 SHA，远端相同字节复用路径提交、不同字节拒绝；超时可能远端已提交，显式重试核对远端后补齐 SHA。SQLite 状态不跨网络持有事务，单实例发布串行，重启将 publishing 标失败并等待显式重试。目标与凭据运行时显式配置，只有 Backend 使用，发布分支必须预先存在。见 [归档协议](PUBLISHING.md)。
 
 ## 6. 任务驱动的管理界面
 

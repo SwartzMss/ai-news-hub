@@ -10,7 +10,9 @@ Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件
 
 Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出及 SQLite 待审核日报已实现，完成真实来源与模型端到端验证。尚不发布。见 [新闻流水线](NEWS_PIPELINE.md) 与 [验证记录](validation/NEWS_PIPELINE.md)。
 
-Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。使用顺序轮询，未实现 SSE、任务编辑或审核发布。见 [后台说明](ADMIN.md)。
+Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。使用顺序轮询，未实现 SSE 或任务编辑；审核归档由 #7 增加。见 [后台说明](ADMIN.md)。
+
+Issue #7：人工批准绑定内容哈希，GitHub 日期/频道/版本 JSON 归档、幂等核对、失败重试与 SHA 持久化已实现；真实测试分支端到端验证成功。Cloudflare/公开 Web 与 RSS 留给 #8。见 [归档说明](PUBLISHING.md)。
 
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
@@ -38,7 +40,7 @@ Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务�
 - [x] 标准化 URL、来源、抓取时间、来源发布时间并实现最小去重
 - [x] 使用受 Schema 约束的 Codex 分析输出，保留可核验的原始来源
 - [x] SQLite 存储任务、Run、新闻与报告
-- [ ] 将日报按日期输出为 JSON / Markdown，仅在校验通过后推送 GitHub（防止重复发布）
+- [x] 将人工批准的日报按日期/频道/版本输出为严格 JSON 并归档 GitHub，幂等重试无重复提交（Markdown 仍保留私有 SQLite 预览）
 
 ### D. Web / RSS 和最小管理端
 - [ ] 公共网站：当天日报、频道、文章详情、历史归档

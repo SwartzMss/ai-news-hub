@@ -345,3 +345,15 @@ API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端�
 在同一台 Linux 主机上直接本地访问。只有 Backend 部署在另一台机器时才需安全通道，例如在访问端运行 `ssh -L 8080:127.0.0.1:3000 user@server`，然后浏览器打开 `http://localhost:8080/admin/`；Token 认证仍必需。SSH 是远程访问方式，不是本机访问的前置条件，不要为管理界面改成公网监听。
 
 `dist/admin` 仅部署到私有 Backend。公共阅读站应使用独立构建目录，禁止将整个 `dist` 或仓库根目录作为 Cloudflare Pages 发布目录；公开站当前尚未实现。后台操作与限制见 [使用说明](ADMIN.md)。
+
+## 13. Issue #7 人工批准与 GitHub 归档
+
+先停服务并备份 SQLite，升级代码、`npm ci --ignore-scripts`、`npm run build`，由同一非 root 服务账户启动；迁移 4 自动追加，不修改历史 SQL。不要删除旧库。发布默认关闭，不影响新闻生成/预览。
+
+在 root 持有的 0600 环境文件设置 `AI_NEWS_HUB_GITHUB_REPOSITORY=owner/repository`、`AI_NEWS_HUB_GITHUB_BRANCH=reports` 及 `AI_NEWS_HUB_GITHUB_TOKEN`。三者必须同时设置，目标分支须预先创建；推荐专用归档仓库/分支。Token 使用限定该仓库的 fine-grained PAT（Contents read/write），或由外部安全机制注入短期 GitHub App token；本版本不自动换取/刷新凭据。轮换后重启服务，历史幂等记录不变。
+
+凭据仅放私有环境文件，不配置在 Codex HOME/CODEX_HOME、Agent 工作目录、浏览器 `VITE_*` 或 Git；Backend 不把这些变量传给 Codex。HTTP 仅访问固定 api.github.com，拒绝重定向，单次发布网络操作总上限 20 秒，响应解码限额 2 MiB，归档 JSON 上限 256 KiB。HTTP_PROXY/HTTPS_PROXY/NO_PROXY 沿用受限环境配置，不入库。
+
+在 `/admin/` 的新闻 Run 中核对来源后勾选确认并批准，再单独点击归档。发布目标、状态、错误及 Commit SHA 可查看；401/403 可能为凭据过期、权限或 GitHub 限流，修复后显式重试。没有自动调度/重试/Cloudflare 构建触发配置；若目标仓库自行配置 Actions，GitHub 提交可能触发其已有工作流。
+
+具体 API、归档路径/Schema、冲突和恢复步骤见 [发布说明](PUBLISHING.md)，实测见 [发布验证](validation/PUBLISHING.md)。真实验证使用专用测试分支，不要把该测试分支作为正式公开站内容来源。#2 原生 Ubuntu Server/systemd/长期认证验收仍独立跟踪。
