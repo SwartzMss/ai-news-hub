@@ -12,7 +12,7 @@
 - RSS 端点返回标准 XML，公共 `/admin/` 为 404，pageerror=0。
 - 模拟 Pages CSP 后脚本/样式正常；桌面与窄屏截图仅保留本地临时目录，不提交生成站点。
 
-本地 lint、typecheck、build 与完整 npm test 均通过：142 项 Node + 10 项 Admin 测试。自动化覆盖严格归档 Schema、文件路径/版本一致、修订选择、旧版本保留、移除条目不复活、符号链接拒绝、生产禁止 DEMO/TEST、XML 转义/非法字符、稳定 GUID、全部静态路由及产物无 Admin/API/SQLite/凭据/源码映射。审查发现并修复了全局 build/ ignore 导致源码漏跟踪、以及 XML 1.0 禁止字符失效问题；构建源码已移至 generator/。
+本地 lint、typecheck、build 与完整 npm test 均通过：143 项 Node + 10 项 Admin 测试。自动化覆盖严格归档 Schema、文件路径/版本一致、修订选择、旧版本保留、移除条目不复活、符号链接和反斜杠伪路径拒绝、生产禁止 DEMO/TEST、XML 转义/非法字符、稳定 GUID、全部静态路由及产物无 Admin/API/SQLite/凭据/源码映射。审查发现并修复了全局 build/ ignore 导致源码漏跟踪、以及 XML 1.0 禁止字符失效问题；构建源码已移至 generator/。
 
 ## 尚未完成的平台验收
 

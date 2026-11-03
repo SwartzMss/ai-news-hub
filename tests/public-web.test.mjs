@@ -126,3 +126,6 @@ test("removed revision entries remain historical but do not replace current olde
     s.close();
   }
 });
+test('Linux archive paths cannot be disguised by backslashes in a filename',()=>{
+ const s=setup();try{writeFileSync(s.dir+'/2026\\11\\03\\opensource\\v000001.json',JSON.stringify(s.doc));assert.throws(()=>readArchives(s.dir,{allowDemo:true}),/unexpected archive file/);}finally{s.close();}
+});

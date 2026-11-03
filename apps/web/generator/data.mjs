@@ -53,7 +53,7 @@ export function readArchives(
         walk(file);
         continue;
       }
-      const name = relative(root, file).replaceAll("\\", "/");
+      const name = relative(root, file);
       const match =
         /^(\d{4})\/(\d{2})\/(\d{2})\/opensource\/v(\d{6})\.json$/.exec(name);
       if (
