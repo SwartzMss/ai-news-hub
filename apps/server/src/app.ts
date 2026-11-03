@@ -80,7 +80,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
   app.register(async scope=>{registerAuthRoutes(scope,authentication);},{prefix:'/api'});
   app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings); }, { prefix: '/api' });
-  if(!authentication.status().initialized)app.log.info({event:'admin_setup_required',setupCodePath:authentication.setupPath},'admin_setup_required');
+  if(!authentication.status().initialized)app.log.info({event:'admin_setup_required'},'admin_setup_required');
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');
   });

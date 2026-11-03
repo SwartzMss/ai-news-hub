@@ -55,7 +55,7 @@ export function errorText(error: unknown): string {
     task_busy: "任务已有执行中的 Run，请等待完成。",
     queue_full: "执行队列已满，请稍后重试。",
     auth_required: "Codex 认证失效，需要在服务账户下重新登录。",
-    invalid_setup_code: "初始化码不正确，请从服务主机的数据目录读取。",
+    invalid_setup_token: "初始化页面已失效，请刷新页面后重新设置密码。",
     invalid_password: "管理员密码必须为 12–128 个字符。",
     password_mismatch: "两次输入的密码不一致。",
     incorrect_password: "当前密码或旧 Token 不正确。",

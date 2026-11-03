@@ -7,7 +7,7 @@
 - 根目录统一管理 Node.js 22 / TypeScript 依赖；`apps/server/src` 为 Backend，`packages/shared/src` 为共享类型与 Agent 环境白名单。
 - `apps/web` 为独立静态公共站（见 `docs/PUBLIC_WEB.md`），源码构建器在 `generator/`，唯一公开输出 `dist/web`；`apps/admin` 为独立 React/Vite 后台，经 Backend `/admin/` 提供，仅页面内存保存 Token。见 `docs/ADMIN.md`。
 - 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程；`npm test` 包含 Backend、Admin 交互与公共站构建测试，构建产物分别为 `dist/apps/server` 与 `dist/admin`。
-- Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未初始化管理员时业务 `/api` 关闭；首次本机 setup-code 初始化密码，旧 Token 仅迁移兼容。接口见 `docs/TASK_ENGINE.md`。
+- Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未初始化管理员时业务 `/api` 关闭；首次本机同源页面设置/确认密码，初始化请求校验由页面自动完成，旧 Token 仅迁移兼容。接口见 `docs/TASK_ENGINE.md`。
 - 新闻任务 `news-research` 接受 topic/input，支持同 Thread 多轮 prompt 和显式 finalize。旧 `news-github` 停用，仅保留历史查询。接口见 `docs/NEWS_PIPELINE.md`；来源引文校验不等于事实审核，不自动发布。人工批准与 GitHub 归档见 `docs/PUBLISHING.md`，凭据不能传给 Codex。
 - 新闻 Thread 仅允许 hosted web search，逐个禁用继承的 MCP，禁用 Shell/委派，审批仍全部拒绝。最终来源验证只接受公网 HTTPS、DNS 固定连接，无代理/凭据/重定向；不将搜索入口改回 RSS。
 - 启动自动迁移，也可 `npm run db:migrate`。应用 `.env` 仅 HOST/PORT/DATA_DIR，其余经后台写 SQLite；GitHub Token 加密、密钥在私有数据目录，不回显，备份须包含密钥。设置/认证见 `docs/SETTINGS.md`，数据模型见 `docs/DATA_MODEL.md`。

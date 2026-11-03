@@ -6,4 +6,4 @@
 
 新闻任务 news-research 支持主题、初始 prompt、同 Thread 多轮追问和显式生成待审核日报；不采集外部 RSS。见 [研究流程](../../docs/NEWS_PIPELINE.md)。
 
-首次使用本机 setup-code 初始化管理员密码；系统设置保存运行参数与 GitHub 目标到 SQLite。`.env` 只保留监听地址/端口/数据目录，见 [配置与认证](../../docs/SETTINGS.md)。
+首次页面仅需设置/确认管理员密码，初始化请求校验自动完成；系统设置保存运行参数与 GitHub 目标到 SQLite。`.env` 只保留监听地址/端口/数据目录，见 [配置与认证](../../docs/SETTINGS.md)。

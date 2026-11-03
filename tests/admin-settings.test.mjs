@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,readFileSync,rmSync,statSync} from 'node:fs';
+import {mkdtempSync,existsSync,writeFileSync,rmSync,statSync} from 'node:fs';
 import {join} from 'node:path';
 import {DatabaseSync} from 'node:sqlite';
 import {buildServer} from '../dist/apps/server/src/app.js';
@@ -19,18 +19,18 @@ const post=(f,url,payload,token)=>f.app.inject({method:'POST',url:'/api'+url,hea
 const get=(f,url,token)=>f.app.inject({url:'/api'+url,headers:token?auth(token):{}});
 const save=(f,body,token)=>f.app.inject({method:'PUT',url:'/api/settings',headers:auth(token),payload:body});
 async function initialize(f) {
- const code=readFileSync(join(f.dir,'setup-code'),'utf8').trim();
- const r=await post(f,'/auth/setup',{code,password});assert.equal(r.statusCode,201,r.body);return r.json().token;
+ const setupToken=(await get(f,'/auth/status')).json().setupToken;
+ const r=await post(f,'/auth/setup',{setupToken,password});assert.equal(r.statusCode,201,r.body);return r.json().token;
 }
 test('minimal env bootstraps once, protects settings, and password/session lifecycle persists without env credentials',async()=>{
  const f=fixture();try{
-  const status=await get(f,'/auth/status');assert.equal(status.statusCode,200);assert.deepEqual(status.json(),{initialized:false,mode:'setup'});
+  const status=await get(f,'/auth/status');assert.equal(status.statusCode,200);assert.equal(status.json().initialized,false);assert.equal(status.json().mode,'setup');assert.match(status.json().setupToken,/^[a-f0-9]{48}$/);
   assert.equal((await get(f,'/settings')).statusCode,503);
-  assert.equal(statSync(join(f.dir,'setup-code')).mode&0o777,0o600);
-  assert.equal((await post(f,'/auth/setup',{code:'wrong',password})).statusCode,401);
+  assert.equal(existsSync(join(f.dir,'setup-code')),false);
+  assert.equal((await post(f,'/auth/setup',{setupToken:'wrong',password})).statusCode,401);
   const token=await initialize(f);assert.equal((await get(f,'/tasks',token)).statusCode,200);
   assert.equal((await get(f,'/settings')).statusCode,401);
-  assert.equal((await post(f,'/auth/setup',{code:'anything',password})).statusCode,409);
+  assert.equal((await post(f,'/auth/setup',{setupToken:'anything',password})).statusCode,409);
   assert.equal((await post(f,'/auth/login',{password:'wrong-password'})).statusCode,401);
   await f.restart();
   assert.deepEqual((await get(f,'/auth/status')).json(),{initialized:true,mode:'password'});
@@ -78,7 +78,7 @@ test('legacy env imports once and idle runtime settings apply to new Turns witho
 test('auth bootstrap/login reject foreign browser origins and DNS-rebinding Host names',async()=>{
  const f=fixture();try{
   for(const headers of [{host:'evil.example'},{host:'localhost:3000',origin:'https://evil.example'}]){
-   const r=await f.app.inject({method:'POST',url:'/api/auth/setup',headers,payload:{code:readFileSync(join(f.dir,'setup-code'),'utf8').trim(),password}});assert.equal(r.statusCode,403);
+   const r=await f.app.inject({method:'POST',url:'/api/auth/setup',headers,payload:{setupToken:'not-exposed-to-foreign-origin',password}});assert.equal(r.statusCode,403);
   }
   assert.equal((await get(f,'/auth/status')).json().initialized,false);
  }finally{await f.close();}
@@ -118,4 +118,17 @@ test('changing GitHub destination through settings creates a separate publicatio
   assert.equal((await post(f,'/news/reports/r/publish',{},legacyToken)).statusCode,200);assert.equal(writes,2);
   const publications=(await get(f,'/news/reports/r/publication',legacyToken)).json().publications;assert.deepEqual(new Set(publications.map(p=>p.repository)),new Set(['owner/first','owner/second']));
  }finally{await app.close();rmSync(dir,{recursive:true,force:true});}
+});
+
+test('setup proof is same-origin only, changes on restart and cannot initialize twice concurrently',async()=>{
+ const f=fixture();try{
+  const before=(await get(f,'/auth/status')).json().setupToken;
+  const legacyCode='a'.repeat(48);writeFileSync(join(f.dir,'setup-code'),legacyCode,{mode:0o600});
+  const blocked=await f.app.inject({url:'/api/auth/status',headers:{host:'localhost:3000',origin:'https://evil.example'}});assert.equal(blocked.statusCode,403);assert.ok(!blocked.body.includes(before));
+  await f.restart();const setupToken=(await get(f,'/auth/status')).json().setupToken;assert.notEqual(setupToken,before);assert.notEqual(setupToken,legacyCode);
+  assert.equal((await post(f,'/auth/setup',{setupToken:legacyCode,password})).statusCode,401);
+  assert.equal((await post(f,'/auth/setup',{setupToken:before,password})).statusCode,401);
+  const results=await Promise.all([post(f,'/auth/setup',{setupToken,password}),post(f,'/auth/setup',{setupToken,password})]);assert.deepEqual(results.map(r=>r.statusCode).sort(),[201,409]);
+  const status=(await get(f,'/auth/status')).json();assert.deepEqual(status,{initialized:true,mode:'password'});assert.ok(!JSON.stringify(status).includes(setupToken));assert.equal(existsSync(join(f.dir,'setup-code')),false);
+ }finally{await f.close();}
 });

@@ -6,7 +6,7 @@ Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。
 ## 配置与认证
 
 Backend 只允许监听 `127.0.0.1` / `::1`。`/health` 公开，仅检查本地服务/数据库；所有已有 `/api` 管理端点要求 `Authorization: Bearer <token>`。
-启动环境文件只保留 HOST、PORT、DATA_DIR。首次通过本机 setup-code 在后台设置密码，之后登录获取临时 Bearer 会话；登录前业务接口返回 503 management_disabled。旧 Token 仅用于升级兼容，改设密码后失效。详见 [系统设置与认证](SETTINGS.md)。
+启动环境文件只保留 HOST、PORT、DATA_DIR。首次在本机页面设置并确认密码（初始化请求校验由页面自动完成），之后登录获取临时 Bearer 会话；登录前业务接口返回 503 management_disabled。旧 Token 仅用于升级兼容，改设密码后失效。详见 [系统设置与认证](SETTINGS.md)。
 
 Codex 路径/模型、每轮超时、并发、队列和日志级别经后台“系统设置”写 SQLite，空闲时立即生效，执行/排队/归档中返回 settings_busy。每轮默认 120000 ms（1000–3600000，含最终来源验证），并发 1（1–4），队列 20（1–100），模型默认沿用 Codex 配置。
 
