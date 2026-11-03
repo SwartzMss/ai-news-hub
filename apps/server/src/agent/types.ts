@@ -20,11 +20,12 @@ export type AgentEvent =
   | { type: 'message'; text: string }
   | { type: 'approval_required' }
   | { type: 'rpc_failed'; method: string; rpcCode?: number }
-  | { type: 'item_started'; itemType: 'commandExecution' | 'fileChange' | 'mcpToolCall' };
+  | { type: 'item_started'; itemType: 'commandExecution' | 'fileChange' | 'mcpToolCall' | 'webSearch' };
 export interface AgentInput {
   runId: string; threadId?: string; input: string; cwd: string; model?: string;
   timeoutMs: number; signal: AbortSignal;
   outputSchema?: Record<string, unknown>; developerInstructions?: string; forbidTools?: boolean;
+  webSearch?: boolean;
 }
 export interface AgentResult {
   status: 'completed' | 'failed' | 'interrupted'; threadId: string; turnId: string; output: string;

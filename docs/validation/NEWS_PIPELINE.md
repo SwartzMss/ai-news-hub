@@ -1,5 +1,7 @@
 # Issue #5 新闻流水线验证
 
+> 历史证据：固定 RSS 输入现已停用，当前 Codex 主题研究见 [新验证](CODEX_RESEARCH.md)。本记录不作为当前主动搜索验收。
+
 ## 真实 RSS 与 Codex
 
 2026-11-03 开发会话在非 root 账户启动真实 Backend，调用受保护的 `news-github` 任务，使用真实 GitHub Blog RSS、stdio Codex 与私有 SQLite。当前开发环境为 Ubuntu 22.04 / WSL2；本记录不代表原生 Ubuntu Server 24.04 的 systemd、独立服务账户或长期认证验收，后者继续由 Issue #2 跟踪，也不新增 WSL 部署支持。

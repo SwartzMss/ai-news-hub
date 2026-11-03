@@ -9,6 +9,7 @@ import { ApiError, client, errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
 import { Publication } from "./Publication";
 import { Report, type ReportRecord } from "./Report";
+import { Research } from "./Research";
 const active = (status: string) =>
   ["queued", "running", "waiting_approval"].includes(status);
 const labels: Record<string, string> = {
@@ -310,6 +311,7 @@ function TaskDetail({ api, taskId }: { api: Client; taskId: string }) {
   return (
     <>
       <ErrorNotice error={state.error ?? error} />
+      {taskId === 'news-research' && <Research api={api} taskId={taskId} disabled={!state.data || state.data.task.status !== 'active' || state.data.runs.some(run=>active(run.status))} onSubmitted={id=>{location.hash=pathFor(taskId,id);}}/>}
       {!state.data ? (
         <p>正在读取任务…</p>
       ) : (
@@ -319,7 +321,7 @@ function TaskDetail({ api, taskId }: { api: Client; taskId: string }) {
               <div className="eyebrow">任务详情</div>
               <h1>{state.data.task.name}</h1>
             </div>
-            <button
+            {taskId !== 'news-research' && <button
               onClick={start}
               disabled={
                 busy ||
@@ -328,7 +330,7 @@ function TaskDetail({ api, taskId }: { api: Client; taskId: string }) {
               }
             >
               {busy ? "正在提交…" : "手动执行"}
-            </button>
+            </button>}
           </div>
           <p className="notice">
             手动执行会调用 Codex 并消耗账户额度。配置只读，暂不执行定时调度。
@@ -416,6 +418,7 @@ function RunDetail({
   runId: string;
 }) {
   const [after, setAfter] = useState(0);
+  const [refresh, setRefresh] = useState(0);
   const load = useCallback(
     async (signal: AbortSignal) => {
       const detail = await api<{ run: RunRecord; turns: TurnRecord[] }>(
@@ -429,7 +432,7 @@ function RunDetail({
         signal,
       );
       let report: ReportRecord | undefined;
-      if (taskId === "news-github") {
+      if (taskId === "news-research" || taskId === "news-github") {
         try {
           const { newsRun } = await api<{
             newsRun: { report_id: string | null };
@@ -447,7 +450,7 @@ function RunDetail({
       }
       return { ...detail, ...events, report };
     },
-    [api, taskId, runId, after],
+    [api, taskId, runId, after, refresh],
   );
   const { data, error } = usePolling(load);
   return (
@@ -455,6 +458,7 @@ function RunDetail({
       <div className="eyebrow">执行记录</div>
       <h1>Run 详情</h1>
       <ErrorNotice error={error} />
+      {taskId === 'news-research' && !data?.report && <Research api={api} taskId={taskId} runId={runId} disabled={!data || active(data.run.status) || !data.run.thread_id || data.turns.length >= 20} onSubmitted={()=>setRefresh(n=>n+1)}/>}
       {!data ? (
         <p>正在读取执行记录…</p>
       ) : (
@@ -521,7 +525,7 @@ function RunDetail({
             <section className="panel">
               <h2>此 Run 尚无日报</h2>
               <p className="muted">
-                样例任务仅返回文本；新闻任务需采集、分析并通过校验后才会生成待审核报告。
+                研究轮先返回文本与来源。完成多轮研究后，填写最终要求并点击“生成待审核日报”，通过来源和结构校验后保存。
               </p>
             </section>
           )}
@@ -532,7 +536,8 @@ function RunDetail({
                 <summary>
                   Turn {turn.sequence} · {labels[turn.status] ?? turn.status}
                 </summary>
-                <pre>{turn.output_text ?? "暂无输出"}</pre>
+                <h3>用户 prompt</h3><pre>{turn.input_text}</pre>
+                <h3>{turn.mode === 'finalize' ? '最终生成结果' : 'Codex 回复'}</h3><pre>{turn.output_text ?? "暂无输出"}</pre>
                 {turn.error_code && <p className="error">{turn.error_code}</p>}
               </details>
             ))}

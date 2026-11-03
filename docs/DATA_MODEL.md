@@ -1,7 +1,7 @@
 # SQLite 数据模型
 
 初始迁移：`apps/server/src/db/migrations.ts` 的 `initial_schema`。数据库在 `AI_NEWS_HUB_DATA_DIR/news.db`，默认 `/var/lib/ai-news-hub/news.db`；禁止提交 SQLite、WAL / SHM、认证或本地日志到 Git。
-Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历史持久化。Issue #5 追加迁移 3，启用 RSS 采集、文章及待审核报告业务；Issue #7 迁移 4 启用人工批准与 GitHub 发布持久化。
+Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历史持久化。Issue #5 追加迁移 3，启用 RSS 采集、文章及待审核报告业务；Issue #7 迁移 4 启用人工批准与 GitHub 发布持久化。迁移 5 改为 Codex 主题研究，历史 RSS 表只兼容读取。
 
 ## 表与关系
 
@@ -32,7 +32,7 @@ Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历
 | `rss_feed_items` | 最近成功 Feed 的文章顺序；用于频率限制与 304 缓存 |
 | `news_runs` | Run 一对一来源、UTC 报告日期、候选 JSON 快照、采集时间及唯一报告引用 |
 
-当前 `articles` 允许同 URL/GUID 的来源更正更新标题、摘要、发布时间和 URL，保留首次抓取时间。弱指纹别名不绑定新 GUID，后续内容分歧独立建记录；canonical/GUID 指向不同文章时整批失败。历史 `news_runs.candidates_json`、`reports.content_json` 与 Markdown 保留生成时快照，追溯时不能用当前文章内容覆盖它们。
+迁移 3 的 RSS 身份/缓存表仅保留历史，不再写入采集数据。当前按 canonical URL 去重，更新文章标题、原文正文、发布时间和 last_seen_at，保留既有 ID 与首次 fetched_at。历史快照和报告不可用当前文章内容覆盖。
 
 报告 `validated` 仅表示严格格式、候选 ID、精确依据引文与来源关联校验通过；文档保持 `reviewStatus=pending`、`verification=source_only`。它不代表独立事实核验或人工批准，不能直接发布。报告/关联/Run 成功事务一起提交或回滚。同日同频道新 Run 增加版本，幂等重试不新增版本。
 
@@ -41,6 +41,12 @@ Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历
 `publication_records` 追加 `repository`、`branch`、`content_hash`（归档字节 SHA-256）、`commit_sha`、`attempts`。幂等键仅绑定仓库/分支/路径/字节哈希，不包含凭据；轮换 Token 保留同一记录。`published_at` 为 GitHub 返回的提交时间。pending → publishing → succeeded/failed；failed 显式重试复用记录并增加次数。启动将未完成 publishing 标 failed / publication_interrupted；不自动重试，不把未知远端结果当成功。成功状态与 Report published 同事务保存，远端操作不处于 SQLite 事务内。
 
 报告 validated → approved（人工、哈希确认）→ published（GitHub 确认）。失败保留 approved；GitHub 已提交但本地持久化失败可通过重试远端内容核对恢复。原始 JSON 的 source_only 不因人工允许发布而升级成独立事实核验。
+
+## Codex 研究（迁移 5）
+
+`codex_news_runs` 一对一绑定 Run，保存 topic、initial_input、创建日 UTC report_date、channel，以及显式生成成功后的 collected_at/candidates_json/report_id；研究轮 candidates 为空且无报告。`run_turns.mode` 为 default/research/finalize，input_text 保留用户原始 prompt，最终输出与旧轮次独立保存。旧 news-github 停用，历史保留。
+
+最终来源验证在事务外完成；报告、文章/关联、不可变快照和 Run/Turn 成功同事务提交。失败不写入部分文章/日报；成功后禁止继续本 Run。已生成报告修订须新建研究。归档 v1 暂保留 opensource 频道键，主题可自由填写。
 
 ## 状态与唯一约束
 
@@ -61,7 +67,7 @@ Run 中的 `thread_id` / `turn_id` 是查询用摘要；继续 Turn 时清除旧
 
 时间字段使用 UTC ISO 8601 字符串；自动创建时间用 SQLite `strftime`，`updated_at` 后续由写入业务显式更新。Task 时区保存 IANA 名称，当前不解析 schedule 或执行计划。
 `source_published_at` 与 `event_at` 不确定时保存 NULL；`fetched_at` 必填，不用抓取时间伪造原始发布时间。`report_date` 表示频道报告日期，与事件发生日期分开。
-URL、IANA 时区、日期格式和状态转换的完整业务校验留给后续入口；固定 RSS 入口与报告 Schema 已执行 URL/日期校验；当前没有自动发布，Schema 中的非空来源字段不能视为来源真实性已验证。
+当前来源入口校验公网 HTTPS、DNS 固定连接、HTML 原文与精确引文；发布时间只取带时区的源元数据，事件时间为 NULL。Schema/引文匹配不等于独立事实核验，没有自动发布。任务时区/调度仍是预留配置。
 
 ## 迁移与运维
 

@@ -23,6 +23,14 @@ export function proposalSchema(articleIds?: string[]) {
     } },
   };
 }
+export const RESEARCH_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['title','items'],
+  properties: { title: text(180), items: { type: 'array', minItems: 1, maxItems: 10, items: {
+    ...proposalItem,
+    required: [...proposalItem.required.filter(key => key !== 'articleId'), 'url'],
+    properties: Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
+  } } },
+};
 export const REPORT_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object', additionalProperties: false,

@@ -36,12 +36,12 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
       properties: { limit: integer(1, 100, 20), offset: integer(0, 100000, 0) },
     } },
   }, async (request) => ({ runs: engine.listRuns(request.params.taskId, request.query.limit, request.query.offset) }));
-  app.post<{ Params: TaskParams; Body: { idempotencyKey: string } }>('/tasks/:taskId/runs', {
+  app.post<{ Params: TaskParams; Body: { idempotencyKey: string; topic?: string; input?: string } }>('/tasks/:taskId/runs', {
     schema: { params: params('taskId'), body: {
-      type: 'object', additionalProperties: false, required: ['idempotencyKey'], properties: { idempotencyKey },
+      type: 'object', additionalProperties: false, required: ['idempotencyKey'], properties: { idempotencyKey, topic: { type: 'string', minLength: 1, maxLength: 200 }, input: { type: 'string', minLength: 1, maxLength: 8000 } },
     } },
   }, async (request, reply) => {
-    const result = engine.start(request.params.taskId, request.body.idempotencyKey);
+    const result = engine.start(request.params.taskId, request.body.idempotencyKey, request.body);
     reply.code(result.reused ? 200 : 202); return result;
   });
   app.get<{ Params: RunParams }>('/runs/:runId', { schema: { params: params('runId') } }, async (request) => engine.detail(request.params.runId));
@@ -54,13 +54,13 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
   app.post<{ Params: RunParams }>('/runs/:runId/cancel', { schema: { params: params('runId') } }, async (request, reply) => {
     reply.code(202); return { run: engine.cancel(request.params.runId) };
   });
-  app.post<{ Params: RunParams; Body: { idempotencyKey: string; input: string } }>('/runs/:runId/turns', {
+  app.post<{ Params: RunParams; Body: { idempotencyKey: string; input: string; finalize?: boolean } }>('/runs/:runId/turns', {
     schema: { params: params('runId'), body: {
       type: 'object', additionalProperties: false, required: ['idempotencyKey', 'input'],
-      properties: { idempotencyKey, input: { type: 'string', minLength: 1, maxLength: 8000 } },
+      properties: { idempotencyKey, input: { type: 'string', minLength: 1, maxLength: 8000 }, finalize: { type: 'boolean' } },
     } },
   }, async (request, reply) => {
-    const result = engine.continueRun(request.params.runId, request.body.idempotencyKey, request.body.input);
+    const result = engine.continueRun(request.params.runId, request.body.idempotencyKey, request.body.input, request.body.finalize);
     reply.code(result.reused ? 200 : 202); return result;
   });
 }

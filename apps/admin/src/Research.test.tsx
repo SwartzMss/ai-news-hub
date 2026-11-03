@@ -1,0 +1,28 @@
+import { afterEach, expect, test, vi } from 'vitest';
+import { cleanup, fireEvent, render, screen, waitFor } from '@testing-library/react';
+import { Research } from './Research';
+import { ApiError } from './api';
+afterEach(cleanup);
+test('topic start and successive prompts send distinct explicit modes and preserve uncertain retries', async () => {
+ const api=vi.fn().mockRejectedValueOnce(new ApiError(0,'network_unavailable')).mockResolvedValue({run:{id:'run'}});
+ const submitted=vi.fn();
+ const view=render(<Research api={api} taskId="news-research" disabled={false} onSubmitted={submitted}/>);
+ fireEvent.change(screen.getByLabelText('研究主题'),{target:{value:'AI 开源模型'}});
+ fireEvent.change(screen.getByLabelText('初始 prompt'),{target:{value:'搜索近三天的官方公告'}});
+ fireEvent.click(screen.getByRole('button',{name:'开始研究'})); await screen.findByRole('alert');
+ expect((screen.getByLabelText('研究主题') as HTMLInputElement).disabled).toBe(true);
+ fireEvent.click(screen.getByRole('button',{name:'重试原请求'})); await waitFor(()=>expect(submitted).toHaveBeenCalledWith('run'));
+ expect(api.mock.calls[0][2]).toEqual(api.mock.calls[1][2]);
+ expect(api.mock.calls[0][2]).toMatchObject({topic:'AI 开源模型',input:'搜索近三天的官方公告'});
+ view.unmount();
+ const continued=vi.fn().mockResolvedValue({run:{id:'run'}});
+ render(<Research api={continued} taskId="news-research" runId="run" disabled={false} onSubmitted={()=>{}}/>);
+ fireEvent.change(screen.getByLabelText('下一轮 prompt'),{target:{value:'只保留开源模型'}});
+ fireEvent.click(screen.getByRole('button',{name:'继续研究'})); await waitFor(()=>expect(continued).toHaveBeenCalledTimes(1));
+ expect(continued.mock.calls[0][2]).toMatchObject({input:'只保留开源模型',finalize:false});
+ await waitFor(()=>expect((screen.getByLabelText('下一轮 prompt') as HTMLTextAreaElement).value).toBe(''));
+ fireEvent.change(screen.getByLabelText('下一轮 prompt'),{target:{value:'整理成中文日报'}});
+ fireEvent.click(screen.getByRole('button',{name:'生成待审核日报'})); await waitFor(()=>expect(continued).toHaveBeenCalledTimes(2));
+ expect(continued.mock.calls[1][2]).toMatchObject({input:'整理成中文日报',finalize:true});
+ expect(continued.mock.calls[0][2].idempotencyKey).not.toBe(continued.mock.calls[1][2].idempotencyKey);
+});

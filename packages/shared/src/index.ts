@@ -21,6 +21,7 @@ export interface RunRecord {
   error_code: string | null; created_at: string; updated_at: string;
 }
 export interface TurnRecord {
+  mode: 'default' | 'research' | 'finalize';
   id: string; run_id: string; sequence: number; idempotency_key: string;
   input_text: string; thread_id: string | null; server_turn_id: string | null;
   status: RunStatus; output_text: string | null; error_code: string | null;

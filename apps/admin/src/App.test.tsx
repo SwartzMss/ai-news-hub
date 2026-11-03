@@ -213,3 +213,30 @@ test("aborted old error response cannot expire a replacement session while readi
   await request;
   expect(expired).not.toHaveBeenCalled();
 });
+test('news prompt and uncertain retry survive log pagination without replacing the idempotency key', async () => {
+  const newsTask={...task,id:'news-research',name:'研究任务'};
+  const newsRun={...run,task_id:newsTask.id};
+  const posts: unknown[]=[];
+  vi.stubGlobal('fetch',vi.fn(async (url:string,init?:RequestInit)=>{
+    if(init?.method==='POST') {posts.push(JSON.parse(String(init.body)));throw new TypeError('lost response');}
+    if(url==='/api/tasks')return Response.json({tasks:[newsTask]});
+    if(url.includes('/events'))return Response.json({events:Array.from({length:100},(_,i)=>({id:i+1,kind:'message',data:{},created_at:run.created_at}))});
+    if(url.startsWith('/api/news/runs/'))return Response.json({newsRun:{report_id:null}});
+    if(url==='/api/runs/run-1')return Response.json({run:newsRun,turns:[{id:'t',sequence:1,status:'succeeded',input_text:'first',output_text:'reply'}]});
+    return Response.json({runs:[newsRun],task:newsTask});
+  }));
+  location.hash='#/tasks/news-research/runs/run-1';render(<App/>);
+  fireEvent.change(screen.getByLabelText('管理 Token'),{target:{value:'test_only_0123456789_abcdefghijklmnop'}});
+  fireEvent.click(screen.getByRole('button',{name:'连接后台'}));
+  fireEvent.change(await screen.findByLabelText('下一轮 prompt'),{target:{value:'补查原始公告'}});
+  fireEvent.click(await screen.findByRole('button',{name:'后续日志'}));
+  await waitFor(()=>expect((screen.getByLabelText('下一轮 prompt') as HTMLTextAreaElement).disabled).toBe(false));
+  expect((screen.getByLabelText('下一轮 prompt') as HTMLTextAreaElement).value).toBe('补查原始公告');
+  fireEvent.click(screen.getByRole('button',{name:'继续研究'}));
+  await screen.findByRole('button',{name:'重试原请求'});
+  fireEvent.click(screen.getByRole('button',{name:'回到首条'}));
+  const retry=await screen.findByRole('button',{name:'重试原请求'});
+  await waitFor(()=>expect(retry.hasAttribute('disabled')).toBe(false));
+  fireEvent.click(retry);await waitFor(()=>expect(posts).toHaveLength(2));
+  expect(posts[0]).toEqual(posts[1]);
+});

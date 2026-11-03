@@ -1,5 +1,5 @@
 import { AppError } from "../errors.js";
-import { feedHttpClient, feedText, type FeedFetch } from "../news/http.js";
+import { githubHttpClient, githubText, type GitHubFetch } from "./http.js";
 import type {
   ArchiveArtifact,
   GitHubAdapter,
@@ -10,9 +10,9 @@ export class GitHubArchive implements GitHubAdapter {
   constructor(
     private target: PublishTarget,
     private token: string,
-    fetcher?: FeedFetch,
+    fetcher?: GitHubFetch,
   ) {
-    this.http = fetcher ? { fetcher, close: async () => {} } : feedHttpClient();
+    this.http = fetcher ? { fetcher, close: async () => {} } : githubHttpClient();
   }
   async publish(artifact: ArchiveArtifact, signal: AbortSignal) {
     if (
@@ -54,7 +54,7 @@ export class GitHubArchive implements GitHubAdapter {
           await response.body?.cancel();
           throw new AppError(`github_http_${response.status}`);
         }
-        return JSON.parse(await feedText(response)) as unknown;
+        return JSON.parse(await githubText(response)) as unknown;
       } catch (error) {
         if (error instanceof AppError) throw error;
         throw new AppError(

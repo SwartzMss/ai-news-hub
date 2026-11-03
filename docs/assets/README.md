@@ -1,6 +1,6 @@
 # README 架构图资源
 
-- `architecture.gif`：1000×480、约 10 秒循环，展示当前手动采集/分析/审核/归档/静态构建链路。
+- `architecture.gif`：1000×480、约 10 秒循环，展示主题与多轮 prompt → Codex 搜索 → 显式生成/原文校验 → 审核/归档/静态构建链路。
 - `architecture.svg`：静态等价图，含 title/desc，便于直接查看和阅读；没有脚本、外部字体或远程资源引用。
 - `../../scripts/render-architecture.py`：同一绘图逻辑生成两种资源，所有临时帧只在内存，PNG 预览写入 `/tmp`。
 

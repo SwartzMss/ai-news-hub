@@ -1,6 +1,6 @@
 # AGENTS.md
 
-本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，已支持手动真实 RSS → Codex → SQLite 待审核日报，已提供独立 React/Vite 管理后台，支持人工批准后归档 GitHub，公共 React/Vite 静态阅读站与 RSS 已可独立构建，Cloudflare 真实上线待账户接入验收。
+本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务引擎、Codex 接入探针和独立原型。新闻入口是用户主题与多轮 prompt，由 Codex 实时搜索、提取和整理，显式生成后 Backend 核对原文并保存 SQLite 待审核日报；不采集外部 RSS。React/Vite 管理后台支持研究、人工批准和 GitHub 归档；公共静态阅读站与输出 RSS 可独立构建，Cloudflare 真实上线待验收。
 
 ## 当前工程结构与检查
 
@@ -8,7 +8,8 @@
 - `apps/web` 为独立静态公共站（见 `docs/PUBLIC_WEB.md`），源码构建器在 `generator/`，唯一公开输出 `dist/web`；`apps/admin` 为独立 React/Vite 后台，经 Backend `/admin/` 提供，仅页面内存保存 Token。见 `docs/ADMIN.md`。
 - 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程；`npm test` 包含 Backend、Admin 交互与公共站构建测试，构建产物分别为 `dist/apps/server` 与 `dist/admin`。
 - Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未配置管理 Token 时 `/api` 关闭。接口见 `docs/TASK_ENGINE.md`。
-- 固定新闻任务 `news-github` 与受保护查询接口见 `docs/NEWS_PIPELINE.md`；Schema/来源关联校验不等于事实审核，不自动发布。人工批准与 GitHub 归档见 `docs/PUBLISHING.md`，发布配置默认关闭，凭据不能传给 Codex。
+- 新闻任务 `news-research` 接受 topic/input，支持同 Thread 多轮 prompt 和显式 finalize。旧 `news-github` 停用，仅保留历史查询。接口见 `docs/NEWS_PIPELINE.md`；来源引文校验不等于事实审核，不自动发布。人工批准与 GitHub 归档见 `docs/PUBLISHING.md`，凭据不能传给 Codex。
+- 新闻 Thread 仅允许 hosted web search，逐个禁用继承的 MCP，禁用 Shell/委派，审批仍全部拒绝。最终来源验证只接受公网 HTTPS、DNS 固定连接，无代理/凭据/重定向；不将搜索入口改回 RSS。
 - 启动自动迁移，也可 `npm run db:migrate`。配置见 `.env.example`，数据模型见 `docs/DATA_MODEL.md`。
 - 每个 Turn 使用独立 stdio App Server 子进程，新 Run 新建 Thread，继续 Turn 恢复原 Thread；不将 Backend 管理/发布凭据继承给 Agent。
 - 每个数据目录只允许一个 Backend；重启将未完成 Run / Turn 标为 interrupted，不自动重跑。Agent 工具审批一律拒绝并失败退出，交互式工具审批暂未实现；日报人工批准是独立业务操作。

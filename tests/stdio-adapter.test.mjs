@@ -71,3 +71,10 @@ for (const mode of ['phase-final','phase-early','phase-legacy','phase-future']) 
 test('progress alone cannot become a successful final response',async()=>{
  await assert.rejects(execute('phase-progress-only'),{code:'invalid_output'});
 });
+test('research enables hosted live search on both start and resume and accepts webSearch events', async () => {
+ const first=await execute('research-config',{webSearch:true,forbidTools:true});
+ await execute('research-config',{webSearch:true,forbidTools:true,threadId:first.threadId});
+});
+test('research still refuses arbitrary tools', async () => {
+ await assert.rejects(execute('tool',{webSearch:true,forbidTools:true}),{code:'unexpected_tool'});
+});

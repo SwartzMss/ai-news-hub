@@ -1,6 +1,6 @@
 # Linux 部署与运行约束（v0.1）
 
-> **Backend 基础与手动任务执行引擎已实现。** 新闻采集、日报和发布仍未实现。本文区分现有代码、待验收的部署步骤和后续目标，不是已实测的一键安装教程。
+> **Backend、Codex 主题/多轮研究、待审核日报和人工批准归档已实现。** 持久调度、原生服务账户/systemd 与 Cloudflare 实际上线仍待验收。本文区分现有代码与待验收步骤。
 
 Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 Issue #3 的基础 Backend 按第 9 节安装；Schema 见 [数据模型](DATA_MODEL.md)。健康检查不验证 Codex 认证。
@@ -11,7 +11,7 @@ Issue #4 的管理 Token、Codex 运行环境与样例执行见第 10 节及 [�
 - **唯一 v0.1 服务端目标**：Linux，首选 Ubuntu Server 24.04 LTS（x86_64）；不做 Windows / WSL 的部署和测试。
 - Node.js LTS + TypeScript Backend、SQLite、Codex CLI / App Server。
 - Linux systemd 管理 Backend 进程；手动任务经 Backend 启动并监管 `codex app-server --listen stdio://` 子进程，每个 Turn 一个子进程，不对外监听 Agent 端口。
-- GitHub 按日期保存审核通过的日报 JSON / Markdown；Cloudflare Pages 自动构建公开网站及 RSS。
+- GitHub 按日期保存审核通过的日报 JSON（Markdown 留私有 SQLite）；Cloudflare Pages 自动构建公开网站及 RSS。
 - 管理台通过 Linux Backend 提供的 API 访问；默认仅绑定 `127.0.0.1`，远程使用时优先 SSH 端口转发，暂不对公网开放管理 API。
 
 ## 1. 基础环境检查
@@ -99,7 +99,7 @@ systemd
 
 ```text
 Linux Backend + SQLite + 管理 API（仅 localhost）
-   → 真实新闻采集 / Codex 分析 / 校验 / 审核
+   → 主题/多轮 prompt / Codex 搜索与分析 / 原文校验 / 审核
    → reports/YYYY/MM/DD.json 或 .md
    → GitHub Commit
    → Cloudflare Pages 构建公开 HTML + RSS
@@ -115,7 +115,7 @@ Linux Backend + SQLite + 管理 API（仅 localhost）
 - 在 Linux 非 root 账户下完成真实 Agent 请求及结构化结果生成。
 - 经 systemd 管理，重启后任务状态及历史仍在；出错可查日志。
 - 管理后台能显示任务列表、手动运行、Run 状态、日志和结果预览。
-- 采集真实来源 → Codex → SQLite → GitHub → 网站 / RSS 的链路可被验证。
+- 主题/多轮 prompt → Codex 搜索 → 来源校验 → SQLite → GitHub → 网站 / RSS 的链路可被验证。
 - 没有实时连接或认证无效时，不会发布假数据或伪成功的报告。
 
 ## 8. Issue #2 独立探针验证步骤
@@ -313,7 +313,7 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 服务启动仅创建预定义任务和来源记录，不会自动调用 Codex。按 [API 说明](TASK_ENGINE.md#手动触发样例) 用 Bearer Token 触发 `sample-connectivity`，保存返回的 Run ID，通过详情与事件接口确认最终状态、Thread / Turn 标识和固定回复。真实请求会使用账户额度。
 继续该 Run 时使用新的 Turn 幂等键；新 Run 使用新的启动幂等键，应有不同 Thread。不要把幂等重试返回旧 Run 误认为又执行了一次。
 
-启动会顺序应用迁移 2、3，不修改历史迁移或删除旧库。每个数据目录只允许一个 Backend，Linux `/proc` 的 PID、进程启动时间与 boot ID 用于识别活跃/失效所有者；不要让多个主机共用该 SQLite。
+启动会顺序应用所有新增迁移（当前至 5），不修改历史迁移或删除旧库。每个数据目录只允许一个 Backend，Linux `/proc` 的 PID、进程启动时间与 boot ID 用于识别活跃/失效所有者；不要让多个主机共用该 SQLite。
 工作目录为 `/var/lib/ai-news-hub/work`，由服务用户持有且 0700。原始 RPC/stderr/工具参数不入 journal 或事件表；受限 Agent 正文属于私有运行记录，不可直接导出为公开内容。
 
 ### 生命周期验收
@@ -325,17 +325,17 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 - 无法确认子进程已清理时，Run 记录 cleanup_failed；引擎冻结调度并触发 Backend 非零关闭，由 systemd 控制组兜底。不得在旧子进程仍运行时手动删除所有权记录或并行重启执行同一 Thread。
 - 服务重新启动后仍可查询历史；仅成功 Turn 不是新闻校验或发布许可。长期登录有效性、真实额度/过期故障和原生 Ubuntu Server 24.04 生命周期仍须记录实测结果，见 [验证记录](validation/TASK_ENGINE.md)。
 
-## 11. Issue #5 RSS 与待审核日报
+## 11. Codex 主题研究与多轮日报
 
-升级前停服务并备份 SQLite，执行 `npm ci --ignore-scripts`、`npm run build`，再以原服务账户启动；迁移 3 自动追加。无需更改现有数据目录或添加来源配置。服务启动、`/health` 与任务查询不会发起 RSS 或模型请求。
+升级前停服务并备份 SQLite，执行 `npm ci --ignore-scripts`、`npm run build`，再以原服务账户启动。迁移 5 追加新闻研究快照和 Turn mode，停用旧 news-github；历史迁移和报告不删除。启动、health 和查询不调用模型。
 
-以第 10 节的管理 Token 调用 `POST /api/tasks/news-github/runs`，请求体仍为唯一 `idempotencyKey`。该动作会访问固定 `https://github.blog/feed/` 并消耗 Codex 额度。来源上游请求至少间隔 5 分钟，15 秒超时、2 MiB 限额；仅跟随同源 HTTPS 重定向。失败会保存安全错误码，不以旧缓存伪装成功。成功缓存或 304 可复用已有文章。HTTP 客户端按需创建，使用 Undici `EnvHttpProxyAgent` 读取服务环境中的 HTTP_PROXY / HTTPS_PROXY / NO_PROXY（及小写形式），代理值仅放私有环境文件。
+在 `/admin/` 选择 news-research，填写主题和初始 prompt；Run 页面可多轮继续研究，最后显式生成待审核日报。API 初始请求带 topic/input，后续 input/finalize，见 [完整协议](NEWS_PIPELINE.md)。每轮消耗账户额度，一个 Run 最多 20 轮，生成成功后不能继续修改；失败可在同 Thread 修正重试。
 
-每次最多分析来源列表前 10 条可用候选，提示选择 1–5 条；Schema 上限 10 条。模型不能提供 URL/时间或使用工具，Backend 独立校验并补充来源。不要把只读沙箱当成凭据隔离：Codex 的 HOME / CODEX_HOME 仍属服务身份，继续遵守第 8、10 节的账户与环境限制。
+服务账户的 Codex、模型/provider 和受管策略须允许 hosted live web search。Backend 显式开启实时搜索，逐个禁用继承的 MCP、禁用 Shell/应用/委派，仍拒绝所有审批。不要把只读沙箱视为凭据隔离，继续遵守服务账户和环境允许列表要求。
 
-通过受保护的 `/api/news/sources` 查看上次请求结果，`/api/news/articles` 查看当前文章，`/api/news/runs/:runId` 查看生成时候选与报告 ID，`/api/news/reports/:reportId` 获取 JSON 与 Markdown。新闻生成的 `validated` 报告仍待人工审核，本步骤不会自动提交 GitHub；人工批准与归档见第 13 节。新幂等键显式生成新 Run/版本；此任务不支持继续 Turn。
+最终生成时 Backend 只核对 Codex 提供的公开 HTTPS 原文，不采集外部 RSS。原文校验必须能直接出站访问来源，不使用 HTTP_PROXY/HTTPS_PROXY、不继承 Cookie/认证、不跟随重定向；核对并固定 DNS 公网地址。每来源 15 秒/2 MiB、UTF-8 HTML，不执行 JavaScript。GitHub 发布客户端仍可使用私有环境中的代理配置；两者职责不同。
 
-API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端到端记录见 [验证记录](validation/NEWS_PIPELINE.md)。原生 Ubuntu Server 24.04 服务账户/systemd/长期认证验收仍由 Issue #2 跟踪；开发会话的成功日报不替代目标主机验收。
+来源不可访问、引文不匹配、认证过期或搜索不支持时，检查 Run 错误并修正来源/prompt，不添加假内容。可按研究量调整单 Turn 总超时 AI_NEWS_HUB_RUN_TIMEOUT_MS（默认 120 秒），它同时包含模型执行和来源验证。生成的 validated 仍待人工审核，不自动归档。历史 RSS 验证不能替代当前研究验证，见 [当前记录](validation/CODEX_RESEARCH.md)。原生服务账户/systemd/长期认证仍由 #2 验收。
 
 ## 12. Issue #6 本地管理后台
 

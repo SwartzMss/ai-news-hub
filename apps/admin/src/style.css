@@ -20,7 +20,8 @@ a:hover {
   color: #034235;
 }
 button,
-input {
+input,
+textarea {
   font: inherit;
 }
 button {
@@ -44,6 +45,7 @@ button.quiet {
 button:focus-visible,
 a:focus-visible,
 input:focus-visible,
+textarea:focus-visible,
 summary:focus-visible {
   outline: 3px solid #3ca688;
   outline-offset: 4px;
@@ -401,3 +403,7 @@ blockquote {
 }
 
 .commit-link { overflow-wrap: anywhere; }
+.research form { display: flex; flex-direction: column; gap: 12px; }
+.research input, .research textarea { width: 100%; border: 1px solid #bac9be; border-radius: 8px; padding: 12px; background: white; }
+.research textarea { resize: vertical; }
+.research-actions { display: flex; flex-wrap: wrap; gap: 12px; }
