@@ -13,6 +13,7 @@ import { acquireBackendLock } from './tasks/lock.js';
 import { registerTaskRoutes } from './tasks/routes.js';
 import { NewsWorkflow } from './news/workflow.js';
 import { feedHttpClient, type FeedFetch } from './news/http.js';
+import { registerAdmin } from './admin.js';
 import { NEWS_TASK_ID } from './news/source.js';
 
 export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: FeedFetch; now?: () => Date } = {}) {
@@ -54,6 +55,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     requestTimeout: 10000,
     forceCloseConnections: true,
   });
+  registerAdmin(app);
   app.addHook('preClose', async () => { await engine.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
   app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken, db); }, { prefix: '/api' });

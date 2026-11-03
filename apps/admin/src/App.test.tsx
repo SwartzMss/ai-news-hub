@@ -1,0 +1,215 @@
+import { afterEach, expect, test, vi } from "vitest";
+import {
+  cleanup,
+  fireEvent,
+  render,
+  screen,
+  waitFor,
+} from "@testing-library/react";
+import { App } from "./App";
+const task = {
+  id: "sample-connectivity",
+  name: "连接检查",
+  channel: "test",
+  status: "active",
+  prompt: "Read-only sample",
+  schedule: null,
+  timezone: "UTC",
+};
+const run = {
+  id: "run-1",
+  task_id: task.id,
+  status: "succeeded",
+  created_at: "2026-11-03T00:00:00Z",
+  error_code: null,
+  thread_id: "thread-1",
+  turn_id: "turn-1",
+};
+afterEach(() => {
+  cleanup();
+  vi.unstubAllGlobals();
+  location.hash = "";
+});
+function mockFetch(fail?: number) {
+  const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
+    if (fail)
+      return new Response(
+        JSON.stringify({
+          error: {
+            code: fail === 401 ? "unauthorized" : "management_disabled",
+          },
+        }),
+        { status: fail },
+      );
+    if (url === "/api/tasks") return Response.json({ tasks: [task] });
+    if (url.includes("/events"))
+      return Response.json({
+        events: [
+          {
+            id: 1,
+            kind: "finished",
+            created_at: run.created_at,
+            data: { status: "succeeded" },
+          },
+        ],
+      });
+    if (url.startsWith("/api/news/runs"))
+      return new Response("{}", { status: 404 });
+    if (url === "/api/runs/run-1")
+      return Response.json({
+        run,
+        turns: [
+          {
+            id: "turn-1",
+            sequence: 1,
+            status: "succeeded",
+            output_text: "<script>unsafe</script>",
+          },
+        ],
+      });
+    if (init?.method === "POST") return Response.json({ run });
+    if (url.includes("/runs")) return Response.json({ runs: [run] });
+    return Response.json({ task });
+  });
+  vi.stubGlobal("fetch", fetcher);
+  return fetcher;
+}
+async function login() {
+  fireEvent.change(screen.getByLabelText("管理 Token"), {
+    target: { value: "test_only_0123456789_abcdefghijklmnop" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
+  await screen.findByRole("heading", { name: "任务总览" });
+}
+test("authenticated Task → Run navigation renders real metadata, safe output and missing-report state", async () => {
+  const fetcher = mockFetch();
+  render(<App />);
+  await login();
+  fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
+  await screen.findByRole("heading", { name: "连接检查" });
+  fireEvent.click(await screen.findByRole("link", { name: "run-1" }));
+  await screen.findByText("thread-1");
+  await screen.findByText("此 Run 尚无日报");
+  expect(screen.getByText("<script>unsafe</script>")).toBeTruthy();
+  expect(document.querySelector("script")).toBeNull();
+  expect(
+    fetcher.mock.calls.every(([, init]) =>
+      new Headers(init?.headers).has("authorization"),
+    ),
+  ).toBe(true);
+  fireEvent.click(screen.getByRole("button", { name: "退出" }));
+  expect(screen.queryByText("thread-1")).toBeNull();
+});
+test("wrong Token and disabled management are explicit and do not show private data", async () => {
+  mockFetch(401);
+  render(<App />);
+  fireEvent.change(screen.getByLabelText("管理 Token"), {
+    target: { value: "wrong-token" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
+  await screen.findByText(/管理认证失效/);
+  expect(screen.queryByRole("heading", { name: "任务总览" })).toBeNull();
+});
+test("unavailable service displays a retryable connection error", async () => {
+  vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network")));
+  render(<App />);
+  fireEvent.change(screen.getByLabelText("管理 Token"), {
+    target: { value: "token" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
+  await screen.findByText(/无法连接后台/);
+});
+test("manual trigger uses idempotency key and enters the Run belonging to the selected Task", async () => {
+  const fetcher = mockFetch();
+  render(<App />);
+  await login();
+  fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
+  const button = await screen.findByRole("button", { name: "手动执行" });
+  fireEvent.click(button);
+  fireEvent.click(button);
+  await screen.findByText("thread-1");
+  await waitFor(() =>
+    expect(
+      fetcher.mock.calls.filter(([, init]) => init?.method === "POST"),
+    ).toHaveLength(1),
+  );
+  expect(
+    JSON.parse(
+      String(
+        fetcher.mock.calls.find(([, init]) => init?.method === "POST")![1]!
+          .body,
+      ),
+    ).idempotencyKey,
+  ).toMatch(/^admin-/);
+});
+
+test("management disabled message is distinct from wrong Token", async () => {
+  mockFetch(503);
+  render(<App />);
+  fireEvent.change(screen.getByLabelText("管理 Token"), {
+    target: { value: "token" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
+  await screen.findByText(/管理 API 尚未启用/);
+});
+test("session expiration removes private results during polling", async () => {
+  const fetcher = mockFetch();
+  render(<App />);
+  await login();
+  await screen.findByRole("link", { name: "连接检查" });
+  fetcher.mockImplementation(
+    async () =>
+      new Response(JSON.stringify({ error: { code: "unauthorized" } }), {
+        status: 401,
+      }),
+  );
+  await screen.findByLabelText("管理 Token", {}, { timeout: 4000 });
+  expect(screen.queryByRole("link", { name: "连接检查" })).toBeNull();
+  expect(screen.getByRole("alert").textContent).toMatch(/管理认证失效/);
+});
+test("late manual execution response cannot navigate after leaving the Task", async () => {
+  const fetcher = mockFetch();
+  render(<App />);
+  await login();
+  fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
+  let complete!: (response: Response) => void;
+  const previous = fetcher.getMockImplementation()!;
+  fetcher.mockImplementation((url, init) =>
+    init?.method === "POST"
+      ? new Promise<Response>((resolve) => {
+          complete = resolve;
+        })
+      : previous(url, init),
+  );
+  fireEvent.click(await screen.findByRole("button", { name: "手动执行" }));
+  fireEvent.click(screen.getByRole("button", { name: "退出" }));
+  location.hash = "";
+  complete(Response.json({ run }));
+  await new Promise((resolve) => setTimeout(resolve, 20));
+  expect(location.hash).toBe("");
+});
+test("aborted old error response cannot expire a replacement session while reading its body", async () => {
+  const { client } = await import("./api");
+  let failBody!: (error: Error) => void;
+  vi.stubGlobal(
+    "fetch",
+    vi.fn().mockResolvedValue({
+      ok: false,
+      status: 401,
+      json: () =>
+        new Promise((_resolve, reject) => {
+          failBody = reject;
+        }),
+    }),
+  );
+  const expired = vi.fn();
+  const controller = new AbortController();
+  const request = client("old", expired)("/tasks", controller.signal).catch(
+    () => {},
+  );
+  await waitFor(() => expect(failBody).toBeTypeOf("function"));
+  controller.abort();
+  failBody(new Error("aborted"));
+  await request;
+  expect(expired).not.toHaveBeenCalled();
+});

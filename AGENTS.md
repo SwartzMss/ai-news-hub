@@ -1,12 +1,12 @@
 # AGENTS.md
 
-本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，已支持手动真实 RSS → Codex → SQLite 待审核日报，尚无公开发布或前端。
+本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，已支持手动真实 RSS → Codex → SQLite 待审核日报，已提供独立 React/Vite 管理后台，尚无公开发布或公共阅读前端。
 
 ## 当前工程结构与检查
 
 - 根目录统一管理 Node.js 22 / TypeScript 依赖；`apps/server/src` 为 Backend，`packages/shared/src` 为共享类型。
-- `apps/web` / `apps/admin` 仅预留位置，不代表 React/Vite 或后台界面已实现。
-- 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程。
+- `apps/web` 仍为预留位置；`apps/admin` 为独立 React/Vite 后台，经 Backend `/admin/` 提供，仅页面内存保存 Token。见 `docs/ADMIN.md`。
+- 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程；`npm test` 包含 Backend 与 Admin 交互测试，构建产物分别为 `dist/apps/server` 与 `dist/admin`。
 - Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未配置管理 Token 时 `/api` 关闭。接口见 `docs/TASK_ENGINE.md`。
 - 固定新闻任务 `news-github` 与受保护查询接口见 `docs/NEWS_PIPELINE.md`；Schema/来源关联校验不等于事实审核，不自动发布。
 - 启动自动迁移，也可 `npm run db:migrate`。配置见 `.env.example`，数据模型见 `docs/DATA_MODEL.md`。

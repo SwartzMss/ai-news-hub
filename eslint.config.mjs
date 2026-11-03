@@ -4,7 +4,7 @@ import tseslint from 'typescript-eslint';
 export default tseslint.config(
   { ignores: ['dist/**', 'node_modules/**', 'prototype/**'] },
   {
-    files: ['apps/server/**/*.ts', 'packages/**/*.ts', 'scripts/**/*.ts', 'tools/**/*.ts'],
+    files: ['apps/server/**/*.ts', 'apps/admin/**/*.ts', 'apps/admin/**/*.tsx', 'packages/**/*.ts', 'scripts/**/*.ts', 'tools/**/*.ts'],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],
   },
   // Existing protocol JSON is untyped; cleanup failure deliberately overrides a Turn result.

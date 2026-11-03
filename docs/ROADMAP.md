@@ -4,11 +4,13 @@
 
 Issue #2：独立接入探针与故障测试已实现；原生 Ubuntu Server 24.04、独立服务账户、真实 systemd Turn 与长期认证仍待验收。见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
-Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、进程测试和 systemd unit 已实现；目标主机安装与 systemd 实际验收仍需完成。前端仅预留目录。
+Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、进程测试和 systemd unit 已实现；目标主机安装与 systemd 实际验收仍需完成。该阶段前端仅预留目录，Admin 已由 #6 实现。
 
 Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件、取消和继续 Turn 已实现；开发会话完成真实样例调用，目标服务账户的 systemd 与长期认证仍待 #2 验收。见 [引擎与 API](TASK_ENGINE.md)。
 
 Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出及 SQLite 待审核日报已实现，完成真实来源与模型端到端验证。尚不发布。见 [新闻流水线](NEWS_PIPELINE.md) 与 [验证记录](validation/NEWS_PIPELINE.md)。
+
+Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。使用顺序轮询，未实现 SSE、任务编辑或审核发布。见 [后台说明](ADMIN.md)。
 
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
@@ -41,8 +43,8 @@ Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出�
 ### D. Web / RSS 和最小管理端
 - [ ] 公共网站：当天日报、频道、文章详情、历史归档
 - [ ] RSS 2.0：全站和频道 Feed、稳定 GUID、有效 XML
-- [ ] **Linux 本地管理后台**：任务列表/详情、手动执行、当前状态、执行日志与日报预览
-- [ ] Agent 会话展示内嵌于具体 Run 详情，**不实现独立 Agent 工作台**
+- [x] **Linux 本地管理后台**：任务列表/详情、手动执行、当前状态、执行日志与日报预览
+- [x] Agent 会话展示内嵌于具体 Run 详情，**不实现独立 Agent 工作台**
 - [ ] GitHub 更新触发 Cloudflare Pages 构建和发布（部署作为可配置环节）
 - [x] 管理员 API 只在回环地址监听，配置 Bearer Token 才启用
 
