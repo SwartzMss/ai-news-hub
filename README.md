@@ -1,223 +1,119 @@
 # AI News Hub
 
-> 基于 Codex App Server 的 AI 信息聚合、定时分析与多渠道订阅平台。
+> 从真实 RSS 到可追溯日报：Codex 分析，人工审核，GitHub 归档，静态 Web / RSS 阅读。
 
-**项目状态：可手动采集真实 RSS，经 Codex 生成待审核日报；已提供本地管理后台，人工批准后可按版本归档 GitHub，公共阅读站与 RSS 已可独立静态构建，Cloudflare Git 集成上线尚待验收。**
+**当前状态：手动端到端链路已实现并有真实调用记录；定时调度尚未实现，原生 Linux 服务账户/systemd 与 Cloudflare 自动部署仍待验收。**
 
-已实现 Fastify、SQLite、Task → Run → Thread → Turn 执行、受保护的管理 API、历史事件与取消/继续 Turn；已接通固定 GitHub Blog RSS、最小去重、严格结构化日报及私有查询；已提供任务/Run/日报预览管理界面，已支持人工批准与幂等 GitHub 归档，公共阅读站/RSS 已提供独立静态构建，尚无调度，Cloudflare 部署仍待账户接入验收。Issue #2 的独立探针保留，目标服务器认证验收见 [探针记录](docs/validation/CODEX_LINUX_PROBE.md)，引擎实测见 [任务引擎记录](docs/validation/TASK_ENGINE.md)。
+运行目标为 **Linux，首选 Ubuntu Server 24.04 LTS**。本地管理后台可以先独立使用，公开站点部署不是运行 Backend 的前置条件。
 
-**v0.1 平台决策：仅支持 Linux（首选 Ubuntu Server 24.04 LTS）；不开发或测试 Windows / WSL 部署。**
+## 架构一览
 
-AI News Hub 旨在将新闻采集、AI 研究与分析、任务调度、内容发布组合成一套可自托管的系统。支持通过网页浏览日报，也支持使用标准 RSS 订阅。核心设计是 **Linux 主机运行 Codex Agent 和管理后台，GitHub 归档日报，Cloudflare Pages 公开发布静态阅读内容**。
+![架构动画：公共 RSS 进入 Linux Backend，Codex 经 stdio 分析，结果存入 SQLite，经人工批准后归档 GitHub，并构建独立 Web 和 RSS。原生 systemd 与 Cloudflare 部署验收待完成。](docs/assets/architecture.gif)
 
-## 目标
+[查看静态架构图](docs/assets/architecture.svg) · [详细架构](docs/ARCHITECTURE.md)
 
-- **自动化信息处理**：按计划采集信息，去重、核实来源，并交由 Codex 分析。
-- **网页 + RSS**：生成可检索、按频道归档的网页内容和独立 RSS Feed。
-- **可观察的 Agent 任务**：管理任务、查看执行状态、日志、失败原因，必要时手动重试。
-- **低运维成本**：v0.1 以 Linux + systemd 部署为唯一目标，公开内容交由静态托管平台。
-- **可扩展的专题频道**：新闻只是第一个场景，后续可增加任意研究主题。
+**Task → Run → Thread → Turn**：会话、日志和结果都属于具体任务。Backend 管理采集、校验、状态和发布，Codex 负责分析；人工批准才允许归档。公开站只消费已批准的 JSON，SQLite、管理 Token 和运行日志留在私有服务侧。
 
-## 计划支持的频道
+## 已实现的能力
 
-| 频道 | 内容方向 |
+| 模块 | 当前范围 |
 | --- | --- |
-| 综合新闻 | 当日重要事件与事实摘要 |
-| AI / 科技 | 大模型、开发者生态、科技公司和产业趋势 |
-| 投资市场 | 市场动态、公司事件与影响逻辑（不构成投资建议） |
-| 开源项目 | GitHub 新项目、热门仓库与重要版本更新 |
-| 热点话题 | 社交媒体讨论、观点分歧与典型评论（需标注来源与可验证性） |
+| Linux Backend | Node.js 22 / TypeScript、Fastify、私有 SQLite、追加式校验迁移、单实例锁、健康检查 |
+| 任务引擎 | 手动触发、队列/并发限制、幂等、状态/历史/日志、取消、超时、重启中断；样例任务支持继续 Turn |
+| Codex Adapter | stdio JSON-RPC、独立 Thread/Turn、只读沙箱、拒绝工具审批、子进程清理；过程消息与最终结果分离 |
+| 新闻流水线 | 固定 GitHub Blog RSS、URL/时间规范化、最小去重、严格结构化分析、来源关联及待审核日报 |
+| 管理后台 | 独立 React/Vite `/admin/`，查看任务与 Run、手动执行、日志、日报/来源预览及人工批准 |
+| GitHub 归档 | 显式配置目标与凭据，按日期/频道/版本追加 JSON，保存 SHA，幂等及失败显式重试 |
+| 公共阅读站 | 独立 React/Vite 静态首页、开源频道、详情、日期/版本归档、全站/频道 RSS；无 JS 也可阅读 |
 
-## 计划功能
+当前只接入 `opensource` 频道与 GitHub Blog 来源。任务编辑、持久化定时调度、SSE、Agent 工具交互审批及更多频道仍在 [路线图](docs/ROADMAP.md) 中。
 
-### 公共阅读端
+`validated` 仅代表结构和来源关联校验，`approved` 代表人工允许发布；两者都不等于独立事实核验。事实摘要、分析推断、来源发布时间、事件时间与抓取时间分开保存和展示，未知时间保留空值。
 
-- 按频道、日期查看每日简报与新闻条目
-- 展示事件时间、原始来源、引用链接与 AI 整理结论
-- 提供频道级 RSS Feed 与全站 RSS Feed
-- 历史内容归档；静态发布后的内容在本地 Agent 离线时仍可访问
+## 本地运行管理后台
 
-### 管理端（Linux 服务端，仅授权访问）
-
-- 创建、编辑、暂停、手动执行定时任务
-- 通过 Codex App Server 创建 / 恢复 Thread、启动 Turn、订阅执行事件
-- 展示运行日志、完成状态、失败原因和重试入口
-- 在任务详情中选择 Run / Thread，查看事件、继续多轮 Turn、审核结果
-- 审核生成内容后发布；支持自动发布策略（需显式配置）
-- 不设独立的「Agent 工作台」一级模块；Agent 交互归属具体任务与执行记录
-
-## 预期架构
-
-```text
-新闻来源（RSS / 官方网站 / 授权 API）
-                  |
-                  v
-          采集、规范化与去重
-                  |
-                  v
-      Backend / Scheduler / Database
-                  |
-           JSON-RPC over stdio
-                  |
-                  v
-           Codex App Server
-           研究、分析、总结
-                  |
-                  v
-        内容校验 / 审核 / 存储
-                  |
-            静态内容构建
-             /          \
-            v            v
-        Web 页面       RSS / JSON
-            \            /
-             静态托管平台
-```
-
-**职责边界**：后端负责采集、调度、状态、存储和发布；Codex 负责需要推理和工具调用的分析任务。不要把数据真实性、定时可靠性或发布权限全部交给 Agent。
-
-## 技术选型与实现范围
-
-| 模块 | 计划方案 |
-| --- | --- |
-| 运行环境 | Linux（首选 Ubuntu Server 24.04 LTS），Node.js + TypeScript；v0.1 不支持 Windows |
-| Agent 接入 | Codex App Server，优先 stdio |
-| 后端 API | Fastify |
-| 服务管理 | systemd：管理 Backend，由 Backend 启动 Codex App Server 子进程 |
-| 定时调度 | 应用内调度 + SQLite 持久化任务状态；systemd 负责服务恢复 |
-| 存储 | SQLite |
-| 前端 | React + Vite |
-| 实时任务事件 | SSE |
-| 内容格式 | Markdown / JSON / RSS 2.0 |
-| 内容归档 | GitHub（每日按日期提交 JSON / Markdown，保留历史数据） |
-| 网站发布 | GitHub 触发 Cloudflare Pages 静态构建；公开 Web / RSS |
-
-Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；真实 RSS 采集与待审核日报已实现；表中定时调度、公共 React/Vite 静态阅读页与 RSS 已实现；Cloudflare 真实部署验收仍待完成。
-
-## 开发与基础服务
-
-使用非 root Linux 账户、Node.js 22.19.0 或更新的 22.x。依赖由根目录统一管理：
-
-```text
-apps/server/src/       Fastify、任务引擎、Codex Adapter、SQLite 与进程入口
-apps/web/              独立 React / Vite 静态公共站与 RSS 生成器
-apps/admin/            独立 React / Vite 管理后台
-packages/shared/src/   健康检查、错误与状态类型
-tools/codex-probe/     独立 Codex 接入验证工具
-scripts/               健康检查与 systemd 操作辅助脚本
-```
+准备非 root Linux 账户、Node.js **22.19.0 或更新的 22.x**，以及服务账户已认证的 Codex CLI：
 
 ```bash
 npm ci --ignore-scripts
-npm run lint
-npm run typecheck
-npm test
 cp .env.example .env
 ```
 
-编辑 `.env`，把 `AI_NEWS_HUB_DATA_DIR` 设置为仓库外、当前用户拥有的绝对路径，目录权限为 0700；目录不存在时服务会创建它。默认 `/var/lib/ai-news-hub` 供正式服务账户使用，普通开发账户通常无权创建。
+编辑私有 `.env`：
+
+- `AI_NEWS_HUB_DATA_DIR`：仓库外、当前用户拥有的绝对路径，目录权限 0700；不存在时自动创建。默认 `/var/lib/ai-news-hub` 用于正式服务账户。
+- `AI_NEWS_HUB_ADMIN_TOKEN`：本机生成的 32–256 位字母/数字/下划线/连字符，可用 `openssl rand -hex 32`；不要提交真实值。
+- `AI_NEWS_HUB_CODEX_BIN`：当前账户可执行的 Codex CLI 路径。
 
 ```bash
 npm run build
-npm run db:migrate
 npm start
 ```
 
-启动也会自动执行迁移。另一个终端运行 `npm run health`，默认访问 `http://127.0.0.1:3000/health`，健康时返回 `{"status":"ok","database":"ok"}`；允许的监听地址为 `127.0.0.1` 或 `::1`。健康检查不检测 Codex 登录或额度。
-前台服务用 Ctrl+C 停止；安装正式 unit 后可用 `npm run service:start` / `npm run service:stop`（需要主机服务管理权限）。
-`npm test` 包含回环 HTTP、停止/重启、迁移及探针模拟测试，不访问外部新闻源或模型。
+打开 **http://127.0.0.1:3000/admin/**，输入管理 Token。Token 仅保存在页面内存，刷新需重输；服务端历史保存在 SQLite。管理 API 只允许回环地址，未配置 Token 时关闭。
 
-SQLite 使用 Node 内置的 `node:sqlite`，在 Node 22 中仍为实验性 API，会输出提示；数据库文件为 `AI_NEWS_HUB_DATA_DIR/news.db`，要求 0600。
-迁移按版本与 SHA-256 校验历史，失败整体回滚，重复运行保留数据；字段和约束见 [数据模型](docs/DATA_MODEL.md)。
+手动运行 `sample-connectivity` 验证接入，或运行 `news-github` 采集并生成待审核日报；真实调用会使用账户额度。新闻任务需新建 Run 重新分析，不支持继续 Turn。审核后可单独批准、归档；发布默认关闭，配置见 [GitHub 归档](docs/PUBLISHING.md)。
 
-开发工具链暂用 `overrides` 将 minimatch 锁定到 11.0.1，修复 [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)；已验证与当前 Node、ESLint 和 TypeScript 插件兼容，上游依赖更新后可复核移除覆盖。
+`npm run health` 检查本地服务/数据库，不验证 Codex 登录或额度。启动自动迁移，也可显式运行 `npm run db:migrate`；失败不清空旧库。SQLite 使用 Node 22 内置实验性 `node:sqlite`，保留其提示。
 
-## 手动任务执行
-
-管理 API 位于 `/api`，默认关闭。先在私有 `.env` 或 systemd 环境文件中配置 `AI_NEWS_HUB_ADMIN_TOKEN`（32–256 位字母、数字、下划线或连字符；可用 `openssl rand -hex 32` 在本机生成），重启 Backend 后通过 `Authorization: Bearer ...` 访问。
-Backend 会保存预定义样例 `sample-connectivity`，仅手动触发时调用真实 Codex 并使用额度。服务账户须已完成 Codex 登录，`AI_NEWS_HUB_CODEX_BIN` 指向可执行 CLI；工作目录为私有数据目录下的 `work/`。
-
-支持启动 Run、查询状态/历史/事件、取消，以及在同一 Run 中继续 Turn。每个新 Run 默认创建 Thread，继续时恢复原 Thread；失败不自动重试，幂等键相同返回原记录。进程重启把未完成记录标为 interrupted，保留历史。
-新闻任务 `news-github` 使用相同启动接口；采集 RSS 并调用真实 Codex，结果仅存为待审核 JSON / Markdown，来源链接和时间由 Backend 补充。配置、查询和限制见 [新闻流水线](docs/NEWS_PIPELINE.md)，实测见 [新闻验证记录](docs/validation/NEWS_PIPELINE.md)。
-详见 [任务引擎与 API](docs/TASK_ENGINE.md)。本地管理后台入口为 `http://127.0.0.1:3000/admin/`，输入管理 Token 后查看任务、手动执行、Run 日志和待审核日报；刷新需重新输入 Token，历史记录保留。见 [后台使用说明](docs/ADMIN.md)。目前没有任务编辑、交互审批、定时调度或独立 Agent 工作台。
-新闻报告可先人工批准，再显式归档到配置的 GitHub 仓库/分支；按日期、频道、版本保存不可覆盖的 JSON，支持失败重试和提交 SHA 查询。默认关闭发布，凭据只在 Backend 运行时配置。见 [GitHub 归档](docs/PUBLISHING.md)。
-
-## 公共新闻站与 RSS
-
-正式静态构建：`SITE_URL=https://your-project.pages.dev npm run build:web`，只读取当前 checkout 的 `reports/`，输出 `dist/web`。首次没有日报时展示空状态，不自动生成假新闻。显式演示构建用 `npm run build:web:demo`，两日期样本标记 DEMO，禁止混入生产。
-
-首页、开源频道、来源详情、日期/版本归档及 RSS 均为静态文件，不依赖 Backend 在线。Pages 必须只发布 `dist/web`；不能上传整个 dist、Admin 或数据库。Cloudflare 账户/GitHub App 授权与真实 HTTPS 自动部署仍需完成，见 [公共站与部署配置](docs/PUBLIC_WEB.md)。
-
-## Codex 接入验证工具
-
-在非 root Linux 账户下，准备 Node.js 22（本次开发版本 22.19.0）及已认证的 Codex CLI：
+## 构建公共站
 
 ```bash
-npm ci --ignore-scripts
-npm run check
+# 正式构建：读取当前 checkout 的 reports/，无数据时展示空状态
+SITE_URL=https://your-project.pages.dev npm run build:web
+
+# 显式演示：两个日期的测试样本，页面/RSS 标记 DEMO
+npm run build:web:demo
+```
+
+唯一公开输出是 **`dist/web`**。`dist/admin`、`dist/apps` 与构建用的 `dist/web-render` 都不能上传到公开站。生成后的 HTML、静态数据与 RSS 不依赖 Backend 在线。
+
+Cloudflare Pages 的 GitHub 授权、HTTPS 与自动构建尚待实际验收，不能把本地构建成功当作已经上线。构建命令、输出目录、`SITE_URL`、Private Repo 和跨分支归档约束见 [公共站与部署](docs/PUBLIC_WEB.md)。
+
+## 工程结构与检查
+
+```text
+apps/server/src/       Backend、任务引擎、Codex Adapter、SQLite、采集与归档
+apps/admin/            私有管理后台
+apps/web/              公共阅读组件与独立静态生成器
+packages/shared/src/   共享接口、状态与 Agent 环境白名单
+tools/codex-probe/     独立接入诊断工具
+scripts/               健康检查、服务操作与架构图生成
+prototype/             独立 HTML 设计原型，全部为模拟交互
+```
+
+```bash
+npm run lint
+npm run typecheck
 npm test
-npm run probe:codex
+npm run build
 ```
 
-`probe:codex` 会执行一次真实请求并使用账户额度；单独执行前需先 `npm run build`。
-探针经 stdio 完成初始化、认证状态读取、新建 Thread 和 Turn，只在收到匹配的成功终态及固定输出后返回零退出码。
-它不运行新闻任务或发布内容，不启动管理 API；每次调用产生新的 Run / Thread。
-可用 `CODEX_BIN`、`CODEX_MODEL`、`PROBE_CWD`、`PROBE_TIMEOUT_MS` 配置路径、模型与总超时，认证仍由 `HOME` / `CODEX_HOME` 下的 Codex 配置管理。
-systemd 使用步骤见 [Linux 部署文档](docs/DEPLOY_LINUX.md#8-issue-2-独立探针验证步骤)。
+`npm test` 包含 Backend、Admin 与公共站的模拟测试/静态构建，会启动回环 HTTP 和模拟子进程，不访问真实新闻源或模型。构建 Backend/Admin 与构建公共站是两个独立入口。
 
-## 开发路线
+开发工具链以 `overrides` 固定 minimatch 11.0.1，处理 [GHSA-g3hv-75wg-m249](https://github.com/advisories/GHSA-g3hv-75wg-m249)；后续更新依赖时应重新评估。架构图资源及可复现生成方式见 [资源说明](docs/assets/README.md)。
 
-- **v0.1：Linux 端到端 MVP** — systemd 托管、App Server、基础新闻采集、结构化输出、Web / RSS，以及最小任务管理页面（启动、状态、日志、结果预览）
-- **v0.2：任务增强** — 持久化调度完善、可编辑 Prompt、多轮 Turn、历史运行、重试和审核流程
-- **v0.3：内容质量** — 来源核验、跨来源去重、审核流程与频道配置
-- **后续** — 更多消息推送方式、搜索、远程安全管理和多运行节点
+## 文档与验收
 
-详见 [开发计划](docs/ROADMAP.md) 与 [架构设计](docs/ARCHITECTURE.md)。
+| 内容 | 文档 |
+| --- | --- |
+| 架构与数据边界 | [ARCHITECTURE](docs/ARCHITECTURE.md)、[DATA_MODEL](docs/DATA_MODEL.md) |
+| Linux 安装、systemd 与认证 | [DEPLOY_LINUX](docs/DEPLOY_LINUX.md) |
+| 任务 API / 管理后台 | [TASK_ENGINE](docs/TASK_ENGINE.md)、[ADMIN](docs/ADMIN.md) |
+| RSS 采集与报告 / GitHub 归档 | [NEWS_PIPELINE](docs/NEWS_PIPELINE.md)、[PUBLISHING](docs/PUBLISHING.md) |
+| 静态站、RSS 与 Pages 配置 | [PUBLIC_WEB](docs/PUBLIC_WEB.md) |
+| 计划和 UI | [ROADMAP](docs/ROADMAP.md)、[UI_DESIGN_SPEC](docs/UI_DESIGN_SPEC.md)、[原型](prototype/README.md) |
 
-## Linux 部署
+真实开发验证记录包括 [Codex 探针](docs/validation/CODEX_LINUX_PROBE.md)、[任务引擎](docs/validation/TASK_ENGINE.md)、[新闻流水线](docs/validation/NEWS_PIPELINE.md)、[管理后台](docs/validation/ADMIN.md)、[归档](docs/validation/PUBLISHING.md) 与 [公共站](docs/validation/PUBLIC_WEB.md)。它们的日期、环境和范围各自注明；原生服务器长期认证与 systemd 验收仍由 [#2](https://github.com/SwartzMss/ai-news-hub/issues/2) 跟踪，Cloudflare 上线由 [#8](https://github.com/SwartzMss/ai-news-hub/issues/8) 跟踪。
 
-v0.1 仅针对 **Linux** 开发与验收。基础 Backend 的部署步骤见 [Linux 部署文档第 9 节](docs/DEPLOY_LINUX.md#9-issue-3-backend-基础服务部署)；正式 systemd 示例位于 `deploy/systemd/ai-news-hub.service`。配置文件已提供，目标主机安装与生命周期验收仍需按文档执行。
+## 数据与安全
 
-在 Linux 上安装 Node.js LTS、Codex CLI 后，可检查：
-
-```bash
-codex --version
-codex app-server --help
-codex login status
-```
-
-Backend 拒绝 root 运行，由 `systemd` 守护。只有收到授权的任务启动/继续请求才以 stdio 启动 Codex；健康检查不代表认证有效。无图形界面的服务器需完成合适的 Codex 认证和凭据续期验证，不能假定无人值守会永久有效。
-
-详见 [Linux 部署设计](docs/DEPLOY_LINUX.md)。使用额度受登录方式及计划限制，不能视为无限免费调用。
-
-## 数据与安全原则
-
-- 每条新闻保留 **原文链接、来源、事件时间（若已知）、抓取时间**，区分事实、观点和未经证实的信息。
-- 不伪造高赞评论、点赞数、来源或新闻时间；无法验证时明确说明。
-- 新闻摘要以可追溯来源为基础；不把 AI 输出当作未经核对的事实。
-- 不在仓库提交凭据、OAuth Token、浏览器 Cookie、数据库运行文件和本地日志。
-- 不把 App Server 的通信端口直接暴露到公网；后台需要认证，危险操作遵循最小权限。
-- 发布站点与本地管理后台分离，默认仅公开已生成的阅读内容。
-
-## 参与与反馈
-
-欢迎通过 [Issues](https://github.com/SwartzMss/ai-news-hub/issues) 反馈问题或提出功能建议。当前以完成 v0.1 最小可用闭环为优先目标。
-
-## 参考资料
-
-- [Codex as a platform](https://developers.openai.com/blog/codex-as-a-platform)
-- [OpenAI Codex](https://github.com/openai/codex)
+- 非 root、最小权限；Backend 和 Agent RPC 不默认开放公网。
+- 发布凭据只在 Backend 运行时配置，不继承给 Codex；管理 Token 不进入浏览器持久存储。
+- SQLite、OAuth 凭据、Cookie、代理配置和私密运行日志不入 Git，不导出到公开站。
+- 无有效来源不发布；原文更正刷新当前来源，已生成报告与候选快照保留历史。
+- GitHub 只归档人工允许发布的内容；公共页面清楚标注来源与推断，不伪造评论、点赞或热度。
 
 ## License
 
-**待确定。** 尚未添加许可证；在选定明确的开源协议前，不应假定本仓库已授予额外的复制、修改或分发权限。
-
-## UI 交互原型（设计预览）
-
-已提交 **混合风格 UI Prototype 0.1**，包含新闻门户首页、RSS 阅读器式频道页、AI 深度文章详情、历史归档、搜索、收藏、RSS 入口及本地任务控制台（模拟）。
-
-- [打开原型源文件](prototype/index.html)（下载后使用现代浏览器打开；与服务端 Linux 平台无关）
-- [原型使用说明](prototype/README.md)
-- [前端交互与设计规范](docs/UI_DESIGN_SPEC.md)
-
-**注意**：这是独立 HTML 演示，不含真实新闻、RSS、Codex、SQLite 或生产后台。公共阅读前端仍需按路线图开发；真实管理后台使用独立 `/admin/` 入口。
+**待确定。** 尚未添加许可证；在明确选择开源协议前，不应假定已授予额外复制、修改或分发权限。

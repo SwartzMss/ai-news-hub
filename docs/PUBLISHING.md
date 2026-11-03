@@ -25,7 +25,7 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 | `POST /api/news/reports/:reportId/approve` | `{ "contentHash": "<GET 返回的 64 位哈希>", "confirm": true }`；明确确认已检查该版本 |
 | `POST /api/news/reports/:reportId/publish` | `{}`；返回 `{publication}`，包括路径、仓库/分支、状态、尝试次数、SHA、URL、错误码和提交时间 |
 
-后台新闻 Run 页面提供同样的两步操作。批准只记录人工许可，不调用 GitHub。归档未配置时返回 503 `publication_disabled`，报告仍可预览/批准。待审核直接归档返回 409 `report_not_approved`；内容或关联变动返回 `report_changed` / `approval_changed` / `report_provenance_invalid`。失败 Run、草稿、缺失来源/关联不允许批准或归档。
+后台新闻 Run 页面提供同样的两步操作。发布状态按当前仓库/分支的成功记录展示，更换目标后仍须显式点击“归档到 GitHub”；已有当前目标成功记录时，“刷新归档记录”只读取本地状态，不写远端也不重新验证远端文件存在。批准只记录人工许可，不调用 GitHub。归档未配置时返回 503 `publication_disabled`，报告仍可预览/批准。待审核直接归档返回 409 `report_not_approved`；内容或关联变动返回 `report_changed` / `approval_changed` / `report_provenance_invalid`。失败 Run、草稿、缺失来源/关联不允许批准或归档。
 
 批准前重新依据不可变候选快照重建整个日报，比较来源字段、URL 白名单、精确引文、报告日期/频道/ID、标题和文章关联；批准哈希绑定文档、版本、候选与关联。生成 JSON 始终保留原始 pending 快照，关系表记录 approved/published；批准后不可直接修改此版本，修订应显式生成新 Run/报告版本。当前没有撤销/编辑接口，只有同一受保护本地管理员身份，无多用户审批审计。
 

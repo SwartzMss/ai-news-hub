@@ -3,7 +3,7 @@
 关联：[#2](https://github.com/SwartzMss/ai-news-hub/issues/2)。记录日期：2026-11-02。
 
 **结论：探针实现完成，目标服务器验收未完成，Issue 保持开放。**
-没有真实新闻 Backend、SQLite、管理 API 或发布服务。
+以下为 #2 探针交付当时的历史记录：当时没有真实新闻 Backend/SQLite/管理 API/发布服务；当前实现已由 #3–#8 补齐，目标主机验收状态仍以本记录为准。
 
 ## 环境与证据范围
 

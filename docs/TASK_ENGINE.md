@@ -1,6 +1,6 @@
 # Task → Run → Thread → Turn 引擎与 API
 
-Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。预定义任务有 `sample-connectivity` 及 Issue #5 的 `news-github`；没有定时调度、任务编辑、日报发布或聊天 UI。新闻任务的来源/报告查询见 [新闻流水线](NEWS_PIPELINE.md)。
+Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。预定义任务有 `sample-connectivity` 及 Issue #5 的 `news-github`；引擎没有定时调度或任务编辑；日报人工批准/GitHub 归档由独立发布模块提供，管理界面见 ADMIN.md。新闻任务的来源/报告查询见 [新闻流水线](NEWS_PIPELINE.md)。
 样例提示词要求固定回复 `AI_NEWS_HUB_TASK_OK` 且不使用工具。创建样例记录不会调用模型；手动启动和继续 Turn 才使用真实账户额度。
 
 ## 配置与认证
@@ -61,8 +61,9 @@ unset task_admin_token
 ## 生命周期与结果边界
 
 - 新 Run 创建独立 Thread；同一 Run 继续时，以保存的 Thread ID 调用 `thread/resume`。每个 Turn 使用新的 stdio App Server 进程，仍属于该 Run。
-- queued → running → succeeded / failed / cancelled / interrupted。审批请求可短暂产生 waiting_approval，随后拒绝请求并以 `needs_approval` 失败；没有待人工审批的驻留子进程或批准接口。
+- queued → running → succeeded / failed / cancelled / interrupted。审批请求可短暂产生 waiting_approval，随后拒绝请求并以 `needs_approval` 失败；没有驻留的 Agent 工具审批或批准接口；日报人工审核是独立业务操作。
 - 仅接受匹配 Thread / Turn 的成功终态、非空输出，并确认进程清理后才标 succeeded。初始化成功、工具单项完成、进程退出或空响应均不能代替 Turn 成功。
+- 明确的 commentary/partial_answer 仅记为过程日志，优先取 final_answer 作为结果；未标记/未知 phase 保留兼容，只有过程消息时按 invalid_output 失败。
 - Run 状态表示最近一个 Turn。继续请求把 Run 重新置 queued，保留旧 Turn 的终态和输出；一个 Run 最多 20 个 Turn。
 - 超时标 failed / `timeout`；人工取消标 cancelled；服务停止和重启恢复标 interrupted。取消之后的迟到成功不会覆盖终态。
 - 进程清理超时为 `cleanup_failed`，优先于取消/任务超时；停止调度并令正式 Backend 非零退出，systemd 清理控制组。检查日志和进程状态后再恢复，不自动开始排队工作。

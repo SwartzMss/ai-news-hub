@@ -8,7 +8,7 @@ Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、�
 
 Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件、取消和继续 Turn 已实现；开发会话完成真实样例调用，目标服务账户的 systemd 与长期认证仍待 #2 验收。见 [引擎与 API](TASK_ENGINE.md)。
 
-Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出及 SQLite 待审核日报已实现，完成真实来源与模型端到端验证。尚不发布。见 [新闻流水线](NEWS_PIPELINE.md) 与 [验证记录](validation/NEWS_PIPELINE.md)。
+Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出及 SQLite 待审核日报已实现，完成真实来源与模型端到端验证。本任务只生成待审核结果，归档由 #7 实现。见 [新闻流水线](NEWS_PIPELINE.md) 与 [验证记录](validation/NEWS_PIPELINE.md)。
 
 Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。使用顺序轮询，未实现 SSE 或任务编辑；审核归档由 #7 增加。见 [后台说明](ADMIN.md)。
 
@@ -21,8 +21,8 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 ### A. Linux 服务骨架
 - [x] 独立 Node.js / TypeScript Codex 验证工具与无网络故障测试
 - [x] 添加 Ubuntu 24.04 GitHub Actions 验证配置（Backend / 探针构建与测试；远端结果另行查看）
-- [ ] 在 Linux 上初始化 Node.js + TypeScript Backend、React + Vite 的公共 Web 与 Admin 基础结构
-- [x] 初始化 TypeScript / Fastify Backend 与共享类型位置；预留公共 Web / Admin 目录
+- [x] 初始化 Node.js + TypeScript Backend 与 React/Vite 公共 Web/Admin 代码结构
+- [x] TypeScript/Fastify、共享类型和独立 Web/Admin 构建入口
 - [x] 准备 Linux `.env.example`、SQLite 私有数据目录与可重复/可回滚迁移
 - [ ] 验证 Linux CLI 的 `codex --version`、`codex app-server --help` 及服务账户认证
 - [ ] 编写并验证 systemd 单实例服务配置，支持开机启动、故障重启、journald 日志
@@ -32,7 +32,7 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 - [x] 验证工具支持 stdio 握手、独立 Thread / Turn、终态关联和失败退出；不替代以下生产 Adapter
 - [x] 由 Backend 以 stdio 启动并管理 Codex 子进程
 - [x] 实现 initialize / initialized、thread/start / resume 与 Turn 生命周期
-- [ ] 正确处理完成、失败、中断、审批、超时、子进程退出及重试
+- [ ] 自动退避重试与交互式 Agent 工具审批
 - [x] 完成、失败、中断、拒绝审批、超时、退出、取消与重启标记；自动重试和交互审批后续实现
 - [x] 每次 Run 默认使用独立 Thread，保存 Thread / Turn ID 并支持继续当前 Run
 - [x] 有限队列/并发、任务互斥、请求幂等、Token 管理 API、SQLite 历史与事件
@@ -59,7 +59,8 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 
 - [ ] 任务创建、编辑 Prompt、启停及更丰富的定时规则
 - [ ] Run 内的多轮 Turn 输入/回复与工具审批交互
-- [ ] SSE 实时事件、运行历史过滤、取消和退避重试
+- [x] 管理 API 运行历史分页与取消（UI 仍未提供取消按钮）
+- [ ] SSE、更多历史过滤和自动退避重试
 - [ ] 持久化调度和重启后的漏执行补偿、幂等校验
 - [ ] 审稿、手工修改、重新发布、内容版本对比
 - [ ] 配置管理与更完善的后台身份验证

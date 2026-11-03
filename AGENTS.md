@@ -4,14 +4,14 @@
 
 ## 当前工程结构与检查
 
-- 根目录统一管理 Node.js 22 / TypeScript 依赖；`apps/server/src` 为 Backend，`packages/shared/src` 为共享类型。
+- 根目录统一管理 Node.js 22 / TypeScript 依赖；`apps/server/src` 为 Backend，`packages/shared/src` 为共享类型与 Agent 环境白名单。
 - `apps/web` 为独立静态公共站（见 `docs/PUBLIC_WEB.md`），源码构建器在 `generator/`，唯一公开输出 `dist/web`；`apps/admin` 为独立 React/Vite 后台，经 Backend `/admin/` 提供，仅页面内存保存 Token。见 `docs/ADMIN.md`。
-- 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程；`npm test` 包含 Backend 与 Admin 交互测试，构建产物分别为 `dist/apps/server` 与 `dist/admin`。
+- 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程；`npm test` 包含 Backend、Admin 交互与公共站构建测试，构建产物分别为 `dist/apps/server` 与 `dist/admin`。
 - Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未配置管理 Token 时 `/api` 关闭。接口见 `docs/TASK_ENGINE.md`。
 - 固定新闻任务 `news-github` 与受保护查询接口见 `docs/NEWS_PIPELINE.md`；Schema/来源关联校验不等于事实审核，不自动发布。人工批准与 GitHub 归档见 `docs/PUBLISHING.md`，发布配置默认关闭，凭据不能传给 Codex。
 - 启动自动迁移，也可 `npm run db:migrate`。配置见 `.env.example`，数据模型见 `docs/DATA_MODEL.md`。
 - 每个 Turn 使用独立 stdio App Server 子进程，新 Run 新建 Thread，继续 Turn 恢复原 Thread；不将 Backend 管理/发布凭据继承给 Agent。
-- 每个数据目录只允许一个 Backend；重启将未完成 Run / Turn 标为 interrupted，不自动重跑。审批一律拒绝并失败退出，交互审批暂未实现。
+- 每个数据目录只允许一个 Backend；重启将未完成 Run / Turn 标为 interrupted，不自动重跑。Agent 工具审批一律拒绝并失败退出，交互式工具审批暂未实现；日报人工批准是独立业务操作。
 - SQLite 迁移只追加新版本，不修改已应用 SQL；历史 checksum 不符必须失败，不删除数据库规避错误。
 - 不将代理配置、凭据、SQLite 或本地验证日志入库；不要创建 `docs/superpowers/` 工作流文档。
 

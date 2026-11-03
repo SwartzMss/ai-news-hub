@@ -75,3 +75,30 @@ test('descendants with closed pipes are also terminated', async () => {
 test('logs do not contain raw server data', () => {
   assert.ok(!JSON.stringify(logs).includes('SECRET_TOKEN'));
 });
+test('probe uses final answer even when commentary follows it',async()=>{
+ assert.equal((await probe('probe-phase-final')).status,'completed');
+});
+test('probe rejects marker appearing only in commentary',async()=>{
+ await assert.rejects(probe('probe-phase-progress-only'),{code:'invalid_output'});
+});
+test('probe child does not inherit management or publishing credentials',async()=>{
+ const keys=['AI_NEWS_HUB_ADMIN_TOKEN','AI_NEWS_HUB_GITHUB_TOKEN','GH_TOKEN'];
+ const old=keys.map(key=>process.env[key]);keys.forEach(key=>{process.env[key]='PRIVATE_TEST_CREDENTIAL';});
+ try{assert.equal((await probe('probe-env-leak')).status,'completed');}
+ finally{keys.forEach((key,i)=>{if(old[i]===undefined)delete process.env[key];else process.env[key]=old[i];});}
+});
+test('standalone probe installation includes its shared environment module',async()=>{
+ const {mkdirSync,copyFileSync,writeFileSync}=await import('node:fs');
+ const {pathToFileURL}=await import('node:url');
+ const root=mkdtempSync(join(tmpdir(),'probe-install-'));
+ try{
+  const probeDir=join(root,'dist/tools/codex-probe');const sharedDir=join(root,'dist/packages/shared/src');
+  mkdirSync(probeDir,{recursive:true});mkdirSync(sharedDir,{recursive:true});
+  writeFileSync(join(root,'package.json'),'{"type":"module"}');
+  for(const name of ['cli.js','client.js'])copyFileSync(join(process.cwd(),'dist/tools/codex-probe',name),join(probeDir,name));
+  copyFileSync(join(process.cwd(),'dist/packages/shared/src/agent-environment.js'),join(sharedDir,'agent-environment.js'));
+  const installed=await import(pathToFileURL(join(probeDir,'client.js')).href);
+  const result=await installed.runProbe({binary:process.execPath,args:[join(process.cwd(),'tests/fixtures/app-server.mjs'),'success'],cwd:root,timeoutMs:2000});
+  assert.equal(result.status,'completed');
+ }finally{rmSync(root,{recursive:true,force:true});}
+});

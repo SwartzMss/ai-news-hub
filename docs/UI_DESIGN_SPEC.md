@@ -44,7 +44,7 @@
 
 **高频 RSS 阅读者**：选择频道 → 日期筛选 → 按重要度排序 → “只看重点” → 打开文章 → 收藏 → 历史搜索。
 
-**管理员**：安全访问 Linux 管理台 → 选择任务 → 查看某次 Run → 查看该 Run 的 Thread/Turn 与日志 → 审核内容 → 发布到 GitHub → Cloudflare Pages 自动构建静态站点与 RSS。
+**管理员**：安全访问 Linux 管理台 → 选择任务 → 查看某次 Run → 查看该 Run 的 Thread/Turn 与日志 → 审核内容 → 允许发布 → 归档 GitHub；Cloudflare Git 集成接入后可自动构建静态站与 RSS，该上线验收尚未完成。
 
 ## 5. 信息架构
 

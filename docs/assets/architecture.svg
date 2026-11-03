@@ -1,0 +1,63 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="480" viewBox="0 0 1000 480" role="img" aria-labelledby="title desc">
+<title id="title">AI News Hub architecture</title>
+<desc id="desc">RSS enters the private Linux Backend. Codex returns structured analysis via stdio. SQLite holds private history. A human approves a report before GitHub archiving and independent static Web/RSS builds. Cloudflare deployment and native systemd acceptance remain pending.</desc>
+<rect width="100%" height="100%" fill="#f6f9f7"/>
+<text x="30" y="42.25" font-family="DejaVu Sans,Arial,sans-serif" font-size="25" font-weight="700" fill="#17392e">AI News Hub</text>
+<text x="31" y="67.2" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="400" fill="#6a8176">Public sources. Structured analysis. Human judgment.</text>
+<text x="671" y="40.2" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700" fill="#08765b">Task → Run → Thread → Turn</text>
+<rect x="226" y="92" width="424" height="298" rx="17" fill="#edf5f0" stroke="#d6e6dc" stroke-width="1"/>
+<rect x="682" y="92" width="294" height="298" rx="17" fill="#f0f4ed" stroke="#d6e6dc" stroke-width="1"/>
+<text x="246" y="116.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">LINUX BACKEND / PRIVATE</text>
+<text x="48" y="116.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">PUBLIC INPUT</text>
+<text x="700" y="116.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">ARCHIVE / PUBLIC OUTPUT</text>
+<polyline points="198,180 246,180" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="240.0,183.0 246,180 240.0,177.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="412,170 460,170" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="454.0,173.0 460,170 454.0,167.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="460,192 412,192" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="418.0,189.0 412,192 418.0,195.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="329,218 329,284" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="326.0,278.0 329,284 332.0,278.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="412,322 460,322" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="454.0,325.0 460,322 454.0,319.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="624,322 708,322" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="702.0,325.0 708,322 702.0,319.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="828,284 828,218" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="831.0,224.0 828,218 825.0,224.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<rect x="48" y="142" width="150" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="63" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Public RSS</text>
+<text x="63" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">GitHub Blog</text>
+<rect x="246" y="142" width="166" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="261" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Backend</text>
+<text x="261" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Fastify / Task → Run</text>
+<rect x="460" y="142" width="164" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="475" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Codex</text>
+<text x="475" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">stdio / Thread → Turn</text>
+<rect x="246" y="284" width="166" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="261" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">SQLite</text>
+<text x="261" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Private state + reports</text>
+<rect x="460" y="284" width="164" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="475" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Admin + Review</text>
+<text x="475" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Explicit human approval</text>
+<rect x="708" y="284" width="240" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="723" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">GitHub archive</text>
+<text x="723" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Approved, versioned JSON</text>
+<rect x="708" y="142" width="240" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="723" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Static Web + RSS</text>
+<text x="723" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">React / Vite build</text>
+<text x="47" y="257.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Public source data.</text>
+<text x="47" y="276.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Always treated as untrusted.</text>
+<text x="246" y="375.65" font-family="DejaVu Sans,Arial,sans-serif" font-size="9" font-weight="400" fill="#956e24">Native systemd acceptance: pending</text>
+<rect x="711" y="235" width="233" height="27" rx="7" fill="#fff4d7" stroke="#e8d6a6" stroke-width="1"/>
+<text x="722" y="251.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#956e24">Cloudflare deployment: pending</text>
+<text x="36" y="419.65" font-family="DejaVu Sans,Arial,sans-serif" font-size="9" font-weight="700" fill="#6a8176">PIPELINE</text>
+<rect x="36" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="58" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="80" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="102" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="124" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="146" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="168" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<text x="218" y="422.05" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" font-weight="700" fill="#08765b">Only approved reports reach GitHub.</text>
+<text x="218" y="447.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Manual trigger and approval today. Scheduling is not implemented.</text>
+</svg>
