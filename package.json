@@ -7,8 +7,8 @@
   },
   "scripts": {
     "build": "tsc && npm run build:admin",
-    "check": "tsc --noEmit && tsc -p apps/admin/tsconfig.json",
-    "typecheck": "tsc --noEmit && tsc -p apps/admin/tsconfig.json",
+    "check": "tsc --noEmit && tsc -p apps/admin/tsconfig.json && tsc -p apps/web/tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc -p apps/admin/tsconfig.json && tsc -p apps/web/tsconfig.json",
     "lint": "eslint .",
     "test": "npm run build && node --test tests/*.test.mjs && npm run test:admin",
     "start": "node --env-file-if-exists=.env dist/apps/server/src/main.js",
@@ -18,7 +18,9 @@
     "service:stop": "bash scripts/service.sh stop",
     "probe:codex": "node dist/tools/codex-probe/cli.js",
     "build:admin": "vite build apps/admin --config apps/admin/vite.config.ts",
-    "test:admin": "vitest run --root apps/admin"
+    "test:admin": "vitest run --root apps/admin",
+    "build:web": "node apps/web/generator/build.mjs",
+    "build:web:demo": "node apps/web/generator/build.mjs --demo"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

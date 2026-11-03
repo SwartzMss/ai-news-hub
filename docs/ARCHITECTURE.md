@@ -2,7 +2,7 @@
 
 > 包含已实现的基础骨架与 v0.1 目标架构；各模块的实现范围如下，不能将目标链路理解为已经上线。
 
-Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；Issue #6 增加本地 React/Vite 管理后台，按 Task → Run 查看状态、日志和待审核日报；Issue #7 增加人工批准、GitHub 按日期/频道/版本 JSON 归档、持久化状态与失败重试。尚无定时调度、Cloudflare 发布或公开阅读站。
+Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；Issue #6 增加本地 React/Vite 管理后台，按 Task → Run 查看状态、日志和待审核日报；Issue #7 增加人工批准、GitHub 按日期/频道/版本 JSON 归档、持久化状态与失败重试。Issue #8 实现 React/Vite 构建时静态 HTML、来源详情/历史版本与 RSS。尚无定时调度，Cloudflare Git 集成真实上线待验收。
 Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于诊断，正式 Adapter 位于 `apps/server/src/agent/`。
 探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
@@ -93,7 +93,7 @@ Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于
 SQLite 使用 Node 22 内置实验性 `node:sqlite`，当前同步访问用于初始化、状态与有限事件事务。未来业务需按实际负载评估，暂不增加 ORM 或独立数据库服务。
 
 Fastify 只允许绑定 `127.0.0.1` / `::1`；`/health` 检查已应用 Schema 可读，失败返回 503，不检测 Codex 认证。统一错误体保留 requestId，日志不记录请求体、头部、查询串或任意异常文本。
-SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` 仍仅有职责说明；`apps/admin` 已实现独立管理前端，共享接口类型放在 `packages/shared/src/`。
+SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` 已提供独立静态阅读站/RSS 构建；`apps/admin` 已实现独立管理前端，共享接口类型放在 `packages/shared/src/`。
 
 已实现的固定来源状态保存于 `rss_sources`；动态来源配置、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只恢复历史可查询性并标记中断，不自动恢复执行，不会擅自将旧 Run 改为成功。
 
@@ -145,6 +145,10 @@ Issue #7 发布层已启用：重新构建报告并核对来源快照/关联、�
 - `/rss/trending.xml`
 
 RSS 2.0 必须正确转义 XML 字符，提供稳定的 item guid、链接和 pubDate。建议允许“整期日报”和“单条新闻”两种 Feed 模式。仅发布可访问的正式 URL，不将开发机 localhost 链接写入正式 Feed。
+
+Issue #8 公共输出固定为 `dist/web`，从归档 v1 Schema 严格读取公开 approved JSON，默认当前 checkout 的 reports/，不读取数据库或在线管理 API。构建时渲染全部实际路由，SSR 模块留在非公开 `dist/web-render`；浏览器脚本仅切换主题，无 JS 也可阅读。生成公开索引/两类 RSS/站点文件，更新不依赖 Backend 在线。同日最高版本进当前列表，全部版本保留独立历史页；Feed GUID 基于稳定条目 ID，与标题/域名/修订无关。XML 非法字符拒绝构建。
+
+显式 demo 使用独立两日期测试样本并标记 DEMO/noindex，正式构建拒绝测试标记；没有日报时输出空状态。Cloudflare Git 项目须单独授权且只发布 dist/web，当前无账户接入证明，不能称已上线。见 [公共站](PUBLIC_WEB.md)。
 
 ## 9. Linux 安全与部署
 
