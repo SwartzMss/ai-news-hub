@@ -2,7 +2,7 @@ import js from '@eslint/js';
 import tseslint from 'typescript-eslint';
 
 export default tseslint.config(
-  { ignores: ['dist/**', 'node_modules/**', 'prototype/**'] },
+  { ignores: ['dist/**', 'node_modules/**'] },
   {
     files: ['apps/server/**/*.ts', 'apps/admin/**/*.ts', 'apps/admin/**/*.tsx', 'apps/web/**/*.ts', 'apps/web/**/*.tsx', 'packages/**/*.ts', 'scripts/**/*.ts', 'tools/**/*.ts'],
     extends: [js.configs.recommended, ...tseslint.configs.recommended],

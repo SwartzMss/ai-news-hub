@@ -1,6 +1,6 @@
 # AGENTS.md
 
-本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务引擎、Codex 接入探针和独立原型。新闻入口是用户主题与多轮 prompt，由 Codex 实时搜索、提取和整理，显式生成后 Backend 核对原文并保存 SQLite 待审核日报；不采集外部 RSS。React/Vite 管理后台支持研究、人工批准和 GitHub 归档；公共静态阅读站与输出 RSS 可独立构建，Cloudflare 真实上线待验收。
+本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务引擎、Codex 接入探针及实际 Web/Admin 页面。新闻入口是用户主题与多轮 prompt，由 Codex 实时搜索、提取和整理，显式生成后 Backend 核对原文并保存 SQLite 待审核日报；不采集外部 RSS。React/Vite 管理后台支持研究、人工批准和 GitHub 归档；公共静态阅读站与输出 RSS 可独立构建，Cloudflare 真实上线待验收。
 
 ## 当前工程结构与检查
 

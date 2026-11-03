@@ -81,7 +81,6 @@ apps/web/              公共阅读组件与独立静态生成器
 packages/shared/src/   共享接口、状态与 Agent 环境白名单
 tools/codex-probe/     独立接入诊断工具
 scripts/               健康检查、服务操作与架构图生成
-prototype/             独立 HTML 设计原型，全部为模拟交互
 ```
 
 ```bash
@@ -104,7 +103,7 @@ npm run build
 | 任务 API / 管理后台 | [TASK_ENGINE](docs/TASK_ENGINE.md)、[ADMIN](docs/ADMIN.md) |
 | Codex 研究与日报 / GitHub 归档 | [NEWS_PIPELINE](docs/NEWS_PIPELINE.md)、[PUBLISHING](docs/PUBLISHING.md) |
 | 静态站、RSS 与 Pages 配置 | [PUBLIC_WEB](docs/PUBLIC_WEB.md) |
-| 计划和 UI | [ROADMAP](docs/ROADMAP.md)、[UI_DESIGN_SPEC](docs/UI_DESIGN_SPEC.md)、[原型](prototype/README.md) |
+| 计划和 UI | [ROADMAP](docs/ROADMAP.md)、[UI_DESIGN_SPEC](docs/UI_DESIGN_SPEC.md) |
 
 真实开发验证记录包括 [Codex 探针](docs/validation/CODEX_LINUX_PROBE.md)、[任务引擎](docs/validation/TASK_ENGINE.md)、[新闻流水线](docs/validation/NEWS_PIPELINE.md)、[管理后台](docs/validation/ADMIN.md)、[归档](docs/validation/PUBLISHING.md) 与 [公共站](docs/validation/PUBLIC_WEB.md)。它们的日期、环境和范围各自注明；原生服务器长期认证与 systemd 验收仍由 [#2](https://github.com/SwartzMss/ai-news-hub/issues/2) 跟踪，Cloudflare 上线由 [#8](https://github.com/SwartzMss/ai-news-hub/issues/8) 跟踪。
 
