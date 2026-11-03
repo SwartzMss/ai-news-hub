@@ -5,6 +5,7 @@ import { taskEngineMigration } from './task-engine-migration.js';
 import { publicationMigration } from './publication-migration.js';
 import { newsMigration } from './news-migration.js';
 import { researchMigration } from './research-migration.js';
+import { settingsMigration } from './settings-migration.js';
 
 export interface Migration { version: number; name: string; sql: string }
 export const migrations: readonly Migration[] = [{
@@ -89,7 +90,7 @@ export const migrations: readonly Migration[] = [{
     ) STRICT;
     CREATE INDEX publications_by_report ON publication_records(report_id, created_at);
   `,
-}, taskEngineMigration, newsMigration, publicationMigration, researchMigration];
+}, taskEngineMigration, newsMigration, publicationMigration, researchMigration, settingsMigration];
 
 export function migrate(db: DatabaseSync, registry: readonly Migration[] = migrations): void {
   if (registry.some((entry, index) => entry.version !== index + 1)) throw new AppError('invalid_migration_registry');

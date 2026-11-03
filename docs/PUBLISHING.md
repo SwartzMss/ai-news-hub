@@ -45,7 +45,7 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 ## 凭据与部署
 
-见 [Linux 部署第 13 节](DEPLOY_LINUX.md#13-issue-7-人工批准与-github-归档)。限定目标仓库的 fine-grained PAT 只授予 Contents read/write；GitHub 自动要求的基础元数据读取权限保留。也可外部注入短期 GitHub App token，但本版本不自动续期。Token 只在私有运行环境配置，轮换重启不破坏幂等。不要复用管理 Token、放入 Codex 配置或 VITE 环境。
+见 [Linux 部署第 13 节](DEPLOY_LINUX.md#13-issue-7-人工批准与-github-归档)。限定目标仓库的 fine-grained PAT 只授予 Contents read/write；GitHub 自动要求的基础元数据读取权限保留。也可外部注入短期 GitHub App token，但本版本不自动续期。仓库、分支和 Token 在后台“系统设置”填写并持久化 SQLite；Token 加密且不回显，留空保留、显式替换/清除。空闲时保存即生效，轮换不破坏幂等，执行中拒绝变更。见 [配置说明](SETTINGS.md)。不要复用管理 Token、放入 Codex 配置或 VITE 环境。
 
 真实端到端验证见 [记录](validation/PUBLISHING.md)。专用 `archive-validation/issue-7` 分支只含验证用测试日报，不应作为 #8 正式内容来源。
 

@@ -10,6 +10,8 @@ import { usePolling } from "./usePolling";
 import { Publication } from "./Publication";
 import { Report, type ReportRecord } from "./Report";
 import { Research } from "./Research";
+import {Login} from './Login';
+import {Settings} from './Settings';
 const active = (status: string) =>
   ["queued", "running", "waiting_approval"].includes(status);
 const labels: Record<string, string> = {
@@ -40,9 +42,7 @@ function ErrorNotice({ error }: { error?: unknown }) {
 
 export function App() {
   const [token, setToken] = useState("");
-  const [input, setInput] = useState("");
   const [error, setError] = useState<unknown>();
-  const [connecting, setConnecting] = useState(false);
   const [hash, setHash] = useState(location.hash);
   const session = useRef(0);
   useEffect(() => {
@@ -53,28 +53,10 @@ export function App() {
   const expire = useCallback((cause: ApiError) => {
     session.current++;
     setToken("");
-    setInput("");
     setError(cause);
   }, []);
   const api = useMemo(() => client(token, expire), [token, expire]);
-  async function connect(event: React.FormEvent) {
-    event.preventDefault();
-    if (connecting) return;
-    setConnecting(true);
-    setError(undefined);
-    const generation = ++session.current;
-    try {
-      await client(input.trim(), () => {})("/tasks");
-      if (generation === session.current) {
-        setToken(input.trim());
-        setInput("");
-      }
-    } catch (cause) {
-      setError(cause);
-    } finally {
-      setConnecting(false);
-    }
-  }
+  function connected(value:string){session.current++;setError(undefined);setToken(value);}
   let taskId: string | undefined, runId: string | undefined;
   try {
     const match = /^#\/tasks\/([^/]+)(?:\/runs\/([^/]+))?$/.exec(hash);
@@ -92,13 +74,14 @@ export function App() {
           AI <span>News Hub</span>
         </a>
         <span className="header-label">本地管理后台</span>
+        {token&&<a href="#/settings">系统设置</a>}
         {token && (
           <button
             className="quiet"
             onClick={() => {
+              void client(token,()=>{})('/auth/logout',AbortSignal.timeout(10000),{}).catch(()=>{});
               session.current++;
               setToken("");
-              setInput("");
               setError(undefined);
             }}
           >
@@ -107,29 +90,7 @@ export function App() {
         )}
       </header>
       {!token ? (
-        <main className="login">
-          <div className="eyebrow">任务与执行</div>
-          <h1>连接你的新闻后台</h1>
-          <p className="muted">查看任务、执行记录与待审核日报。</p>
-          <form onSubmit={connect}>
-            <label htmlFor="token">管理 Token</label>
-            <input
-              id="token"
-              type="password"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              autoComplete="off"
-              required
-            />
-            <button disabled={connecting}>
-              {connecting ? "连接中…" : "连接后台"}
-            </button>
-          </form>
-          <ErrorNotice error={error} />
-          <p className="muted">
-            Token 仅保留在当前页面内存，刷新后需重新输入。
-          </p>
-        </main>
+        <Login onConnected={connected} error={error}/>
       ) : (
         <div className="layout">
           <aside>
@@ -137,6 +98,7 @@ export function App() {
             <a href="#" className="nav-active">
               任务总览
             </a>
+            <a href="#/settings">系统设置</a>
             <p>
               Task → Run
               <br />
@@ -159,7 +121,7 @@ export function App() {
               )}
               {runId && " / Run 详情"}
             </nav>
-            {!taskId ? (
+            {hash==='#/settings'?<Settings api={api} onCredentialChanged={connected}/>:!taskId ? (
               <Dashboard api={api} />
             ) : runId ? (
               <RunDetail api={api} taskId={taskId} runId={runId} />

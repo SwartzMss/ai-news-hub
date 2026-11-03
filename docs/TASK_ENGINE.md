@@ -6,16 +6,9 @@ Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。
 ## 配置与认证
 
 Backend 只允许监听 `127.0.0.1` / `::1`。`/health` 公开，仅检查本地服务/数据库；所有已有 `/api` 管理端点要求 `Authorization: Bearer <token>`。
-在私有 `.env` 或 `/etc/ai-news-hub/ai-news-hub.env` 配置以下变量后重启服务：
+启动环境文件只保留 HOST、PORT、DATA_DIR。首次通过本机 setup-code 在后台设置密码，之后登录获取临时 Bearer 会话；登录前业务接口返回 503 management_disabled。旧 Token 仅用于升级兼容，改设密码后失效。详见 [系统设置与认证](SETTINGS.md)。
 
-| 配置 | 默认 / 约束 |
-| --- | --- |
-| `AI_NEWS_HUB_ADMIN_TOKEN` | 空/未设置时管理 API 返回 503；32–256 个字母、数字、下划线或连字符，可用 `openssl rand -hex 32` 在本机生成 |
-| `AI_NEWS_HUB_CODEX_BIN` | `codex`，正式服务建议指定服务账户可执行的绝对路径 |
-| `AI_NEWS_HUB_MODEL` | 未设置时沿用 Codex 配置，模型访问权须通过真实 Turn 验证 |
-| `AI_NEWS_HUB_RUN_TIMEOUT_MS` | 120000；允许 1000–3600000，作用于正在执行的单个 Turn（含最终来源验证阶段），不含排队时间 |
-| `AI_NEWS_HUB_CONCURRENCY` | 1；允许 1–4，同时执行的 Turn 上限 |
-| `AI_NEWS_HUB_MAX_QUEUE` | 20；允许 1–100，运行槽之外的等待数量上限 |
+Codex 路径/模型、每轮超时、并发、队列和日志级别经后台“系统设置”写 SQLite，空闲时立即生效，执行/排队/归档中返回 settings_busy。每轮默认 120000 ms（1000–3600000，含最终来源验证），并发 1（1–4），队列 20（1–100），模型默认沿用 Codex 配置。
 
 同一 Linux 服务账户完成 Codex 登录，HOME / CODEX_HOME 与 systemd 配置一致。工作目录是数据目录下的 `work/`，须为服务用户所有、0700。数据库保持在本机持久目录，不能提交到 Git。
 Token 不接受查询参数或 Cookie；未认证返回 401，响应不缓存，不启用跨域访问。请勿将真实 Token、OAuth 凭据或 Agent 原始日志写入文档、Issue 或公开产物。
@@ -43,7 +36,7 @@ Token 不接受查询参数或 Cookie；未认证返回 401，响应不缓存，
 
 ### 手动触发样例
 
-先启动已配置管理 Token 的 Backend，再在本机输入同一个 Token。以下方式不会把 Token 放进 curl 命令参数；响应给出 Run ID，可据此查询状态和事件。
+先初始化管理员，通过 POST /api/auth/login 获取临时会话 Token，再在本机输入该 Token。以下方式不会把 Token 放进 curl 命令参数；响应给出 Run ID，可据此查询状态和事件。
 
 ```bash
 read -rsp 'Admin token: ' task_admin_token

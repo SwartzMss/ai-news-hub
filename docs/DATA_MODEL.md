@@ -80,3 +80,11 @@ Run 中的 `thread_id` / `turn_id` 是查询用摘要；继续 Turn 时清除旧
 - Run / Turn 输入与经过大小限制的 Agent 正文可包含私有内容，仅供已认证管理 API 查询，不导出到公开站或原始服务日志。事件不保存原始 RPC、stderr、工具参数或认证响应。API 与大小限制见 [任务引擎](TASK_ENGINE.md)。
 
 参考：[Node 22.19 SQLite API](https://nodejs.org/download/release/v22.19.0/docs/api/sqlite.html)（当前仍为实验性 API）。
+
+## 数据库配置与管理员（迁移 6）
+
+app_settings 单行保存 revision、严格 runtime config JSON、加密 GitHub Token 和更新时间；revision 防止不同页面互相覆盖。私有 settings.key 为自动生成的 AES-256-GCM 密钥，数据库与密钥需一起备份。读取设置不包含原始 Token。
+
+admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历史 Token 哈希；admin_sessions 只保存会话 SHA-256 和创建/到期时间。首次初始化需要本机 0600 setup-code，成功后失效。登录会话 12 小时，密码轮换事务更新凭据、撤销所有旧会话并返回替换会话。旧 env 仅在对应记录缺失时导入，已有 DB 时不重新解析/覆盖旧值。
+
+监听地址/端口/数据目录仍在启动配置。其余参数由 [系统设置](SETTINGS.md) 保存；执行或发布忙碌时拒绝修改，空闲时立即应用，不改变已完成 Run/报告或归档历史。
