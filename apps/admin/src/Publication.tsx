@@ -13,6 +13,8 @@ interface State {
     remote_url: string | null;
     error_code: string | null;
     attempts: number;
+    repository: string | null;
+    branch: string | null;
   }[];
 }
 export function Publication({
@@ -30,6 +32,15 @@ export function Publication({
   const state = usePolling(load);
   const [current, setCurrent] = useState<State>();
   const data = current ?? state.data;
+  const currentTargetPublished =
+    !!data?.target &&
+    data.publications.some(
+      (p) =>
+        p.status === "succeeded" &&
+        p.repository === data.target?.repository &&
+        p.branch === data.target?.branch,
+    );
+
   const [confirmed, setConfirmed] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>();
@@ -45,6 +56,11 @@ export function Publication({
     setBusy(true);
     setError(undefined);
     try {
+      if (kind === "publish" && currentTargetPublished) {
+        // This is a read-only refresh, even if server configuration changed since rendering.
+        setCurrent(await load(controller.signal));
+        return;
+      }
       await api(
         base + "/" + kind,
         controller.signal,
@@ -80,9 +96,9 @@ export function Publication({
           <p className="notice">
             {data.status === "validated"
               ? "待人工批准"
-              : data.status === "published"
-                ? "已归档到 GitHub"
-                : "已人工批准，尚未归档"}{" "}
+              : currentTargetPublished
+                ? "当前目标已归档到 GitHub"
+                : "已人工批准，当前目标尚未归档"}{" "}
             · 原始来源仍标记 source_only，不代表独立事实证实。
           </p>
           {data.target ? (
@@ -120,7 +136,7 @@ export function Publication({
               }
               onClick={() => action("publish")}
             >
-              {data.status === "published" ? "核对归档记录" : "归档到 GitHub"}
+              {currentTargetPublished ? "刷新归档记录" : "归档到 GitHub"}
             </button>
           )}
           <p className="muted">
@@ -128,6 +144,10 @@ export function Publication({
           </p>
           {data.publications.map((p) => (
             <div key={p.id}>
+              <p className="muted">
+                归档目标：{p.repository ?? "历史目标未知"} ·{" "}
+                {p.branch ?? "未知分支"}
+              </p>
               <p>
                 发布状态：{p.status} · 尝试 {p.attempts} 次
               </p>

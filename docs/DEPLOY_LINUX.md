@@ -143,16 +143,17 @@ codex login --help
 sudo useradd --system --home-dir /var/lib/ai-news-hub --shell /usr/sbin/nologin ai-news-hub
 sudo install -d -o ai-news-hub -g ai-news-hub -m 0700 /var/lib/ai-news-hub
 sudo install -d -o ai-news-hub -g ai-news-hub -m 0700 /var/lib/ai-news-hub/.codex /var/lib/ai-news-hub/probe-work
-sudo install -d -o root -g root -m 0755 /opt/ai-news-hub/dist/tools/codex-probe
+sudo install -d -o root -g root -m 0755 /opt/ai-news-hub/dist/tools/codex-probe /opt/ai-news-hub/dist/packages/shared/src
 sudo install -o root -g root -m 0644 dist/tools/codex-probe/*.js /opt/ai-news-hub/dist/tools/codex-probe/
+sudo install -o root -g root -m 0644 dist/packages/shared/src/agent-environment.js /opt/ai-news-hub/dist/packages/shared/src/
 sudo install -o root -g root -m 0644 package.json /opt/ai-news-hub/package.json
 sudo install -d -o root -g root -m 0700 /etc/ai-news-hub
 sudo install -o root -g root -m 0600 deploy/systemd/.env.example /etc/ai-news-hub/codex-probe.env
 ```
 
-独立探针运行时没有第三方依赖，但 `package.json` 的 `type=module` 必须随构建产物部署；第 9 节的 Backend 则需要 Fastify 生产依赖。
+独立探针运行时没有第三方依赖，但需要部署上述内部共享环境白名单模块，且 `package.json` 的 `type=module` 必须随构建产物部署；第 9 节的 Backend 则需要根 package.json 声明的生产依赖。
 编辑 `/etc/ai-news-hub/codex-probe.env`，将 `CODEX_BIN` 改为全局安装的实际绝对路径；服务用户须可执行该路径及其父目录。
-不要使用个人用户目录里的 nvm 路径作为正式部署依赖。
+不要使用个人用户目录里的 nvm 路径作为正式部署依赖。探针与正式 Adapter 共享环境允许列表；需要额外自定义模型认证变量时先显式评估，不通过继承整个 Backend 环境排障。
 如果主机需要代理，在这个受限文件中显式设置 `http_proxy` / `https_proxy` / `no_proxy`；systemd 不会自动继承交互 shell 的网络环境。不要把代理凭据写入仓库或 journal。
 
 ### 认证与单次运行
@@ -180,7 +181,7 @@ sudo systemctl show ai-news-hub-codex-probe.service -p Result -p ExecMainStatus
 
 通过条件：日志依次包含 `initialized`、`account_available`、`thread_started`、`turn_started`、`completed`、`child_closed`，且 `ExecMainStatus=0`、`Result=success`。这是一次性探针，成功后进入 inactive 是正常现象。
 再启动一次，比较不同的 Run / Thread 标识；同一 Run 内的 Thread / Turn 应一致。
-unit 刻意没有 `[Install]` 且 `Restart=no`，不执行 `enable`，避免开机或故障时自动重复消耗额度。正式 Backend 的自动恢复须另行实现。
+unit 刻意没有 `[Install]` 且 `Restart=no`，不执行 `enable`，避免开机或故障时自动重复消耗额度。正式 Backend 已提供单独的 Restart=on-failure unit，目标主机恢复验收仍待完成。
 
 ### 失败与生命周期验收
 
@@ -287,7 +288,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 - 正常停止日志有 `server_stopped`，HTTP 关闭；再次启动原记录保留。异常杀死服务主进程后检查 systemd `NRestarts` 与健康检查恢复，记录脱敏日志，不将运行数据提交到 Git。
 - 当前测试验证普通 Node 进程的停止/重启，CI 使用 Ubuntu 24.04；它们不等于完成 systemd 安装、开机启动或重启主机实测。
 - CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
-- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例，暂无调度或发布；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
+- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例/新闻并独立批准、归档，暂无定时调度；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
 
 ## 10. Issue #4 管理 API 与真实任务
 
@@ -332,7 +333,7 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 
 每次最多分析来源列表前 10 条可用候选，提示选择 1–5 条；Schema 上限 10 条。模型不能提供 URL/时间或使用工具，Backend 独立校验并补充来源。不要把只读沙箱当成凭据隔离：Codex 的 HOME / CODEX_HOME 仍属服务身份，继续遵守第 8、10 节的账户与环境限制。
 
-通过受保护的 `/api/news/sources` 查看上次请求结果，`/api/news/articles` 查看当前文章，`/api/news/runs/:runId` 查看生成时候选与报告 ID，`/api/news/reports/:reportId` 获取 JSON 与 Markdown。报告 `validated` 仍待人工审核，不进行 GitHub 提交或公开发布。新幂等键显式生成新 Run/版本；此任务不支持继续 Turn。
+通过受保护的 `/api/news/sources` 查看上次请求结果，`/api/news/articles` 查看当前文章，`/api/news/runs/:runId` 查看生成时候选与报告 ID，`/api/news/reports/:reportId` 获取 JSON 与 Markdown。新闻生成的 `validated` 报告仍待人工审核，本步骤不会自动提交 GitHub；人工批准与归档见第 13 节。新幂等键显式生成新 Run/版本；此任务不支持继续 Turn。
 
 API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端到端记录见 [验证记录](validation/NEWS_PIPELINE.md)。原生 Ubuntu Server 24.04 服务账户/systemd/长期认证验收仍由 Issue #2 跟踪；开发会话的成功日报不替代目标主机验收。
 
@@ -365,3 +366,7 @@ API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端�
 Cloudflare Pages 从本 GitHub 仓库 main 集成，根目录留空、命令 `npm run build:web`、输出 `dist/web`、`NODE_VERSION=22.19.0`、`SITE_URL` 为真实稳定 HTTPS origin。同分支正式 reports 提交触发自动构建；另一归档仓库/分支必须另外安全检出并触发部署，默认不会自动跨分支读取。初次没有正式日报时正常展示空状态。不要将测试归档分支或 demo fixture 当正式新闻。
 
 详细账户/GitHub App 授权、Private Repo、路径与数据边界见 [公共站部署说明](PUBLIC_WEB.md)。当前代码与本地浏览器验证不等于 Cloudflare 已上线；实际账户接入、URL 和一次 Git 自动部署成功后才能完成 #8 上线验收。开发阶段的两日期样本仅在显式 demo 模式使用。
+
+## 15. 代码与文档复核
+
+仓库根目录检查 `npm ci --ignore-scripts`、lint、typecheck、test 和 build；公共站另按第 14 节构建/预览。模拟检查不消耗真实模型额度，不写入 GitHub 归档目标。消息 phase 兼容、归档目标切换后的显式写操作及只读刷新均有回归覆盖，详见 [复核记录](validation/REPOSITORY_AUDIT.md)。这不替代第 8–10 节的原生服务账户/systemd 实机验收，也不代表已连接 Cloudflare。

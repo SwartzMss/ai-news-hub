@@ -61,3 +61,13 @@ test('runtime archive token is excluded from Codex environment',async()=>{
  const env=codexEnvironment({PATH:'/usr/bin',AI_NEWS_HUB_GITHUB_TOKEN:'DO_NOT_INHERIT',AI_NEWS_HUB_GITHUB_REPOSITORY:'owner/private',GH_TOKEN:'DO_NOT_INHERIT'});
  assert.equal(env.AI_NEWS_HUB_GITHUB_TOKEN,undefined);assert.equal(env.AI_NEWS_HUB_GITHUB_REPOSITORY,undefined);assert.equal(env.GH_TOKEN,undefined);
 });
+for (const mode of ['phase-final','phase-early','phase-legacy','phase-future']) {
+ test(`stdio ${mode} separates progress from final output`,async()=>{
+  const events=[];const result=await execute(mode,{},e=>events.push(e));
+  assert.deepEqual(JSON.parse(result.output),{ok:true});
+  assert.ok(events.some(e=>e.type==='message'&&e.text==='Checking public sources.'));
+ });
+}
+test('progress alone cannot become a successful final response',async()=>{
+ await assert.rejects(execute('phase-progress-only'),{code:'invalid_output'});
+});

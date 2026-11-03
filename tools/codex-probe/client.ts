@@ -1,3 +1,4 @@
+import { codexEnvironment } from '../../packages/shared/src/agent-environment.js';
 import { spawn } from 'node:child_process';
 import { randomUUID } from 'node:crypto';
 
@@ -21,7 +22,7 @@ const MARKER = 'AI_NEWS_HUB_PROBE_OK';
 const MAX_LINE = 1024 * 1024;
 
 // This bounded diagnostic deliberately supports one Run and one active RPC.
-// It is not the future durable Backend adapter.
+// It remains separate from the durable Backend adapter.
 export async function runProbe(options: ProbeOptions): Promise<ProbeResult> {
   if (!Number.isSafeInteger(options.timeoutMs) || options.timeoutMs < 1) throw new ProbeError('invalid_config');
   if (options.signal?.aborted) throw new ProbeError('cancelled');
@@ -31,7 +32,7 @@ export async function runProbe(options: ProbeOptions): Promise<ProbeResult> {
     timestamp: new Date().toISOString(), event, runId, ...extra,
   });
   const child = spawn(options.binary, options.args ?? ['app-server', '--listen', 'stdio://'], {
-    cwd: options.cwd, stdio: ['pipe', 'pipe', 'pipe'], detached: true,
+    cwd: options.cwd, env: codexEnvironment(), stdio: ['pipe', 'pipe', 'pipe'], detached: true,
   });
   // Drain stderr, never forward it: it can contain private config or token material.
   child.stderr.resume();
@@ -45,7 +46,7 @@ export async function runProbe(options: ProbeOptions): Promise<ProbeResult> {
       let done = false, seq = 0, pendingId = 0, phase = '';
       let buffer = '';
       const completions: RecordValue[] = [];
-      const messages = new Map<string, string>();
+      const messages = new Map<string, { text: string; final: boolean }>();
       const fail = (code: string) => {
         if (done) return;
         done = true;
@@ -74,7 +75,7 @@ export async function runProbe(options: ProbeOptions): Promise<ProbeResult> {
           fail(code);
           return;
         }
-        if (messages.get(`${threadId}/${turnId}`)?.trim() !== MARKER) { fail('invalid_output'); return; }
+        if (messages.get(`${threadId}/${turnId}`)?.text.trim() !== MARKER) { fail('invalid_output'); return; }
         done = true;
         log('completed', { threadId, turnId });
         resolve({ status: 'completed', runId, threadId, turnId });
@@ -94,7 +95,11 @@ export async function runProbe(options: ProbeOptions): Promise<ProbeResult> {
             completions.push(p); finish();
           } else if (m.method === 'item/completed' && p?.item?.type === 'agentMessage') {
             if (typeof p.item.text !== 'string' || messages.size >= 32) { fail('protocol_error'); return; }
-            messages.set(`${p.threadId}/${p.turnId}`, p.item.text);
+            if (p.item.phase != null && typeof p.item.phase !== 'string') { fail('protocol_error'); return; }
+            if (['commentary', 'partial_answer'].includes(p.item.phase)) return;
+            const key = `${p.threadId}/${p.turnId}`;
+            const final = p.item.phase === 'final_answer';
+            if (!messages.get(key)?.final || final) messages.set(key, { text: p.item.text, final });
           }
           return;
         }

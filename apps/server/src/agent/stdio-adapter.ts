@@ -7,7 +7,7 @@ interface WireMessage {
   id?: string | number; method?: string;
   error?: { code?: number };
   result?: { account?: object | null; requiresOpenaiAuth?: boolean; thread?: { id?: string }; turn?: WireTurn };
-  params?: { threadId?: string; turnId?: string; turn?: WireTurn; item?: { id?: string; type?: string; text?: string } };
+  params?: { threadId?: string; turnId?: string; turn?: WireTurn; item?: { id?: string; type?: string; text?: string; phase?: string | null } };
 }
 const idValid = (id: unknown): id is string => typeof id === 'string' && id.length > 0 && id.length <= 256;
 
@@ -29,7 +29,7 @@ export class StdioAdapter implements AgentAdapter {
         let done = false, sequence = 0, pending = 0, phase = '';
         let buffer = '', threadId = '', turnId = '';
         const terminal: NonNullable<WireMessage['params']>[] = [];
-        const messages = new Map<string, { threadId: string; turnId: string; text: string }>();
+        const messages = new Map<string, { threadId: string; turnId: string; text: string; phase?: string | null }>();
         const fail = (code: string) => { if (!done) { done = true; reject(new AgentError(code)); } };
         const emit = (event: AgentEvent) => {
           try { onEvent(event); }
@@ -52,7 +52,14 @@ export class StdioAdapter implements AgentAdapter {
               : event.turn.status === 'interrupted' ? 'interrupted' : 'agent_failed');
             return;
           }
-          const output = [...messages.values()].filter((m) => m.threadId === threadId && m.turnId === turnId).map((m) => m.text).join('\n');
+          const matching = [...messages.values()].filter((m) => m.threadId === threadId && m.turnId === turnId);
+          const progress = (message: { phase?: string | null }) => ['commentary', 'partial_answer'].includes(message.phase ?? '');
+          // Explicit progress belongs in the Run log, never in a structured result.
+          for (const message of matching.filter(progress)) emit({ type: 'message', text: message.text });
+          if (done) return;
+          const finals = matching.filter((m) => m.phase === 'final_answer');
+          // Older and future protocol versions may omit phase or introduce new values.
+          const output = (finals.length ? finals : matching.filter((m) => !progress(m))).map((m) => m.text).join('\n');
           if (!output.trim()) { fail('invalid_output'); return; }
           if (Buffer.byteLength(output) > 64 * 1024) { fail('output_too_large'); return; }
           emit({ type: 'message', text: output });
@@ -76,10 +83,10 @@ export class StdioAdapter implements AgentAdapter {
               if (!idValid(p?.threadId) || !idValid(p?.turn?.id) || terminal.length >= 32) { fail('protocol_error'); return; }
               terminal.push(p!); finish();
             } else if (m.method === 'item/completed' && p?.item?.type === 'agentMessage') {
-              if (!idValid(p.threadId) || !idValid(p.turnId) || !idValid(p.item.id) || typeof p.item.text !== 'string' || messages.size >= 32) { fail('protocol_error'); return; }
+              if (!idValid(p.threadId) || !idValid(p.turnId) || !idValid(p.item.id) || typeof p.item.text !== 'string' || (p.item.phase != null && typeof p.item.phase !== 'string') || messages.size >= 32) { fail('protocol_error'); return; }
               if (Buffer.byteLength(p.item.text) > 64 * 1024) { fail('output_too_large'); return; }
               // Keep early notifications until turn/start gives the authoritative ID.
-              messages.set(`${p.threadId}/${p.turnId}/${p.item.id}`, { threadId: p.threadId, turnId: p.turnId, text: p.item.text });
+              messages.set(`${p.threadId}/${p.turnId}/${p.item.id}`, { threadId: p.threadId, turnId: p.turnId, text: p.item.text, phase: p.item.phase });
             } else if (m.method === 'item/started' && p?.item && ['commandExecution', 'fileChange', 'mcpToolCall'].includes(p.item.type ?? '')) {
               emit({ type: 'item_started', itemType: p.item.type as 'commandExecution' | 'fileChange' | 'mcpToolCall' });
             }
