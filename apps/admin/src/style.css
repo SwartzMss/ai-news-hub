@@ -399,3 +399,5 @@ blockquote {
     font-size: 25px;
   }
 }
+
+.commit-link { overflow-wrap: anywhere; }

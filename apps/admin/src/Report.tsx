@@ -23,8 +23,12 @@ export function Report({ report }: { report: ReportRecord }) {
       <div className="eyebrow">日报 · 版本 {report.version}</div>
       <h2>{report.document.title}</h2>
       <p className="notice">
-        待人工审核 ·
-        格式与来源关联校验通过不等于独立事实核验。当前没有发布操作。
+        {report.status === "published"
+          ? "已归档"
+          : report.status === "approved"
+            ? "已人工批准"
+            : "待人工审核"}{" "}
+        · 格式与来源关联校验通过不等于独立事实核验。
       </p>
       <p>
         {report.document.reportDate} · {report.document.channel} · 采集时间{" "}

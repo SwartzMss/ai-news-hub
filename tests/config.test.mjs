@@ -24,3 +24,9 @@ test('explicit IPv6 loopback and absolute data directory are allowed', () => {
   const config = loadConfig({ AI_NEWS_HUB_HOST: '::1', AI_NEWS_HUB_DATA_DIR: '/tmp/news-hub-test' });
   assert.equal(config.host, '::1');
 });
+test('publication is opt-in and rejects incomplete targets or unsafe branch names',()=>{
+ assert.equal(loadConfig({}).publication,undefined);
+ const good={AI_NEWS_HUB_GITHUB_REPOSITORY:'owner/archive',AI_NEWS_HUB_GITHUB_BRANCH:'reports',AI_NEWS_HUB_GITHUB_TOKEN:'test_only_01234567890123456789'};
+ assert.equal(loadConfig(good).publication.repository,'owner/archive');
+ for(const patch of [{AI_NEWS_HUB_GITHUB_TOKEN:''},{AI_NEWS_HUB_GITHUB_BRANCH:'../main'},{AI_NEWS_HUB_GITHUB_REPOSITORY:'https://evil.example/owner/repo'},{AI_NEWS_HUB_GITHUB_BRANCH:'refs//main'},{AI_NEWS_HUB_GITHUB_BRANCH:'main.lock'}]) assert.throws(()=>loadConfig({...good,...patch}),{code:'invalid_publication_config'});
+});

@@ -1,6 +1,6 @@
 # 真实 RSS → 待审核日报
 
-Issue #5 提供固定 `news-github` 手动任务，频道 `opensource`，来源为 [GitHub Blog RSS](https://github.blog/feed/)。Backend 拉取和规范化来源，Codex 负责分类、重要性排序、中文事实摘要与独立分析，Backend 校验后保存 SQLite JSON / Markdown。尚无调度、审核修改、GitHub 归档、公开 RSS 或前端。
+Issue #5 提供固定 `news-github` 手动任务，频道 `opensource`，来源为 [GitHub Blog RSS](https://github.blog/feed/)。Backend 拉取和规范化来源，Codex 负责分类、重要性排序、中文事实摘要与独立分析，Backend 校验后保存 SQLite JSON / Markdown。已提供管理后台与人工批准/GitHub 归档，见 [发布说明](PUBLISHING.md)；尚无调度、内容编辑、公开 RSS 或公共阅读前端。
 
 ## 运行与查询
 
@@ -35,7 +35,7 @@ Issue #5 提供固定 `news-github` 手动任务，频道 `opensource`，来源�
 
 模型通过 `turn/start.outputSchema` 接收严格 Schema。Backend 再独立解析 JSON，拒绝额外字段、错误类型、未知/重复文章 ID，以及无法从候选标题/摘要精确匹配的 `evidenceQuote`。URL、来源和三类时间只从候选快照补充，模型不能提交这些字段，也没有点赞/评论数输出字段。最终报告再次通过完整 Schema 验证；Markdown 转义来源与模型文本。
 
-报告状态 `validated` 表示结构与来源关联通过，JSON 始终标记 `reviewStatus: pending`、条目 `verification: source_only`，原始文章默认 `unverified`。精确引文不能证明摘要或推断准确，仍需人工核对原文、事实/观点和时效。当前没有批准或发布接口，`publication_records` 不写入。
+报告状态 `validated` 表示结构与来源关联通过，JSON 始终标记 `reviewStatus: pending`、条目 `verification: source_only`，原始文章默认 `unverified`。精确引文不能证明摘要或推断准确，仍需人工核对原文、事实/观点和时效。新闻生成本身不批准、不发布；人工批准与归档由 Issue #7 的独立管理操作完成。
 
 报告、文章关联、newsRun 报告引用与 Run/Turn 成功状态在同一事务提交；解析、校验或存储失败均回滚报告并将 Run 标失败。候选快照与采集记录可保留用于排查。取消/超时沿用任务引擎，迟到成功不写报告；重启中断，不自动重试。
 

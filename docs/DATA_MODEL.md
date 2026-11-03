@@ -1,7 +1,7 @@
 # SQLite 数据模型
 
 初始迁移：`apps/server/src/db/migrations.ts` 的 `initial_schema`。数据库在 `AI_NEWS_HUB_DATA_DIR/news.db`，默认 `/var/lib/ai-news-hub/news.db`；禁止提交 SQLite、WAL / SHM、认证或本地日志到 Git。
-Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历史持久化。Issue #5 追加迁移 3，启用 RSS 采集、文章及待审核报告业务；发布表仍只有 Schema。
+Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历史持久化。Issue #5 追加迁移 3，启用 RSS 采集、文章及待审核报告业务；Issue #7 迁移 4 启用人工批准与 GitHub 发布持久化。
 
 ## 表与关系
 
@@ -35,6 +35,12 @@ Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历
 当前 `articles` 允许同 URL/GUID 的来源更正更新标题、摘要、发布时间和 URL，保留首次抓取时间。弱指纹别名不绑定新 GUID，后续内容分歧独立建记录；canonical/GUID 指向不同文章时整批失败。历史 `news_runs.candidates_json`、`reports.content_json` 与 Markdown 保留生成时快照，追溯时不能用当前文章内容覆盖它们。
 
 报告 `validated` 仅表示严格格式、候选 ID、精确依据引文与来源关联校验通过；文档保持 `reviewStatus=pending`、`verification=source_only`。它不代表独立事实核验或人工批准，不能直接发布。报告/关联/Run 成功事务一起提交或回滚。同日同频道新 Run 增加版本，幂等重试不新增版本。
+
+迁移 4（`approved_github_publications`）新增 `report_approvals(report_id, content_hash, approved_at)`，一份报告只能批准一次，绑定完整生成文档、版本、候选快照与关联 ID；变动后拒绝，修订须生成新报告版本。原始 `reports.content_json` 不改写，故仍保留 pending 生成快照。
+
+`publication_records` 追加 `repository`、`branch`、`content_hash`（归档字节 SHA-256）、`commit_sha`、`attempts`。幂等键仅绑定仓库/分支/路径/字节哈希，不包含凭据；轮换 Token 保留同一记录。`published_at` 为 GitHub 返回的提交时间。pending → publishing → succeeded/failed；failed 显式重试复用记录并增加次数。启动将未完成 publishing 标 failed / publication_interrupted；不自动重试，不把未知远端结果当成功。成功状态与 Report published 同事务保存，远端操作不处于 SQLite 事务内。
+
+报告 validated → approved（人工、哈希确认）→ published（GitHub 确认）。失败保留 approved；GitHub 已提交但本地持久化失败可通过重试远端内容核对恢复。原始 JSON 的 source_only 不因人工允许发布而升级成独立事实核验。
 
 ## 状态与唯一约束
 
