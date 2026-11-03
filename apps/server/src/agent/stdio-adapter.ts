@@ -68,6 +68,10 @@ export class StdioAdapter implements AgentAdapter {
               emit({ type: 'approval_required' }); fail('needs_approval'); return;
             }
             const p = m.params;
+            if (m.method === 'item/started' && input.forbidTools && p?.item?.type
+              && !['userMessage', 'agentMessage', 'reasoning', 'plan', 'contextCompaction'].includes(p.item.type)) {
+              fail('unexpected_tool'); return;
+            }
             if (m.method === 'turn/completed') {
               if (!idValid(p?.threadId) || !idValid(p?.turn?.id) || terminal.length >= 32) { fail('protocol_error'); return; }
               terminal.push(p!); finish();
@@ -96,11 +100,12 @@ export class StdioAdapter implements AgentAdapter {
             request(input.threadId ? 'thread/resume' : 'thread/start', {
               ...(input.threadId ? { threadId: input.threadId } : {}),
               cwd: input.cwd, sandbox: 'read-only', approvalPolicy: 'untrusted', model: input.model,
+              developerInstructions: input.developerInstructions,
             });
           } else if (phase === 'thread/start' || phase === 'thread/resume') {
             if (!idValid(r.thread?.id) || (input.threadId && r.thread.id !== input.threadId)) { fail('protocol_error'); return; }
             threadId = r.thread.id; emit({ type: 'thread', threadId });
-            request('turn/start', { threadId, input: [{ type: 'text', text: input.input, text_elements: [] }] });
+            request('turn/start', { threadId, input: [{ type: 'text', text: input.input, text_elements: [] }], outputSchema: input.outputSchema });
           } else if (phase === 'turn/start') {
             if (!idValid(r.turn?.id)) { fail('protocol_error'); return; }
             turnId = r.turn.id; pending = -1; phase = 'waiting';

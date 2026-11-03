@@ -1,7 +1,7 @@
 # SQLite 数据模型
 
 初始迁移：`apps/server/src/db/migrations.ts` 的 `initial_schema`。数据库在 `AI_NEWS_HUB_DATA_DIR/news.db`，默认 `/var/lib/ai-news-hub/news.db`；禁止提交 SQLite、WAL / SHM、认证或本地日志到 Git。
-Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历史持久化。内容采集、报告和发布表仍只有 Schema，尚无对应业务流程。
+Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历史持久化。Issue #5 追加迁移 3，启用 RSS 采集、文章及待审核报告业务；发布表仍只有 Schema。
 
 ## 表与关系
 
@@ -20,6 +20,21 @@ Issue #4 追加迁移 2（`task_execution_history`），实现任务执行及历
 | `backend_owner` | 同一数据目录的单 Backend 所有权：随机 owner ID、PID、进程启动时间、boot ID |
 
 标识均为调用方分配的非空主键；后续业务使用 UUID 等稳定 ID。表使用 STRICT 类型，外键在连接时启用，历史引用采用 `ON DELETE RESTRICT`。
+
+迁移 3（`rss_collection_and_reports`）追加：
+
+| 表/字段 | 职责 |
+| --- | --- |
+| `articles.last_seen_at` | 最近在成功 RSS 响应中观察到的时间；`fetched_at` 保留首次抓取时间 |
+| `rss_sources` | 固定来源 URL、请求/成功时间、安全错误码、ETag/Last-Modified |
+| `rss_entries` | 来源内稳定条目标识与文章映射 |
+| `article_fingerprints` | 来源内当前规范化标题/摘要指纹与文章映射；更新时移除旧指纹 |
+| `rss_feed_items` | 最近成功 Feed 的文章顺序；用于频率限制与 304 缓存 |
+| `news_runs` | Run 一对一来源、UTC 报告日期、候选 JSON 快照、采集时间及唯一报告引用 |
+
+当前 `articles` 允许同 URL/GUID 的来源更正更新标题、摘要、发布时间和 URL，保留首次抓取时间。弱指纹别名不绑定新 GUID，后续内容分歧独立建记录；canonical/GUID 指向不同文章时整批失败。历史 `news_runs.candidates_json`、`reports.content_json` 与 Markdown 保留生成时快照，追溯时不能用当前文章内容覆盖它们。
+
+报告 `validated` 仅表示严格格式、候选 ID、精确依据引文与来源关联校验通过；文档保持 `reviewStatus=pending`、`verification=source_only`。它不代表独立事实核验或人工批准，不能直接发布。报告/关联/Run 成功事务一起提交或回滚。同日同频道新 Run 增加版本，幂等重试不新增版本。
 
 ## 状态与唯一约束
 
@@ -40,7 +55,7 @@ Run 中的 `thread_id` / `turn_id` 是查询用摘要；继续 Turn 时清除旧
 
 时间字段使用 UTC ISO 8601 字符串；自动创建时间用 SQLite `strftime`，`updated_at` 后续由写入业务显式更新。Task 时区保存 IANA 名称，当前不解析 schedule 或执行计划。
 `source_published_at` 与 `event_at` 不确定时保存 NULL；`fetched_at` 必填，不用抓取时间伪造原始发布时间。`report_date` 表示频道报告日期，与事件发生日期分开。
-URL、IANA 时区、日期格式和状态转换的完整业务校验留给后续入口；当前没有自动发布，Schema 中的非空来源字段不能视为来源真实性已验证。
+URL、IANA 时区、日期格式和状态转换的完整业务校验留给后续入口；固定 RSS 入口与报告 Schema 已执行 URL/日期校验；当前没有自动发布，Schema 中的非空来源字段不能视为来源真实性已验证。
 
 ## 迁移与运维
 

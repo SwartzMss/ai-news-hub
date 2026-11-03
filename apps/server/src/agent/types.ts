@@ -3,6 +3,7 @@ export const AGENT_ERROR_CODES = [
   'auth_required', 'quota_exceeded', 'rate_limited', 'needs_approval', 'agent_failed',
   'interrupted', 'invalid_output', 'output_too_large', 'event_limit', 'cleanup_failed',
   'event_persistence_failed',
+  'unexpected_tool',
 ] as const;
 export class AgentError extends Error {
   readonly code: typeof AGENT_ERROR_CODES[number];
@@ -23,6 +24,7 @@ export type AgentEvent =
 export interface AgentInput {
   runId: string; threadId?: string; input: string; cwd: string; model?: string;
   timeoutMs: number; signal: AbortSignal;
+  outputSchema?: Record<string, unknown>; developerInstructions?: string; forbidTools?: boolean;
 }
 export interface AgentResult {
   status: 'completed' | 'failed' | 'interrupted'; threadId: string; turnId: string; output: string;

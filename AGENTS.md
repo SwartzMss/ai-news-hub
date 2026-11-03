@@ -1,6 +1,6 @@
 # AGENTS.md
 
-本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，尚无可运行的真实新闻服务。
+本仓库为 **AI News Hub**，当前包含 Fastify / SQLite 任务执行引擎、独立 HTML 交互原型和 Codex 接入验证工具，已支持手动真实 RSS → Codex → SQLite 待审核日报，尚无公开发布或前端。
 
 ## 当前工程结构与检查
 
@@ -8,6 +8,7 @@
 - `apps/web` / `apps/admin` 仅预留位置，不代表 React/Vite 或后台界面已实现。
 - 运行 `npm run lint`、`npm run typecheck`、`npm test`、`npm run build`；测试不调用真实 Codex，但会启动回环 HTTP 子进程。
 - Backend 提供公开 `/health` 与 Bearer Token 保护的 `/api` 任务/Run 接口；未配置管理 Token 时 `/api` 关闭。接口见 `docs/TASK_ENGINE.md`。
+- 固定新闻任务 `news-github` 与受保护查询接口见 `docs/NEWS_PIPELINE.md`；Schema/来源关联校验不等于事实审核，不自动发布。
 - 启动自动迁移，也可 `npm run db:migrate`。配置见 `.env.example`，数据模型见 `docs/DATA_MODEL.md`。
 - 每个 Turn 使用独立 stdio App Server 子进程，新 Run 新建 Thread，继续 Turn 恢复原 Thread；不将 Backend 管理/发布凭据继承给 Agent。
 - 每个数据目录只允许一个 Backend；重启将未完成 Run / Turn 标为 interrupted，不自动重跑。审批一律拒绝并失败退出，交互审批暂未实现。

@@ -1,6 +1,6 @@
 # Task → Run → Thread → Turn 引擎与 API
 
-Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。当前只有预定义样例 `sample-connectivity`；没有定时调度、任务编辑、新闻采集、日报发布或聊天 UI。
+Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。预定义任务有 `sample-connectivity` 及 Issue #5 的 `news-github`；没有定时调度、任务编辑、日报发布或聊天 UI。新闻任务的来源/报告查询见 [新闻流水线](NEWS_PIPELINE.md)。
 样例提示词要求固定回复 `AI_NEWS_HUB_TASK_OK` 且不使用工具。创建样例记录不会调用模型；手动启动和继续 Turn 才使用真实账户额度。
 
 ## 配置与认证
@@ -13,7 +13,7 @@ Backend 只允许监听 `127.0.0.1` / `::1`。`/health` 公开，仅检查本地
 | `AI_NEWS_HUB_ADMIN_TOKEN` | 空/未设置时管理 API 返回 503；32–256 个字母、数字、下划线或连字符，可用 `openssl rand -hex 32` 在本机生成 |
 | `AI_NEWS_HUB_CODEX_BIN` | `codex`，正式服务建议指定服务账户可执行的绝对路径 |
 | `AI_NEWS_HUB_MODEL` | 未设置时沿用 Codex 配置，模型访问权须通过真实 Turn 验证 |
-| `AI_NEWS_HUB_RUN_TIMEOUT_MS` | 120000；允许 1000–3600000，作用于正在执行的单个 Turn，不含排队时间 |
+| `AI_NEWS_HUB_RUN_TIMEOUT_MS` | 120000；允许 1000–3600000，作用于正在执行的单个 Turn（含新闻采集准备阶段），不含排队时间 |
 | `AI_NEWS_HUB_CONCURRENCY` | 1；允许 1–4，同时执行的 Turn 上限 |
 | `AI_NEWS_HUB_MAX_QUEUE` | 20；允许 1–100，运行槽之外的等待数量上限 |
 
@@ -35,7 +35,7 @@ Token 不接受查询参数或 Cookie；未认证返回 401，响应不缓存，
 | `POST /api/runs/:runId/cancel` | 返回 `{run}`；排队任务立即取消，执行中的任务发出中断并等待子进程清理 |
 | `POST /api/runs/:runId/turns` | `{"idempotencyKey":"followup-001","input":"继续分析…"}`，返回 `{run,turn,reused}` |
 
-幂等键为 1–128 个字母、数字或 `._:-`。初始请求的幂等键在 Task 内唯一；继续请求在 Run 内唯一，键相同但输入不同返回 409 `idempotency_conflict`。输入须非空且最多 8000 个字符。
+幂等键为 1–128 个字母、数字或 `._:-`。初始请求的幂等键在 Task 内唯一；继续请求在 Run 内唯一，键相同但输入不同返回 409 `idempotency_conflict`。手动继续输入须非空且最多 8000 个字符。新闻任务由受限工作流生成最多 48 KiB 的候选输入，禁止继续 Turn（409 `workflow_continuation_disabled`），重新分析须显式新建 Run。
 相同 Task 有 queued/running/waiting_approval Run 时，新的执行或继续请求返回 409 `task_busy`；相同幂等键的重试只读取原记录。队列满返回 429 `queue_full`，不会创建多余 Run。
 
 错误体为 `{"error":{"code":"…","message":"…","requestId":"…"}}`。不存在的 Task / Run 返回 404；缺少 Thread 时继续请求返回 409 `thread_unavailable`，须用新的启动幂等键显式新建 Run。

@@ -8,6 +8,8 @@ Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、�
 
 Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件、取消和继续 Turn 已实现；开发会话完成真实样例调用，目标服务账户的 systemd 与长期认证仍待 #2 验收。见 [引擎与 API](TASK_ENGINE.md)。
 
+Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出及 SQLite 待审核日报已实现，完成真实来源与模型端到端验证。尚不发布。见 [新闻流水线](NEWS_PIPELINE.md) 与 [验证记录](validation/NEWS_PIPELINE.md)。
+
 ## v0.1 — Linux 端到端 MVP（含最小管理后台）
 
 ### A. Linux 服务骨架
@@ -30,10 +32,10 @@ Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件
 - [x] 有限队列/并发、任务互斥、请求幂等、Token 管理 API、SQLite 历史与事件
 
 ### C. 真实新闻 → 已验证日报
-- [ ] 采集至少一个合法可访问的 RSS 真实来源
-- [ ] 标准化 URL、来源、抓取时间、来源发布时间并实现最小去重
-- [ ] 使用受 Schema 约束的 Codex 分析输出，保留可核验的原始来源
-- [ ] SQLite 存储任务、Run、新闻与报告
+- [x] 采集至少一个合法可访问的 RSS 真实来源
+- [x] 标准化 URL、来源、抓取时间、来源发布时间并实现最小去重
+- [x] 使用受 Schema 约束的 Codex 分析输出，保留可核验的原始来源
+- [x] SQLite 存储任务、Run、新闻与报告
 - [ ] 将日报按日期输出为 JSON / Markdown，仅在校验通过后推送 GitHub（防止重复发布）
 
 ### D. Web / RSS 和最小管理端
