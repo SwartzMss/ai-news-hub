@@ -335,3 +335,13 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 通过受保护的 `/api/news/sources` 查看上次请求结果，`/api/news/articles` 查看当前文章，`/api/news/runs/:runId` 查看生成时候选与报告 ID，`/api/news/reports/:reportId` 获取 JSON 与 Markdown。报告 `validated` 仍待人工审核，不进行 GitHub 提交或公开发布。新幂等键显式生成新 Run/版本；此任务不支持继续 Turn。
 
 API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端到端记录见 [验证记录](validation/NEWS_PIPELINE.md)。原生 Ubuntu Server 24.04 服务账户/systemd/长期认证验收仍由 Issue #2 跟踪；开发会话的成功日报不替代目标主机验收。
+
+## 12. Issue #6 本地管理后台
+
+在源码安装依赖并运行 `npm run build`，它同时生成 Backend 与独立 `dist/admin`。部署时保留整个 `dist`，不能只拷贝 server；重启服务后打开 `http://127.0.0.1:3000/admin/`。后台构建缺失时入口返回 503 `admin_build_missing`，不会影响原有健康/API 路由。构建需要开发依赖；正式运行仍通过单个 Backend/systemd，不需额外 Vite 服务。
+
+输入第 10 节配置的管理 Token，页面内存持有，不使用 Cookie/localStorage/sessionStorage。刷新后重新输入 Token，Task/Run 导航与服务端历史保留。页面壳和 JS/CSS 不含私有数据，可以在认证前加载；任何任务、日志、报告读取或执行仍须 Bearer Token。退出、401 或管理 API 被关闭时移除私有视图。
+
+在同一台 Linux 主机上直接本地访问。只有 Backend 部署在另一台机器时才需安全通道，例如在访问端运行 `ssh -L 8080:127.0.0.1:3000 user@server`，然后浏览器打开 `http://localhost:8080/admin/`；Token 认证仍必需。SSH 是远程访问方式，不是本机访问的前置条件，不要为管理界面改成公网监听。
+
+`dist/admin` 仅部署到私有 Backend。公共阅读站应使用独立构建目录，禁止将整个 `dist` 或仓库根目录作为 Cloudflare Pages 发布目录；公开站当前尚未实现。后台操作与限制见 [使用说明](ADMIN.md)。

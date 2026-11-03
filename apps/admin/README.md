@@ -1,4 +1,5 @@
-# 管理后台
+# 本地管理后台
 
-预留受保护的管理前端位置。目前没有登录、任务操作或审批界面。
-后续按 Task → Run → Thread → Turn 展示状态、日志与结果，共享接口类型放在 `packages/shared/src/`。
+独立 React/Vite 应用，按 Task → Run 展示真实状态、日志与待审核日报。根目录 `npm run build` 后由 Backend `/admin/` 提供，不单独部署公开 Vite 服务。
+
+运行与访问边界见 [后台说明](../../docs/ADMIN.md)。Token 仅在页面内存，所有数据与操作使用受保护 API。此目录与 `dist/admin` 不属于 Cloudflare 公共站构建，`apps/web` 仍未实现。

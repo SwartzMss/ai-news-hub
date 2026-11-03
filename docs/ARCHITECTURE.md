@@ -2,7 +2,7 @@
 
 > 包含已实现的基础骨架与 v0.1 目标架构；各模块的实现范围如下，不能将目标链路理解为已经上线。
 
-Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；尚无定时调度、审核操作或发布。
+Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；Issue #6 增加本地 React/Vite 管理后台，按 Task → Run 查看状态、日志和待审核日报；尚无定时调度、审核操作或发布。
 Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于诊断，正式 Adapter 位于 `apps/server/src/agent/`。
 探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
@@ -93,7 +93,7 @@ Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于
 SQLite 使用 Node 22 内置实验性 `node:sqlite`，当前同步访问用于初始化、状态与有限事件事务。未来业务需按实际负载评估，暂不增加 ORM 或独立数据库服务。
 
 Fastify 只允许绑定 `127.0.0.1` / `::1`；`/health` 检查已应用 Schema 可读，失败返回 503，不检测 Codex 认证。统一错误体保留 requestId，日志不记录请求体、头部、查询串或任意异常文本。
-SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` / `apps/admin` 当前仅有职责说明，共享接口类型放在 `packages/shared/src/`。
+SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` 仍仅有职责说明；`apps/admin` 已实现独立管理前端，共享接口类型放在 `packages/shared/src/`。
 
 已实现的固定来源状态保存于 `rss_sources`；动态来源配置、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只恢复历史可查询性并标记中断，不自动恢复执行，不会擅自将旧 Run 改为成功。
 
@@ -119,6 +119,8 @@ Issue #5 已实现严格 JSON Schema：分类、重要性、事实摘要、独�
 - **不提供独立 Agent 工作台**，避免任务与会话脱钩。
 - v0.1 最小管理端包括任务状态、手动触发、执行日志、结果预览；任务编辑、审批和完整多轮交互可逐步完善。
 - 管理 API 默认只绑定 Linux 主机回环地址；网页远程访问需单独完成认证/安全代理方案，不在 v0.1 默认开放公网。
+
+后台独立构建到 `dist/admin`，Backend 仅为 `/admin/` 和受限 JS/CSS 白名单提供静态响应，不嵌入 Token 或 SQLite 数据；所有私有读取和写操作仍经受保护 `/api`。浏览器 Token 仅保存在内存，刷新重新认证；hash 保留 Task/Run 导航。每 2 秒顺序轮询、离开页面取消旧请求，401/管理关闭清除私有视图。日报按结构化字段转义展示，不执行模型 HTML；来源链接限制 HTTP(S)。公开站构建不应复制 `dist/admin`。详见 [管理后台](ADMIN.md)。
 
 ## 7. 定时与幂等
 

@@ -6,30 +6,40 @@
     "node": ">=22.19.0 <23"
   },
   "scripts": {
-    "build": "tsc",
-    "check": "tsc --noEmit",
-    "typecheck": "tsc --noEmit",
+    "build": "tsc && npm run build:admin",
+    "check": "tsc --noEmit && tsc -p apps/admin/tsconfig.json",
+    "typecheck": "tsc --noEmit && tsc -p apps/admin/tsconfig.json",
     "lint": "eslint .",
-    "test": "npm run build && node --test tests/*.test.mjs",
+    "test": "npm run build && node --test tests/*.test.mjs && npm run test:admin",
     "start": "node --env-file-if-exists=.env dist/apps/server/src/main.js",
     "db:migrate": "node --env-file-if-exists=.env dist/apps/server/src/migrate.js",
     "health": "node --env-file-if-exists=.env dist/scripts/health.js",
     "service:start": "bash scripts/service.sh start",
     "service:stop": "bash scripts/service.sh stop",
-    "probe:codex": "node dist/tools/codex-probe/cli.js"
+    "probe:codex": "node dist/tools/codex-probe/cli.js",
+    "build:admin": "vite build apps/admin --config apps/admin/vite.config.ts",
+    "test:admin": "vitest run --root apps/admin"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",
+    "@testing-library/react": "16.3.3",
     "@types/node": "22.19.0",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
     "@types/sax": "1.2.7",
     "eslint": "10.14.0",
+    "jsdom": "26.1.0",
     "typescript": "5.9.3",
-    "typescript-eslint": "8.72.1"
+    "typescript-eslint": "8.72.1",
+    "vite": "8.3.5",
+    "vitest": "5.1.0"
   },
   "dependencies": {
     "ajv": "8.20.0",
     "ajv-formats": "3.0.1",
     "fastify": "5.12.8",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
     "sax": "1.6.1",
     "undici": "8.12.3"
   },

@@ -1,0 +1,67 @@
+import type { DailyReport } from "../../server/src/news/report";
+export interface ReportRecord {
+  id: string;
+  version: number;
+  status: string;
+  document: DailyReport;
+}
+function safeUrl(value: string) {
+  try {
+    const url = new URL(value);
+    return ["http:", "https:"].includes(url.protocol) &&
+      !url.username &&
+      !url.password
+      ? url.href
+      : undefined;
+  } catch {
+    return undefined;
+  }
+}
+export function Report({ report }: { report: ReportRecord }) {
+  return (
+    <section className="panel">
+      <div className="eyebrow">日报 · 版本 {report.version}</div>
+      <h2>{report.document.title}</h2>
+      <p className="notice">
+        待人工审核 ·
+        格式与来源关联校验通过不等于独立事实核验。当前没有发布操作。
+      </p>
+      <p>
+        {report.document.reportDate} · {report.document.channel} · 采集时间{" "}
+        {report.document.collectedAt}
+      </p>
+      {report.document.items.map((item) => (
+        <article className="report-item" key={item.articleId}>
+          <span className="badge">
+            {item.category} · 重要性 {item.importance}/5
+          </span>
+          <h3>来源事实摘要</h3>
+          <p>{item.factSummary}</p>
+          <h3>分析（推断）</h3>
+          <p>{item.analysis ?? "无"}</p>
+          <blockquote>{item.evidenceQuote}</blockquote>
+          <a
+            href={safeUrl(item.source.canonicalUrl)}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            {item.source.name} · 查看原文 ↗
+          </a>
+          <dl>
+            <dt>来源发布时间</dt>
+            <dd>{item.source.publishedAt ?? "未知"}</dd>
+            <dt>事件时间</dt>
+            <dd>{item.source.eventAt ?? "未知"}</dd>
+            <dt>首次抓取时间</dt>
+            <dd>{item.source.fetchedAt}</dd>
+          </dl>
+          <p className="muted">来源关联：source_only · 未独立证实</p>
+        </article>
+      ))}
+      <details>
+        <summary>查看结构化 JSON</summary>
+        <pre>{JSON.stringify(report.document, null, 2)}</pre>
+      </details>
+    </section>
+  );
+}
