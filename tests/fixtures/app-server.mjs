@@ -28,10 +28,14 @@ createInterface({ input: process.stdin }).on('line', (line) => {
     if (!initialized) process.exit(8);
     send({ id: m.id, result: { account: mode === 'unauthenticated' || mode === 'custom-provider' ? null : { type: 'chatgpt' }, requiresOpenaiAuth: mode !== 'custom-provider' } });
   } else if (m.method === 'thread/start' || m.method === 'thread/resume') {
+    if (mode === 'research-config' && (m.params.config?.web_search !== 'live' || m.params.config?.['features.shell_tool'] !== false || m.params.config?.['features.multi_agent'] !== false || m.params.config?.['mcp_servers.inherited_test.enabled'] !== false)) process.exit(10);
     if (m.params.sandbox !== 'read-only' || m.params.approvalPolicy !== 'untrusted') process.exit(9);
     if (m.method === 'thread/resume') threadId = mode === 'resume-wrong' ? 'wrong-thread' : m.params.threadId;
     send({ id: m.id, result: { thread: { id: threadId } } });
+  } else if (m.method === 'config/read') {
+    send({id:m.id,result:{config:{mcp_servers:{inherited_test:{command:'DO_NOT_RUN'}}}}});
   } else if (m.method === 'turn/start') {
+    if (mode === 'research-config') send({method:'item/started',params:{threadId,turnId,item:{id:'search-1',type:'webSearch'}}});
     if (mode === 'tool') send({ method: 'item/started', params: { threadId, item: { id: 'tool-1', type: 'commandExecution' } } });
     if (mode === 'rpc-error') {
       send({ id: m.id, error: { code: -32000, message: 'SECRET_TOKEN' } }); return;

@@ -6,7 +6,7 @@ interface WireTurn { id?: string; status?: string; error?: { codexErrorInfo?: st
 interface WireMessage {
   id?: string | number; method?: string;
   error?: { code?: number };
-  result?: { account?: object | null; requiresOpenaiAuth?: boolean; thread?: { id?: string }; turn?: WireTurn };
+  result?: { account?: object | null; requiresOpenaiAuth?: boolean; thread?: { id?: string }; turn?: WireTurn; config?: Record<string,unknown> };
   params?: { threadId?: string; turnId?: string; turn?: WireTurn; item?: { id?: string; type?: string; text?: string; phase?: string | null } };
 }
 const idValid = (id: unknown): id is string => typeof id === 'string' && id.length > 0 && id.length <= 256;
@@ -28,6 +28,7 @@ export class StdioAdapter implements AgentAdapter {
       result = await new Promise<AgentResult>((resolve, reject) => {
         let done = false, sequence = 0, pending = 0, phase = '';
         let buffer = '', threadId = '', turnId = '';
+        let toolConfig: Record<string,unknown> | undefined;
         const terminal: NonNullable<WireMessage['params']>[] = [];
         const messages = new Map<string, { threadId: string; turnId: string; text: string; phase?: string | null }>();
         const fail = (code: string) => { if (!done) { done = true; reject(new AgentError(code)); } };
@@ -76,7 +77,7 @@ export class StdioAdapter implements AgentAdapter {
             }
             const p = m.params;
             if (m.method === 'item/started' && input.forbidTools && p?.item?.type
-              && !['userMessage', 'agentMessage', 'reasoning', 'plan', 'contextCompaction'].includes(p.item.type)) {
+              && !['userMessage', 'agentMessage', 'reasoning', 'plan', 'contextCompaction', ...(input.webSearch ? ['webSearch'] : [])].includes(p.item.type)) {
               fail('unexpected_tool'); return;
             }
             if (m.method === 'turn/completed') {
@@ -87,8 +88,8 @@ export class StdioAdapter implements AgentAdapter {
               if (Buffer.byteLength(p.item.text) > 64 * 1024) { fail('output_too_large'); return; }
               // Keep early notifications until turn/start gives the authoritative ID.
               messages.set(`${p.threadId}/${p.turnId}/${p.item.id}`, { threadId: p.threadId, turnId: p.turnId, text: p.item.text, phase: p.item.phase });
-            } else if (m.method === 'item/started' && p?.item && ['commandExecution', 'fileChange', 'mcpToolCall'].includes(p.item.type ?? '')) {
-              emit({ type: 'item_started', itemType: p.item.type as 'commandExecution' | 'fileChange' | 'mcpToolCall' });
+            } else if (m.method === 'item/started' && p?.item && ['commandExecution', 'fileChange', 'mcpToolCall', 'webSearch'].includes(p.item.type ?? '')) {
+              emit({ type: 'item_started', itemType: p.item.type as 'commandExecution' | 'fileChange' | 'mcpToolCall' | 'webSearch' });
             }
             return;
           }
@@ -102,12 +103,26 @@ export class StdioAdapter implements AgentAdapter {
           if (phase === 'initialize') {
             send({ method: 'initialized' }); emit({ type: 'initialized' });
             request('account/read', { refreshToken: false });
-          } else if (phase === 'account/read') {
-            if (!r.account && r.requiresOpenaiAuth !== false) { fail('auth_required'); return; }
+          } else if (phase === 'account/read' || phase === 'config/read') {
+            if (phase === 'account/read' && !r.account && r.requiresOpenaiAuth !== false) { fail('auth_required'); return; }
+            if (input.webSearch && phase === 'account/read') { request('config/read',{cwd:input.cwd,includeLayers:false}); return; }
+            if (input.webSearch) {
+              if (!r.config || typeof r.config !== 'object' || Array.isArray(r.config)) { fail('protocol_error'); return; }
+              toolConfig = { web_search: 'live', 'features.shell_tool': false, 'features.multi_agent': false, 'features.apps': false };
+              // Empty tables merge with user config. Explicitly disable every
+              // inherited MCP server before the Thread starts its processes.
+              const servers = r.config.mcp_servers;
+              if (servers != null && (typeof servers !== 'object' || Array.isArray(servers))) { fail('protocol_error'); return; }
+              for (const name of Object.keys(servers ?? {})) {
+                if (!/^[A-Za-z0-9_-]+$/.test(name)) { fail('protocol_error'); return; }
+                toolConfig[`mcp_servers.${name}.enabled`] = false;
+              }
+            }
             request(input.threadId ? 'thread/resume' : 'thread/start', {
               ...(input.threadId ? { threadId: input.threadId } : {}),
               cwd: input.cwd, sandbox: 'read-only', approvalPolicy: 'untrusted', model: input.model,
               developerInstructions: input.developerInstructions,
+              ...(toolConfig ? {config:toolConfig} : {}),
             });
           } else if (phase === 'thread/start' || phase === 'thread/resume') {
             if (!idValid(r.thread?.id) || (input.threadId && r.thread.id !== input.threadId)) { fail('protocol_error'); return; }

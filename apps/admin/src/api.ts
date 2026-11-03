@@ -54,6 +54,8 @@ export function errorText(error: unknown): string {
     task_busy: "任务已有执行中的 Run，请等待完成。",
     queue_full: "执行队列已满，请稍后重试。",
     auth_required: "Codex 认证失效，需要在服务账户下重新登录。",
+    workflow_run_finalized: "本 Run 已生成日报，请新建研究以调整内容。",
+    turn_limit: "已达到每个 Run 20 轮的上限，请开始新的研究。",
   };
   return messages[error.code] ?? `请求失败（${error.code}）。请刷新或重试。`;
 }

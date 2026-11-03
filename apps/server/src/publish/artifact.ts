@@ -7,8 +7,8 @@ import type { DatabaseSync } from "node:sqlite";
 import { isDeepStrictEqual } from "node:util";
 import { HttpError } from "../errors.js";
 import { buildReport, type DailyReport } from "../news/report.js";
-import { canonicalUrl } from "../news/rss.js";
-import { GITHUB_SOURCE } from "../news/source.js";
+import { legacySourceUrl } from "../news/legacy-source.js";
+import { sourceUrl } from "../news/sources.js";
 import type { ArticleCandidate } from "../news/types.js";
 const validator = new Ajv({
   strict: true,
@@ -23,7 +23,10 @@ export function reviewedReport(db: DatabaseSync, id: string) {
   const row = db
     .prepare(
       `SELECT r.*,n.source_id,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,t.status run_status
- FROM reports r JOIN news_runs n ON n.report_id=r.id AND n.run_id=r.run_id JOIN task_runs t ON t.id=r.run_id WHERE r.id=?`,
+ FROM reports r JOIN (
+ SELECT run_id,report_id,source_id,candidates_json,collected_at,report_date,channel FROM news_runs
+ UNION ALL SELECT run_id,report_id,'codex-research' source_id,candidates_json,collected_at,report_date,channel FROM codex_news_runs
+ ) n ON n.report_id=r.id AND n.run_id=r.run_id JOIN task_runs t ON t.id=r.run_id WHERE r.id=?`,
     )
     .get(id);
   if (!row) throw new HttpError(404, "report_not_found");
@@ -38,7 +41,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       String(row.candidates_json),
     ) as ArticleCandidate[];
     if (
-      row.source_id !== GITHUB_SOURCE.id ||
+      !['github-blog','codex-research'].includes(String(row.source_id)) ||
       row.channel !== "opensource" ||
       row.channel !== row.snapshot_channel ||
       row.report_date !== row.snapshot_date ||
@@ -53,9 +56,9 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       throw Error();
     for (const candidate of candidates)
       if (
-        candidate.sourceName !== GITHUB_SOURCE.name ||
-        canonicalUrl(candidate.originalUrl, GITHUB_SOURCE) !==
-          candidate.canonicalUrl
+        (row.source_id === 'github-blog'
+          ? candidate.sourceName !== 'GitHub Blog' || legacySourceUrl(candidate.originalUrl) !== candidate.canonicalUrl
+          : sourceUrl(candidate.originalUrl) !== candidate.canonicalUrl || candidate.sourceName !== new URL(candidate.canonicalUrl).hostname)
       )
         throw Error();
     const proposal = {

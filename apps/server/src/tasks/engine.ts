@@ -4,6 +4,7 @@ import type { RunEvent, RunRecord, RunStatus, TaskRecord, TurnRecord } from '../
 import { AppError, HttpError } from '../errors.js';
 import { AgentError, type AgentAdapter, type AgentEvent } from '../agent/types.js';
 import type { TaskWorkflow } from './workflow.js';
+import { NEWS_TASK_ID } from '../news/source.js';
 
 interface EngineOptions {
   adapter: AgentAdapter; concurrency: number; maxQueue: number; timeoutMs: number;
@@ -68,32 +69,48 @@ export class TaskEngine {
     }));
   }
 
-  start(taskId: string, idempotencyKey: string): { run: RunRecord; reused: boolean } {
+  start(taskId: string, idempotencyKey: string, request: { topic?: string; input?: string } = {}): { run: RunRecord; reused: boolean } {
     this.available(); key(idempotencyKey);
     const task = this.task(taskId);
+    const research = taskId === NEWS_TASK_ID;
+    if (research) {
+      if (typeof request.topic !== 'string' || !request.topic.trim() || request.topic.length > 200) throw new HttpError(400, 'invalid_topic');
+      inputText(request.input!);
+    } else if (request.topic !== undefined || request.input !== undefined) throw new HttpError(400, 'unsupported_run_input');
+    const input = research ? request.input! : task.prompt;
     const existing = this.db.prepare('SELECT * FROM task_runs WHERE task_id=? AND idempotency_key=?').get(taskId, idempotencyKey);
-    if (existing) return { run: existing as unknown as RunRecord, reused: true };
+    if (existing) {
+      if (research) {
+        const prior = this.db.prepare('SELECT topic,initial_input FROM codex_news_runs WHERE run_id=?').get(existing.id);
+        if (!prior || prior.topic !== request.topic || prior.initial_input !== input) throw new HttpError(409, 'idempotency_conflict');
+      }
+      return { run: existing as unknown as RunRecord, reused: true };
+    }
     if (task.status !== 'active') throw new HttpError(409, 'task_paused');
-    inputText(task.prompt); this.capacity(taskId);
+    inputText(input); this.capacity(taskId);
     const runId = randomUUID(), turnId = randomUUID();
     this.transaction(() => {
       this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key) VALUES (?,?,?)').run(runId, taskId, idempotencyKey);
-      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text) VALUES (?,?,1,?,?)').run(turnId, runId, idempotencyKey, task.prompt);
+      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, research ? 'research' : 'default');
+      if (research) this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, now().slice(0,10), task.channel);
       this.event(runId, turnId, 'queued', {});
     });
-    this.queue.push({ runId, turnId, input: task.prompt }); this.schedule();
+    this.queue.push({ runId, turnId, input }); this.schedule();
     return { run: this.run(runId), reused: false };
   }
 
-  continueRun(runId: string, idempotencyKey: string, input: string): { run: RunRecord; turn: TurnRecord; reused: boolean } {
+  continueRun(runId: string, idempotencyKey: string, input: string, finalize = false): { run: RunRecord; turn: TurnRecord; reused: boolean } {
     this.available(); key(idempotencyKey); inputText(input);
     const run = this.run(runId);
-    if (this.options.workflows?.has(run.task_id)) throw new HttpError(409, 'workflow_continuation_disabled');
+    const research = run.task_id === NEWS_TASK_ID;
+    if (!research && (finalize || run.task_id === 'news-github' || this.options.workflows?.has(run.task_id))) throw new HttpError(409, 'workflow_continuation_disabled');
+    const mode = research ? finalize ? 'finalize' : 'research' : 'default';
     const prior = this.db.prepare('SELECT * FROM run_turns WHERE run_id=? AND idempotency_key=?').get(runId, idempotencyKey) as unknown as TurnRecord | undefined;
     if (prior) {
-      if (prior.input_text !== input) throw new HttpError(409, 'idempotency_conflict');
+      if (prior.input_text !== input || prior.mode !== mode) throw new HttpError(409, 'idempotency_conflict');
       return { run, turn: prior, reused: true };
     }
+    if (research && this.db.prepare('SELECT report_id FROM codex_news_runs WHERE run_id=?').get(runId)?.report_id) throw new HttpError(409, 'workflow_run_finalized');
     if (!run.thread_id) throw new HttpError(409, 'thread_unavailable');
     if (this.task(run.task_id).status !== 'active') throw new HttpError(409, 'task_paused');
     this.capacity(run.task_id);
@@ -101,7 +118,7 @@ export class TaskEngine {
     if (sequence > 20) throw new HttpError(409, 'turn_limit');
     const turnId = randomUUID();
     this.transaction(() => {
-      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text) VALUES (?,?,?,?,?)').run(turnId, runId, sequence, idempotencyKey, input);
+      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,?,?,?,?)').run(turnId, runId, sequence, idempotencyKey, input, mode);
       this.db.prepare("UPDATE task_runs SET status='queued',turn_id=NULL,finished_at=NULL,error_code=NULL,error_message=NULL,updated_at=? WHERE id=?").run(now(), runId);
       this.event(runId, turnId, 'queued', { continuation: true });
     });
@@ -193,14 +210,14 @@ export class TaskEngine {
       });
       const run = this.run(work.runId);
       const workflow = this.options.workflows?.get(run.task_id);
-      const prepared = workflow ? await workflow.prepare(run, slot.controller.signal) : { input: work.input };
+      const prepared = workflow ? await workflow.prepare(run, slot.controller.signal, { input: work.input, mode: this.turn(work.turnId).mode }) : { input: work.input };
       if (slot.reason) throw new AgentError('cancelled');
-      this.db.prepare('UPDATE run_turns SET input_text=? WHERE id=?').run(prepared.input, work.turnId);
       if (prepared.metadata) this.event(work.runId, work.turnId, 'input_prepared', prepared.metadata);
       const result = await this.options.adapter.execute({
         runId: work.runId, threadId: work.threadId, input: prepared.input, cwd: this.options.cwd,
         model: this.options.model, timeoutMs: this.options.timeoutMs, signal: slot.controller.signal,
         outputSchema: prepared.outputSchema, developerInstructions: prepared.developerInstructions, forbidTools: prepared.forbidTools,
+        webSearch: prepared.webSearch,
       }, (event) => {
         if (slot.reason || settled) return;
         eventBytes += Buffer.byteLength(JSON.stringify(event));
@@ -213,7 +230,9 @@ export class TaskEngine {
       if (!validId(saved.thread_id ?? '') || !validId(saved.server_turn_id ?? '') || result.threadId !== saved.thread_id || result.turnId !== saved.server_turn_id) throw new AgentError('protocol_error');
       if (!result.output.trim()) throw new AgentError('invalid_output');
       if (Buffer.byteLength(result.output) > 64 * 1024) throw new AgentError('output_too_large');
-      this.finish(work, 'succeeded', undefined, result.output, prepared.save ? () => prepared.save!(this.db, result.output) : undefined);
+      const commit = await prepared.complete?.(result.output, slot.controller.signal);
+      if (slot.reason) throw new AgentError('cancelled');
+      this.finish(work, 'succeeded', undefined, result.output, commit ? () => commit(this.db) : prepared.save ? () => prepared.save!(this.db, result.output) : undefined);
     } catch (error) {
       // Unreaped processes can still hold a Thread or consume quota. A timeout
       // or cancellation must not hide this loss of lifecycle control.

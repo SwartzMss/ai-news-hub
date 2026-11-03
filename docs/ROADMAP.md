@@ -8,7 +8,7 @@ Issue #3：Backend 基础服务、SQLite 初始 Schema/事务迁移、配置、�
 
 Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件、取消和继续 Turn 已实现；开发会话完成真实样例调用，目标服务账户的 systemd 与长期认证仍待 #2 验收。见 [引擎与 API](TASK_ENGINE.md)。
 
-Issue #5：GitHub Blog RSS、规范化/最小去重、Codex 严格 JSON 输出及 SQLite 待审核日报已实现，完成真实来源与模型端到端验证。本任务只生成待审核结果，归档由 #7 实现。见 [新闻流水线](NEWS_PIPELINE.md) 与 [验证记录](validation/NEWS_PIPELINE.md)。
+Issue #5 最初交付固定 RSS 最小链路，现已按用户要求移除 RSS 入口。当前 news-research 支持主题/初始 prompt、Codex 实时搜索、同 Thread 多轮研究及显式生成；Backend 核对原文/引文后保存待审核日报，归档仍为 #7 的独立步骤。见 [新闻研究](NEWS_PIPELINE.md) 与 [当前验证](validation/CODEX_RESEARCH.md)。
 
 Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。使用顺序轮询，未实现 SSE 或任务编辑；审核归档由 #7 增加。见 [后台说明](ADMIN.md)。
 
@@ -38,7 +38,8 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 - [x] 有限队列/并发、任务互斥、请求幂等、Token 管理 API、SQLite 历史与事件
 
 ### C. 真实新闻 → 已验证日报
-- [x] 采集至少一个合法可访问的 RSS 真实来源
+- [x] 由 Codex 按用户主题实时搜索和提取公开原始来源（已移除 RSS 输入）
+- [x] 同 Thread 多轮 prompt、显式最终生成及 Backend 原文/引文核对
 - [x] 标准化 URL、来源、抓取时间、来源发布时间并实现最小去重
 - [x] 使用受 Schema 约束的 Codex 分析输出，保留可核验的原始来源
 - [x] SQLite 存储任务、Run、新闻与报告
@@ -53,12 +54,13 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 - [x] 管理员 API 只在回环地址监听，配置 Bearer Token 才启用
 
 ### v0.1 验收标准
-在 Linux 上，以非 root 服务账号启动单实例 Backend 并通过 systemd 管理：真实 RSS → Codex App Server → 结构化校验 → SQLite → GitHub 日报文件 → Web / RSS。可以在本地后台查看某次 Run 状态、日志及结果。失败不可误报为成功，历史日报不被覆盖。无 GUI 时能完成受控认证并有失效告警/处理方法。
+在 Linux 上，以非 root 服务账号启动单实例 Backend 并通过 systemd 管理：主题/多轮 prompt → Codex 实时搜索 → 原文与结构校验 → SQLite → GitHub 日报文件 → Web / RSS。可以在本地后台查看某次 Run 状态、日志及结果。失败不可误报为成功，历史日报不被覆盖。无 GUI 时能完成受控认证并有失效告警/处理方法。
 
 ## v0.2 — 管理和可靠性增强
 
 - [ ] 任务创建、编辑 Prompt、启停及更丰富的定时规则
-- [ ] Run 内的多轮 Turn 输入/回复与工具审批交互
+- [x] 新闻 Run 内多轮 prompt / Turn 回复与显式生成
+- [ ] Agent 工具审批交互
 - [x] 管理 API 运行历史分页与取消（UI 仍未提供取消按钮）
 - [ ] SSE、更多历史过滤和自动退避重试
 - [ ] 持久化调度和重启后的漏执行补偿、幂等校验
@@ -76,7 +78,7 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 
 - 远程管理：认证 + TLS + 安全隧道（非直接暴露 App Server）
 - 邮件 / IM / Webhook 推送
-- 更多内容采集器、技能和主题模板
+- Codex 研究技能和主题模板
 - Docker Compose（若有实际部署需求）
 
 ## 开发约束

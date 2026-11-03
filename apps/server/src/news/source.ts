@@ -1,9 +1,3 @@
-export interface FeedSource {
-  id: string; name: string; feedUrl: string; articleHosts: readonly string[]; minIntervalMs: number;
-}
-export const GITHUB_SOURCE: FeedSource = {
-  id: 'github-blog', name: 'GitHub Blog', feedUrl: 'https://github.blog/feed/',
-  articleHosts: ['github.blog'], minIntervalMs: 300000,
-};
-export const NEWS_TASK_ID = 'news-github';
+export const NEWS_TASK_ID = 'news-research';
+// Archive v1 channel; research topics are independent of this storage key.
 export const NEWS_CHANNEL = 'opensource';

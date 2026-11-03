@@ -12,19 +12,19 @@ import { TaskEngine } from './tasks/engine.js';
 import { acquireBackendLock } from './tasks/lock.js';
 import { registerTaskRoutes } from './tasks/routes.js';
 import { NewsWorkflow } from './news/workflow.js';
-import { feedHttpClient, type FeedFetch } from './news/http.js';
+import { sourceHttpClient, type SourceFetch } from './news/sources.js';
 import { registerAdmin } from './admin.js';
 import { PublicationService, type GitHubAdapter } from './publish/service.js';
 import { GitHubArchive } from './publish/github.js';
 import { NEWS_TASK_ID } from './news/source.js';
 
-export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: FeedFetch; now?: () => Date; githubAdapter?: GitHubAdapter } = {}) {
+export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: SourceFetch; now?: () => Date; githubAdapter?: GitHubAdapter } = {}) {
   const db = openDatabase(config.dataDir);
   let release: () => void;
   try { release = acquireBackendLock(db); }
   catch (error) { db.close(); throw error; }
   const cwd = join(config.dataDir, 'work');
-  const http = options.newsFetcher ? { fetcher: options.newsFetcher, close: async () => {} } : feedHttpClient();
+  const http = options.newsFetcher ? { fetcher: options.newsFetcher, close: async () => {} } : sourceHttpClient();
   let engine: TaskEngine;
   try {
     mkdirSync(cwd, { recursive: true, mode: 0o700 });

@@ -50,3 +50,7 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 真实端到端验证见 [记录](validation/PUBLISHING.md)。专用 `archive-validation/issue-7` 分支只含验证用测试日报，不应作为 #8 正式内容来源。
 
 协议参考：[GitHub Contents API](https://docs.github.com/en/rest/repos/contents)、[GitHub Commit API](https://docs.github.com/en/rest/commits/commits)、[Git refs](https://docs.github.com/en/rest/git/refs)。
+
+## Codex 主题研究兼容
+
+当前报告来自 news-research 的显式最终生成，发布时重新校验 codex_news_runs 的原文快照、引文和关联；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和人工哈希批准。新研究主题不改变 archive v1 的 opensource 频道键。
