@@ -53,3 +53,6 @@ test('Codex child never inherits Backend control or publishing credentials', asy
     if (previousGithub === undefined) delete process.env.GH_TOKEN; else process.env.GH_TOKEN = previousGithub;
   }
 });
+test('news execution fails when a tool starts instead of accepting a report', async () => {
+  await assert.rejects(execute('tool', { forbidTools: true }), { code: 'unexpected_tool' });
+});

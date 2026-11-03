@@ -11,13 +11,17 @@ import type { AgentAdapter } from './agent/types.js';
 import { TaskEngine } from './tasks/engine.js';
 import { acquireBackendLock } from './tasks/lock.js';
 import { registerTaskRoutes } from './tasks/routes.js';
+import { NewsWorkflow } from './news/workflow.js';
+import { feedHttpClient, type FeedFetch } from './news/http.js';
+import { NEWS_TASK_ID } from './news/source.js';
 
-export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void } = {}) {
+export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: FeedFetch; now?: () => Date } = {}) {
   const db = openDatabase(config.dataDir);
   let release: () => void;
   try { release = acquireBackendLock(db); }
   catch (error) { db.close(); throw error; }
   const cwd = join(config.dataDir, 'work');
+  const http = options.newsFetcher ? { fetcher: options.newsFetcher, close: async () => {} } : feedHttpClient();
   let engine: TaskEngine;
   try {
     mkdirSync(cwd, { recursive: true, mode: 0o700 });
@@ -27,6 +31,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
       adapter: options.adapter ?? new StdioAdapter(config.codexBin),
       concurrency: config.concurrency, maxQueue: config.maxQueue, timeoutMs: config.runTimeoutMs,
       cwd, model: config.model,
+      workflows: new Map([[NEWS_TASK_ID, new NewsWorkflow(db, http.fetcher, options.now)]]),
       onFatal: () => {
         app.log.error({ code: 'engine_unavailable' }, 'task_engine_unavailable');
         if (options.onFatal) options.onFatal();
@@ -49,9 +54,9 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     requestTimeout: 10000,
     forceCloseConnections: true,
   });
-  app.addHook('preClose', async () => { await engine.close(); });
+  app.addHook('preClose', async () => { await engine.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
-  app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken); }, { prefix: '/api' });
+  app.register(async (scope) => { await registerTaskRoutes(scope, engine, config.adminToken, db); }, { prefix: '/api' });
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');
   });

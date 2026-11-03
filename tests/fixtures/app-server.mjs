@@ -32,6 +32,7 @@ createInterface({ input: process.stdin }).on('line', (line) => {
     if (m.method === 'thread/resume') threadId = mode === 'resume-wrong' ? 'wrong-thread' : m.params.threadId;
     send({ id: m.id, result: { thread: { id: threadId } } });
   } else if (m.method === 'turn/start') {
+    if (mode === 'tool') send({ method: 'item/started', params: { threadId, item: { id: 'tool-1', type: 'commandExecution' } } });
     if (mode === 'rpc-error') {
       send({ id: m.id, error: { code: -32000, message: 'SECRET_TOKEN' } }); return;
     }

@@ -2,7 +2,7 @@
 
 > 包含已实现的基础骨架与 v0.1 目标架构；各模块的实现范围如下，不能将目标链路理解为已经上线。
 
-Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。尚无定时调度、新闻采集、日报或发布。
+Issue #3 实现 Fastify / SQLite 基础；Issue #4 增加 Task → Run → Thread → Turn 引擎、受保护管理 API、stdio Adapter、持久化事件与重启恢复标记。Issue #5 增加固定真实 RSS 采集、最小去重、结构化分析与待审核日报；尚无定时调度、审核操作或发布。
 Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于诊断，正式 Adapter 位于 `apps/server/src/agent/`。
 探针的 systemd unit 与正式 Backend 分开，实际证据与未完成验收见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 
@@ -87,7 +87,7 @@ Issue #2 的独立 TypeScript 接入探针（`tools/codex-probe/`）继续用于
 ## 4. 数据模型与基础服务
 
 已实现的初始 Schema 为 `tasks`、`task_runs`、`articles`、`reports`、`report_articles`、`publication_records` 与内部 `schema_migrations`。原草案的 `jobs` / `job_runs` 分别统一为 `tasks` / `task_runs`。
-迁移 2 追加 `run_threads`、`run_turns`、`run_events`、`backend_owner`；迁移 1 的 SQL 不变。Task / Run 提供手动执行和历史查询，其余内容表暂不提供业务接口。字段、外键、状态及迁移规则详见 [数据模型](DATA_MODEL.md)。
+迁移 2 追加 `run_threads`、`run_turns`、`run_events`、`backend_owner`；迁移 1 的 SQL 不变。Task / Run 提供手动执行和历史查询，迁移 3 追加 RSS 来源/身份/缓存与新闻 Run 快照表，并启用文章及日报查询。字段、外键、状态及迁移规则详见 [数据模型](DATA_MODEL.md)。
 
 `openDatabase` 检查专用数据目录与数据库权限，开启外键、WAL 与 5 秒 busy timeout。启动时在事务内核对迁移历史并应用新版本，校验失败或 SQL 失败则启动失败；不自动重建或清空旧数据库。
 SQLite 使用 Node 22 内置实验性 `node:sqlite`，当前同步访问用于初始化、状态与有限事件事务。未来业务需按实际负载评估，暂不增加 ORM 或独立数据库服务。
@@ -95,7 +95,7 @@ SQLite 使用 Node 22 内置实验性 `node:sqlite`，当前同步访问用于�
 Fastify 只允许绑定 `127.0.0.1` / `::1`；`/health` 检查已应用 Schema 可读，失败返回 503，不检测 Codex 认证。统一错误体保留 requestId，日志不记录请求体、头部、查询串或任意异常文本。
 SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 秒停止上限与整个控制组回收兜底。`apps/web` / `apps/admin` 当前仅有职责说明，共享接口类型放在 `packages/shared/src/`。
 
-来源配置 `sources`、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只恢复历史可查询性并标记中断，不自动恢复执行，不会擅自将旧 Run 改为成功。
+已实现的固定来源状态保存于 `rss_sources`；动态来源配置、专题 `topics`、报告条目 `report_items` 和 Feed 配置 `feeds` 仍待后续需求驱动添加迁移。进程重启只恢复历史可查询性并标记中断，不自动恢复执行，不会擅自将旧 Run 改为成功。
 
 推荐时区：任务配置使用 IANA 时区（如 `Asia/Singapore`），内部存储 UTC 时间戳，渲染时按频道设置转换。报告日期与新闻事件发生日期分开记录。
 
@@ -109,7 +109,9 @@ SIGTERM / SIGINT 关闭 HTTP 与数据库，8 秒超时退出；systemd 用 15 �
 
 必须保留可追溯的新闻 URL；至少区分事件发生时间、来源发布时间和系统抓取时间。对于观点、行情解释、网络评论，明确区分数据与推论；无法取得点赞数或评论来源时不得捏造。
 
-建议定义机器校验的 JSON Schema，至少包含标题、频道、摘要、来源 URL、时间字段、事实/观点标记。发布层只消费校验通过的数据，不解析任意自由格式的 Agent 回复作为事实依据。
+Issue #5 已实现严格 JSON Schema：分类、重要性、事实摘要、独立推断、精确依据引文；未知 ID、额外字段和重复条目拒绝。来源 URL/时间只由 Backend 从候选快照补充。报告与 Run 成功在同一事务保存；失败不生成可发布记录。`validated` 仅代表格式与来源关联，JSON 标记 `reviewStatus=pending`、`verification=source_only`，需人工核实摘要是否忠实及来源事实。
+
+固定来源 GitHub Blog RSS 由 Backend 拉取；5 分钟上游频率限制、15 秒超时、2 MiB 限额、仅同源 HTTPS 重定向、禁用 DTD。按 canonical URL、来源 GUID、当前内容指纹去重。原文更正会刷新当前文章，保留首次抓取时间；历史 Run 候选快照及日报文档不变。新闻任务不继续原 Thread，显式新建 Run 产生新版本。来源列表顺序最多取 10 条分析，非完整当日新闻索引。具体边界见 [新闻流水线](NEWS_PIPELINE.md)。发布层只消费校验通过的数据，不解析任意自由格式的 Agent 回复作为事实依据。
 
 ## 6. 任务驱动的管理界面
 

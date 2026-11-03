@@ -2,9 +2,9 @@
 
 > 基于 Codex App Server 的 AI 信息聚合、定时分析与多渠道订阅平台。
 
-**项目状态：Backend 任务执行引擎可运行，真实新闻服务尚未实现。**
+**项目状态：可手动采集真实 RSS，经 Codex 生成待审核日报；尚未实现公开发布和前端。**
 
-已实现 Fastify、SQLite、Task → Run → Thread → Turn 执行、受保护的管理 API、历史事件与取消/继续 Turn；尚无新闻采集、日报或发布。Issue #2 的独立探针保留，目标服务器认证验收见 [探针记录](docs/validation/CODEX_LINUX_PROBE.md)，引擎实测见 [任务引擎记录](docs/validation/TASK_ENGINE.md)。
+已实现 Fastify、SQLite、Task → Run → Thread → Turn 执行、受保护的管理 API、历史事件与取消/继续 Turn；已接通固定 GitHub Blog RSS、最小去重、严格结构化日报及私有查询；尚无调度、人工审核操作或发布。Issue #2 的独立探针保留，目标服务器认证验收见 [探针记录](docs/validation/CODEX_LINUX_PROBE.md)，引擎实测见 [任务引擎记录](docs/validation/TASK_ENGINE.md)。
 
 **v0.1 平台决策：仅支持 Linux（首选 Ubuntu Server 24.04 LTS）；不开发或测试 Windows / WSL 部署。**
 
@@ -92,7 +92,7 @@ AI News Hub 旨在将新闻采集、AI 研究与分析、任务调度、内容�
 | 内容归档 | GitHub（每日按日期提交 JSON / Markdown，保留历史数据） |
 | 网站发布 | GitHub 触发 Cloudflare Pages 静态构建；公开 Web / RSS |
 
-Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；表中定时调度、前端、RSS 和发布仍为计划。
+Node.js / TypeScript、Fastify、SQLite 与 stdio Codex Adapter 已实现；真实 RSS 采集与待审核日报已实现；表中定时调度、前端、对外 RSS 和发布仍为计划。
 
 ## 开发与基础服务
 
@@ -138,6 +138,7 @@ SQLite 使用 Node 内置的 `node:sqlite`，在 Node 22 中仍为实验性 API�
 Backend 会保存预定义样例 `sample-connectivity`，仅手动触发时调用真实 Codex 并使用额度。服务账户须已完成 Codex 登录，`AI_NEWS_HUB_CODEX_BIN` 指向可执行 CLI；工作目录为私有数据目录下的 `work/`。
 
 支持启动 Run、查询状态/历史/事件、取消，以及在同一 Run 中继续 Turn。每个新 Run 默认创建 Thread，继续时恢复原 Thread；失败不自动重试，幂等键相同返回原记录。进程重启把未完成记录标为 interrupted，保留历史。
+新闻任务 `news-github` 使用相同启动接口；采集 RSS 并调用真实 Codex，结果仅存为待审核 JSON / Markdown，来源链接和时间由 Backend 补充。配置、查询和限制见 [新闻流水线](docs/NEWS_PIPELINE.md)，实测见 [新闻验证记录](docs/validation/NEWS_PIPELINE.md)。
 详见 [任务引擎与 API](docs/TASK_ENGINE.md)。目前没有任务编辑 UI、交互审批、定时调度或独立 Agent 工作台。
 
 ## Codex 接入验证工具

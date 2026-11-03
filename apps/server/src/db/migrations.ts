@@ -2,6 +2,7 @@ import { createHash } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { AppError } from '../errors.js';
 import { taskEngineMigration } from './task-engine-migration.js';
+import { newsMigration } from './news-migration.js';
 
 export interface Migration { version: number; name: string; sql: string }
 export const migrations: readonly Migration[] = [{
@@ -86,7 +87,7 @@ export const migrations: readonly Migration[] = [{
     ) STRICT;
     CREATE INDEX publications_by_report ON publication_records(report_id, created_at);
   `,
-}, taskEngineMigration];
+}, taskEngineMigration, newsMigration];
 
 export function migrate(db: DatabaseSync, registry: readonly Migration[] = migrations): void {
   if (registry.some((entry, index) => entry.version !== index + 1)) throw new AppError('invalid_migration_registry');

@@ -1,12 +1,14 @@
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import type { RunEvent, RunRecord, RunStatus, TaskRecord, TurnRecord } from '../../../../packages/shared/src/index.js';
-import { HttpError } from '../errors.js';
+import { AppError, HttpError } from '../errors.js';
 import { AgentError, type AgentAdapter, type AgentEvent } from '../agent/types.js';
+import type { TaskWorkflow } from './workflow.js';
 
 interface EngineOptions {
   adapter: AgentAdapter; concurrency: number; maxQueue: number; timeoutMs: number;
   cwd: string; model?: string; onFatal?: () => void;
+  workflows?: ReadonlyMap<string, TaskWorkflow>;
 }
 interface Work { runId: string; turnId: string; input: string; threadId?: string }
 interface Slot { controller: AbortController; done: Promise<void>; reason?: 'cancelled' | 'timeout' | 'backend_stopped' }
@@ -86,6 +88,7 @@ export class TaskEngine {
   continueRun(runId: string, idempotencyKey: string, input: string): { run: RunRecord; turn: TurnRecord; reused: boolean } {
     this.available(); key(idempotencyKey); inputText(input);
     const run = this.run(runId);
+    if (this.options.workflows?.has(run.task_id)) throw new HttpError(409, 'workflow_continuation_disabled');
     const prior = this.db.prepare('SELECT * FROM run_turns WHERE run_id=? AND idempotency_key=?').get(runId, idempotencyKey) as unknown as TurnRecord | undefined;
     if (prior) {
       if (prior.input_text !== input) throw new HttpError(409, 'idempotency_conflict');
@@ -170,8 +173,9 @@ export class TaskEngine {
       });
     }
   }
-  private finish(work: Work, status: RunStatus, code?: string, output?: string): void {
+  private finish(work: Work, status: RunStatus, code?: string, output?: string, save?: () => void): void {
     this.transaction(() => {
+      save?.();
       this.db.prepare('UPDATE task_runs SET status=?,error_code=?,finished_at=?,updated_at=? WHERE id=?').run(status, code ?? null, now(), now(), work.runId);
       this.db.prepare('UPDATE run_turns SET status=?,error_code=?,output_text=?,finished_at=? WHERE id=?').run(status, code ?? null, output ?? null, now(), work.turnId);
       this.event(work.runId, work.turnId, 'finished', { status, ...(code ? { code } : {}) });
@@ -187,9 +191,16 @@ export class TaskEngine {
         this.db.prepare("UPDATE run_turns SET status='running',started_at=? WHERE id=?").run(now(), work.turnId);
         this.event(work.runId, work.turnId, 'started', {});
       });
+      const run = this.run(work.runId);
+      const workflow = this.options.workflows?.get(run.task_id);
+      const prepared = workflow ? await workflow.prepare(run, slot.controller.signal) : { input: work.input };
+      if (slot.reason) throw new AgentError('cancelled');
+      this.db.prepare('UPDATE run_turns SET input_text=? WHERE id=?').run(prepared.input, work.turnId);
+      if (prepared.metadata) this.event(work.runId, work.turnId, 'input_prepared', prepared.metadata);
       const result = await this.options.adapter.execute({
-        runId: work.runId, threadId: work.threadId, input: work.input, cwd: this.options.cwd,
+        runId: work.runId, threadId: work.threadId, input: prepared.input, cwd: this.options.cwd,
         model: this.options.model, timeoutMs: this.options.timeoutMs, signal: slot.controller.signal,
+        outputSchema: prepared.outputSchema, developerInstructions: prepared.developerInstructions, forbidTools: prepared.forbidTools,
       }, (event) => {
         if (slot.reason || settled) return;
         eventBytes += Buffer.byteLength(JSON.stringify(event));
@@ -202,7 +213,7 @@ export class TaskEngine {
       if (!validId(saved.thread_id ?? '') || !validId(saved.server_turn_id ?? '') || result.threadId !== saved.thread_id || result.turnId !== saved.server_turn_id) throw new AgentError('protocol_error');
       if (!result.output.trim()) throw new AgentError('invalid_output');
       if (Buffer.byteLength(result.output) > 64 * 1024) throw new AgentError('output_too_large');
-      this.finish(work, 'succeeded', undefined, result.output);
+      this.finish(work, 'succeeded', undefined, result.output, prepared.save ? () => prepared.save!(this.db, result.output) : undefined);
     } catch (error) {
       // Unreaped processes can still hold a Thread or consume quota. A timeout
       // or cancellation must not hide this loss of lifecycle control.
@@ -211,7 +222,7 @@ export class TaskEngine {
         this.failEngine();
         return;
       }
-      const code = slot.reason ?? (error instanceof AgentError ? error.code : 'event_persistence_failed');
+      const code = slot.reason ?? (error instanceof AgentError || error instanceof AppError ? error.code : 'event_persistence_failed');
       const status = code === 'cancelled' ? 'cancelled' : code === 'interrupted' || code === 'backend_stopped' ? 'interrupted' : 'failed';
       this.finish(work, status, code);
     } finally { settled = true; clearTimeout(timer); }

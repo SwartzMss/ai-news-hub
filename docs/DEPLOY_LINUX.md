@@ -287,7 +287,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 - 正常停止日志有 `server_stopped`，HTTP 关闭；再次启动原记录保留。异常杀死服务主进程后检查 systemd `NRestarts` 与健康检查恢复，记录脱敏日志，不将运行数据提交到 Git。
 - 当前测试验证普通 Node 进程的停止/重启，CI 使用 Ubuntu 24.04；它们不等于完成 systemd 安装、开机启动或重启主机实测。
 - CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
-- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例，暂无调度、新闻或发布；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
+- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例，暂无调度或发布；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
 
 ## 10. Issue #4 管理 API 与真实任务
 
@@ -309,10 +309,10 @@ sudo systemctl restart ai-news-hub.service
 sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 ```
 
-服务启动仅创建默认样例记录，不会自动调用 Codex。按 [API 说明](TASK_ENGINE.md#手动触发样例) 用 Bearer Token 触发 `sample-connectivity`，保存返回的 Run ID，通过详情与事件接口确认最终状态、Thread / Turn 标识和固定回复。真实请求会使用账户额度。
+服务启动仅创建预定义任务和来源记录，不会自动调用 Codex。按 [API 说明](TASK_ENGINE.md#手动触发样例) 用 Bearer Token 触发 `sample-connectivity`，保存返回的 Run ID，通过详情与事件接口确认最终状态、Thread / Turn 标识和固定回复。真实请求会使用账户额度。
 继续该 Run 时使用新的 Turn 幂等键；新 Run 使用新的启动幂等键，应有不同 Thread。不要把幂等重试返回旧 Run 误认为又执行了一次。
 
-启动会应用迁移 2，不修改迁移 1 或删除旧库。每个数据目录只允许一个 Backend，Linux `/proc` 的 PID、进程启动时间与 boot ID 用于识别活跃/失效所有者；不要让多个主机共用该 SQLite。
+启动会顺序应用迁移 2、3，不修改历史迁移或删除旧库。每个数据目录只允许一个 Backend，Linux `/proc` 的 PID、进程启动时间与 boot ID 用于识别活跃/失效所有者；不要让多个主机共用该 SQLite。
 工作目录为 `/var/lib/ai-news-hub/work`，由服务用户持有且 0700。原始 RPC/stderr/工具参数不入 journal 或事件表；受限 Agent 正文属于私有运行记录，不可直接导出为公开内容。
 
 ### 生命周期验收
@@ -323,3 +323,15 @@ sudo journalctl -u ai-news-hub.service --since '5 minutes ago' --no-pager
 - 正常停服务后旧未完成记录为 interrupted / backend_stopped。异常杀死主进程后，确认 systemd 已清理整个控制组，再观察自动重启；旧未完成记录应为 interrupted / backend_restarted，不自动重跑。
 - 无法确认子进程已清理时，Run 记录 cleanup_failed；引擎冻结调度并触发 Backend 非零关闭，由 systemd 控制组兜底。不得在旧子进程仍运行时手动删除所有权记录或并行重启执行同一 Thread。
 - 服务重新启动后仍可查询历史；仅成功 Turn 不是新闻校验或发布许可。长期登录有效性、真实额度/过期故障和原生 Ubuntu Server 24.04 生命周期仍须记录实测结果，见 [验证记录](validation/TASK_ENGINE.md)。
+
+## 11. Issue #5 RSS 与待审核日报
+
+升级前停服务并备份 SQLite，执行 `npm ci --ignore-scripts`、`npm run build`，再以原服务账户启动；迁移 3 自动追加。无需更改现有数据目录或添加来源配置。服务启动、`/health` 与任务查询不会发起 RSS 或模型请求。
+
+以第 10 节的管理 Token 调用 `POST /api/tasks/news-github/runs`，请求体仍为唯一 `idempotencyKey`。该动作会访问固定 `https://github.blog/feed/` 并消耗 Codex 额度。来源上游请求至少间隔 5 分钟，15 秒超时、2 MiB 限额；仅跟随同源 HTTPS 重定向。失败会保存安全错误码，不以旧缓存伪装成功。成功缓存或 304 可复用已有文章。HTTP 客户端按需创建，使用 Undici `EnvHttpProxyAgent` 读取服务环境中的 HTTP_PROXY / HTTPS_PROXY / NO_PROXY（及小写形式），代理值仅放私有环境文件。
+
+每次最多分析来源列表前 10 条可用候选，提示选择 1–5 条；Schema 上限 10 条。模型不能提供 URL/时间或使用工具，Backend 独立校验并补充来源。不要把只读沙箱当成凭据隔离：Codex 的 HOME / CODEX_HOME 仍属服务身份，继续遵守第 8、10 节的账户与环境限制。
+
+通过受保护的 `/api/news/sources` 查看上次请求结果，`/api/news/articles` 查看当前文章，`/api/news/runs/:runId` 查看生成时候选与报告 ID，`/api/news/reports/:reportId` 获取 JSON 与 Markdown。报告 `validated` 仍待人工审核，不进行 GitHub 提交或公开发布。新幂等键显式生成新 Run/版本；此任务不支持继续 Turn。
+
+API、限制与失败处理见 [新闻流水线](NEWS_PIPELINE.md)，真实端到端记录见 [验证记录](validation/NEWS_PIPELINE.md)。原生 Ubuntu Server 24.04 服务账户/systemd/长期认证验收仍由 Issue #2 跟踪；开发会话的成功日报不替代目标主机验收。

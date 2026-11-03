@@ -1,0 +1,51 @@
+const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
+const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
+const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', 'other'];
+export interface ProposalItem {
+  articleId: string; category: string; importance: number; factSummary: string; analysis: string | null; evidenceQuote: string;
+}
+export interface Proposal { title: string; items: ProposalItem[] }
+const proposalItem = {
+  type: 'object', additionalProperties: false,
+  required: ['articleId', 'category', 'importance', 'factSummary', 'analysis', 'evidenceQuote'],
+  properties: {
+    articleId: text(256), category: { type: 'string', enum: categories }, importance: { type: 'integer', minimum: 1, maximum: 5 },
+    factSummary: text(600), analysis: { anyOf: [text(600), { type: 'null' }] },
+    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 },
+  },
+};
+export function proposalSchema(articleIds?: string[]) {
+  return {
+    type: 'object', additionalProperties: false, required: ['title', 'items'],
+    properties: { title: text(180), items: {
+      type: 'array', minItems: 1, maxItems: articleIds ? Math.min(10, articleIds.length) : 10,
+      items: { ...proposalItem, properties: { ...proposalItem.properties, articleId: articleIds ? { type: 'string', enum: articleIds } : text(256) } },
+    } },
+  };
+}
+export const REPORT_SCHEMA = {
+  $schema: 'http://json-schema.org/draft-07/schema#',
+  type: 'object', additionalProperties: false,
+  required: ['schemaVersion', 'reportId', 'runId', 'reportDate', 'channel', 'reviewStatus', 'title', 'collectedAt', 'items'],
+  properties: {
+    schemaVersion: { const: 1 }, reportId: text(256), runId: text(256), reportDate: { type: 'string', format: 'date' },
+    channel: { const: 'opensource' }, reviewStatus: { const: 'pending' }, title: text(180),
+    collectedAt: { type: 'string', format: 'date-time' }, items: {
+      type: 'array', minItems: 1, maxItems: 10, items: {
+        ...proposalItem,
+        required: [...proposalItem.required, 'verification', 'source'],
+        properties: { ...proposalItem.properties,
+          verification: { const: 'source_only' }, source: {
+            type: 'object', additionalProperties: false,
+            required: ['name', 'originalUrl', 'canonicalUrl', 'publishedAt', 'eventAt', 'fetchedAt'],
+            properties: {
+              name: text(200), originalUrl: { type: 'string', format: 'uri', maxLength: 2048 },
+              canonicalUrl: { type: 'string', format: 'uri', maxLength: 2048 },
+              publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: { type: 'string', format: 'date-time' },
+            },
+          },
+        },
+      },
+    },
+  },
+};
