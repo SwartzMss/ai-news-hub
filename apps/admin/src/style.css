@@ -2324,7 +2324,19 @@ summary {
 .task-editor-fields { border: 0; padding: 0; display: grid; gap: 24px; }
 .task-editor-fields label { display: grid; gap: 8px; }
 .task-editor-fields .check { display: flex; }
-.task-editor { margin-bottom: 28px; }
+/* Native modal keeps task editing separate from the overview. */
+:root { --dialog-backdrop: #17212f66; }
+.task-editor { width: min(800px, calc(100% - 32px)); max-width: none; max-height: min(90dvh, 960px); padding: 0; margin: auto; border: 1px solid var(--line); border-radius: 12px; color: var(--ink); background: var(--menu-surface); overflow: hidden; }
+.task-editor[open] { display: flex; flex-direction: column; }
+.task-editor::backdrop { background: var(--dialog-backdrop); }
+.task-editor-header { display: flex; align-items: center; justify-content: space-between; gap: 16px; padding: 18px 24px; border-bottom: 1px solid var(--line); flex-shrink: 0; }
+.task-editor > form { display: flex; flex-direction: column; min-height: 0; }
+.task-editor-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; flex: 1 1 auto; }
+.task-editor .task-editor-fields { padding: 24px; margin: 0; }
+.task-editor-footer { background: var(--menu-surface); display: flex; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--line); flex-shrink: 0; }
+.task-editor .prompt-sequence > button { justify-self: start; }
+@media (max-width: 480px) { .task-editor { width: calc(100% - 20px); max-height: calc(100dvh - 20px); } .task-editor-header, .task-editor .task-editor-fields, .task-editor-footer { padding: 16px; } }
+
 .prompt-sequence { display: grid; gap: 16px; }
 .prompt-step { border-bottom: 1px solid var(--line); padding-bottom: 16px; }
 .task-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }

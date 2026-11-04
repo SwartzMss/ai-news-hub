@@ -1,3 +1,4 @@
+import { createPortal } from "react-dom";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TaskRecord, RunRecord } from "../../../packages/shared/src";
 import { ApiError, errorText, type Client } from "./api";
@@ -48,6 +49,11 @@ function shortTime(value?: string | null, timezone = "Asia/Shanghai") {
     hour12: false,
   }).format(new Date(value));
 }
+function closeTaskMenu(button: HTMLButtonElement) {
+  const menu = button.closest("details");
+  menu?.removeAttribute("open");
+  menu?.querySelector("summary")?.focus();
+}
 function TaskEditor({
   api,
   task,
@@ -64,6 +70,21 @@ function TaskEditor({
   );
   const [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>();
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  useEffect(() => {
+    const dialog = dialogRef.current!;
+    const opener = document.activeElement;
+    const previousOverflow = document.documentElement.style.overflow;
+    document.documentElement.style.overflow = "hidden";
+    if (dialog.showModal) dialog.showModal();
+    else dialog.setAttribute("open", "");
+    dialog.querySelector<HTMLInputElement>("input")?.focus();
+    return () => {
+      if (dialog.close) dialog.close();
+      document.documentElement.style.overflow = previousOverflow;
+      if (opener instanceof HTMLElement && opener.isConnected) opener.focus();
+    };
+  }, []);
   const update = (patch: Partial<Configuration>) =>
     setConfig((c) => ({ ...c, ...patch }));
   const plan = (patch: Partial<Plan>) =>
@@ -100,13 +121,18 @@ function TaskEditor({
       setBusy(false);
     }
   }
-  return (
-    <section
-      className="panel task-editor"
-      aria-label={task ? "编辑任务" : "新增任务"}
+  return createPortal(
+    <dialog
+      ref={dialogRef}
+      className="task-editor"
+      aria-labelledby="task-editor-title"
+      onCancel={(event) => {
+        event.preventDefault();
+        if (!busy) onClose();
+      }}
     >
-      <div className="section-heading">
-        <h2>{task ? "编辑任务" : "新增任务"}</h2>
+      <div className="task-editor-header">
+        <h2 id="task-editor-title">{task ? "编辑任务" : "新增任务"}</h2>
         <button
           type="button"
           className="quiet"
@@ -117,209 +143,217 @@ function TaskEditor({
         </button>
       </div>
       <form onSubmit={save}>
-        <fieldset disabled={busy} className="task-editor-fields">
-          <label>
-            任务主题
-            <input
-              required
-              maxLength={200}
-              value={config.topic}
-              onChange={(e) => update({ topic: e.target.value })}
-            />
-          </label>
-          <div className="prompt-sequence">
-            <h3>多轮 Prompt</h3>
-            {config.prompts.map((prompt, index) => (
-              <div className="prompt-step" key={index}>
-                <label>
-                  第 {index + 1} 轮
-                  <textarea
-                    required
-                    maxLength={8000}
-                    rows={3}
-                    value={prompt}
-                    onChange={(e) =>
-                      update({
-                        prompts: config.prompts.map((v, i) =>
-                          i === index ? e.target.value : v,
-                        ),
-                      })
-                    }
-                  />
-                </label>
-                <div className="task-actions">
-                  <button
-                    type="button"
-                    className="quiet"
-                    disabled={index === 0}
-                    onClick={() => {
-                      const prompts = [...config.prompts];
-                      [prompts[index - 1], prompts[index]] = [
-                        prompts[index],
-                        prompts[index - 1],
-                      ];
-                      update({ prompts });
-                    }}
-                  >
-                    上移
-                  </button>
-                  <button
-                    type="button"
-                    className="quiet"
-                    disabled={index === config.prompts.length - 1}
-                    onClick={() => {
-                      const prompts = [...config.prompts];
-                      [prompts[index + 1], prompts[index]] = [
-                        prompts[index],
-                        prompts[index + 1],
-                      ];
-                      update({ prompts });
-                    }}
-                  >
-                    下移
-                  </button>
-                  <button
-                    type="button"
-                    className="quiet"
-                    disabled={config.prompts.length === 1}
-                    onClick={() =>
-                      update({
-                        prompts: config.prompts.filter((_, i) => i !== index),
-                      })
-                    }
-                  >
-                    删除本轮
-                  </button>
+        <div className="task-editor-body">
+          <fieldset disabled={busy} className="task-editor-fields">
+            <label>
+              任务主题
+              <input
+                required
+                maxLength={200}
+                value={config.topic}
+                onChange={(e) => update({ topic: e.target.value })}
+              />
+            </label>
+            <div className="prompt-sequence">
+              <h3>多轮 Prompt</h3>
+              {config.prompts.map((prompt, index) => (
+                <div className="prompt-step" key={index}>
+                  <label>
+                    第 {index + 1} 轮
+                    <textarea
+                      required
+                      maxLength={8000}
+                      rows={3}
+                      value={prompt}
+                      onChange={(e) =>
+                        update({
+                          prompts: config.prompts.map((v, i) =>
+                            i === index ? e.target.value : v,
+                          ),
+                        })
+                      }
+                    />
+                  </label>
+                  <div className="task-actions">
+                    <button
+                      type="button"
+                      className="quiet"
+                      disabled={index === 0}
+                      onClick={() => {
+                        const prompts = [...config.prompts];
+                        [prompts[index - 1], prompts[index]] = [
+                          prompts[index],
+                          prompts[index - 1],
+                        ];
+                        update({ prompts });
+                      }}
+                    >
+                      上移
+                    </button>
+                    <button
+                      type="button"
+                      className="quiet"
+                      disabled={index === config.prompts.length - 1}
+                      onClick={() => {
+                        const prompts = [...config.prompts];
+                        [prompts[index + 1], prompts[index]] = [
+                          prompts[index],
+                          prompts[index + 1],
+                        ];
+                        update({ prompts });
+                      }}
+                    >
+                      下移
+                    </button>
+                    <button
+                      type="button"
+                      className="quiet"
+                      disabled={config.prompts.length === 1}
+                      onClick={() =>
+                        update({
+                          prompts: config.prompts.filter((_, i) => i !== index),
+                        })
+                      }
+                    >
+                      删除本轮
+                    </button>
+                  </div>
                 </div>
-              </div>
-            ))}
-            <button
-              type="button"
-              className="quiet"
-              disabled={config.prompts.length >= 19}
-              onClick={() => update({ prompts: [...config.prompts, ""] })}
-            >
-              添加一轮
-            </button>
-            <p className="field-help">
-              依次执行以上 Prompt，最后自动整理日报。
-            </p>
-          </div>
-          <div className="form-grid">
-            <label>
-              执行计划
-              <select
-                value={config.schedule.kind}
-                onChange={(e) =>
-                  update({
-                    schedule: {
-                      kind: e.target.value as Plan["kind"],
-                      minutes: 60,
-                      time: "09:00",
-                      weekday: 1,
-                    },
-                  })
-                }
+              ))}
+              <button
+                type="button"
+                className="quiet"
+                disabled={config.prompts.length >= 19}
+                onClick={() => update({ prompts: [...config.prompts, ""] })}
               >
-                <option value="manual">手动</option>
-                <option value="once">指定时间</option>
-                <option value="interval">固定间隔</option>
-                <option value="daily">每天</option>
-                <option value="weekly">每周</option>
-              </select>
-            </label>
-            <label>
-              时区
+                添加一轮
+              </button>
+              <p className="field-help">
+                依次执行以上 Prompt，最后自动整理日报。
+              </p>
+            </div>
+            <div className="form-grid">
+              <label>
+                执行计划
+                <select
+                  aria-label="执行计划"
+                  value={config.schedule.kind}
+                  onChange={(e) =>
+                    update({
+                      schedule: {
+                        kind: e.target.value as Plan["kind"],
+                        minutes: 60,
+                        time: "09:00",
+                        weekday: 1,
+                      },
+                    })
+                  }
+                >
+                  <option value="manual">手动</option>
+                  <option value="once">指定时间</option>
+                  <option value="interval">固定间隔</option>
+                  <option value="daily">每天</option>
+                  <option value="weekly">每周</option>
+                </select>
+              </label>
+              <label>
+                时区
+                <input
+                  required
+                  value={config.timezone}
+                  onChange={(e) => update({ timezone: e.target.value })}
+                />
+              </label>
+            </div>
+            {config.schedule.kind === "once" && (
+              <label>
+                执行时间（浏览器本地时区）
+                <input
+                  type="datetime-local"
+                  required
+                  value={
+                    config.schedule.at
+                      ? new Date(
+                          new Date(config.schedule.at).getTime() -
+                            new Date(config.schedule.at).getTimezoneOffset() *
+                              60000,
+                        )
+                          .toISOString()
+                          .slice(0, 16)
+                      : ""
+                  }
+                  onChange={(e) =>
+                    plan({
+                      at: e.target.value
+                        ? new Date(e.target.value).toISOString()
+                        : undefined,
+                    })
+                  }
+                />
+              </label>
+            )}
+            {config.schedule.kind === "interval" && (
+              <label>
+                间隔（分钟）
+                <input
+                  type="number"
+                  min={1}
+                  max={525600}
+                  required
+                  value={config.schedule.minutes ?? 60}
+                  onChange={(e) => plan({ minutes: Number(e.target.value) })}
+                />
+              </label>
+            )}
+            {["daily", "weekly"].includes(config.schedule.kind) && (
+              <label>
+                执行时刻
+                <input
+                  type="time"
+                  required
+                  value={config.schedule.time ?? "09:00"}
+                  onChange={(e) => plan({ time: e.target.value })}
+                />
+              </label>
+            )}
+            {config.schedule.kind === "weekly" && (
+              <label>
+                星期
+                <select
+                  value={config.schedule.weekday ?? 1}
+                  onChange={(e) => plan({ weekday: Number(e.target.value) })}
+                >
+                  {["日", "一", "二", "三", "四", "五", "六"].map((d, i) => (
+                    <option key={i} value={i}>
+                      星期{d}
+                    </option>
+                  ))}
+                </select>
+              </label>
+            )}
+            <label className="check">
               <input
-                required
-                value={config.timezone}
-                onChange={(e) => update({ timezone: e.target.value })}
+                type="checkbox"
+                checked={config.autoPublish}
+                onChange={(e) => update({ autoPublish: e.target.checked })}
               />
+              自动发布到 GitHub
             </label>
-          </div>
-          {config.schedule.kind === "once" && (
-            <label>
-              执行时间（浏览器本地时区）
-              <input
-                type="datetime-local"
-                required
-                value={
-                  config.schedule.at
-                    ? new Date(
-                        new Date(config.schedule.at).getTime() -
-                          new Date(config.schedule.at).getTimezoneOffset() *
-                            60000,
-                      )
-                        .toISOString()
-                        .slice(0, 16)
-                    : ""
-                }
-                onChange={(e) =>
-                  plan({
-                    at: e.target.value
-                      ? new Date(e.target.value).toISOString()
-                      : undefined,
-                  })
-                }
-              />
-            </label>
-          )}
-          {config.schedule.kind === "interval" && (
-            <label>
-              间隔（分钟）
-              <input
-                type="number"
-                min={1}
-                max={525600}
-                required
-                value={config.schedule.minutes ?? 60}
-                onChange={(e) => plan({ minutes: Number(e.target.value) })}
-              />
-            </label>
-          )}
-          {["daily", "weekly"].includes(config.schedule.kind) && (
-            <label>
-              执行时刻
-              <input
-                type="time"
-                required
-                value={config.schedule.time ?? "09:00"}
-                onChange={(e) => plan({ time: e.target.value })}
-              />
-            </label>
-          )}
-          {config.schedule.kind === "weekly" && (
-            <label>
-              星期
-              <select
-                value={config.schedule.weekday ?? 1}
-                onChange={(e) => plan({ weekday: Number(e.target.value) })}
-              >
-                {["日", "一", "二", "三", "四", "五", "六"].map((d, i) => (
-                  <option key={i} value={i}>
-                    星期{d}
-                  </option>
-                ))}
-              </select>
-            </label>
-          )}
-          <label className="check">
-            <input
-              type="checkbox"
-              checked={config.autoPublish}
-              onChange={(e) => update({ autoPublish: e.target.checked })}
-            />
-            自动发布到 GitHub
-          </label>
-          {error ? (
-            <p className="error" role="alert">
-              {errorText(error)}
-            </p>
-          ) : null}
-          <button type="submit">{busy ? "正在保存…" : "保存任务"}</button>
-        </fieldset>
+            {error ? (
+              <p className="error" role="alert">
+                {errorText(error)}
+              </p>
+            ) : null}
+          </fieldset>
+        </div>
+        <div className="task-editor-footer">
+          <button type="submit" disabled={busy}>
+            {busy ? "正在保存…" : "保存任务"}
+          </button>
+        </div>
       </form>
-    </section>
+    </dialog>,
+    document.body,
   );
 }
 export function ManagedTasks({
@@ -543,7 +577,10 @@ export function ManagedTasks({
                           <button
                             className="quiet"
                             disabled={!!busy || running}
-                            onClick={() => setEditing(task)}
+                            onClick={(event) => {
+                              closeTaskMenu(event.currentTarget);
+                              setEditing(task);
+                            }}
                           >
                             编辑
                           </button>
@@ -551,7 +588,10 @@ export function ManagedTasks({
                             <button
                               className="quiet"
                               disabled={!!busy || running}
-                              onClick={() => void action(task, "pause")}
+                              onClick={(event) => {
+                                closeTaskMenu(event.currentTarget);
+                                void action(task, "pause");
+                              }}
                             >
                               {task.status === "active"
                                 ? "暂停定时"
@@ -561,7 +601,10 @@ export function ManagedTasks({
                           <button
                             className="quiet danger-action"
                             disabled={!!busy || running}
-                            onClick={() => setDeleting(task.id)}
+                            onClick={(event) => {
+                              closeTaskMenu(event.currentTarget);
+                              setDeleting(task.id);
+                            }}
                           >
                             删除
                           </button>

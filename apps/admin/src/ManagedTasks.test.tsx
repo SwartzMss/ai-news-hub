@@ -152,21 +152,19 @@ test("an active execution replaces Run with Stop and separates the schedule stat
     ...task,
     configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
   };
-  const api = vi
-    .fn()
-    .mockImplementation(async (path: string) =>
-      path === "/tasks"
-        ? { tasks: [scheduled] }
-        : {
-            runs: [
-              {
-                id: "running",
-                status: "running",
-                created_at: "2026-11-04T01:00:00Z",
-              },
-            ],
-          },
-    );
+  const api = vi.fn().mockImplementation(async (path: string) =>
+    path === "/tasks"
+      ? { tasks: [scheduled] }
+      : {
+          runs: [
+            {
+              id: "running",
+              status: "running",
+              created_at: "2026-11-04T01:00:00Z",
+            },
+          ],
+        },
+  );
   render(<ManagedTasks api={api} />);
   await screen.findByText("定时已启用");
   expect(screen.getByRole("status").textContent).toBe("运行中");
@@ -175,4 +173,21 @@ test("an active execution replaces Run with Stop and separates the schedule stat
   expect(
     screen.getByRole("link", { name: "查看结果" }).getAttribute("href"),
   ).toContain("running");
+});
+
+test("task editor is a separate modal that closes on cancel and restores focus", async () => {
+  const api = fixture();
+  render(<ManagedTasks api={api} />);
+  await screen.findByText("模型公告");
+  const trigger = screen.getByRole("button", { name: "新增任务" });
+  trigger.focus();
+  fireEvent.click(trigger);
+  const dialog = await screen.findByRole("dialog", { name: "新增任务" });
+  expect(dialog.closest(".managed-task-list")).toBeNull();
+  expect(document.documentElement.style.overflow).toBe("hidden");
+  expect(document.activeElement).toBe(screen.getByLabelText("任务主题"));
+  fireEvent(dialog, new Event("cancel", { cancelable: true }));
+  expect(screen.queryByRole("dialog")).toBeNull();
+  expect(document.documentElement.style.overflow).toBe("");
+  expect(document.activeElement).toBe(trigger);
 });
