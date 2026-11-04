@@ -90,3 +90,5 @@ admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历�
 监听地址/端口/数据目录仍在启动配置。其余参数由 [系统设置](SETTINGS.md) 保存；执行或发布忙碌时拒绝修改，空闲时立即应用，不改变已完成 Run/报告或归档历史。
 
 用户配置任务另存 `configuration_json`、`next_run_at`、`deleted_at`；每个 Run 保存配置快照，编辑不能改变已开始的 Prompt 或自动发布策略。批准记录新增 `approval_kind`，区分 manual/automatic。迁移追加，既有 SQL/checksum 保持不变。
+
+版本 8 追加运行时间排序及报告/发布关联查询索引，为跨任务结果列表提供稳定分页；没有改写已应用的迁移。

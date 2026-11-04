@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TaskRecord, RunRecord } from "../../../packages/shared/src";
 import { ApiError, errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
-import { active, Badge, PageHeading, pathFor, time } from "./ui";
+import { active, PageHeading, pathFor } from "./ui";
 
 type Plan = {
   kind: "manual" | "once" | "interval" | "daily" | "weekly";
@@ -229,7 +229,7 @@ function TaskEditor({
                 添加一轮
               </button>
               <p className="field-help">
-                依次执行以上 Prompt，最后自动整理日报。
+                以上为研究轮次。完成后系统会额外执行“日报生成”，核验来源并保存结果。
               </p>
             </div>
             <div className="form-grid">
@@ -363,7 +363,6 @@ export function ManagedTasks({
   api: Client;
   taskId?: string;
 }) {
-  const [page, setPage] = useState(0);
   const [revision, refresh] = useState(0),
     [editing, setEditing] = useState<ManagedTask | "new">(),
     [busy, setBusy] = useState<string>(),
@@ -378,19 +377,15 @@ export function ManagedTasks({
           .map(async (task) => {
             const base = `/tasks/${encodeURIComponent(task.id)}/runs`;
             const { runs } = await api<{ runs: RunRecord[] }>(
-              `${base}?limit=${taskId ? 20 : 1}&offset=${taskId ? page * 20 : 0}`,
+              `${base}?limit=1`,
               signal,
             );
-            const current =
-              taskId && page > 0
-                ? (await api<{ runs: RunRecord[] }>(`${base}?limit=1`, signal))
-                    .runs[0]
-                : runs[0];
+            const current = runs[0];
             return { task, runs, current };
           }),
       );
     },
-    [api, taskId, revision, page],
+    [api, taskId, revision],
   );
   const startKeys = useRef(new Map<string, string>());
   const state = usePolling(load);
@@ -493,7 +488,7 @@ export function ManagedTasks({
         <div className="managed-task-list">
           {state.data
             .filter((row) => row.task.configuration || taskId)
-            .map(({ task, runs, current }) => {
+            .map(({ task, current }) => {
               const running = active(current?.status) || !!current?.publishing;
               const scheduled = task.configuration?.schedule.kind !== "manual";
               return (
@@ -551,7 +546,7 @@ export function ManagedTasks({
                       </dd>
                     </div>
                     <div>
-                      <dt>Prompt</dt>
+                      <dt>研究 Prompt</dt>
                       <dd>{task.configuration?.prompts.length ?? 1} 轮</dd>
                     </div>
                     <div>
@@ -611,33 +606,9 @@ export function ManagedTasks({
                         </div>
                       </details>
                     </div>
-                    {!taskId && current && (
-                      <div className="task-latest">
-                        <span>最近执行</span>
-                        <Badge status={current.status} />
-                        {current.configuration?.autoPublish &&
-                          current.status === "succeeded" &&
-                          !current.publishing &&
-                          !current.error_code && <span>已自动发布</span>}
-                        {current.error_code && (
-                          <span
-                            className="inline-error"
-                            title={current.error_code}
-                          >
-                            {current.status === "succeeded"
-                              ? "发布失败"
-                              : "执行异常"}
-                          </span>
-                        )}
-                        <time dateTime={current.created_at}>
-                          {shortTime(
-                            current.created_at,
-                            task.configuration?.timezone,
-                          )}
-                        </time>
-                        <a href={pathFor(task.id, current.id)}>查看结果</a>
-                      </div>
-                    )}
+                    <a href={`#/runs?taskId=${encodeURIComponent(task.id)}`}>
+                      运行记录
+                    </a>
                   </div>
                   {deleting === task.id && (
                     <div className="delete-confirm" role="alert">
@@ -653,57 +624,6 @@ export function ManagedTasks({
                         onClick={() => void action(task, "delete")}
                       >
                         确认删除
-                      </button>
-                    </div>
-                  )}
-                  {taskId && runs.length > 0 && (
-                    <div className="table-wrap">
-                      <table>
-                        <thead>
-                          <tr>
-                            <th>执行时间</th>
-                            <th>状态</th>
-                            <th>操作</th>
-                          </tr>
-                        </thead>
-                        <tbody>
-                          {runs.map((run) => (
-                            <tr key={run.id}>
-                              <td>{time(run.created_at)}</td>
-                              <td>
-                                <Badge status={run.status} />
-                                {run.publishing && <span>正在发布</span>}
-                                {run.error_code && (
-                                  <span className="inline-error">
-                                    {run.error_code}
-                                  </span>
-                                )}
-                              </td>
-                              <td>
-                                <a href={pathFor(task.id, run.id)}>查看记录</a>
-                              </td>
-                            </tr>
-                          ))}
-                        </tbody>
-                      </table>
-                    </div>
-                  )}
-                  {taskId && (
-                    <div className="pagination">
-                      <button
-                        className="quiet"
-                        disabled={!page}
-                        onClick={() => setPage((n) => n - 1)}
-                      >
-                        上一页
-                      </button>
-                      <span>第 {page + 1} 页</span>
-                      <button
-                        className="quiet"
-                        disabled={runs.length < 20}
-                        onClick={() => setPage((n) => n + 1)}
-                      >
-                        下一页
                       </button>
                     </div>
                   )}

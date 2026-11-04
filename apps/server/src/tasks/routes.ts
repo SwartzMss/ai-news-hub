@@ -1,3 +1,4 @@
+import type { RunListQuery } from '../../../../packages/shared/src/index.js';
 import type { FastifyInstance } from 'fastify';
 import { HttpError } from '../errors.js';
 import type { TaskEngine } from './engine.js';
@@ -58,6 +59,7 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
     const result = engine.start(request.params.taskId, request.body.idempotencyKey, request.body);
     reply.code(result.reused ? 200 : 202); return result;
   });
+  app.get<{Querystring:RunListQuery}>('/runs',{preValidation:async request=>{if(Object.keys(request.query).some(key=>!['taskId','state','limit','offset'].includes(key)))throw new HttpError(400,'bad_request');},schema:{querystring:{type:'object',additionalProperties:false,properties:{taskId:id,state:{type:'string',enum:['all','running','pending_review','publish_failed','failed','published'],default:'all'},limit:integer(1,100,20),offset:integer(0,100000,0)}}}},async request=>engine.listAllRuns(request.query));
   app.get<{ Params: RunParams }>('/runs/:runId', { schema: { params: params('runId') } }, async (request) => engine.detail(request.params.runId));
   app.get<{ Params: RunParams; Querystring: { after: number; limit: number } }>('/runs/:runId/events', {
     schema: { params: params('runId'), querystring: {

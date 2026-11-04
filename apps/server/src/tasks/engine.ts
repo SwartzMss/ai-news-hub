@@ -1,3 +1,5 @@
+import { listRunSummaries } from './run-summaries.js';
+import type { RunListQuery, RunListResponse } from '../../../../packages/shared/src/index.js';
 import { taskInput, nextOccurrence } from './configuration.js';
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
@@ -97,6 +99,7 @@ export class TaskEngine {
       try {this.start(task.id,'scheduled:'+String(row.next_run_at),{},'scheduled');}catch(error){if(!(error instanceof HttpError))throw error;}
     }
   }
+  listAllRuns(query:RunListQuery):RunListResponse {return listRunSummaries(this.db,query,id=>this.run(id));}
   listRuns(taskId: string, limit = 20, offset = 0): RunRecord[] {
     this.task(taskId);
     return this.db.prepare('SELECT id FROM task_runs WHERE task_id=? ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(taskId, limit, offset).map(row=>this.run(String(row.id)));

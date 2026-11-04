@@ -29,11 +29,14 @@ function Notice({ error }: { error?: unknown }) {
   ) : null;
 }
 
-export function Dashboard({api}:{api:Client}) { return <ManagedTasks api={api}/>; }
+export function Dashboard({ api }: { api: Client }) {
+  return <ManagedTasks api={api} />;
+}
 
-export function TaskDetail({api,taskId}:{api:Client;taskId:string}) {
- if (!["sample-connectivity","news-research","news-github"].includes(taskId)) return <ManagedTasks api={api} taskId={taskId}/>;
- return <LegacyTaskDetail api={api} taskId={taskId}/>;
+export function TaskDetail({ api, taskId }: { api: Client; taskId: string }) {
+  if (!["sample-connectivity", "news-research", "news-github"].includes(taskId))
+    return <ManagedTasks api={api} taskId={taskId} />;
+  return <LegacyTaskDetail api={api} taskId={taskId} />;
 }
 
 function LegacyTaskDetail({ api, taskId }: { api: Client; taskId: string }) {
@@ -258,9 +261,16 @@ export function RunDetail({
   taskId: string;
   runId: string;
 }) {
+  const managed = ![
+    "news-research",
+    "news-github",
+    "sample-connectivity",
+  ].includes(taskId);
   const [after, setAfter] = useState(0),
     [refresh, setRefresh] = useState(0),
-    [tab, setTab] = useState<"conversation" | "logs" | "info">("conversation");
+    [tab, setTab] = useState<"result" | "conversation" | "logs" | "info">(
+      managed ? "result" : "conversation",
+    );
   const load = useCallback(
     async (signal: AbortSignal) => {
       const detail = await api<{ run: RunRecord; turns: TurnRecord[] }>(
@@ -300,31 +310,47 @@ export function RunDetail({
     : data.run.publishing
       ? ["正在发布", "正在归档到 GitHub。"]
       : data.report
-      ? [data.report.status === "published" ? "已发布到 GitHub" : "日报已生成", data.run.error_code ? "发布未完成，可在发布记录中重试。" : data.report.status === "published" ? "查看发布记录中的提交结果。" : "在发布记录中查看审核与归档状态。"]
-      : active(data.run.status)
         ? [
-            research ? "研究进行中" : "任务执行中",
-            "完成后可查看回复与执行日志。",
+            data.report.status === "published"
+              ? "已发布到 GitHub"
+              : "日报已生成",
+            data.run.error_code
+              ? "发布未完成，可在发布记录中重试。"
+              : data.report.status === "published"
+                ? "查看发布记录中的提交结果。"
+                : "在发布记录中查看审核与归档状态。",
           ]
-        : !research
+        : active(data.run.status)
           ? [
-              `执行${labels[data.run.status] ?? data.run.status}`,
-              "在会话中查看输出，或返回任务再次执行。",
+              research ? "研究进行中" : "任务执行中",
+              "完成后可查看回复与执行日志。",
             ]
-          : !data.run.thread_id
-            ? ["本次研究无法继续", "尚未创建 Thread，请检查错误并新建研究。"]
-            : data.turns.length >= 20
-              ? ["已达到 20 轮上限", "如需继续，请返回任务新建研究。"]
-              : ["等待下一步研究", "可以补查、筛选，再整理为日报。"];
+          : !research
+            ? [
+                `执行${labels[data.run.status] ?? data.run.status}`,
+                "在会话中查看输出，或返回任务再次执行。",
+              ]
+            : !data.run.thread_id
+              ? ["本次研究无法继续", "尚未创建 Thread，请检查错误并新建研究。"]
+              : data.turns.length >= 20
+                ? ["已达到 20 轮上限", "如需继续，请返回任务新建研究。"]
+                : ["等待下一步研究", "可以补查、筛选，再整理为日报。"];
   const tabs = [
-    { id: "conversation", label: "研究会话", icon: "message" },
+    ...(managed
+      ? [{ id: "result", label: "最终结果", icon: "file" } as const]
+      : []),
+    {
+      id: "conversation",
+      label: managed ? "Prompt 记录" : "研究会话",
+      icon: "message",
+    },
     { id: "logs", label: "执行日志", icon: "activity" },
     { id: "info", label: "运行信息", icon: "info" },
   ] as const;
   return (
     <>
       <PageHeading
-        title={research ? "研究会话" : "执行详情"}
+        title={managed ? "执行结果" : research ? "研究会话" : "执行详情"}
 
         action={data && <Badge status={data.run.status} />}
       />
@@ -371,6 +397,43 @@ export function RunDetail({
               </button>
             ))}
           </div>
+          {managed && (
+            <div
+              id="panel-result"
+              role="tabpanel"
+              aria-labelledby="tab-result"
+              hidden={tab !== "result"}
+            >
+              {!data ? (
+                <p>正在读取结果…</p>
+              ) : data.report ? (
+                <Report report={data.report} />
+              ) : (
+                <section className="panel">
+                  <h2>
+                    {active(data.run.status)
+                      ? data.turns.at(-1)?.mode === "finalize"
+                        ? "正在生成日报"
+                        : "正在执行研究 Prompt"
+                      : "尚无可审核日报"}
+                  </h2>
+                  <p className="result-explanation">
+                    {data.run.error_code === "source_fetch_failed"
+                      ? "日报生成阶段的原文抓取校验失败。前面的研究记录仍然保留，本次没有生成可审核或发布的日报。"
+                      : active(data.run.status)
+                        ? "预设研究 Prompt 完成后，系统会额外执行日报生成并核验来源。"
+                        : "查看各阶段的输出和错误记录，核对后可返回任务重新执行。"}
+                  </p>
+                  <button
+                    className="quiet"
+                    onClick={() => setTab("conversation")}
+                  >
+                    查看 Prompt 记录
+                  </button>
+                </section>
+              )}
+            </div>
+          )}
           <div
             id="panel-conversation"
             role="tabpanel"
@@ -384,7 +447,13 @@ export function RunDetail({
                 data.turns.map((turn) => (
                   <article className="conversation-turn" key={turn.id}>
                     <div className="turn-divider">
-                      <span>第 {turn.sequence} 轮</span>
+                      <span>
+                        {managed && turn.mode === "finalize"
+                          ? "日报生成（系统步骤）"
+                          : managed
+                            ? `研究第 ${turn.sequence} 轮`
+                            : `第 ${turn.sequence} 轮`}
+                      </span>
                       <Badge status={turn.status} />
                     </div>
                     <div className="message-row user-message">
@@ -440,7 +509,7 @@ export function RunDetail({
                 onSubmitted={() => setRefresh((n) => n + 1)}
               />
             )}
-            {data?.report ? (
+            {managed ? null : data?.report ? (
               <Report report={data.report} />
             ) : data && !research ? (
               <div className="panel">
@@ -546,8 +615,18 @@ export function RunDetail({
               </div>
             </div>
             <dl>
-              <dt>已执行轮次</dt>
-              <dd>{data?.turns.length ?? "—"} / 20</dd>
+              <dt>{managed ? "研究轮次" : "已执行轮次"}</dt>
+              <dd>
+                {managed
+                  ? `${data?.turns.filter((turn) => turn.mode === "research").length ?? 0} / ${data?.run.configuration?.prompts.length ?? "—"}`
+                  : `${data?.turns.length ?? "—"} / 20`}
+              </dd>
+              {managed && (
+                <>
+                  <dt>系统步骤</dt>
+                  <dd>日报生成（额外执行）</dd>
+                </>
+              )}
               <dt>创建时间</dt>
               <dd>{time(data?.run.created_at)}</dd>
               <dt>当前状态</dt>
@@ -556,7 +635,7 @@ export function RunDetail({
           </section>
           {data?.report ? (
             <Publication api={api} reportId={data.report.id} />
-          ) : (
+          ) : managed ? null : (
             <div className="rail-note">
               <Icon name="shield" size={19} />
               <p>

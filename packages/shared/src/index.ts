@@ -40,3 +40,14 @@ export interface RunEvent {
   id: number; run_id: string; turn_record_id: string | null;
   kind: string; data: Record<string, unknown>; created_at: string;
 }
+
+export type RunListState = 'all' | 'running' | 'pending_review' | 'publish_failed' | 'failed' | 'published';
+export interface RunListQuery { taskId?: string; state?: RunListState; limit?: number; offset?: number }
+export interface RunSummary {
+  run: RunRecord; task_name: string; task_deleted: boolean;
+  state: Exclude<RunListState,'all'> | 'completed';
+  latest_turn: Pick<TurnRecord,'sequence'|'mode'|'status'|'error_code'> | null;
+  report: {id:string;status:string;title:string} | null;
+  publication: {status:string;error_code:string|null;commit_sha:string|null} | null;
+}
+export interface RunListResponse { runs:RunSummary[]; total:number;limit:number;offset:number }

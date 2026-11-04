@@ -2376,3 +2376,8 @@ summary {
 .back-to-task { display: inline-block; margin-bottom: 16px; font-size: 13px; }
 .page-heading > div { min-width: 0; }
 .page-heading h1 { overflow-wrap: anywhere; }
+
+.run-filters { display: flex; flex-wrap: wrap; gap: 16px; margin-bottom: 24px; }
+.run-filters label { display: grid; gap: 8px; flex: 1 1 220px; max-width: 380px; }
+.run-back-links { display: flex; gap: 20px; margin-bottom: 18px; font-size: 13px; }
+.result-explanation { color: var(--muted); margin: 16px 0 24px; }

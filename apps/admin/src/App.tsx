@@ -1,3 +1,4 @@
+import { Runs } from "./Runs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { client, type ApiError } from "./api";
 import { Login } from "./Login";
@@ -38,8 +39,16 @@ export function App() {
     { id: "github", label: "GitHub 归档", icon: "github" as const },
     { id: "security", label: "安全设置", icon: "shield" as const },
   ];
-  const settingsPage = settingsPages.find(page => hash === `#/settings/${page.id}` || (page.id === "codex" && hash === "#/settings"));
+  const settingsPage = settingsPages.find(
+    (page) =>
+      hash === `#/settings/${page.id}` ||
+      (page.id === "codex" && hash === "#/settings"),
+  );
   const settings = !!settingsPage;
+  const resultsPage = hash === "#/runs" || hash.startsWith("#/runs?");
+  const resultsTaskId =
+    new URLSearchParams(hash.split("?")[1] ?? "").get("taskId") ?? "";
+  const inResults = resultsPage || !!runId;
   function logout() {
     void client(token, () => {})(
       "/auth/logout",
@@ -67,14 +76,28 @@ export function App() {
           <Brand />
         </a>
         <nav className="primary-nav" aria-label="主导航">
-          <a href="#" aria-current={!settings ? "page" : undefined}>
+          <a
+            href="#"
+            aria-current={!settings && !inResults ? "page" : undefined}
+          >
             <Icon name="grid" />
             <span>任务总览</span>
-            {!settings && <span className="nav-marker" />}
+            {!settings && !inResults && <span className="nav-marker" />}
           </a>
-          {settingsPages.map(page => <a key={page.id} href={`#/settings/${page.id}`} aria-current={settingsPage?.id === page.id ? "page" : undefined}>
-            <Icon name={page.icon} /><span>{page.label}</span>
-          </a>)}
+          <a href="#/runs" aria-current={inResults ? "page" : undefined}>
+            <Icon name="file" />
+            <span>运行与结果</span>
+          </a>
+          {settingsPages.map((page) => (
+            <a
+              key={page.id}
+              href={`#/settings/${page.id}`}
+              aria-current={settingsPage?.id === page.id ? "page" : undefined}
+            >
+              <Icon name={page.icon} />
+              <span>{page.label}</span>
+            </a>
+          ))}
         </nav>
         <div className="sidebar-footer">
           <button className="logout-button" onClick={logout} aria-label="退出">
@@ -87,11 +110,25 @@ export function App() {
         className={`workspace-content${settings ? " settings-page" : ""}`}
         id="main-content"
         tabIndex={-1}
-        key={`${token}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
+        key={`${token}:${resultsPage}:${resultsTaskId}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
       >
-        {taskId && runId && <a className="back-to-task" href={pathFor(taskId)}>返回任务</a>}
+        {taskId && runId && (
+          <div className="run-back-links">
+            <a href={`#/runs?taskId=${encodeURIComponent(taskId)}`}>
+              返回运行记录
+            </a>
+            <a href={pathFor(taskId)}>所属任务</a>
+          </div>
+        )}
         {settings ? (
-          <Settings api={api} onCredentialChanged={connected} initialSection={`settings-${settingsPage!.id}`} hideNavigation />
+          <Settings
+            api={api}
+            onCredentialChanged={connected}
+            initialSection={`settings-${settingsPage!.id}`}
+            hideNavigation
+          />
+        ) : resultsPage ? (
+          <Runs api={api} initialTaskId={resultsTaskId} />
         ) : !taskId ? (
           <Dashboard api={api} />
         ) : runId ? (
