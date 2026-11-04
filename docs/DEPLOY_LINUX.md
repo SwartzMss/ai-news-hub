@@ -317,7 +317,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 ## 12. Issue #6 本地管理后台
 
-在源码安装依赖并运行 `npm run build`，它同时生成 Backend 与独立 `dist/admin`。部署时保留整个 `dist`，不能只拷贝 server；重启服务后打开 `http://127.0.0.1:3000/admin/`。后台构建缺失时入口返回 503 `admin_build_missing`，不会影响原有健康/API 路由。构建需要开发依赖；正式运行仍通过单个 Backend/systemd，不需额外 Vite 服务。
+在源码安装依赖并运行 `npm run build`，它同时生成 Backend 与独立 `dist/admin`。部署时保留整个 `dist`，不能只拷贝 server；重启服务后打开 `http://127.0.0.1:3000/admin/`。更新后台 UI 后需要重新构建并重启 Backend，再刷新浏览器；静态资源清单在 Backend 启动时读取。新版页面无需额外字体、图片服务或配置。后台构建缺失时入口返回 503 `admin_build_missing`，不会影响原有健康/API 路由。构建需要开发依赖；正式运行仍通过单个 Backend/systemd，不需额外 Vite 服务。
 
 按第 10 节初始化后用密码登录，临时会话仅页面内存持有，不使用 Cookie/localStorage/sessionStorage。刷新后重新登录，Task/Run 导航与服务端历史保留。页面壳和 JS/CSS 不含私有数据，可以在认证前加载；任何任务、日志、报告读取或执行仍须 Bearer Token。退出、401 或管理 API 被关闭时移除私有视图。
 
