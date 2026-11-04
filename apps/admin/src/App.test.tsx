@@ -32,7 +32,8 @@ afterEach(() => {
 });
 function mockFetch(fail?: number) {
   const fetcher = vi.fn(async (url: string, init?: RequestInit) => {
-    if(url === "/api/auth/status") return Response.json({initialized:true,mode:"token"});
+    if (url === "/api/auth/status")
+      return Response.json({ initialized: true, mode: "token" });
     if (fail)
       return new Response(
         JSON.stringify({
@@ -42,8 +43,22 @@ function mockFetch(fail?: number) {
         }),
         { status: fail },
       );
-    if(url === "/api/auth/login") return Response.json({token:"test_only_0123456789_abcdefghijklmnop"});
+    if (url === "/api/auth/login")
+      return Response.json({ token: "test_only_0123456789_abcdefghijklmnop" });
     if (url === "/api/tasks") return Response.json({ tasks: [task] });
+    if (url === "/api/settings")
+      return Response.json({
+        revision: 1,
+        logLevel: "info",
+        codex: { binary: "codex", model: "" },
+        execution: { timeoutMs: 120000, concurrency: 1, maxQueue: 20 },
+        github: {
+          enabled: false,
+          repository: "",
+          branch: "",
+          tokenConfigured: false,
+        },
+      });
     if (url.includes("/events"))
       return Response.json({
         events: [
@@ -90,9 +105,21 @@ test("authenticated Task → Run navigation renders real metadata, safe output a
   fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
   await screen.findByRole("heading", { name: "连接检查" });
   fireEvent.click(await screen.findByRole("link", { name: "run-1" }));
+  const conversation = await screen.findByRole("tab", { name: "研究会话" });
+  expect(conversation.getAttribute("aria-selected")).toBe("true");
+  fireEvent.keyDown(conversation, { key: "End" });
+  expect(
+    screen.getByRole("tab", { name: "运行信息" }).getAttribute("aria-selected"),
+  ).toBe("true");
   await screen.findByText("thread-1");
+  fireEvent.keyDown(screen.getByRole("tab", { name: "运行信息" }), {
+    key: "Home",
+  });
+  expect(conversation.getAttribute("aria-selected")).toBe("true");
   await screen.findByText("此 Run 尚无日报");
-  expect(screen.getByText("<script>unsafe</script>")).toBeTruthy();
+  expect(screen.getAllByText("<script>unsafe</script>").length).toBeGreaterThan(
+    0,
+  );
   expect(document.querySelector("script")).toBeNull();
   expect(
     fetcher.mock.calls.every(([, init]) =>
@@ -116,7 +143,7 @@ test("unavailable service displays a retryable connection error", async () => {
   vi.stubGlobal("fetch", vi.fn().mockRejectedValue(new TypeError("network")));
   render(<App />);
   await screen.findByText(/无法连接后台/);
-  expect(screen.getByRole('button',{name:'重新连接'})).toBeTruthy();
+  expect(screen.getByRole("button", { name: "重新连接" })).toBeTruthy();
 });
 test("manual trigger uses idempotency key and enters the Run belonging to the selected Task", async () => {
   const fetcher = mockFetch();
@@ -129,14 +156,17 @@ test("manual trigger uses idempotency key and enters the Run belonging to the se
   await screen.findByText("thread-1");
   await waitFor(() =>
     expect(
-      fetcher.mock.calls.filter(([url, init]) => init?.method === "POST" && !url.includes("/auth/")),
+      fetcher.mock.calls.filter(
+        ([url, init]) => init?.method === "POST" && !url.includes("/auth/"),
+      ),
     ).toHaveLength(1),
   );
   expect(
     JSON.parse(
       String(
-        fetcher.mock.calls.find(([url, init]) => init?.method === "POST" && !url.includes("/auth/"))![1]!
-          .body,
+        fetcher.mock.calls.find(
+          ([url, init]) => init?.method === "POST" && !url.includes("/auth/"),
+        )![1]!.body,
       ),
     ).idempotencyKey,
   ).toMatch(/^admin-/);
@@ -156,11 +186,12 @@ test("session expiration removes private results during polling", async () => {
   render(<App />);
   await login();
   await screen.findByRole("link", { name: "连接检查" });
-  fetcher.mockImplementation(
-    async (url) =>
-      url === "/api/auth/status" ? Response.json({initialized:true,mode:"token"}) : new Response(JSON.stringify({ error: { code: "unauthorized" } }), {
-        status: 401,
-      }),
+  fetcher.mockImplementation(async (url) =>
+    url === "/api/auth/status"
+      ? Response.json({ initialized: true, mode: "token" })
+      : new Response(JSON.stringify({ error: { code: "unauthorized" } }), {
+          status: 401,
+        }),
   );
   await screen.findByLabelText("管理 Token", {}, { timeout: 4000 });
   expect(screen.queryByRole("link", { name: "连接检查" })).toBeNull();
@@ -212,32 +243,96 @@ test("aborted old error response cannot expire a replacement session while readi
   await request;
   expect(expired).not.toHaveBeenCalled();
 });
-test('news prompt and uncertain retry survive log pagination without replacing the idempotency key', async () => {
-  const newsTask={...task,id:'news-research',name:'研究任务'};
-  const newsRun={...run,task_id:newsTask.id};
-  const posts: unknown[]=[];
-  vi.stubGlobal('fetch',vi.fn(async (url:string,init?:RequestInit)=>{
-    if(url==='/api/auth/status')return Response.json({initialized:true,mode:'token'});
-    if(url==='/api/auth/login')return Response.json({token:'test_only_0123456789_abcdefghijklmnop'});
-    if(init?.method==='POST') {posts.push(JSON.parse(String(init.body)));throw new TypeError('lost response');}
-    if(url==='/api/tasks')return Response.json({tasks:[newsTask]});
-    if(url.includes('/events'))return Response.json({events:Array.from({length:100},(_,i)=>({id:i+1,kind:'message',data:{},created_at:run.created_at}))});
-    if(url.startsWith('/api/news/runs/'))return Response.json({newsRun:{report_id:null}});
-    if(url==='/api/runs/run-1')return Response.json({run:newsRun,turns:[{id:'t',sequence:1,status:'succeeded',input_text:'first',output_text:'reply'}]});
-    return Response.json({runs:[newsRun],task:newsTask});
-  }));
-  location.hash='#/tasks/news-research/runs/run-1';render(<App/>);
-  fireEvent.change(await screen.findByLabelText('管理 Token'),{target:{value:'test_only_0123456789_abcdefghijklmnop'}});
-  fireEvent.click(screen.getByRole('button',{name:'连接后台'}));
-  fireEvent.change(await screen.findByLabelText('下一轮 prompt'),{target:{value:'补查原始公告'}});
-  fireEvent.click(await screen.findByRole('button',{name:'后续日志'}));
-  await waitFor(()=>expect((screen.getByLabelText('下一轮 prompt') as HTMLTextAreaElement).disabled).toBe(false));
-  expect((screen.getByLabelText('下一轮 prompt') as HTMLTextAreaElement).value).toBe('补查原始公告');
-  fireEvent.click(screen.getByRole('button',{name:'继续研究'}));
-  await screen.findByRole('button',{name:'重试原请求'});
-  fireEvent.click(screen.getByRole('button',{name:'回到首条'}));
-  const retry=await screen.findByRole('button',{name:'重试原请求'});
-  await waitFor(()=>expect(retry.hasAttribute('disabled')).toBe(false));
-  fireEvent.click(retry);await waitFor(()=>expect(posts).toHaveLength(2));
+test("news prompt and uncertain retry survive log pagination without replacing the idempotency key", async () => {
+  const newsTask = { ...task, id: "news-research", name: "研究任务" };
+  const newsRun = { ...run, task_id: newsTask.id };
+  const posts: unknown[] = [];
+  vi.stubGlobal(
+    "fetch",
+    vi.fn(async (url: string, init?: RequestInit) => {
+      if (url === "/api/auth/status")
+        return Response.json({ initialized: true, mode: "token" });
+      if (url === "/api/auth/login")
+        return Response.json({
+          token: "test_only_0123456789_abcdefghijklmnop",
+        });
+      if (init?.method === "POST") {
+        posts.push(JSON.parse(String(init.body)));
+        throw new TypeError("lost response");
+      }
+      if (url === "/api/tasks") return Response.json({ tasks: [newsTask] });
+      if (url.includes("/events"))
+        return Response.json({
+          events: Array.from({ length: 100 }, (_, i) => ({
+            id: i + 1,
+            kind: "message",
+            data: {},
+            created_at: run.created_at,
+          })),
+        });
+      if (url.startsWith("/api/news/runs/"))
+        return Response.json({ newsRun: { report_id: null } });
+      if (url === "/api/runs/run-1")
+        return Response.json({
+          run: newsRun,
+          turns: [
+            {
+              id: "t",
+              sequence: 1,
+              status: "succeeded",
+              input_text: "first",
+              output_text: "reply",
+            },
+          ],
+        });
+      return Response.json({ runs: [newsRun], task: newsTask });
+    }),
+  );
+  location.hash = "#/tasks/news-research/runs/run-1";
+  render(<App />);
+  fireEvent.change(await screen.findByLabelText("管理 Token"), {
+    target: { value: "test_only_0123456789_abcdefghijklmnop" },
+  });
+  fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
+  fireEvent.change(await screen.findByLabelText("下一轮 prompt"), {
+    target: { value: "补查原始公告" },
+  });
+  fireEvent.click(screen.getByRole("tab", { name: "执行日志" }));
+  fireEvent.click(await screen.findByRole("button", { name: "后续日志" }));
+  fireEvent.click(screen.getByRole("tab", { name: "研究会话" }));
+  await waitFor(() =>
+    expect(
+      (screen.getByLabelText("下一轮 prompt") as HTMLTextAreaElement).disabled,
+    ).toBe(false),
+  );
+  expect(
+    (screen.getByLabelText("下一轮 prompt") as HTMLTextAreaElement).value,
+  ).toBe("补查原始公告");
+  fireEvent.click(screen.getByRole("button", { name: "继续研究" }));
+  await screen.findByRole("button", { name: "重试原请求" });
+  fireEvent.click(screen.getByRole("tab", { name: "执行日志" }));
+  fireEvent.click(screen.getByRole("button", { name: "回到首条" }));
+  fireEvent.click(screen.getByRole("tab", { name: "研究会话" }));
+  const retry = await screen.findByRole("button", { name: "重试原请求" });
+  await waitFor(() => expect(retry.hasAttribute("disabled")).toBe(false));
+  fireEvent.click(retry);
+  await waitFor(() => expect(posts).toHaveLength(2));
   expect(posts[0]).toEqual(posts[1]);
+});
+test("workspace navigation marks the current page and opens real system settings", async () => {
+  mockFetch();
+  render(<App />);
+  await login();
+  expect(
+    screen.getByRole("link", { name: "任务总览" }).getAttribute("aria-current"),
+  ).toBe("page");
+  fireEvent.click(screen.getByRole("link", { name: "系统设置" }));
+  await screen.findByRole("heading", { name: "系统设置" });
+  await screen.findByLabelText("GitHub 仓库");
+  expect(
+    screen.getByRole("link", { name: "系统设置" }).getAttribute("aria-current"),
+  ).toBe("page");
+  expect(
+    screen.getByRole("link", { name: "任务总览" }).getAttribute("aria-current"),
+  ).toBeNull();
 });

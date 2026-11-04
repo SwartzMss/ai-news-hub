@@ -1,0 +1,735 @@
+import { useCallback, useEffect, useMemo, useRef, useState } from "react";
+import type {
+  TaskRecord,
+  RunRecord,
+  TurnRecord,
+  RunEvent,
+} from "../../../packages/shared/src";
+import { ApiError, errorText, type Client } from "./api";
+import { usePolling } from "./usePolling";
+import { Research } from "./Research";
+import { Report, type ReportRecord } from "./Report";
+import { Publication } from "./Publication";
+import {
+  active,
+  Badge,
+  EmptyState,
+  Icon,
+  labels,
+  PageHeading,
+  pathFor,
+  time,
+} from "./ui";
+function Notice({ error }: { error?: unknown }) {
+  return error ? (
+    <p className="error" role="alert">
+      {errorText(error)}
+    </p>
+  ) : null;
+}
+
+export function Dashboard({ api }: { api: Client }) {
+  const load = useCallback(
+    async (signal: AbortSignal) => {
+      const { tasks } = await api<{ tasks: TaskRecord[] }>("/tasks", signal);
+      return Promise.all(
+        tasks.map(async (task) => ({
+          task,
+          runs: (
+            await api<{ runs: RunRecord[] }>(
+              `/tasks/${encodeURIComponent(task.id)}/runs?limit=1`,
+              signal,
+            )
+          ).runs,
+        })),
+      );
+    },
+    [api],
+  );
+  const { data, error } = usePolling(load);
+  const research = data?.find((row) => row.task.id === "news-research");
+  return (
+    <>
+      <PageHeading
+        title="任务总览"
+        description="从一个主题开始，追踪研究进展，审阅每一份结果。"
+        action={
+          research && (
+            <a className="button" href={pathFor(research.task.id)}>
+              <Icon name="plus" />
+              开始研究
+            </a>
+          )
+        }
+      />
+      <Notice error={error} />
+      {!data && !error && (
+        <div className="loading-state" role="status">
+          正在读取任务…
+        </div>
+      )}
+      {data && (
+        <>
+          <div className="metrics-strip">
+            <div>
+              <span className="metric-icon">
+                <Icon name="grid" />
+              </span>
+              <p>
+                已配置任务
+                <strong>
+                  {data.length}
+                  <small>个任务</small>
+                </strong>
+              </p>
+            </div>
+            <div>
+              <span className="metric-icon blue">
+                <Icon name="activity" />
+              </span>
+              <p>
+                等待 / 执行中
+                <strong>
+                  {data.filter((row) => active(row.runs[0]?.status)).length}
+                  <small>个执行</small>
+                </strong>
+              </p>
+            </div>
+            <div>
+              <span className="metric-icon amber">
+                <Icon name="info" />
+              </span>
+              <p>
+                最近执行异常
+                <strong>
+                  {
+                    data.filter((row) =>
+                      ["failed", "interrupted"].includes(row.runs[0]?.status),
+                    ).length
+                  }
+                  <small>需关注</small>
+                </strong>
+              </p>
+            </div>
+          </div>
+          <section className="task-section">
+            <div className="section-heading">
+              <div>
+                <h2>全部任务</h2>
+                <p className="muted">研究与诊断任务，各自保留独立执行历史。</p>
+              </div>
+              <span className="update-note">
+                <span className="status-dot" />每 2 秒更新
+              </span>
+            </div>
+            {!data.length ? (
+              <EmptyState title="还没有配置任务">
+                任务会在服务启动后出现在这里。
+              </EmptyState>
+            ) : (
+              <div className="task-list">
+                {data.map(({ task, runs }) => (
+                  <article className="task-row" key={task.id}>
+                    <span
+                      className={`task-symbol ${task.id === "news-research" ? "research-symbol" : ""}`}
+                    >
+                      <Icon
+                        name={
+                          task.id === "news-research" ? "spark" : "activity"
+                        }
+                        size={23}
+                      />
+                    </span>
+                    <div className="task-row-main">
+                      <h3>
+                        <a href={pathFor(task.id)}>{task.name}</a>
+                      </h3>
+                      <p>
+                        {task.id === "news-research"
+                          ? "按主题搜索、多轮补查，最后生成待审核日报。"
+                          : task.id === "sample-connectivity"
+                            ? "检查 Codex 接入，确认任务执行链路。"
+                            : "查看任务配置和历史结果。"}
+                      </p>
+                      <span className="task-id">{task.id}</span>
+                      {runs[0] && (
+                        <span className={`task-availability ${task.status}`}>
+                          {labels[task.status] ?? task.status}
+                        </span>
+                      )}
+                    </div>
+                    <div className="task-row-status">
+                      <Badge status={runs[0]?.status ?? task.status} />
+                      <small>
+                        {runs[0] ? time(runs[0].created_at) : "尚无执行记录"}
+                      </small>
+                      {runs[0]?.error_code && (
+                        <span className="inline-error">
+                          {runs[0].error_code}
+                        </span>
+                      )}
+                    </div>
+                    <a
+                      className="task-open"
+                      href={pathFor(task.id)}
+                      aria-label={`查看任务：${task.name}`}
+                    >
+                      <Icon name="chevron" />
+                    </a>
+                  </article>
+                ))}
+              </div>
+            )}
+          </section>
+          <div className="workflow-guide">
+            <div>
+              <Icon name="file" size={22} />
+              <span>一份日报的工作流程</span>
+            </div>
+            <ol>
+              <li>确定主题</li>
+              <li>与 Codex 研究</li>
+              <li>核对来源与摘要</li>
+              <li>批准后归档</li>
+            </ol>
+          </div>
+        </>
+      )}
+    </>
+  );
+}
+
+export function TaskDetail({ api, taskId }: { api: Client; taskId: string }) {
+  const [page, setPage] = useState(0),
+    [busy, setBusy] = useState(false),
+    [error, setError] = useState<unknown>();
+  const key = useRef<string | undefined>(undefined),
+    pending = useRef(false);
+  const load = useCallback(
+    async (signal: AbortSignal) => {
+      const [task, runs] = await Promise.all([
+        api<{
+          task: TaskRecord & { schedule?: string | null; timezone?: string };
+        }>(`/tasks/${encodeURIComponent(taskId)}`, signal),
+        api<{ runs: RunRecord[] }>(
+          `/tasks/${encodeURIComponent(taskId)}/runs?limit=20&offset=${page * 20}`,
+          signal,
+        ),
+      ]);
+      return { ...task, ...runs };
+    },
+    [api, taskId, page],
+  );
+  const controller = useMemo(() => new AbortController(), []);
+  useEffect(() => () => controller.abort(), [controller]);
+  const state = usePolling(load),
+    research = taskId === "news-research";
+  async function start() {
+    if (pending.current) return;
+    pending.current = true;
+    setBusy(true);
+    setError(undefined);
+    key.current ??= "admin-" + crypto.randomUUID();
+    try {
+      const { run } = await api<{ run: RunRecord }>(
+        `/tasks/${encodeURIComponent(taskId)}/runs`,
+        controller.signal,
+        { idempotencyKey: key.current },
+      );
+      if (!controller.signal.aborted) location.hash = pathFor(taskId, run.id);
+    } catch (cause) {
+      if (!controller.signal.aborted) {
+        setError(cause);
+        if (
+          cause instanceof ApiError &&
+          cause.status >= 400 &&
+          cause.status < 500
+        )
+          key.current = undefined;
+      }
+    } finally {
+      pending.current = false;
+      if (!controller.signal.aborted) setBusy(false);
+    }
+  }
+  return (
+    <>
+      <PageHeading
+        title={state.data?.task.name ?? "任务详情"}
+        description={
+          research
+            ? "定义你的问题，在同一次研究中逐步完善答案。"
+            : "查看配置、检查接入并追踪执行历史。"
+        }
+        action={
+          state.data &&
+          !research && (
+            <button
+              onClick={start}
+              disabled={
+                busy ||
+                state.data.task.status !== "active" ||
+                state.data.runs.some((run) => active(run.status))
+              }
+            >
+              <Icon name="plus" />
+              {busy ? "正在提交…" : "手动执行"}
+            </button>
+          )
+        }
+      />
+      <Notice error={state.error ?? error} />
+      {research && (
+        <div className="research-start-layout">
+          <Research
+            api={api}
+            taskId={taskId}
+            disabled={
+              !state.data ||
+              state.data.task.status !== "active" ||
+              state.data.runs.some((run) => active(run.status))
+            }
+            onSubmitted={(id) => {
+              location.hash = pathFor(taskId, id);
+            }}
+          />
+          <aside className="context-card">
+            <span className="context-icon">
+              <Icon name="spark" size={23} />
+            </span>
+            <h2>研究从好问题开始</h2>
+            <p>告诉 Codex 你关心什么，以及希望如何筛选信息。</p>
+            <ul>
+              <li>明确主题与时间范围</li>
+              <li>优先官方公告和原始来源</li>
+              <li>通过后续 prompt 补查、筛选</li>
+            </ul>
+            <div className="subtle-note">
+              <Icon name="shield" size={16} />
+              生成结果由你审核后归档。
+            </div>
+          </aside>
+        </div>
+      )}
+      {!state.data ? (
+        <p className="muted">正在读取任务…</p>
+      ) : (
+        <>
+          <section className="task-facts">
+            <div>
+              <span>任务状态</span>
+              <Badge status={state.data.task.status} />
+            </div>
+            <div>
+              <span>发布频道</span>
+              <strong>{state.data.task.channel}</strong>
+            </div>
+            <div>
+              <span>执行方式</span>
+              <strong>仅手动</strong>
+            </div>
+            <details>
+              <summary>查看任务配置</summary>
+              <dl>
+                <dt>任务 ID</dt>
+                <dd>{taskId}</dd>
+                <dt>时区</dt>
+                <dd>{state.data.task.timezone ?? "UTC"}</dd>
+              </dl>
+              <pre>{state.data.task.prompt}</pre>
+            </details>
+          </section>
+          <section>
+            <div className="section-heading">
+              <h2>执行历史</h2>
+              <span className="muted">每页 20 条</span>
+            </div>
+            {!state.data.runs.length ? (
+              <div className="panel">
+                <EmptyState title="还没有执行记录" icon="clock">
+                  {research
+                    ? "填写上方主题和初始 prompt，开始你的第一轮研究。"
+                    : "点击手动执行，检查任务是否能正常完成。"}
+                </EmptyState>
+              </div>
+            ) : (
+              <div className="table-wrap">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>研究记录</th>
+                      <th>状态</th>
+                      <th>创建时间</th>
+                      <th>异常</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {state.data.runs.map((run) => (
+                      <tr key={run.id}>
+                        <td>
+                          <a
+                            className="run-link"
+                            href={pathFor(taskId, run.id)}
+                          >
+                            <Icon name="message" size={16} />
+                            {run.id}
+                          </a>
+                        </td>
+                        <td>
+                          <Badge status={run.status} />
+                        </td>
+                        <td>{time(run.created_at)}</td>
+                        <td>{run.error_code ?? "—"}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+            <div className="pagination">
+              <span>第 {page + 1} 页</span>
+              <div>
+                <button
+                  className="quiet"
+                  disabled={!page}
+                  onClick={() => setPage((n) => n - 1)}
+                >
+                  上一页
+                </button>
+                <button
+                  className="quiet"
+                  disabled={state.data.runs.length < 20}
+                  onClick={() => setPage((n) => n + 1)}
+                >
+                  下一页
+                </button>
+              </div>
+            </div>
+          </section>
+        </>
+      )}
+    </>
+  );
+}
+
+export function RunDetail({
+  api,
+  taskId,
+  runId,
+}: {
+  api: Client;
+  taskId: string;
+  runId: string;
+}) {
+  const [after, setAfter] = useState(0),
+    [refresh, setRefresh] = useState(0),
+    [tab, setTab] = useState<"conversation" | "logs" | "info">("conversation");
+  const load = useCallback(
+    async (signal: AbortSignal) => {
+      const detail = await api<{ run: RunRecord; turns: TurnRecord[] }>(
+        `/runs/${encodeURIComponent(runId)}`,
+        signal,
+      );
+      if (detail.run.task_id !== taskId)
+        throw new ApiError(404, "run_not_in_task");
+      const events = await api<{ events: RunEvent[] }>(
+        `/runs/${encodeURIComponent(runId)}/events?limit=100&after=${after}`,
+        signal,
+      );
+      let report: ReportRecord | undefined;
+      if (["news-research", "news-github"].includes(taskId))
+        try {
+          const { newsRun } = await api<{
+            newsRun: { report_id: string | null };
+          }>(`/news/runs/${encodeURIComponent(runId)}`, signal);
+          if (newsRun.report_id)
+            report = (
+              await api<{ report: ReportRecord }>(
+                `/news/reports/${encodeURIComponent(newsRun.report_id)}`,
+                signal,
+              )
+            ).report;
+        } catch (cause) {
+          if (!(cause instanceof ApiError && cause.status === 404)) throw cause;
+        }
+      return { ...detail, ...events, report };
+    },
+    [api, taskId, runId, after, refresh],
+  );
+  const { data, error } = usePolling(load),
+    research = taskId === "news-research";
+  const summary = !data
+    ? ["正在读取记录", "请稍候…"]
+    : data.report
+      ? ["日报已生成", "核对内容后再批准归档。"]
+      : active(data.run.status)
+        ? [
+            research ? "研究进行中" : "任务执行中",
+            "完成后可查看回复与执行日志。",
+          ]
+        : !research
+          ? [
+              `执行${labels[data.run.status] ?? data.run.status}`,
+              "在会话中查看输出，或返回任务再次执行。",
+            ]
+          : !data.run.thread_id
+            ? ["本次研究无法继续", "尚未创建 Thread，请检查错误并新建研究。"]
+            : data.turns.length >= 20
+              ? ["已达到 20 轮上限", "如需继续，请返回任务新建研究。"]
+              : ["等待下一步研究", "可以补查、筛选，再整理为日报。"];
+  const tabs = [
+    { id: "conversation", label: "研究会话", icon: "message" },
+    { id: "logs", label: "执行日志", icon: "activity" },
+    { id: "info", label: "运行信息", icon: "info" },
+  ] as const;
+  return (
+    <>
+      <PageHeading
+        title={research ? "研究会话" : "执行详情"}
+        description="查看每一轮的思路与结果，让研究逐步收敛。"
+        action={data && <Badge status={data.run.status} />}
+      />
+      <Notice error={error} />
+      {data?.run.error_code && (
+        <p role="alert" className="error">
+          {data.run.error_code === "auth_required"
+            ? "Codex 认证失效，请在服务账户下重新登录。"
+            : `执行异常：${data.run.error_code}`}
+        </p>
+      )}
+      <div className="run-layout">
+        <div className="run-main">
+          <div className="tabs" role="tablist" aria-label="研究记录视图">
+            {tabs.map((item) => (
+              <button
+                key={item.id}
+                id={`tab-${item.id}`}
+                role="tab"
+                aria-selected={tab === item.id}
+                tabIndex={tab === item.id ? 0 : -1}
+                onKeyDown={(event) => {
+                  const keys = ["ArrowLeft", "ArrowRight", "Home", "End"];
+                  if (!keys.includes(event.key)) return;
+                  event.preventDefault();
+                  const index = tabs.findIndex((value) => value.id === tab);
+                  const next =
+                    event.key === "Home"
+                      ? 0
+                      : event.key === "End"
+                        ? tabs.length - 1
+                        : (index +
+                            (event.key === "ArrowRight" ? 1 : -1) +
+                            tabs.length) %
+                          tabs.length;
+                  setTab(tabs[next].id);
+                  document.getElementById(`tab-${tabs[next].id}`)?.focus();
+                }}
+                aria-controls={`panel-${item.id}`}
+                onClick={() => setTab(item.id)}
+              >
+                <Icon name={item.icon} size={17} />
+                {item.label}
+              </button>
+            ))}
+          </div>
+          <div
+            id="panel-conversation"
+            role="tabpanel"
+            aria-labelledby="tab-conversation"
+            hidden={tab !== "conversation"}
+          >
+            <div className="conversation-list">
+              {!data ? (
+                <p className="loading-state">正在读取执行记录…</p>
+              ) : (
+                data.turns.map((turn) => (
+                  <article className="conversation-turn" key={turn.id}>
+                    <div className="turn-divider">
+                      <span>第 {turn.sequence} 轮</span>
+                      <Badge status={turn.status} />
+                    </div>
+                    <div className="message-row user-message">
+                      <span className="message-avatar">你</span>
+                      <div className="message-content">
+                        <span className="message-author">你的要求</span>
+                        <p className="message-text">{turn.input_text}</p>
+                      </div>
+                    </div>
+                    <div className="message-row assistant-message">
+                      <span className="message-avatar">
+                        <Icon name="spark" size={17} />
+                      </span>
+                      <div className="message-content">
+                        <span className="message-author">
+                          Codex
+                          <span>
+                            {turn.mode === "finalize" ? "日报整理" : "研究回复"}
+                          </span>
+                        </span>
+                        {turn.mode === "finalize" && data.report ? (
+                          <p className="message-text">
+                            日报已生成，可以在下方核对来源与内容。
+                          </p>
+                        ) : (
+                          <pre className="message-text">
+                            {turn.output_text ??
+                              (active(turn.status)
+                                ? "正在研究中…"
+                                : "暂无输出")}
+                          </pre>
+                        )}
+                        {turn.error_code && (
+                          <p className="inline-error">{turn.error_code}</p>
+                        )}
+                      </div>
+                    </div>
+                  </article>
+                ))
+              )}
+            </div>
+            {research && !data?.report && (
+              <Research
+                api={api}
+                taskId={taskId}
+                runId={runId}
+                disabled={
+                  !data ||
+                  active(data.run.status) ||
+                  !data.run.thread_id ||
+                  data.turns.length >= 20
+                }
+                onSubmitted={() => setRefresh((n) => n + 1)}
+              />
+            )}
+            {data?.report ? (
+              <Report report={data.report} />
+            ) : data && !research ? (
+              <div className="panel">
+                <EmptyState title="此 Run 尚无日报">
+                  样例任务仅返回执行文本，日报通过新闻研究任务生成。
+                </EmptyState>
+              </div>
+            ) : data ? (
+              <p className="muted report-hint">
+                此 Run 尚无日报。完成研究后，填写整理要求并生成待审核日报。
+              </p>
+            ) : null}
+          </div>
+          <div
+            id="panel-logs"
+            role="tabpanel"
+            aria-labelledby="tab-logs"
+            hidden={tab !== "logs"}
+          >
+            <section className="panel log-panel">
+              <div className="section-heading">
+                <h2>执行日志</h2>
+                <span className="muted">每页最多 100 条</span>
+              </div>
+              {data?.events.length ? (
+                <ol className="logs">
+                  {data.events.map((event) => (
+                    <li key={event.id}>
+                      <div className="log-heading">
+                        <strong>{event.kind}</strong>
+                        <time>{time(event.created_at)}</time>
+                      </div>
+                      <pre>{JSON.stringify(event.data, null, 2)}</pre>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="muted">暂无执行日志。</p>
+              )}
+              <div className="pagination">
+                <button
+                  className="quiet"
+                  disabled={!after}
+                  onClick={() => setAfter(0)}
+                >
+                  回到首条
+                </button>
+                <button
+                  className="quiet"
+                  disabled={!data || data.events.length < 100}
+                  onClick={() => setAfter(data!.events.at(-1)!.id)}
+                >
+                  后续日志
+                </button>
+              </div>
+            </section>
+          </div>
+          <div
+            id="panel-info"
+            role="tabpanel"
+            aria-labelledby="tab-info"
+            hidden={tab !== "info"}
+          >
+            <section className="panel">
+              <h2>运行信息</h2>
+              {data && (
+                <dl className="technical-info">
+                  <dt>Run</dt>
+                  <dd>{runId}</dd>
+                  <dt>Thread</dt>
+                  <dd>{data.run.thread_id ?? "尚未创建"}</dd>
+                  <dt>Turn</dt>
+                  <dd>{data.run.turn_id ?? "尚未创建"}</dd>
+                  <dt>创建时间</dt>
+                  <dd>{time(data.run.created_at)}</dd>
+                  <dt>开始时间</dt>
+                  <dd>{time(data.run.started_at)}</dd>
+                  <dt>结束时间</dt>
+                  <dd>{time(data.run.finished_at)}</dd>
+                </dl>
+              )}
+              {data?.turns.map((turn) => (
+                <details key={turn.id}>
+                  <summary>
+                    Turn {turn.sequence} · {labels[turn.status] ?? turn.status}
+                  </summary>
+                  <pre>{turn.output_text ?? "暂无输出"}</pre>
+                </details>
+              ))}
+            </section>
+          </div>
+        </div>
+        <aside className="run-rail">
+          <section className="panel run-summary">
+            <h2>{research ? "本次研究" : "本次执行"}</h2>
+            <div className="summary-progress">
+              <span className="summary-icon">
+                <Icon name={data?.report ? "check" : "message"} size={22} />
+              </span>
+              <div>
+                <strong>{summary[0]}</strong>
+                <p>{summary[1]}</p>
+              </div>
+            </div>
+            <dl>
+              <dt>已执行轮次</dt>
+              <dd>{data?.turns.length ?? "—"} / 20</dd>
+              <dt>创建时间</dt>
+              <dd>{time(data?.run.created_at)}</dd>
+              <dt>当前状态</dt>
+              <dd>{data ? labels[data.run.status] : "读取中"}</dd>
+            </dl>
+          </section>
+          {data?.report ? (
+            <Publication api={api} reportId={data.report.id} />
+          ) : (
+            <div className="rail-note">
+              <Icon name="shield" size={19} />
+              <p>
+                来源值得多看一眼
+                <small>
+                  结构与引文校验通过后，仍需你核对事实、时间和推断。
+                </small>
+              </p>
+            </div>
+          )}
+        </aside>
+      </div>
+    </>
+  );
+}

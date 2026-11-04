@@ -62,6 +62,8 @@ GitHub 路径 `reports/YYYY/MM/DD/opensource/vNNNNNN.json` 只追加；相同字
 
 ## 管理和公开站
 
+Admin 采用独立的响应式工作台壳、任务列表与研究会话视图；Run 的日志/运行信息用标签组织，切换时保留研究输入与幂等请求。系统设置按模型/执行、归档和密码分组。
+
 Admin 独立构建到 dist/admin，Backend 只提供 `/admin/` 壳和有限 JS/CSS，私有读写均经 Bearer `/api`。初始化后用密码登录，临时 Bearer 会话仅在页面内存，刷新重新认证。每 2 秒顺序轮询，导航/退出中断旧请求。研究请求保存页面内幂等 payload，不确定时锁定输入并重试原请求；刷新后先查历史。
 
 公开站唯一输出 dist/web，构建模块 dist/web-render 不公开。正式构建读取 checkout 的 approved reports/；无数据为空状态；demo 独立并标记 DEMO/noindex，正式拒绝测试标记。HTML 包括首页、频道、来源详情、日期/版本页；无 JS 可阅读，浏览器脚本仅切主题。同日最高版本进入列表，历史页保留版本。

@@ -1,4 +1,5 @@
 import type { DailyReport } from "../../server/src/news/report";
+import { Icon } from "./ui";
 export interface ReportRecord {
   id: string;
   version: number;
@@ -19,8 +20,11 @@ function safeUrl(value: string) {
 }
 export function Report({ report }: { report: ReportRecord }) {
   return (
-    <section className="panel">
-      <div className="eyebrow">日报 · 版本 {report.version}</div>
+    <section className="panel report-panel">
+      <div className="report-kicker">
+        <Icon name="file" size={16} />
+        日报预览<span>版本 {report.version}</span>
+      </div>
       <h2>{report.document.title}</h2>
       <p className="notice">
         {report.status === "published"
@@ -39,11 +43,16 @@ export function Report({ report }: { report: ReportRecord }) {
           <span className="badge">
             {item.category} · 重要性 {item.importance}/5
           </span>
-          <h3>来源事实摘要</h3>
-          <p>{item.factSummary}</p>
-          <h3>分析（推断）</h3>
-          <p>{item.analysis ?? "无"}</p>
-          <blockquote>{item.evidenceQuote}</blockquote>
+          <h3 className="fact-label">来源事实摘要</h3>
+          <p className="fact-summary">{item.factSummary}</p>
+          <div className="analysis-block">
+            <h3>分析（推断）</h3>
+            <p>{item.analysis ?? "无"}</p>
+          </div>
+          <blockquote>
+            <span>依据原文</span>
+            {item.evidenceQuote}
+          </blockquote>
           <a
             href={safeUrl(item.source.canonicalUrl)}
             target="_blank"
@@ -51,7 +60,7 @@ export function Report({ report }: { report: ReportRecord }) {
           >
             {item.source.name} · 查看原文 ↗
           </a>
-          <dl>
+          <dl className="source-times">
             <dt>来源发布时间</dt>
             <dd>{item.source.publishedAt ?? "未知"}</dd>
             <dt>事件时间</dt>

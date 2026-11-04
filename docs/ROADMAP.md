@@ -10,7 +10,7 @@ Issue #4：任务执行引擎、stdio Adapter、Token 管理 API、历史/事件
 
 Issue #5 最初交付固定 RSS 最小链路，现已按用户要求移除 RSS 入口。当前 news-research 支持主题/初始 prompt、Codex 实时搜索、同 Thread 多轮研究及显式生成；Backend 核对原文/引文后保存待审核日报，归档仍为 #7 的独立步骤。见 [新闻研究](NEWS_PIPELINE.md) 与 [当前验证](validation/CODEX_RESEARCH.md)。
 
-Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。使用顺序轮询，未实现 SSE 或任务编辑；审核归档由 #7 增加。见 [后台说明](ADMIN.md)。
+Issue #6：独立 React/Vite 本地管理后台、内存 Token 认证、任务总览/详情、手动执行、Run 历史/日志及待审核日报预览已实现。管理界面已统一为响应式浅色工作台，Run 会话/日志/运行信息分标签，设置分组；保留草稿与网络不确定时的幂等重试。使用顺序轮询，未实现 SSE 或任务编辑；审核归档由 #7 增加。见 [后台说明](ADMIN.md)。
 
 Issue #7：人工批准绑定内容哈希，GitHub 日期/频道/版本 JSON 归档、幂等核对、失败重试与 SHA 持久化已实现；真实测试分支端到端验证成功。Cloudflare/公开 Web 与 RSS 留给 #8。见 [归档说明](PUBLISHING.md)。
 

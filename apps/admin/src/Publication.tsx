@@ -1,6 +1,7 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import { errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
+import { Icon } from "./ui";
 interface State {
   contentHash: string;
   status: string;
@@ -77,8 +78,13 @@ export function Publication({
     }
   }
   return (
-    <section className="panel">
-      <h2>人工审核与 GitHub 归档</h2>
+    <section className="panel approval-panel">
+      <div className="approval-title">
+        <span className="section-symbol">
+          <Icon name="shield" size={19} />
+        </span>
+        <h2>人工审核与 GitHub 归档</h2>
+      </div>
       {state.error ? (
         <p className="error" role="alert">
           {errorText(state.error)}
@@ -106,11 +112,14 @@ export function Publication({
               {data.target.repository} · {data.target.branch}
             </p>
           ) : (
-            <p>尚未配置 GitHub 目标，归档功能关闭。<a href="#/settings">前往系统设置</a></p>
+            <p>
+              尚未配置 GitHub 目标，归档功能关闭。
+              <a href="#/settings">前往系统设置</a>
+            </p>
           )}
           {data.status === "validated" ? (
             <>
-              <label>
+              <label className="approval-check">
                 <input
                   type="checkbox"
                   checked={confirmed}
