@@ -216,7 +216,7 @@ svg {
 .app-shell {
   min-height: 100vh;
   padding-left: 224px;
-  padding-top: 69px;
+  padding-top: 0;
 }
 .sidebar {
   position: fixed;
@@ -256,18 +256,7 @@ svg {
   color: var(--muted);
   margin-top: 2px;
 }
-.workspace-avatar,
-.user-avatar {
-  display: grid;
-  place-items: center;
-  background: #e7edf3;
-  color: #53657b;
-  font-weight: 650;
-  border-radius: 7px;
-  width: 30px;
-  height: 30px;
-  flex-shrink: 0;
-}
+
 .primary-nav {
   display: flex;
   flex-direction: column;
@@ -340,59 +329,12 @@ svg {
   background: #f5f7fa;
   color: var(--ink);
 }
-.topbar {
-  height: 69px;
-  position: absolute;
-  top: 0;
-  left: 224px;
-  right: 0;
-  background: rgba(255, 255, 255, 0.92);
-  border-bottom: 1px solid var(--line);
-  padding: 0 36px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  gap: 20px;
-}
-.breadcrumbs {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  font-size: 12px;
-  color: #758297;
-  min-width: 0;
-}
-.breadcrumbs a {
-  color: #66748a;
-  text-decoration: none;
-}
-.breadcrumbs span:last-child {
-  color: #37465a;
-}
-.topbar-meta {
-  display: flex;
-  align-items: center;
-  gap: 22px;
-}
-.local-label {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  font-size: 11px;
-  color: #748195;
-}
-.user-avatar {
-  border-radius: 50%;
-  width: 29px;
-  height: 29px;
-  font-size: 11px;
-  background: #eaf2ef;
-  color: var(--green);
-}
+
 .workspace-content {
-  max-width: 1320px;
-  padding: 35px 36px 64px;
-  margin: 0 auto;
+  width: 100%;
+  max-width: none;
+  padding: 32px 36px 64px;
+  margin: 0;
   min-width: 0;
   outline: none;
 }
@@ -402,7 +344,7 @@ svg {
   justify-content: space-between;
   gap: 24px;
   margin-bottom: 29px;
-  min-height: 69px;
+  min-height: 42px;
 }
 .page-description {
   font-size: 13px;
@@ -1739,9 +1681,7 @@ summary {
   .workspace-content {
     padding: 28px 25px 60px;
   }
-  .topbar {
-    padding: 0 25px;
-  }
+
   .run-layout {
     grid-template-columns: minmax(0, 1fr) 245px;
     gap: 20px;
@@ -1873,15 +1813,7 @@ summary {
   .logout-button span {
     display: none;
   }
-  .topbar {
-    position: static;
-    height: 52px;
-    padding: 0 25px;
-    background: #fafbfd;
-  }
-  .topbar-meta {
-    gap: 12px;
-  }
+
   .workspace-content {
     padding-top: 25px;
   }
@@ -2039,21 +1971,7 @@ summary {
     padding: 8px;
     min-width: 32px;
   }
-  .topbar {
-    height: 47px;
-    padding: 0 18px;
-  }
-  .local-label {
-    display: none;
-  }
-  .breadcrumbs {
-    font-size: 10px;
-    gap: 8px;
-  }
-  .user-avatar {
-    width: 25px;
-    height: 25px;
-  }
+
   .workspace-content {
     padding: 23px 17px 45px;
   }
@@ -2373,7 +2291,6 @@ summary {
 
 /* Settings: aligned navigation and a single focused form. */
 .workspace-content { width: 100%; }
-.workspace-content:has(.settings-layout) { max-width: 1120px; padding: 36px 40px 64px; }
 .primary-nav { margin-top: 28px; }
 .settings-layout { grid-template-columns: 180px minmax(0, 1fr); gap: 32px; }
 .settings-nav button { font-size: 14px; min-height: 44px; }
@@ -2383,7 +2300,6 @@ summary {
 .settings-content .field > label { font-size: 14px; }
 .token-field > .quiet { align-self: flex-start; }
 @media (max-width: 820px) {
- .workspace-content:has(.settings-layout) { padding: 24px 20px 40px; }
  .settings-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
  .settings-nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; }
  .settings-nav p { display: none; }
@@ -2392,9 +2308,8 @@ summary {
 
 /* Settings navigation belongs to the application sidebar. */
 .settings-page.workspace-content {
-  max-width: 1040px;
   margin: 0;
-  padding: 36px 40px 64px;
+  padding: 32px 36px 64px;
 }
 .settings-page .settings-layout { display: block; }
 .settings-page .settings-content { max-width: none; }
@@ -2445,3 +2360,7 @@ summary {
 .task-more-options .danger-action { color: var(--danger); }
 .task-latest { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted); }
 @media(max-width:680px) { .managed-task { padding: 18px; } .managed-task-heading { align-items: flex-start; flex-direction: column; gap: 10px; } .task-latest { width: 100%; } .task-timezone { display: block; margin-left: 0; } }
+
+.back-to-task { display: inline-block; margin-bottom: 16px; font-size: 13px; }
+.page-heading > div { min-width: 0; }
+.page-heading h1 { overflow-wrap: anywhere; }

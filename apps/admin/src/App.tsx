@@ -83,38 +83,13 @@ export function App() {
           </button>
         </div>
       </aside>
-      <header className="topbar">
-        <nav className="breadcrumbs" aria-label="页面位置">
-          {taskId ? (
-            <>
-              <a href={pathFor(taskId)}>任务详情</a>
-              {runId && (
-                <>
-                  <Icon name="chevron" size={14} />
-                  <span>研究记录</span>
-                </>
-              )}
-            </>
-          ) : (
-            <span>{settingsPage?.label ?? "任务总览"}</span>
-          )}
-        </nav>
-        <div className="topbar-meta">
-          <span className="local-label">
-            <Icon name="shield" size={14} />
-            本地管理
-          </span>
-          <span className="user-avatar" title="管理员">
-            A
-          </span>
-        </div>
-      </header>
       <main
         className={`workspace-content${settings ? " settings-page" : ""}`}
         id="main-content"
         tabIndex={-1}
         key={`${token}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
       >
+        {taskId && runId && <a className="back-to-task" href={pathFor(taskId)}>返回任务</a>}
         {settings ? (
           <Settings api={api} onCredentialChanged={connected} initialSection={`settings-${settingsPage!.id}`} hideNavigation />
         ) : !taskId ? (
