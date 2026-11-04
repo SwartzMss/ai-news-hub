@@ -65,7 +65,7 @@ Run 中的 `thread_id` / `turn_id` 是查询用摘要；继续 Turn 时清除旧
 
 ## 时间和来源边界
 
-时间字段使用 UTC ISO 8601 字符串；自动创建时间用 SQLite `strftime`，`updated_at` 后续由写入业务显式更新。Task 时区保存 IANA 名称，当前不解析 schedule 或执行计划。
+时间字段使用 UTC ISO 8601 字符串；自动创建时间用 SQLite `strftime`，`updated_at` 后续由写入业务显式更新。Task 时区保存 IANA 名称，用户配置任务的结构化计划存于 configuration_json，由 Backend 解析执行。
 `source_published_at` 与 `event_at` 不确定时保存 NULL；`fetched_at` 必填，不用抓取时间伪造原始发布时间。`report_date` 表示频道报告日期，与事件发生日期分开。
 当前来源入口校验公网 HTTPS、DNS 固定连接、HTML 原文与精确引文；发布时间只取带时区的源元数据，事件时间为 NULL。Schema/引文匹配不等于独立事实核验，没有自动发布。任务时区/调度仍是预留配置。
 
@@ -88,3 +88,5 @@ app_settings 单行保存 revision、严格 runtime config JSON、加密 GitHub 
 admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历史 Token 哈希；admin_sessions 只保存会话 SHA-256 和创建/到期时间。首次初始化仅由本机同源页面设置并确认密码；自动请求校验保存在进程内，重启换新、成功后失效，不写入数据库或码文件。登录会话 12 小时，密码轮换事务更新凭据、撤销所有旧会话并返回替换会话。旧 env 仅在对应记录缺失时导入，已有 DB 时不重新解析/覆盖旧值。
 
 监听地址/端口/数据目录仍在启动配置。其余参数由 [系统设置](SETTINGS.md) 保存；执行或发布忙碌时拒绝修改，空闲时立即应用，不改变已完成 Run/报告或归档历史。
+
+用户配置任务另存 `configuration_json`、`next_run_at`、`deleted_at`；每个 Run 保存配置快照，编辑不能改变已开始的 Prompt 或自动发布策略。批准记录新增 `approval_kind`，区分 manual/automatic。迁移追加，既有 SQL/checksum 保持不变。

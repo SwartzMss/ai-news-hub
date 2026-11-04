@@ -1,6 +1,6 @@
 # 架构与实现边界
 
-AI News Hub 采用 **Linux 单实例执行、Codex 主题研究、人工审核、GitHub 归档与静态公开站**。目前手动操作；持久调度、自动重试、原生 Ubuntu Server 24.04 服务账户/systemd 验收及 Cloudflare 上线尚未完成。
+AI News Hub 采用 **Linux 单实例执行、Codex 主题研究、人工审核、GitHub 归档与静态公开站**。支持手动与持久计划调度、顺序 Prompt 及可选自动归档；自动重试、原生 Ubuntu Server 24.04 服务账户/systemd 验收及 Cloudflare 上线尚未完成。
 
 ![主题和多轮 prompt 驱动 Codex 搜索，经 Backend 校验、SQLite、人工审核及 GitHub 归档，生成公共 Web 与输出 RSS](assets/architecture.svg)
 
@@ -76,6 +76,13 @@ Admin 独立构建到 dist/admin，Backend 只提供 `/admin/` 壳和有限 JS/C
 
 Agent 与探针使用环境允许列表，不继承 Backend 管理/发布凭据。来源校验直接连接无代理；GitHub 客户端可使用服务端私有代理。日志不输出请求头/正文、原始 RPC/stderr、工具参数或任意错误。凭据、SQLite 和私人日志不得入 Git 或公开站。
 
-原生服务账户认证/systemd/长期使用由 #2 跟踪，Cloudflare 由 #8 跟踪。持久调度、自动退避、SSE、工具审批交互、跨源事实核验尚未实现。见 [部署](DEPLOY_LINUX.md)、[路线图](ROADMAP.md)。
+原生服务账户认证/systemd/长期使用由 #2 跟踪，Cloudflare 由 #8 跟踪。持久计划调度已实现；自动退避、SSE、工具审批交互、跨源事实核验尚未实现。见 [部署](DEPLOY_LINUX.md)、[路线图](ROADMAP.md)。
 
 环境文件仅提供监听地址、端口和数据目录。运行参数由系统设置页保存 SQLite，空闲时立即应用；任务/归档忙碌时拒绝修改。GitHub Token 以 AES-GCM 加密，私有 settings.key 自动生成，API 仅返回是否配置。首次本机同源页面设置/确认 scrypt 管理密码，页面自动携带进程内一次性请求校验，DB 保存会话哈希/到期时间，改密码撤销旧会话。旧环境配置只在记录缺失时导入，之后数据库优先。见 [设置与认证](SETTINGS.md)。
+
+<!-- Settings UI update -->
+管理后台侧栏平级显示任务总览、模型与执行、GitHub 归档、安全设置，不再设置父级菜单；右侧单列显示当前标题与表单，窄屏导航折为顶部菜单。切换前需保存当前修改。Token 默认仅显示配置状态，点击设置或更换后才显示输入框。分支无预填值；已有配置保留。更新前端需运行 `npm run build`。
+
+## 用户配置任务与顺序执行
+
+任务 CRUD、手动/单次/间隔/每日/每周调度、顺序多轮 Prompt 与可选自动 GitHub 归档已接入单实例 Backend。计划和执行快照写 SQLite，重启中断旧执行且不补跑。自动授权记录与人工批准分开，外部构建部署由目标仓库集成承担。删除采用软删除保留审计，不删除数据库。API、限制与界面见 [任务管理](TASK_MANAGEMENT.md)。

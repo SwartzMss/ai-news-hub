@@ -1,6 +1,6 @@
 # Task → Run → Thread → Turn 引擎与 API
 
-Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。预定义任务有 `sample-connectivity` 及 `news-research`（旧 `news-github` 已停用）；引擎没有定时调度或任务编辑；日报人工批准/GitHub 归档由独立发布模块提供，管理界面见 ADMIN.md。新闻任务的来源/报告查询见 [新闻流水线](NEWS_PIPELINE.md)。
+Issue #4 已实现手动任务执行、持久化历史、取消和继续 Turn。预定义任务有 `sample-connectivity` 及 `news-research`（旧 `news-github` 已停用）；引擎现支持用户任务编辑、定时调度和顺序 Prompt（见 [任务管理](TASK_MANAGEMENT.md)）；历史预定义任务保留旧接口；日报人工批准/GitHub 归档由独立发布模块提供，管理界面见 ADMIN.md。新闻任务的来源/报告查询见 [新闻流水线](NEWS_PIPELINE.md)。
 样例提示词要求固定回复 `AI_NEWS_HUB_TASK_OK` 且不使用工具。创建样例记录不会调用模型；手动启动和继续 Turn 才使用真实账户额度。
 
 ## 配置与认证
@@ -74,3 +74,11 @@ Thread 采用 read-only sandbox 与 untrusted 审批策略，所有服务器请�
 输入、输出和事件保存在私有 SQLite，可能含任务私有正文，只有认证管理 API 可以查询。journald 不输出请求头/正文/查询参数、原始 RPC、stderr、工具参数或任意服务端错误文本；数据库事件保留安全元数据和有大小限制的 Agent 正文，不能视为可公开日志。
 
 Schema 与迁移规则见 [数据模型](DATA_MODEL.md)。真实开发验证和仍需目标服务器验收的部分见 [验证记录](validation/TASK_ENGINE.md)。协议参考：[Codex App Server 官方文档](https://developers.openai.com/codex/app-server)。
+
+## 用户配置任务接口
+
+`POST /api/tasks` 新增；`PUT /api/tasks/:taskId` 全量更新；`DELETE /api/tasks/:taskId` 软删除并保留历史；`POST /api/tasks/:taskId/stop` 停止当前执行。新增/更新请求为 `{name,topic,prompts,autoPublish,schedule,timezone,status}`；`status` 为 active/paused。运行中拒绝修改或删除。
+
+计划格式：`{kind:"manual"}`、`{kind:"once",at:"UTC ISO 时间"}`、`{kind:"interval",minutes:60}`、`{kind:"daily",time:"09:00"}`、`{kind:"weekly",time:"09:00",weekday:1}`。周日为 0，默认时区 Asia/Shanghai。每个 Prompt 最多 8000 字符，1–19 轮，系统追加第 20 轮以内的日报生成。启动仍使用 `/tasks/:taskId/runs` 幂等键；配置任务不接受交互式继续 Turn，执行使用不可变配置快照。
+
+用户配置任务的 paused 状态暂停定时调度，但仍允许手动启动；历史预定义任务的暂停行为不变。管理界面以单个任务主题同时填写 name/topic，旧 API 字段保持兼容。

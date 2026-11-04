@@ -11,10 +11,19 @@ export type TaskStatus = 'active' | 'paused';
 export type RunStatus = 'queued' | 'running' | 'waiting_approval' | 'succeeded' | 'failed' | 'cancelled' | 'interrupted';
 export type ContentKind = 'fact' | 'opinion' | 'unverified';
 
+export interface TaskSchedule {
+  kind: 'manual' | 'once' | 'interval' | 'daily' | 'weekly';
+  at?: string; minutes?: number; time?: string; weekday?: number;
+}
+export interface TaskConfiguration {
+  topic: string; prompts: string[]; autoPublish: boolean; schedule: TaskSchedule; timezone: string;
+}
 export interface TaskRecord {
+  configuration?: TaskConfiguration; next_run_at?: string | null; deleted_at?: string | null;
   id: string; name: string; channel: string; prompt: string; status: TaskStatus;
 }
 export interface RunRecord {
+  configuration?: TaskConfiguration; publishing?: boolean;
   id: string; task_id: string; idempotency_key: string; status: RunStatus;
   thread_id: string | null; turn_id: string | null;
   started_at: string | null; finished_at: string | null;

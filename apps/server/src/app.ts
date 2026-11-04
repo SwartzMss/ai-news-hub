@@ -69,6 +69,20 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     const client=new GitHubArchive(target,target.token);try{return await client.publish(artifact,signal);}finally{await client.close();}
   }};
   const publications=new PublicationService(db,settings.publication(),settings.publication()?github:undefined);
+  engine.setAutomaticPublisher(async(reportId,signal)=>{
+    if(signal.aborted)throw new AppError('publication_interrupted');
+    if(publications.busy())throw new AppError('publication_busy');
+    const inspection=publications.inspect(reportId);
+    if(!inspection.configured)throw new AppError('publication_disabled');
+    publications.approve(reportId,inspection.contentHash,'automatic');
+    const interrupt=()=>publications.interrupt();
+    signal.addEventListener('abort',interrupt,{once:true});
+    try {const result=await publications.publish(reportId);if(result.status!=='succeeded')throw new AppError(result.error_code??'github_unavailable');}
+    finally {signal.removeEventListener('abort',interrupt);}
+  });
+  engine.resetSchedules();
+  const scheduleTimer=setInterval(()=>{try{if(authentication.status().initialized)engine.tick();}catch{app.log.error({code:'scheduler_failed'},'scheduler_failed');}},1000);
+  scheduleTimer.unref();
   const applySettings=()=>{
     const runtime=settings.runtime(),target=settings.publication();
     engine.configure({...runtime.execution,model:runtime.codex.model||undefined});
@@ -76,7 +90,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     app.log.level=runtime.logLevel;
   };
   registerAdmin(app);
-  app.addHook('preClose', async () => { await engine.close(); await publications.close(); await http.close(); });
+  app.addHook('preClose', async () => { clearInterval(scheduleTimer); await engine.close(); await publications.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
   app.register(async scope=>{registerAuthRoutes(scope,authentication);},{prefix:'/api'});
   app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings); }, { prefix: '/api' });

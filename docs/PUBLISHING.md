@@ -1,4 +1,4 @@
-# 人工批准与 GitHub 日报归档
+# GitHub 日报归档与自动发布
 
 Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归档到明确配置的 GitHub 仓库/分支。没有默认发布目标、自动批准、自动重试或 Cloudflare 部署。公开阅读站和 RSS 由 #8 实现。
 
@@ -45,7 +45,7 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 ## 凭据与部署
 
-见 [Linux 部署第 13 节](DEPLOY_LINUX.md#13-issue-7-人工批准与-github-归档)。限定目标仓库的 fine-grained PAT 只授予 Contents read/write；GitHub 自动要求的基础元数据读取权限保留。也可外部注入短期 GitHub App token，但本版本不自动续期。仓库、分支和 Token 在后台“系统设置”填写并持久化 SQLite；Token 加密且不回显，留空保留、显式替换/清除。空闲时保存即生效，轮换不破坏幂等，执行中拒绝变更。见 [配置说明](SETTINGS.md)。不要复用管理 Token、放入 Codex 配置或 VITE 环境。
+见 [Linux 部署第 13 节](DEPLOY_LINUX.md#13-issue-7-人工批准与-github-归档)。限定目标仓库的 fine-grained PAT 只授予 Contents read/write；GitHub 自动要求的基础元数据读取权限保留。也可外部注入短期 GitHub App token，但本版本不自动续期。仓库、分支和 Token 在后台“GitHub 归档”填写并持久化 SQLite；Token 加密且不回显，留空保留、显式替换/清除。空闲时保存即生效，轮换不破坏幂等，执行中拒绝变更。见 [配置说明](SETTINGS.md)。不要复用管理 Token、放入 Codex 配置或 VITE 环境。
 
 真实端到端验证见 [记录](validation/PUBLISHING.md)。专用 `archive-validation/issue-7` 分支只含验证用测试日报，不应作为 #8 正式内容来源。
 
@@ -53,4 +53,10 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 ## Codex 主题研究兼容
 
-当前报告来自 news-research 的显式最终生成，发布时重新校验 codex_news_runs 的原文快照、引文和关联；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和人工哈希批准。新研究主题不改变 archive v1 的 opensource 频道键。
+当前报告来自 news-research 的显式最终生成，发布时重新校验 codex_news_runs 的原文快照、引文和关联；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。新研究主题不改变 archive v1 的 opensource 频道键。
+
+## 任务自动发布
+
+任务配置 `autoPublish` 默认 false。开启后执行快照中的 Prompt 全部完成且来源校验通过，Backend 记录 `approval_kind=automatic`，然后复用现有 GitHub create-only 归档；手工批准记录为 manual。GitHub Contents API 成功即生成远端提交，无需本机 Git checkout/push。部署由目标仓库已有 CI/Cloudflare 集成负责，本服务不创建此集成。
+
+自动推送失败保留日报、发布失败状态和安全错误码，可从发布记录重试。研究成功与发布成功分别呈现，不因一次推送错误重新消耗全部研究轮次。停止或来源验证失败不触发后续发布。

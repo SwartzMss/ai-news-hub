@@ -38,6 +38,11 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
   if (newsDb) registerNewsRoutes(app, newsDb);
   if (publications) registerPublicationRoutes(app,publications);
   app.get('/tasks', async () => ({ tasks: engine.listTasks() }));
+  app.post<{Body:unknown}>('/tasks',{bodyLimit:1024*1024},async(request,reply)=>{const task=engine.createTask(request.body);reply.code(201);return {task};});
+  app.put<{Params:TaskParams;Body:unknown}>('/tasks/:taskId',{bodyLimit:1024*1024,schema:{params:params('taskId')}},async request=>({task:engine.updateTask(request.params.taskId,request.body)}));
+  app.delete<{Params:TaskParams}>('/tasks/:taskId',{schema:{params:params('taskId')}},async(request,reply)=>{engine.deleteTask(request.params.taskId);reply.code(204);});
+  app.post<{Params:TaskParams}>('/tasks/:taskId/stop',{schema:{params:params('taskId')}},async(request,reply)=>{engine.stopTask(request.params.taskId);reply.code(202);return {task:engine.task(request.params.taskId)};});
+
   app.get<{ Params: TaskParams }>('/tasks/:taskId', { schema: { params: params('taskId') } }, async (request) => ({ task: engine.task(request.params.taskId) }));
   app.get<{ Params: TaskParams; Querystring: { limit: number; offset: number } }>('/tasks/:taskId/runs', {
     schema: { params: params('taskId'), querystring: {

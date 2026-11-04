@@ -2370,3 +2370,78 @@ summary {
     scroll-margin-top: 82px;
   }
 }
+
+/* Settings: aligned navigation and a single focused form. */
+.workspace-content { width: 100%; }
+.workspace-content:has(.settings-layout) { max-width: 1120px; padding: 36px 40px 64px; }
+.primary-nav { margin-top: 28px; }
+.settings-layout { grid-template-columns: 180px minmax(0, 1fr); gap: 32px; }
+.settings-nav button { font-size: 14px; min-height: 44px; }
+.settings-nav p { font-size: 12px; margin: 20px 12px; }
+.settings-section { border-radius: 8px; padding: 28px; margin-bottom: 20px; }
+.settings-content .field-help, .settings-save-note { font-size: 12px; line-height: 1.7; }
+.settings-content .field > label { font-size: 14px; }
+.token-field > .quiet { align-self: flex-start; }
+@media (max-width: 820px) {
+ .workspace-content:has(.settings-layout) { padding: 24px 20px 40px; }
+ .settings-layout { grid-template-columns: minmax(0, 1fr); gap: 20px; }
+ .settings-nav { position: static; flex-direction: row; flex-wrap: wrap; gap: 4px; }
+ .settings-nav p { display: none; }
+ .settings-section { padding: 20px; }
+}
+
+/* Settings navigation belongs to the application sidebar. */
+.settings-page.workspace-content {
+  max-width: 1040px;
+  margin: 0;
+  padding: 36px 40px 64px;
+}
+.settings-page .settings-layout { display: block; }
+.settings-page .settings-content { max-width: none; }
+@media (max-width: 820px) {
+  .sidebar { flex-wrap: wrap; height: auto; padding-top: 12px; padding-bottom: 12px; row-gap: 10px; }
+  .sidebar .primary-nav { order: 3; width: 100%; margin: 0; flex-wrap: wrap; }
+  .sidebar-footer { margin-left: auto; }
+  .primary-nav a { flex: 1 1 auto; justify-content: center; }
+  .settings-page.workspace-content { padding: 24px 20px 40px; }
+}
+
+.task-editor-fields { border: 0; padding: 0; display: grid; gap: 24px; }
+.task-editor-fields label { display: grid; gap: 8px; }
+.task-editor-fields .check { display: flex; }
+.task-editor { margin-bottom: 28px; }
+.prompt-sequence { display: grid; gap: 16px; }
+.prompt-step { border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+.task-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+.task-actions button { min-height: 36px; padding: 7px 12px; }
+.managed-task-list { display: grid; gap: 20px; }
+.managed-task { margin: 0; }
+.managed-facts { display: grid; grid-template-columns: repeat(4,minmax(0,1fr)); gap: 20px; margin: 24px 0; }
+.managed-facts dt { font-size: 12px; color: var(--muted); }
+.managed-facts dd { margin: 6px 0 0; overflow-wrap: anywhere; }
+.managed-task .table-wrap { margin-top: 24px; }
+.delete-confirm { margin-top: 20px; padding-top: 16px; border-top: 1px solid var(--line); }
+.delete-confirm button { margin: 12px 8px 0 0; }
+@media(max-width:680px) { .managed-facts { grid-template-columns: repeat(2,minmax(0,1fr)); } }
+
+.managed-task { padding: 22px 24px; }
+.managed-task-heading, .managed-task-footer { display: flex; align-items: center; justify-content: space-between; gap: 20px; }
+.managed-task-heading h2 { font-size: 17px; }
+.managed-task-heading h2 a { color: var(--ink); text-decoration: none; }
+.managed-task-heading h2 a:hover { color: var(--green); }
+.task-state-group { display: flex; align-items: center; gap: 14px; font-size: 12px; }
+.task-schedule-state { color: var(--muted); }
+.task-running-state { color: var(--green); font-weight: 600; }
+.managed-facts { margin: 20px 0; gap: 16px; }
+.task-timezone { margin-left: 8px; font-size: 11px; color: var(--muted); }
+.managed-task-footer { border-top: 1px solid var(--line); padding-top: 16px; flex-wrap: wrap; }
+.managed-task-footer .task-actions { margin-top: 0; align-items: center; }
+.task-more { position: relative; }
+.task-more summary { cursor: pointer; padding: 8px 12px; border-radius: 6px; color: var(--muted); }
+.task-more summary:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
+.task-more-options { position: absolute; top: 100%; left: 0; z-index: 10; min-width: 136px; padding: 6px; display: grid; gap: 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--menu-surface); box-shadow: 0 8px 24px var(--menu-shadow); }
+:root { --menu-surface: #fff; --menu-shadow: #17212f14; --danger: #a32c2c; }
+.task-more-options button { width: 100%; justify-content: flex-start; border-color: transparent; }
+.task-more-options .danger-action { color: var(--danger); }
+.task-latest { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted); }
+@media(max-width:680px) { .managed-task { padding: 18px; } .managed-task-heading { align-items: flex-start; flex-direction: column; gap: 10px; } .task-latest { width: 100%; } .task-timezone { display: block; margin-left: 0; } }

@@ -62,7 +62,7 @@ export class PublicationService {
         .all(id) as Publication[],
     };
   }
-  approve(id: string, expectedHash: string) {
+  approve(id: string, expectedHash: string, kind: 'manual'|'automatic' = 'manual') {
     const report = reviewedReport(this.db, id);
     if (report.contentHash !== expectedHash)
       throw new HttpError(409, "report_changed");
@@ -78,9 +78,9 @@ export class PublicationService {
     try {
       this.db
         .prepare(
-          "INSERT INTO report_approvals(report_id,content_hash,approved_at) VALUES (?,?,?)",
+          "INSERT INTO report_approvals(report_id,content_hash,approved_at,approval_kind) VALUES (?,?,?,?)",
         )
-        .run(id, expectedHash, new Date().toISOString());
+        .run(id, expectedHash, new Date().toISOString(), kind);
       this.db
         .prepare("UPDATE reports SET status='approved',updated_at=? WHERE id=?")
         .run(new Date().toISOString(), id);
@@ -154,6 +154,7 @@ export class PublicationService {
       .run(new Date().toISOString(), key);
     try {
       const result = await this.adapter.publish(artifact, signal);
+      if(signal.aborted)throw new AppError("publication_interrupted");
       if (
         !/^[0-9a-f]{40}$/.test(result.sha) ||
         !Number.isFinite(Date.parse(result.committedAt))
@@ -180,6 +181,7 @@ export class PublicationService {
             "UPDATE reports SET status='published',updated_at=? WHERE id=?",
           )
           .run(new Date().toISOString(), id);
+        this.db.prepare("UPDATE task_runs SET error_code=NULL,updated_at=? WHERE id=? AND status='succeeded'").run(new Date().toISOString(), report.document.runId);
         this.db.exec("COMMIT");
       } catch (error) {
         this.db.exec("ROLLBACK");
@@ -200,6 +202,7 @@ export class PublicationService {
     }
     return get();
   }
+  interrupt():void { this.controller?.abort(); }
   async close() {
     this.stopped = true;
     this.controller?.abort();

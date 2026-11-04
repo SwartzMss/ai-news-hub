@@ -102,7 +102,8 @@ test("authenticated Task → Run navigation renders real metadata, safe output a
   const fetcher = mockFetch();
   render(<App />);
   await login();
-  fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
+  location.hash = "#/tasks/sample-connectivity";
+  fireEvent(window, new HashChangeEvent("hashchange"));
   await screen.findByRole("heading", { name: "连接检查" });
   fireEvent.click(await screen.findByRole("link", { name: "run-1" }));
   const conversation = await screen.findByRole("tab", { name: "研究会话" });
@@ -149,7 +150,8 @@ test("manual trigger uses idempotency key and enters the Run belonging to the se
   const fetcher = mockFetch();
   render(<App />);
   await login();
-  fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
+  location.hash = "#/tasks/sample-connectivity";
+  fireEvent(window, new HashChangeEvent("hashchange"));
   const button = await screen.findByRole("button", { name: "手动执行" });
   fireEvent.click(button);
   fireEvent.click(button);
@@ -185,7 +187,9 @@ test("session expiration removes private results during polling", async () => {
   const fetcher = mockFetch();
   render(<App />);
   await login();
-  await screen.findByRole("link", { name: "连接检查" });
+  location.hash = "#/tasks/sample-connectivity";
+  fireEvent(window, new HashChangeEvent("hashchange"));
+  await screen.findByRole("heading", { name: "连接检查" });
   fetcher.mockImplementation(async (url) =>
     url === "/api/auth/status"
       ? Response.json({ initialized: true, mode: "token" })
@@ -201,7 +205,8 @@ test("late manual execution response cannot navigate after leaving the Task", as
   const fetcher = mockFetch();
   render(<App />);
   await login();
-  fireEvent.click(await screen.findByRole("link", { name: "连接检查" }));
+  location.hash = "#/tasks/sample-connectivity";
+  fireEvent(window, new HashChangeEvent("hashchange"));
   let complete!: (response: Response) => void;
   const previous = fetcher.getMockImplementation()!;
   fetcher.mockImplementation((url, init) =>
@@ -326,12 +331,18 @@ test("workspace navigation marks the current page and opens real system settings
   expect(
     screen.getByRole("link", { name: "任务总览" }).getAttribute("aria-current"),
   ).toBe("page");
-  fireEvent.click(screen.getByRole("link", { name: "系统设置" }));
-  await screen.findByRole("heading", { name: "系统设置" });
+  fireEvent.click(screen.getByRole("link", { name: "模型与执行" }));
+  await screen.findByRole("heading", { name: "模型与执行" });
+  await screen.findByLabelText("Codex 可执行文件");
+  fireEvent.click(screen.getByRole("link", { name: "GitHub 归档" }));
   await screen.findByLabelText("GitHub 仓库");
+  expect(screen.getByRole("link", { name: "GitHub 归档" }).closest("aside")).not.toBeNull();
+  expect(screen.getByRole("main").querySelector(".settings-nav")).toBeNull();
   expect(
-    screen.getByRole("link", { name: "系统设置" }).getAttribute("aria-current"),
+    screen.getByRole("link", { name: "GitHub 归档" }).getAttribute("aria-current"),
   ).toBe("page");
+  expect(document.querySelectorAll('.primary-nav [aria-current="page"]')).toHaveLength(1);
+  expect(screen.queryByRole("link", { name: "系统设置" })).toBeNull();
   expect(
     screen.getByRole("link", { name: "任务总览" }).getAttribute("aria-current"),
   ).toBeNull();
