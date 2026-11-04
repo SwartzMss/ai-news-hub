@@ -1,3 +1,7 @@
+# 任务研究流程更新
+
+用户配置任务按预设 Prompt 顺序自动运行，同一 Run 恢复原 Thread，末尾自动追加结构化生成轮。自动发布关闭则待人工批准，开启则通过来源验证后自动授权、提交 GitHub；该设置随 Run 快照保存。以下 news-research 多轮接口供历史兼容，后台新任务不提供交互式追问。见 [任务管理](TASK_MANAGEMENT.md)。
+
 # Codex 主题研究与待审核日报
 
 新闻入口是用户主题与 prompt。`news-research` 通过 Codex 实时 web search 搜索、打开原文、提取并分析；用户在同一个 Run / Thread 内多轮补查、筛选，最后显式生成日报。Backend 不采集外部 RSS，不预先指定 GitHub Blog 候选。公开站的输出 RSS 保留。
@@ -45,7 +49,7 @@ Backend 只请求 Codex 选出的原文以核对来源，不建立候选采集�
 
 报告、文章/关联、快照与 Run/Turn 成功在同一事务提交。网络、解析、引文或存储失败不生成可发布报告；取消/超时的迟到结果不写成功。重启中断，不自动重试。
 
-`validated` / `source_only` 仅表示结构与引文关联，文档仍为 pending。引文匹配不能证明摘要忠实、事实准确或满足时间范围，必须人工核对。生成不批准、不归档，见 [人工批准与归档](PUBLISHING.md)。
+`validated` / `source_only` 仅表示结构与引文关联，文档仍为 pending。引文匹配不能证明摘要忠实、事实准确或满足时间范围，默认人工核对；用户任务开启自动发布时，以已保存的任务授权替代逐份人工批准。来源校验不等于事实证实。历史手动生成不批准、不归档，见 [人工批准与归档](PUBLISHING.md)。
 
 常见错误：`invalid_topic`、`workflow_run_finalized`、`turn_limit`、`source_http_failed`、`source_content_type`、`source_timeout`、`invalid_source_address`、`report_invalid_json`、`report_schema_invalid`、`report_duplicate_article`、`report_evidence_invalid`。在 Run 中查看错误，修正 prompt/来源后以新键重试。
 

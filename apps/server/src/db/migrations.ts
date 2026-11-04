@@ -1,3 +1,4 @@
+import { managedTasksMigration } from './managed-tasks-migration.js';
 import { createHash } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import { AppError } from '../errors.js';
@@ -90,7 +91,7 @@ export const migrations: readonly Migration[] = [{
     ) STRICT;
     CREATE INDEX publications_by_report ON publication_records(report_id, created_at);
   `,
-}, taskEngineMigration, newsMigration, publicationMigration, researchMigration, settingsMigration];
+}, taskEngineMigration, newsMigration, publicationMigration, researchMigration, settingsMigration, managedTasksMigration];
 
 export function migrate(db: DatabaseSync, registry: readonly Migration[] = migrations): void {
   if (registry.some((entry, index) => entry.version !== index + 1)) throw new AppError('invalid_migration_registry');

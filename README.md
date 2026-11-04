@@ -1,8 +1,8 @@
 # AI News Hub
 
-> 指定主题，通过多轮 prompt 让 Codex 搜索、核实和整理新闻；人工审核后归档 GitHub，提供静态 Web / RSS 阅读。
+> 配置任务和有序多轮 Prompt，由 Codex 搜索、核实和整理新闻；支持定时运行及校验通过后自动归档 GitHub，提供静态 Web / RSS 阅读。
 
-**当前状态：Codex 主题研究、多轮追问、显式生成待审核日报、人工批准及归档已实现；定时调度、原生 Linux 服务账户/systemd 与 Cloudflare 自动部署仍待验收。**
+**当前状态：任务新增、编辑、删除、启动/停止、定时计划、多轮 Prompt 顺序执行及可选自动发布已实现。Linux 服务账户/systemd 与 Cloudflare 真实上线仍待验收。**
 
 运行目标为 **Linux，首选 Ubuntu Server 24.04 LTS**。本地管理后台可以先独立使用，公开站点部署不是运行 Backend 的前置条件。
 
@@ -12,7 +12,7 @@
 
 [查看静态架构图](docs/assets/architecture.svg) · [详细架构](docs/ARCHITECTURE.md)
 
-**Task → Run → Thread → Turn**：主题和会话属于一次具体 Run，后续 prompt 恢复同一个 Thread。Codex 负责搜索、提取和分析；Backend 管理校验、状态、存储和发布。人工批准才允许归档，公开站只消费已批准的 JSON。SQLite、管理 Token 和运行日志留在私有服务侧。
+**Task → Run → Thread → Turn**：主题和会话属于一次具体 Run，后续 prompt 恢复同一个 Thread。Codex 负责搜索、提取和分析；Backend 管理校验、状态、存储和发布。自动发布关闭时需人工批准；开启时来源校验后记录自动授权并归档，公开站只消费已授权的 JSON。SQLite、管理 Token 和运行日志留在私有服务侧。
 
 ## 已实现的能力
 
@@ -22,7 +22,7 @@
 | 任务引擎 | 主题与 prompt 输入、多轮 Turn、队列/并发限制、幂等、状态/历史/日志、取消、超时、重启中断 |
 | Codex Adapter | stdio JSON-RPC、独立 Thread/Turn、只读沙箱、拒绝工具审批、子进程清理；过程消息与最终结果分离 |
 | 新闻研究 | Codex 实时搜索原文，多轮筛选/补查，显式生成 JSON；Backend 核对公开原文与精确引文后保存待审核日报 |
-| 管理后台 | 独立 React/Vite `/admin/`，填写主题/初始 prompt、继续研究、生成日报、查看日志/来源及人工批准 |
+| 管理后台 | 独立 React/Vite `/admin/`，配置任务、Prompt 顺序、执行计划、自动发布，查看执行历史/日志/日报 |
 | GitHub 归档 | 显式配置目标与凭据，按日期/频道/版本追加 JSON，保存 SHA，幂等及失败显式重试 |
 | 公共阅读站 | 独立 React/Vite 静态首页、开源频道、详情、日期/版本归档、全站/频道 RSS；无 JS 也可阅读 |
 
@@ -58,7 +58,7 @@ npm start
 
 会话只保存在页面内存，刷新重新登录。配置保存在 SQLite，GitHub Token 加密且不回显，密钥自动保存在私有数据目录。备份、旧版本一次性迁移与 API 见 [设置说明](docs/SETTINGS.md)。任务或归档执行中暂不允许保存设置。
 
-手动运行 `sample-connectivity` 验证接入。选择 `news-research`，填写主题（如“AI 开源模型”）和初始 prompt；在 Run 页面继续追问，最后填写整理要求并点击“生成待审核日报”。每轮都会使用账户额度。生成成功后本 Run 固定，修改需新建研究；审核后单独批准、归档。发布默认关闭，配置见 [GitHub 归档](docs/PUBLISHING.md)。
+在后台点击“新增任务”，配置任务主题、有序 Prompt、计划与自动发布开关。启动后自动依次执行各轮并追加日报生成轮。每轮使用账户额度；自动发布默认关闭，开启后来源校验通过即归档 GitHub。请先在“GitHub 归档”配置目标、分支和凭据。历史预定义任务仅保留兼容接口，不在任务列表展示。详见 [任务管理](docs/TASK_MANAGEMENT.md)。
 
 新闻 Thread 启用 Codex 实时 web search，禁用继承的 MCP、Shell 与委派；服务账户和模型/provider 须支持搜索。最终生成时 Backend 只校验 Codex 选定的公开 HTTPS 原文，不另行采集候选。校验需要服务器能直接访问原文；暂不跟随重定向，也不执行页面 JavaScript。限制与错误处理见 [新闻流程](docs/NEWS_PIPELINE.md)。
 
@@ -125,3 +125,6 @@ npm run build
 ## License
 
 **待确定。** 尚未添加许可证；在明确选择开源协议前，不应假定已授予额外复制、修改或分发权限。
+
+<!-- Settings UI update -->
+管理后台侧栏平级显示任务总览、模型与执行、GitHub 归档、安全设置，不再设置父级菜单；右侧单列显示当前标题与表单，窄屏导航折为顶部菜单。切换前需保存当前修改。Token 默认仅显示配置状态，点击设置或更换后才显示输入框。分支无预填值；已有配置保留。更新前端需运行 `npm run build`。

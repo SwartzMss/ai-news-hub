@@ -1,6 +1,7 @@
+import { taskInput, nextOccurrence } from './configuration.js';
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
-import type { RunEvent, RunRecord, RunStatus, TaskRecord, TurnRecord } from '../../../../packages/shared/src/index.js';
+import type { RunEvent, RunRecord, RunStatus, TaskRecord, TaskConfiguration, TurnRecord } from '../../../../packages/shared/src/index.js';
 import { AppError, HttpError } from '../errors.js';
 import { AgentError, type AgentAdapter, type AgentEvent } from '../agent/types.js';
 import type { TaskWorkflow } from './workflow.js';
@@ -10,6 +11,7 @@ interface EngineOptions {
   adapter: AgentAdapter; concurrency: number; maxQueue: number; timeoutMs: number;
   cwd: string; model?: string; onFatal?: () => void;
   workflows?: ReadonlyMap<string, TaskWorkflow>;
+  onAutomaticPublish?: (reportId:string,signal:AbortSignal)=>Promise<void>;
 }
 interface Work { runId: string; turnId: string; input: string; threadId?: string }
 interface Slot { controller: AbortController; done: Promise<void>; reason?: 'cancelled' | 'timeout' | 'backend_stopped' }
@@ -47,21 +49,57 @@ export class TaskEngine {
     });
   }
 
+  setAutomaticPublisher(callback:NonNullable<EngineOptions['onAutomaticPublish']>):void {this.options.onAutomaticPublish=callback;}
   healthy(): boolean { return !this.fatal; }
   busy():boolean{return this.active.size>0||this.queue.length>0;}
   configure(value:{concurrency:number;maxQueue:number;timeoutMs:number;model?:string}):void {
     if(this.busy())throw new HttpError(409,'settings_busy');
     Object.assign(this.options,value);
   }
-  listTasks(): TaskRecord[] { return this.db.prepare('SELECT * FROM tasks ORDER BY id').all() as unknown as TaskRecord[]; }
+  listTasks(): TaskRecord[] { return this.db.prepare('SELECT * FROM tasks WHERE deleted_at IS NULL ORDER BY created_at DESC,id').all().map(row=>this.task(String(row.id))); }
   task(id: string): TaskRecord {
     const row = this.db.prepare('SELECT * FROM tasks WHERE id=?').get(id);
     if (!row) throw new HttpError(404, 'task_not_found');
-    return row as unknown as TaskRecord;
+    const result = row as unknown as TaskRecord;
+    if (row.configuration_json) result.configuration = JSON.parse(String(row.configuration_json)) as TaskConfiguration;
+    delete (result as unknown as Record<string,unknown>).configuration_json;
+    return result;
+  }
+  createTask(value: unknown): TaskRecord {
+    const input=taskInput(value),id=randomUUID();
+    this.db.prepare('INSERT INTO tasks(id,name,channel,prompt,status,configuration_json,next_run_at,timezone) VALUES (?,?,?,?,?,?,?,?)').run(id,input.name,'opensource',input.configuration.prompts[0]!,input.status,JSON.stringify(input.configuration),input.status==='active'?nextOccurrence(input.configuration,new Date()):null,input.configuration.timezone);
+    return this.task(id);
+  }
+  updateTask(id:string,value:unknown):TaskRecord {
+    const prior=this.task(id);if(!prior.configuration||prior.deleted_at)throw new HttpError(409,'task_not_editable');
+    this.capacityForMutation(id);const input=taskInput(value);
+    this.db.prepare('UPDATE tasks SET name=?,prompt=?,status=?,configuration_json=?,next_run_at=?,timezone=?,updated_at=? WHERE id=?').run(input.name,input.configuration.prompts[0]!,input.status,JSON.stringify(input.configuration),input.status==='active'?nextOccurrence(input.configuration,new Date()):null,input.configuration.timezone,now(),id);
+    return this.task(id);
+  }
+  deleteTask(id:string):void {
+    const prior=this.task(id);if(!prior.configuration)throw new HttpError(409,'task_not_editable');this.capacityForMutation(id);
+    this.db.prepare("UPDATE tasks SET deleted_at=?,status='paused',next_run_at=NULL,updated_at=? WHERE id=?").run(now(),now(),id);
+  }
+  stopTask(id:string):void {
+    this.task(id);for(const runId of this.active.keys())if(this.run(runId).task_id===id)this.cancel(runId);for(const row of this.db.prepare(`SELECT id FROM task_runs WHERE task_id=? AND status IN ${ACTIVE}`).all(id))this.cancel(String(row.id));
+  }
+  private capacityForMutation(id:string):void {
+    if(this.db.prepare(`SELECT id FROM task_runs WHERE task_id=? AND status IN ${ACTIVE}`).get(id)||[...this.active.keys()].some(runId=>this.run(runId).task_id===id))throw new HttpError(409,'task_busy');
+  }
+  resetSchedules():void {
+    for(const task of this.listTasks())if(task.configuration)this.db.prepare('UPDATE tasks SET next_run_at=? WHERE id=?').run(task.status==='active'?nextOccurrence(task.configuration,new Date()):null,task.id);
+  }
+  tick(at=new Date()):void {
+    if(this.stopping||this.fatal)return;
+    for(const row of this.db.prepare("SELECT id,next_run_at FROM tasks WHERE status='active' AND deleted_at IS NULL AND next_run_at IS NOT NULL AND next_run_at<=? ORDER BY next_run_at,id").all(at.toISOString())){
+      const task=this.task(String(row.id));if(!task.configuration)continue;
+      this.db.prepare('UPDATE tasks SET next_run_at=? WHERE id=?').run(nextOccurrence(task.configuration,at),task.id);
+      try {this.start(task.id,'scheduled:'+String(row.next_run_at),{},'scheduled');}catch(error){if(!(error instanceof HttpError))throw error;}
+    }
   }
   listRuns(taskId: string, limit = 20, offset = 0): RunRecord[] {
     this.task(taskId);
-    return this.db.prepare('SELECT * FROM task_runs WHERE task_id=? ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(taskId, limit, offset) as unknown as RunRecord[];
+    return this.db.prepare('SELECT id FROM task_runs WHERE task_id=? ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?').all(taskId, limit, offset).map(row=>this.run(String(row.id)));
   }
   detail(runId: string): { run: RunRecord; turns: TurnRecord[] } {
     return { run: this.run(runId), turns: this.db.prepare('SELECT * FROM run_turns WHERE run_id=? ORDER BY sequence').all(runId) as unknown as TurnRecord[] };
@@ -74,10 +112,13 @@ export class TaskEngine {
     }));
   }
 
-  start(taskId: string, idempotencyKey: string, request: { topic?: string; input?: string } = {}): { run: RunRecord; reused: boolean } {
+  start(taskId: string, idempotencyKey: string, request: { topic?: string; input?: string } = {}, triggerKind: 'manual'|'scheduled' = 'manual'): { run: RunRecord; reused: boolean } {
     this.available(); key(idempotencyKey);
     const task = this.task(taskId);
-    const research = taskId === NEWS_TASK_ID;
+    const managed=task.configuration;
+    if(task.deleted_at)throw new HttpError(404,'task_not_found');
+    if(managed) request={topic:managed.topic,input:managed.prompts[0]};
+    const research = taskId === NEWS_TASK_ID || !!managed;
     if (research) {
       if (typeof request.topic !== 'string' || !request.topic.trim() || request.topic.length > 200) throw new HttpError(400, 'invalid_topic');
       inputText(request.input!);
@@ -91,11 +132,11 @@ export class TaskEngine {
       }
       return { run: existing as unknown as RunRecord, reused: true };
     }
-    if (task.status !== 'active') throw new HttpError(409, 'task_paused');
+    if (task.status !== 'active' && (!managed || triggerKind === 'scheduled')) throw new HttpError(409, 'task_paused');
     inputText(input); this.capacity(taskId);
     const runId = randomUUID(), turnId = randomUUID();
     this.transaction(() => {
-      this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key) VALUES (?,?,?)').run(runId, taskId, idempotencyKey);
+      this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,configuration_json,trigger_kind) VALUES (?,?,?,?,?)').run(runId, taskId, idempotencyKey,managed?JSON.stringify(managed):null,triggerKind);
       this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, research ? 'research' : 'default');
       if (research) this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, now().slice(0,10), task.channel);
       this.event(runId, turnId, 'queued', {});
@@ -107,6 +148,7 @@ export class TaskEngine {
   continueRun(runId: string, idempotencyKey: string, input: string, finalize = false): { run: RunRecord; turn: TurnRecord; reused: boolean } {
     this.available(); key(idempotencyKey); inputText(input);
     const run = this.run(runId);
+    if(this.runConfiguration(runId))throw new HttpError(409,'managed_run_automatic');
     const research = run.task_id === NEWS_TASK_ID;
     if (!research && (finalize || run.task_id === 'news-github' || this.options.workflows?.has(run.task_id))) throw new HttpError(409, 'workflow_continuation_disabled');
     const mode = research ? finalize ? 'finalize' : 'research' : 'default';
@@ -167,13 +209,22 @@ export class TaskEngine {
     this.options.onFatal?.();
   }
   private capacity(taskId: string): void {
-    if (this.db.prepare(`SELECT id FROM task_runs WHERE task_id=? AND status IN ${ACTIVE} LIMIT 1`).get(taskId)) throw new HttpError(409, 'task_busy');
+    if ([...this.active.keys()].some(id=>this.run(id).task_id===taskId) || this.db.prepare(`SELECT id FROM task_runs WHERE task_id=? AND status IN ${ACTIVE} LIMIT 1`).get(taskId)) throw new HttpError(409, 'task_busy');
     if (this.active.size + this.queue.length >= this.options.concurrency + this.options.maxQueue) throw new HttpError(429, 'queue_full');
+  }
+  private runConfiguration(id:string):TaskConfiguration|undefined {
+    const value=this.db.prepare('SELECT configuration_json FROM task_runs WHERE id=?').get(id)?.configuration_json;
+    return value?JSON.parse(String(value)) as TaskConfiguration:undefined;
   }
   private run(id: string): RunRecord {
     const row = this.db.prepare('SELECT * FROM task_runs WHERE id=?').get(id);
     if (!row) throw new HttpError(404, 'run_not_found');
-    return row as unknown as RunRecord;
+    const result=row as unknown as RunRecord;
+    const snapshot=this.runConfiguration(id);
+    if(snapshot)result.configuration=snapshot;
+    delete (result as unknown as Record<string,unknown>).configuration_json;
+    result.publishing=this.active.has(id)&&result.status==='succeeded';
+    return result;
   }
   private turn(id: string): TurnRecord { return this.db.prepare('SELECT * FROM run_turns WHERE id=?').get(id) as unknown as TurnRecord; }
   private transaction<T>(fn: () => T): T {
@@ -191,9 +242,22 @@ export class TaskEngine {
       const slot: Slot = { controller: new AbortController(), done: Promise.resolve() };
       this.active.set(work.runId, slot);
       slot.done = this.execute(work, slot).catch(() => this.failEngine()).finally(() => {
-        this.active.delete(work.runId); this.schedule();
+        this.active.delete(work.runId); try {this.advance(work);} catch {this.failEngine();} this.schedule();
       });
     }
+  }
+  private advance(work:Work):void {
+    const config=this.runConfiguration(work.runId),run=this.run(work.runId);
+    if(!config||run.status!=='succeeded'||this.stopping||this.fatal)return;
+    const sequence=this.turn(work.turnId).sequence;
+    if(sequence>config.prompts.length)return;
+    const input=config.prompts[sequence]??'依据前面所有轮次的研究结果，生成完整日报。',turnId=randomUUID(),mode=sequence===config.prompts.length?'finalize':'research';
+    this.transaction(()=>{
+      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,?,?,?,?)').run(turnId,run.id,sequence+1,'automatic:'+String(sequence+1),input,mode);
+      this.db.prepare("UPDATE task_runs SET status='queued',finished_at=NULL,turn_id=NULL,updated_at=? WHERE id=?").run(now(),run.id);
+      this.event(run.id,turnId,'queued',{automatic:true});
+    });
+    this.queue.push({runId:run.id,turnId,input,threadId:run.thread_id!});
   }
   private finish(work: Work, status: RunStatus, code?: string, output?: string, save?: () => void): void {
     this.transaction(() => {
@@ -214,7 +278,8 @@ export class TaskEngine {
         this.event(work.runId, work.turnId, 'started', {});
       });
       const run = this.run(work.runId);
-      const workflow = this.options.workflows?.get(run.task_id);
+      const configuration=this.runConfiguration(run.id);
+      const workflow = this.options.workflows?.get(configuration?NEWS_TASK_ID:run.task_id);
       const prepared = workflow ? await workflow.prepare(run, slot.controller.signal, { input: work.input, mode: this.turn(work.turnId).mode }) : { input: work.input };
       if (slot.reason) throw new AgentError('cancelled');
       if (prepared.metadata) this.event(work.runId, work.turnId, 'input_prepared', prepared.metadata);
@@ -238,6 +303,20 @@ export class TaskEngine {
       const commit = await prepared.complete?.(result.output, slot.controller.signal);
       if (slot.reason) throw new AgentError('cancelled');
       this.finish(work, 'succeeded', undefined, result.output, commit ? () => commit(this.db) : prepared.save ? () => prepared.save!(this.db, result.output) : undefined);
+      if(configuration?.autoPublish && this.turn(work.turnId).mode==='finalize'){
+        const reportId=this.db.prepare('SELECT report_id FROM codex_news_runs WHERE run_id=?').get(run.id)?.report_id;
+        if(!reportId)throw new AppError('report_not_found');
+        this.event(run.id,work.turnId,'automatic_publication_started',{});
+        try {
+          if(!this.options.onAutomaticPublish)throw new AppError('publication_disabled');
+          await this.options.onAutomaticPublish(String(reportId),slot.controller.signal);
+          this.event(run.id,work.turnId,'automatic_publication_succeeded',{});
+        } catch(error) {
+          const code=error instanceof AppError?error.code:'github_unavailable';
+          this.db.prepare('UPDATE task_runs SET error_code=?,updated_at=? WHERE id=?').run(code,now(),run.id);
+          this.event(run.id,work.turnId,'automatic_publication_failed',{code});
+        }
+      }
     } catch (error) {
       // Unreaped processes can still hold a Thread or consume quota. A timeout
       // or cancellation must not hide this loss of lifecycle control.

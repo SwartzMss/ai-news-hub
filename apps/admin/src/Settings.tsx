@@ -8,7 +8,11 @@ import { Icon, PageHeading } from "./ui";
 export function Settings({
   api,
   onCredentialChanged,
+  initialSection = "settings-codex",
+  hideNavigation = false,
 }: {
+  initialSection?: string;
+  hideNavigation?: boolean;
   api: Client;
   onCredentialChanged: (token: string) => void;
 }) {
@@ -22,6 +26,8 @@ export function Settings({
     [password, setPassword] = useState(""),
     [confirm, setConfirm] = useState(""),
     [passwordBusy, setPasswordBusy] = useState(false);
+  const original = useRef<SettingsView>(undefined);
+  const [editingToken, setEditingToken] = useState(false);
   const pending = useRef(false),
     passwordPending = useRef(false),
     controller = useMemo(() => new AbortController(), []);
@@ -30,7 +36,7 @@ export function Settings({
     const c = new AbortController();
     void api<SettingsView>("/settings", c.signal)
       .then((value) => {
-        if (!c.signal.aborted) setData(value);
+        if (!c.signal.aborted) { setData(value); original.current = value; }
       })
       .catch((cause) => {
         if (!c.signal.aborted) setError(cause);
@@ -46,10 +52,10 @@ export function Settings({
     setError(undefined);
     const body: SettingsUpdate = {
       revision: data.revision,
-      logLevel: data.logLevel,
-      codex: data.codex,
-      execution: data.execution,
-      github: {
+      logLevel: section === "settings-codex" ? data.logLevel : original.current!.logLevel,
+      codex: section === "settings-codex" ? data.codex : original.current!.codex,
+      execution: section === "settings-codex" ? data.execution : original.current!.execution,
+      github: section !== "settings-github" ? { enabled: original.current!.github.enabled, repository: original.current!.github.repository, branch: original.current!.github.branch } : {
         enabled: data.github.enabled,
         repository: data.github.repository,
         branch: data.github.branch,
@@ -64,7 +70,9 @@ export function Settings({
         "PUT",
       );
       if (!controller.signal.aborted) {
+        original.current = result;
         setData(result);
+        setEditingToken(false);
         setToken("");
         setClearToken(false);
         setSaved(true);
@@ -101,35 +109,46 @@ export function Settings({
       if (!controller.signal.aborted) setPasswordBusy(false);
     }
   }
-  const [section, setSection] = useState("settings-codex");
+  const [section, setSection] = useState(initialSection);
   function jump(id: string) {
     setSection(id);
-    document
-      .getElementById(id)
-      ?.scrollIntoView({
-        behavior: window.matchMedia?.("(prefers-reduced-motion: reduce)")
-          .matches
-          ? "auto"
-          : "smooth",
-        block: "start",
-      });
+    setSaved(false);
+    setError(undefined);
+    if (original.current) setData(original.current);
+    setToken("");
+    setClearToken(false);
+    setEditingToken(false);
   }
   const disabled = busy || passwordBusy;
+  const navigation = (
+        <nav className="settings-nav" aria-label="设置分区">
+          {[
+            { id: "settings-codex", label: "模型与执行", icon: "spark" },
+            { id: "settings-github", label: "GitHub 归档", icon: "github" },
+            { id: "settings-security", label: "安全设置", icon: "shield" },
+          ].map((item) => (
+            <button
+              key={item.id}
+              className={section === item.id ? "selected" : ""}
+              aria-current={section === item.id ? "page" : undefined}
+              disabled={disabled}
+              onClick={() => jump(item.id)}
+            >
+              <Icon
+                name={item.icon as "spark" | "github" | "shield"}
+                size={17}
+              />
+              {item.label}
+            </button>
+          ))}
+        </nav>
+  );
   return (
     <>
+      {!hideNavigation && navigation}
       <PageHeading
-        title="系统设置"
-        description="管理你的研究工具、执行偏好与发布目标。"
-        action={
-          <button
-            type="submit"
-            form="runtime-settings"
-            disabled={disabled || !data}
-          >
-            <Icon name="check" size={17} />
-            {busy ? "正在保存…" : "保存设置"}
-          </button>
-        }
+        title={section === "settings-codex" ? "模型与执行" : section === "settings-github" ? "GitHub 归档" : "安全设置"}
+
       />
       {error ? (
         <p role="alert" className="error">
@@ -143,53 +162,23 @@ export function Settings({
         </p>
       ) : null}
       <div className="settings-layout">
-        <nav className="settings-nav" aria-label="设置分区">
-          {[
-            { id: "settings-codex", label: "模型与执行", icon: "spark" },
-            { id: "settings-github", label: "GitHub 归档", icon: "github" },
-            { id: "settings-security", label: "安全设置", icon: "shield" },
-          ].map((item) => (
-            <button
-              key={item.id}
-              className={section === item.id ? "selected" : ""}
-              onClick={() => jump(item.id)}
-            >
-              <Icon
-                name={item.icon as "spark" | "github" | "shield"}
-                size={17}
-              />
-              {item.label}
-            </button>
-          ))}
-          <p>
-            配置保存到数据库。
-            <br />
-            任务空闲时即可生效。
-          </p>
-        </nav>
+
         <div className="settings-content">
           {!data ? (
             <p className="loading-state">正在读取设置…</p>
-          ) : (
+          ) : section !== "settings-security" ? (
             <form
               className="settings-form"
               id="runtime-settings"
               onSubmit={save}
+              autoComplete="off"
             >
-              <fieldset
+              {section === "settings-codex" && <fieldset
                 className="settings-section"
                 id="settings-codex"
+                aria-label="模型与执行"
                 disabled={disabled}
               >
-                <legend>
-                  <span className="section-symbol">
-                    <Icon name="spark" size={20} />
-                  </span>
-                  模型与执行
-                </legend>
-                <p className="section-description">
-                  选择研究使用的 Codex，并控制每轮执行的资源。
-                </p>
                 <div className="form-grid">
                   <div className="field">
                     <label htmlFor="codex-binary">Codex 可执行文件</label>
@@ -315,22 +304,13 @@ export function Settings({
                     ))}
                   </select>
                 </div>
-                <p className="subtle-note">
-                  <Icon name="info" size={15} />
-                  Codex 账户登录仍由服务主机管理。
-                </p>
-              </fieldset>
-              <fieldset
+              </fieldset>}
+              {section === "settings-github" && <fieldset
                 className="settings-section"
                 id="settings-github"
+                aria-label="GitHub 归档"
                 disabled={disabled}
               >
-                <legend>
-                  <span className="section-symbol">
-                    <Icon name="github" size={20} />
-                  </span>
-                  GitHub 归档
-                </legend>
                 <div className="settings-inline-row archive-toggle">
                   <div>
                     <strong>归档已批准的日报</strong>
@@ -384,7 +364,9 @@ export function Settings({
                           github: { ...data.github, branch: e.target.value },
                         })
                       }
-                      placeholder="reports"
+                      autoComplete="off"
+                      name="archive-target-branch"
+                      placeholder="填写目标分支"
                       required={data.github.enabled}
                     />
                   </div>
@@ -398,7 +380,7 @@ export function Settings({
                       {data.github.tokenConfigured ? "已保存" : "未配置"}
                     </span>
                   </label>
-                  <input
+                  {!editingToken ? <button type="button" className="quiet" onClick={() => setEditingToken(true)}>{data.github.tokenConfigured ? "更换 Token" : "设置 Token"}</button> : <input
                     id="github-token"
                     aria-label="GitHub Token"
                     type="password"
@@ -407,14 +389,15 @@ export function Settings({
                       setToken(e.target.value);
                       setClearToken(false);
                     }}
-                    autoComplete="off"
+                    autoComplete="new-password"
+                    name="archive-access-token"
                     disabled={clearToken}
                     placeholder={
                       data.github.tokenConfigured
                         ? "留空保留现有 Token"
                         : "输入具有目标仓库权限的 Token"
                     }
-                  />
+                  />}
                   <p className="field-help">
                     {data.github.tokenConfigured
                       ? "已配置；留空保留原 Token。"
@@ -422,7 +405,7 @@ export function Settings({
                     只授予目标仓库所需的内容读写权限。
                   </p>
                 </div>
-                <label className="check clear-secret">
+                {data.github.tokenConfigured && <label className="check clear-secret">
                   <input
                     type="checkbox"
                     checked={clearToken}
@@ -432,28 +415,12 @@ export function Settings({
                     }}
                   />
                   清除已存 Token
-                </label>
-                <p className="subtle-note">
-                  <Icon name="shield" size={15} />
-                  保存目标不会自动发布，归档仍需你单独确认。
-                </p>
-              </fieldset>
-              <p className="settings-save-note">
-                <Icon name="info" size={15} />
-                任务或归档执行中，请等待完成后保存设置。
-              </p>
+                </label>}
+              </fieldset>}
+              <button type="submit" disabled={disabled}>{busy ? "正在保存…" : "保存设置"}</button>
             </form>
-          )}
-          <section className="settings-section" id="settings-security">
-            <div className="settings-section-title">
-              <span className="section-symbol">
-                <Icon name="shield" size={20} />
-              </span>
-              <h2>管理员密码</h2>
-            </div>
-            <p className="section-description">
-              更新登录凭据，管理你对工作台的访问。
-            </p>
+          ) : null}
+          {section === "settings-security" && <section className="settings-section" id="settings-security">
             <form className="settings-form" onSubmit={rotate}>
               <div className="field">
                 <label htmlFor="current-password">当前密码或旧 Token</label>
@@ -506,7 +473,7 @@ export function Settings({
                 </button>
               </div>
             </form>
-          </section>
+          </section>}
         </div>
       </div>
     </>

@@ -3,6 +3,7 @@ import { errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
 import { Icon } from "./ui";
 interface State {
+  approval?: { approval_kind?: "manual" | "automatic" } | null;
   contentHash: string;
   status: string;
   configured: boolean;
@@ -83,7 +84,7 @@ export function Publication({
         <span className="section-symbol">
           <Icon name="shield" size={19} />
         </span>
-        <h2>人工审核与 GitHub 归档</h2>
+        <h2>发布记录</h2>
       </div>
       {state.error ? (
         <p className="error" role="alert">
@@ -104,7 +105,7 @@ export function Publication({
               ? "待人工批准"
               : currentTargetPublished
                 ? "当前目标已归档到 GitHub"
-                : "已人工批准，当前目标尚未归档"}{" "}
+                : data.approval?.approval_kind === "automatic" ? "已按任务配置自动授权，等待归档" : "已人工批准，当前目标尚未归档"}{" "}
             · 原始来源仍标记 source_only，不代表独立事实证实。
           </p>
           {data.target ? (
@@ -114,7 +115,7 @@ export function Publication({
           ) : (
             <p>
               尚未配置 GitHub 目标，归档功能关闭。
-              <a href="#/settings">前往系统设置</a>
+              <a href="#/settings/github">配置 GitHub 归档</a>
             </p>
           )}
           {data.status === "validated" ? (

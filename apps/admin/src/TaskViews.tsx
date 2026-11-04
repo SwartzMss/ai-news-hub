@@ -1,3 +1,4 @@
+import { ManagedTasks } from "./ManagedTasks";
 import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type {
   TaskRecord,
@@ -28,178 +29,14 @@ function Notice({ error }: { error?: unknown }) {
   ) : null;
 }
 
-export function Dashboard({ api }: { api: Client }) {
-  const load = useCallback(
-    async (signal: AbortSignal) => {
-      const { tasks } = await api<{ tasks: TaskRecord[] }>("/tasks", signal);
-      return Promise.all(
-        tasks.map(async (task) => ({
-          task,
-          runs: (
-            await api<{ runs: RunRecord[] }>(
-              `/tasks/${encodeURIComponent(task.id)}/runs?limit=1`,
-              signal,
-            )
-          ).runs,
-        })),
-      );
-    },
-    [api],
-  );
-  const { data, error } = usePolling(load);
-  const research = data?.find((row) => row.task.id === "news-research");
-  return (
-    <>
-      <PageHeading
-        title="任务总览"
-        description="从一个主题开始，追踪研究进展，审阅每一份结果。"
-        action={
-          research && (
-            <a className="button" href={pathFor(research.task.id)}>
-              <Icon name="plus" />
-              开始研究
-            </a>
-          )
-        }
-      />
-      <Notice error={error} />
-      {!data && !error && (
-        <div className="loading-state" role="status">
-          正在读取任务…
-        </div>
-      )}
-      {data && (
-        <>
-          <div className="metrics-strip">
-            <div>
-              <span className="metric-icon">
-                <Icon name="grid" />
-              </span>
-              <p>
-                已配置任务
-                <strong>
-                  {data.length}
-                  <small>个任务</small>
-                </strong>
-              </p>
-            </div>
-            <div>
-              <span className="metric-icon blue">
-                <Icon name="activity" />
-              </span>
-              <p>
-                等待 / 执行中
-                <strong>
-                  {data.filter((row) => active(row.runs[0]?.status)).length}
-                  <small>个执行</small>
-                </strong>
-              </p>
-            </div>
-            <div>
-              <span className="metric-icon amber">
-                <Icon name="info" />
-              </span>
-              <p>
-                最近执行异常
-                <strong>
-                  {
-                    data.filter((row) =>
-                      ["failed", "interrupted"].includes(row.runs[0]?.status),
-                    ).length
-                  }
-                  <small>需关注</small>
-                </strong>
-              </p>
-            </div>
-          </div>
-          <section className="task-section">
-            <div className="section-heading">
-              <div>
-                <h2>全部任务</h2>
-                <p className="muted">研究与诊断任务，各自保留独立执行历史。</p>
-              </div>
-              <span className="update-note">
-                <span className="status-dot" />每 2 秒更新
-              </span>
-            </div>
-            {!data.length ? (
-              <EmptyState title="还没有配置任务">
-                任务会在服务启动后出现在这里。
-              </EmptyState>
-            ) : (
-              <div className="task-list">
-                {data.map(({ task, runs }) => (
-                  <article className="task-row" key={task.id}>
-                    <span
-                      className={`task-symbol ${task.id === "news-research" ? "research-symbol" : ""}`}
-                    >
-                      <Icon
-                        name={
-                          task.id === "news-research" ? "spark" : "activity"
-                        }
-                        size={23}
-                      />
-                    </span>
-                    <div className="task-row-main">
-                      <h3>
-                        <a href={pathFor(task.id)}>{task.name}</a>
-                      </h3>
-                      <p>
-                        {task.id === "news-research"
-                          ? "按主题搜索、多轮补查，最后生成待审核日报。"
-                          : task.id === "sample-connectivity"
-                            ? "检查 Codex 接入，确认任务执行链路。"
-                            : "查看任务配置和历史结果。"}
-                      </p>
-                      <span className="task-id">{task.id}</span>
-                      {runs[0] && (
-                        <span className={`task-availability ${task.status}`}>
-                          {labels[task.status] ?? task.status}
-                        </span>
-                      )}
-                    </div>
-                    <div className="task-row-status">
-                      <Badge status={runs[0]?.status ?? task.status} />
-                      <small>
-                        {runs[0] ? time(runs[0].created_at) : "尚无执行记录"}
-                      </small>
-                      {runs[0]?.error_code && (
-                        <span className="inline-error">
-                          {runs[0].error_code}
-                        </span>
-                      )}
-                    </div>
-                    <a
-                      className="task-open"
-                      href={pathFor(task.id)}
-                      aria-label={`查看任务：${task.name}`}
-                    >
-                      <Icon name="chevron" />
-                    </a>
-                  </article>
-                ))}
-              </div>
-            )}
-          </section>
-          <div className="workflow-guide">
-            <div>
-              <Icon name="file" size={22} />
-              <span>一份日报的工作流程</span>
-            </div>
-            <ol>
-              <li>确定主题</li>
-              <li>与 Codex 研究</li>
-              <li>核对来源与摘要</li>
-              <li>批准后归档</li>
-            </ol>
-          </div>
-        </>
-      )}
-    </>
-  );
+export function Dashboard({api}:{api:Client}) { return <ManagedTasks api={api}/>; }
+
+export function TaskDetail({api,taskId}:{api:Client;taskId:string}) {
+ if (!["sample-connectivity","news-research","news-github"].includes(taskId)) return <ManagedTasks api={api} taskId={taskId}/>;
+ return <LegacyTaskDetail api={api} taskId={taskId}/>;
 }
 
-export function TaskDetail({ api, taskId }: { api: Client; taskId: string }) {
+function LegacyTaskDetail({ api, taskId }: { api: Client; taskId: string }) {
   const [page, setPage] = useState(0),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>();
@@ -437,7 +274,7 @@ export function RunDetail({
         signal,
       );
       let report: ReportRecord | undefined;
-      if (["news-research", "news-github"].includes(taskId))
+      if (taskId !== "sample-connectivity")
         try {
           const { newsRun } = await api<{
             newsRun: { report_id: string | null };
@@ -460,8 +297,10 @@ export function RunDetail({
     research = taskId === "news-research";
   const summary = !data
     ? ["正在读取记录", "请稍候…"]
-    : data.report
-      ? ["日报已生成", "核对内容后再批准归档。"]
+    : data.run.publishing
+      ? ["正在发布", "正在归档到 GitHub。"]
+      : data.report
+      ? [data.report.status === "published" ? "已发布到 GitHub" : "日报已生成", data.run.error_code ? "发布未完成，可在发布记录中重试。" : data.report.status === "published" ? "查看发布记录中的提交结果。" : "在发布记录中查看审核与归档状态。"]
       : active(data.run.status)
         ? [
             research ? "研究进行中" : "任务执行中",
@@ -486,7 +325,7 @@ export function RunDetail({
     <>
       <PageHeading
         title={research ? "研究会话" : "执行详情"}
-        description="查看每一轮的思路与结果，让研究逐步收敛。"
+
         action={data && <Badge status={data.run.status} />}
       />
       <Notice error={error} />

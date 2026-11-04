@@ -33,7 +33,13 @@ export function App() {
   } catch {
     /* Invalid route returns to the workspace. */
   }
-  const settings = hash === "#/settings";
+  const settingsPages = [
+    { id: "codex", label: "模型与执行", icon: "spark" as const },
+    { id: "github", label: "GitHub 归档", icon: "github" as const },
+    { id: "security", label: "安全设置", icon: "shield" as const },
+  ];
+  const settingsPage = settingsPages.find(page => hash === `#/settings/${page.id}` || (page.id === "codex" && hash === "#/settings"));
+  const settings = !!settingsPage;
   function logout() {
     void client(token, () => {})(
       "/auth/logout",
@@ -60,31 +66,17 @@ export function App() {
         <a className="sidebar-brand" href="#" aria-label="News Hub 首页">
           <Brand />
         </a>
-        <div className="workspace-identity">
-          <span className="workspace-avatar">N</span>
-          <span>
-            个人工作空间<small>新闻研究与内容管理</small>
-          </span>
-        </div>
         <nav className="primary-nav" aria-label="主导航">
           <a href="#" aria-current={!settings ? "page" : undefined}>
             <Icon name="grid" />
             <span>任务总览</span>
             {!settings && <span className="nav-marker" />}
           </a>
-          <a href="#/settings" aria-current={settings ? "page" : undefined}>
-            <Icon name="settings" />
-            <span>系统设置</span>
-            {settings && <span className="nav-marker" />}
-          </a>
+          {settingsPages.map(page => <a key={page.id} href={`#/settings/${page.id}`} aria-current={settingsPage?.id === page.id ? "page" : undefined}>
+            <Icon name={page.icon} /><span>{page.label}</span>
+          </a>)}
         </nav>
         <div className="sidebar-footer">
-          <div className="workspace-note">
-            <Icon name="shield" />
-            <p>
-              由你决定何时发布<small>研究结果经人工审核后归档</small>
-            </p>
-          </div>
           <button className="logout-button" onClick={logout} aria-label="退出">
             <Icon name="logout" />
             <span>退出</span>
@@ -93,8 +85,6 @@ export function App() {
       </aside>
       <header className="topbar">
         <nav className="breadcrumbs" aria-label="页面位置">
-          <span>工作空间</span>
-          <Icon name="chevron" size={14} />
           {taskId ? (
             <>
               <a href={pathFor(taskId)}>任务详情</a>
@@ -106,7 +96,7 @@ export function App() {
               )}
             </>
           ) : (
-            <span>{settings ? "系统设置" : "任务总览"}</span>
+            <span>{settingsPage?.label ?? "任务总览"}</span>
           )}
         </nav>
         <div className="topbar-meta">
@@ -120,13 +110,13 @@ export function App() {
         </div>
       </header>
       <main
-        className="workspace-content"
+        className={`workspace-content${settings ? " settings-page" : ""}`}
         id="main-content"
         tabIndex={-1}
-        key={`${token}:${settings}:${taskId ?? ""}:${runId ?? ""}`}
+        key={`${token}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
       >
         {settings ? (
-          <Settings api={api} onCredentialChanged={connected} />
+          <Settings api={api} onCredentialChanged={connected} initialSection={`settings-${settingsPage!.id}`} hideNavigation />
         ) : !taskId ? (
           <Dashboard api={api} />
         ) : runId ? (

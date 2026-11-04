@@ -11,12 +11,12 @@ export function client(token: string, expired: (error: ApiError) => void) {
     path: string,
     signal?: AbortSignal,
     body?: unknown,
-    method?: 'POST'|'PUT',
+    method?: 'POST'|'PUT'|'DELETE',
   ): Promise<T> {
     let response: Response;
     try {
       response = await fetch("/api" + path, {
-        method: body ? method??"POST" : "GET",
+        method: method ?? (body ? "POST" : "GET"),
         signal,
         cache: "no-store",
         redirect: "error",
@@ -40,7 +40,7 @@ export function client(token: string, expired: (error: ApiError) => void) {
         );
       throw new ApiError(response.status, data.error?.code ?? "request_failed");
     }
-    const data = (await response.json()) as T;
+    const data = (response.status === 204 ? undefined : await response.json()) as T;
     signal?.throwIfAborted();
     return data;
   };
@@ -52,6 +52,11 @@ export function errorText(error: unknown): string {
     unauthorized: "管理认证失效或 Token 不正确，请重新连接。",
     management_disabled: "管理 API 尚未启用，请先配置服务端 Token。",
     network_unavailable: "无法连接后台，请确认服务正在运行，然后重试。",
+    invalid_task_configuration: "任务配置不正确，请检查 Prompt、计划和时区。",
+    task_not_editable: "历史预定义任务仅供查看，请新建研究任务。",
+    managed_run_automatic: "此任务按已配置的 Prompt 自动执行。",
+    invalid_schedule: "执行计划不正确，请检查时间与时区。",
+    publication_disabled: "请先配置并启用 GitHub 归档。",
     task_busy: "任务已有执行中的 Run，请等待完成。",
     queue_full: "执行队列已满，请稍后重试。",
     auth_required: "Codex 认证失效，需要在服务账户下重新登录。",

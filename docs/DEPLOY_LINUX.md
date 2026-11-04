@@ -1,6 +1,6 @@
 # Linux 部署与运行约束（v0.1）
 
-> **Backend、Codex 主题/多轮研究、待审核日报和人工批准归档已实现。** 持久调度、原生服务账户/systemd 与 Cloudflare 实际上线仍待验收。本文区分现有代码与待验收步骤。
+> **Backend、Codex 主题/多轮研究、待审核日报和人工批准归档已实现。** 持久计划调度已实现；原生服务账户/systemd 与 Cloudflare 实际上线仍待验收。本文区分现有代码与待验收步骤。
 
 Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。
 Issue #3 的基础 Backend 按第 9 节安装；Schema 见 [数据模型](DATA_MODEL.md)。健康检查不验证 Codex 认证。
@@ -69,7 +69,7 @@ Backend 使用 Node.js 22.19.0 或更新的 22.x，`npm run build` 后可 `npm s
 journald                           # 服务启动、错误与运行日志
 ```
 
-定时任务状态和运行记录必须持久化到 SQLite；程序重启不能把“上次计划时间”当作已执行。需要防重复发布、漏执行补偿和错误重试策略。
+定时任务状态和运行记录必须持久化到 SQLite；程序重启不能把“上次计划时间”当作已执行。通过幂等键防重复；重启不补跑错过计划，错误由用户重试。
 
 ## 4. 进程和 systemd
 
@@ -287,7 +287,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 - 正常停止日志有 `server_stopped`，HTTP 关闭；再次启动原记录保留。异常杀死服务主进程后检查 systemd `NRestarts` 与健康检查恢复，记录脱敏日志，不将运行数据提交到 Git。
 - 当前测试验证普通 Node 进程的停止/重启，CI 使用 Ubuntu 24.04；它们不等于完成 systemd 安装、开机启动或重启主机实测。
 - CI 静态检查在临时 unit 副本中将 `/usr/bin/node` 替换成 runner 的实际 Node 路径；目标主机仍须独立确认安装路径并校验正式 unit。
-- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例/新闻并独立批准、归档，暂无定时调度；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
+- `/health` 只说明基础服务与 Schema 可读，不验证 Codex 登录/额度。现有管理 API 可手动执行样例/新闻并独立批准、归档，已支持持久计划与单实例调度；重启只中断旧 Run，不自动恢复执行。#2 认证/systemd 问题继续独立跟踪。
 
 ## 10. 管理员初始化、配置与真实任务
 
@@ -333,7 +333,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 凭据仅放私有环境文件，不配置在 Codex HOME/CODEX_HOME、Agent 工作目录、浏览器 `VITE_*` 或 Git；Backend 不把这些变量传给 Codex。HTTP 仅访问固定 api.github.com，拒绝重定向，单次发布网络操作总上限 20 秒，响应解码限额 2 MiB，归档 JSON 上限 256 KiB。HTTP_PROXY/HTTPS_PROXY/NO_PROXY 沿用受限环境配置，不入库。
 
-在 `/admin/` 的新闻 Run 中核对来源后勾选确认并批准，再单独点击归档。发布目标、状态、错误及 Commit SHA 可查看；401/403 可能为凭据过期、权限或 GitHub 限流，修复后显式重试。没有自动调度/重试/Cloudflare 构建触发配置；若目标仓库自行配置 Actions，GitHub 提交可能触发其已有工作流。
+在 `/admin/` 的新闻 Run 中核对来源后勾选确认并批准，再单独点击归档。发布目标、状态、错误及 Commit SHA 可查看；401/403 可能为凭据过期、权限或 GitHub 限流，修复后显式重试。支持任务自动调度和可选自动归档；不自动重试失败运行，也不配置 Cloudflare 构建触发；若目标仓库自行配置 Actions，GitHub 提交可能触发其已有工作流。
 
 具体 API、归档路径/Schema、冲突和恢复步骤见 [发布说明](PUBLISHING.md)，实测见 [发布验证](validation/PUBLISHING.md)。真实验证使用专用测试分支，不要把该测试分支作为正式公开站内容来源。#2 原生 Ubuntu Server/systemd/长期认证验收仍独立跟踪。
 
@@ -348,3 +348,10 @@ Cloudflare Pages 从本 GitHub 仓库 main 集成，根目录留空、命令 `np
 ## 15. 代码与文档复核
 
 仓库根目录检查 `npm ci --ignore-scripts`、lint、typecheck、test 和 build；公共站另按第 14 节构建/预览。模拟检查不消耗真实模型额度，不写入 GitHub 归档目标。消息 phase 兼容、归档目标切换后的显式写操作及只读刷新均有回归覆盖，详见 [复核记录](validation/REPOSITORY_AUDIT.md)。这不替代第 8–10 节的原生服务账户/systemd 实机验收，也不代表已连接 Cloudflare。
+
+<!-- Settings UI update -->
+管理后台侧栏平级显示任务总览、模型与执行、GitHub 归档、安全设置，不再设置父级菜单；右侧单列显示当前标题与表单，窄屏导航折为顶部菜单。切换前需保存当前修改。Token 默认仅显示配置状态，点击设置或更换后才显示输入框。分支无预填值；已有配置保留。更新前端需运行 `npm run build`。
+
+## 用户配置任务与顺序执行
+
+任务 CRUD、手动/单次/间隔/每日/每周调度、顺序多轮 Prompt 与可选自动 GitHub 归档已接入单实例 Backend。计划和执行快照写 SQLite，重启中断旧执行且不补跑。自动授权记录与人工批准分开，外部构建部署由目标仓库集成承担。删除采用软删除保留审计，不删除数据库。API、限制与界面见 [任务管理](TASK_MANAGEMENT.md)。
