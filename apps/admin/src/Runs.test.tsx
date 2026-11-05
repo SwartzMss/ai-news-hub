@@ -171,3 +171,44 @@ test("source failure diagnostics expose bounded details and keep the repair stag
   ).toBeTruthy();
   expect(screen.getByText(/以下生成内容未通过校验/)).toBeTruthy();
 });
+
+test("task filter only offers configured user tasks, retaining legacy run history", async () => {
+  const api = vi.fn().mockImplementation(async (path: string) =>
+    path === "/tasks"
+      ? {
+          tasks: [
+            {
+              id: "task-one",
+              name: "每日研究",
+              configuration: run.configuration,
+            },
+            { id: "news-research", name: "Codex 主题新闻研究" },
+            { id: "sample-connectivity", name: "Codex connectivity sample" },
+          ],
+        }
+      : {
+          runs: [
+            {
+              run: { ...run, task_id: "sample-connectivity" },
+              task_name: "Codex connectivity sample",
+              task_deleted: false,
+              state: "failed",
+              latest_turn: null,
+              report: null,
+              publication: null,
+            },
+          ],
+          total: 1,
+        },
+  );
+  render(<Runs api={api} />);
+  await screen.findByRole("option", { name: "每日研究" });
+  const filter = within(screen.getByLabelText("所属任务"));
+  expect(
+    filter.queryByRole("option", { name: "Codex 主题新闻研究" }),
+  ).toBeNull();
+  expect(
+    filter.queryByRole("option", { name: "Codex connectivity sample" }),
+  ).toBeNull();
+  expect(screen.getByText("Codex connectivity sample")).toBeTruthy();
+});
