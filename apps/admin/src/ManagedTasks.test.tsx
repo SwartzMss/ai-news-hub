@@ -171,8 +171,8 @@ test("an active execution replaces Run with Stop and separates the schedule stat
   expect(screen.getByRole("button", { name: "停止执行" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "立即运行" })).toBeNull();
   expect(
-    screen.getByRole("link", { name: "查看结果" }).getAttribute("href"),
-  ).toContain("running");
+    screen.getByRole("link", { name: "运行记录" }).getAttribute("href"),
+  ).toContain("managed-one");
 });
 
 test("task editor is a separate modal that closes on cancel and restores focus", async () => {

@@ -107,7 +107,9 @@ test("authenticated Task → Run navigation renders real metadata, safe output a
   await screen.findByRole("heading", { name: "连接检查" });
   fireEvent.click(await screen.findByRole("link", { name: "run-1" }));
   const conversation = await screen.findByRole("tab", { name: "研究会话" });
-  expect(screen.getByRole("link", { name: "返回任务" }).getAttribute("href")).toBe("#/tasks/sample-connectivity");
+  expect(
+    screen.getByRole("link", { name: "所属任务" }).getAttribute("href"),
+  ).toBe("#/tasks/sample-connectivity");
   expect(conversation.getAttribute("aria-selected")).toBe("true");
   fireEvent.keyDown(conversation, { key: "End" });
   expect(
@@ -334,19 +336,27 @@ test("workspace navigation marks the current page and opens real system settings
   ).toBe("page");
   fireEvent.click(screen.getByRole("link", { name: "模型与执行" }));
   await screen.findByRole("heading", { name: "模型与执行" });
-  expect(screen.getAllByRole("heading", { name: "模型与执行" })).toHaveLength(1);
+  expect(screen.getAllByRole("heading", { name: "模型与执行" })).toHaveLength(
+    1,
+  );
   expect(screen.queryByText("本地管理")).toBeNull();
   expect(document.querySelector(".topbar")).toBeNull();
   expect(document.querySelector(".user-avatar")).toBeNull();
   await screen.findByLabelText("Codex 可执行文件");
   fireEvent.click(screen.getByRole("link", { name: "GitHub 归档" }));
   await screen.findByLabelText("GitHub 仓库");
-  expect(screen.getByRole("link", { name: "GitHub 归档" }).closest("aside")).not.toBeNull();
+  expect(
+    screen.getByRole("link", { name: "GitHub 归档" }).closest("aside"),
+  ).not.toBeNull();
   expect(screen.getByRole("main").querySelector(".settings-nav")).toBeNull();
   expect(
-    screen.getByRole("link", { name: "GitHub 归档" }).getAttribute("aria-current"),
+    screen
+      .getByRole("link", { name: "GitHub 归档" })
+      .getAttribute("aria-current"),
   ).toBe("page");
-  expect(document.querySelectorAll('.primary-nav [aria-current="page"]')).toHaveLength(1);
+  expect(
+    document.querySelectorAll('.primary-nav [aria-current="page"]'),
+  ).toHaveLength(1);
   expect(screen.queryByRole("link", { name: "系统设置" })).toBeNull();
   expect(
     screen.getByRole("link", { name: "任务总览" }).getAttribute("aria-current"),

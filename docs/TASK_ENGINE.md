@@ -82,3 +82,9 @@ Schema 与迁移规则见 [数据模型](DATA_MODEL.md)。真实开发验证和�
 计划格式：`{kind:"manual"}`、`{kind:"once",at:"UTC ISO 时间"}`、`{kind:"interval",minutes:60}`、`{kind:"daily",time:"09:00"}`、`{kind:"weekly",time:"09:00",weekday:1}`。周日为 0，默认时区 Asia/Shanghai。每个 Prompt 最多 8000 字符，1–19 轮，系统追加第 20 轮以内的日报生成。启动仍使用 `/tasks/:taskId/runs` 幂等键；配置任务不接受交互式继续 Turn，执行使用不可变配置快照。
 
 用户配置任务的 paused 状态暂停定时调度，但仍允许手动启动；历史预定义任务的暂停行为不变。管理界面以单个任务主题同时填写 name/topic，旧 API 字段保持兼容。
+
+## 跨任务运行与结果
+
+`GET /api/runs?taskId=<可选>&state=all&limit=20&offset=0` 需要认证，返回 `{runs,total,limit,offset}`。state 支持 all/running/pending_review/publish_failed/failed/published。每条记录包含 run、所属任务名称/删除标记、最新阶段、日报与最新 GitHub 发布状态；删除任务不删除历史。生成日报前的研究成功不等于来源校验成功，失败阶段和发布错误分别呈现。
+
+来源校验失败写入 `source_validation_failed` 事件；Run 详情可含 `sourceFailures`，列出最近一次校验的安全诊断。用户配置任务的可修复来源错误允许一次 `source-repair` 幂等系统 Turn（mode=finalize），保持同一 Thread；排队事件为 `source_repair_queued`。仅在总 Turn 数小于 20、任务未取消且未修复过时追加。历史失败 Run 不会因升级自动重跑。
