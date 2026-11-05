@@ -18,78 +18,148 @@ function safeUrl(value: string) {
     return undefined;
   }
 }
+const categoryNames: Record<string, string> = {
+  ai: "AI 与大模型",
+  opensource: "开源项目",
+  developer_tools: "开发工具",
+  security: "安全动态",
+  industry: "公司与产业",
+  other: "综合资讯",
+};
+function displayTime(value: string) {
+  const date = new Date(value);
+  return Number.isNaN(date.getTime())
+    ? value
+    : date.toLocaleString("zh-CN", {
+        year: "numeric",
+        month: "2-digit",
+        day: "2-digit",
+        hour: "2-digit",
+        minute: "2-digit",
+        hour12: false,
+      });
+}
 export function Report({ report }: { report: ReportRecord }) {
+  const doc = report.document;
+  const codexReported = doc.items.some(
+    (item) => item.verification === "codex_reported",
+  );
   return (
-    <section className="panel report-panel">
-      <div className="report-kicker">
-        <Icon name="file" size={16} />
-        日报预览<span>版本 {report.version}</span>
+    <section className="report-preview" aria-label="简报阅读预览">
+      <div className="report-preview-bar">
+        <span>
+          <Icon name="file" size={16} />
+          阅读预览
+        </span>
+        <span>
+          版本 {report.version}
+        </span>
       </div>
-      <h2>{report.document.title}</h2>
-      <p className="notice">
-        {report.status === "published"
-          ? "已归档"
-          : report.status === "approved"
-            ? "已批准"
-            : "待人工审核"}{" "}
-        {report.document.items.some(
-          (item) => item.verification === "codex_reported",
-        )
-          ? "· 内容与来源由 Codex 整理。"
-          : "· 历史来源记录。"}
-      </p>
-      <p>
-        {report.document.reportDate} · {report.document.channel} · 采集时间{" "}
-        {report.document.collectedAt}
-      </p>
-      {report.document.items.map((item) => (
-        <article className="report-item" key={item.articleId}>
-          <span className="badge">
-            {item.category} · 重要性 {item.importance}/5
-          </span>
-          <h3 className="fact-label">来源事实摘要</h3>
-          <p className="fact-summary">{item.factSummary}</p>
-          <div className="analysis-block">
-            <h3>分析（推断）</h3>
-            <p>{item.analysis ?? "无"}</p>
-          </div>
-          <blockquote>
-            <span>
-              {item.verification === "codex_reported"
-                ? "Codex 提供的引文"
-                : "依据原文"}
-            </span>
-            {item.evidenceQuote}
-          </blockquote>
-          <a
-            href={safeUrl(item.source.canonicalUrl)}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            {item.source.name} · 查看原文 ↗
-          </a>
-          <dl className="source-times">
-            <dt>来源发布时间</dt>
-            <dd>{item.source.publishedAt ?? "未知"}</dd>
-            <dt>事件时间</dt>
-            <dd>{item.source.eventAt ?? "未知"}</dd>
-            {item.source.fetchedAt && (
-              <>
-                <dt>首次抓取时间</dt>
-                <dd>{item.source.fetchedAt}</dd>
-              </>
-            )}
-          </dl>
-          <p className="muted">
-            {item.verification === "codex_reported"
-              ? "来源由 Codex 提供"
-              : "来源关联：source_only · 未独立证实"}
+      <article className="panel report-panel">
+        <header className="report-cover">
+          <p className="report-edition">
+            <time dateTime={doc.reportDate}>{doc.reportDate}</time>
+            <span>{doc.items.length} 条精选</span>
           </p>
-        </article>
-      ))}
-      <details>
+          <h2>{doc.title}</h2>
+          <p className="report-byline">
+            {codexReported ? "内容与来源由 Codex 整理" : "历史来源记录"} ·
+            生成于{" "}
+            <time dateTime={doc.collectedAt}>
+              {displayTime(doc.collectedAt)}
+            </time>
+          </p>
+        </header>
+        <ol className="report-stories">
+          {doc.items.map((item, index) => (
+            <li className="report-item" key={item.articleId}>
+              <div className="report-story-meta">
+                <span className="report-number">
+                  {String(index + 1).padStart(2, "0")}
+                </span>
+                <span className="report-category">
+                  {categoryNames[item.category] ?? item.category}
+                </span>
+                <span className="report-importance">
+                  重要性 {item.importance}/5
+                </span>
+              </div>
+              <p className="fact-summary">{item.factSummary}</p>
+              {item.analysis && (
+                <div className="analysis-block">
+                  <h3>分析（推断）</h3>
+                  <p>{item.analysis}</p>
+                </div>
+              )}
+              <div className="report-source-link">
+                <a
+                  href={safeUrl(item.source.canonicalUrl)}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {item.source.name} · 查看原文 ↗
+                </a>
+              </div>
+              <details className="report-evidence">
+                <summary>来源与引文</summary>
+                <blockquote>
+                  <span>
+                    {item.verification === "codex_reported"
+                      ? "Codex 提供的引文"
+                      : "依据原文"}
+                  </span>
+                  {item.evidenceQuote}
+                </blockquote>
+                {(item.source.publishedAt ||
+                  item.source.eventAt ||
+                  item.source.fetchedAt) && (
+                  <dl className="source-times">
+                    {item.source.publishedAt && (
+                      <>
+                        <dt>来源发布时间</dt>
+                        <dd>
+                          <time dateTime={item.source.publishedAt}>
+                            {displayTime(item.source.publishedAt)}
+                          </time>
+                        </dd>
+                      </>
+                    )}
+                    {item.source.eventAt && (
+                      <>
+                        <dt>事件时间</dt>
+                        <dd>
+                          <time dateTime={item.source.eventAt}>
+                            {displayTime(item.source.eventAt)}
+                          </time>
+                        </dd>
+                      </>
+                    )}
+                    {item.source.fetchedAt && (
+                      <>
+                        <dt>首次抓取时间</dt>
+                        <dd>
+                          <time dateTime={item.source.fetchedAt}>
+                            {displayTime(item.source.fetchedAt)}
+                          </time>
+                        </dd>
+                      </>
+                    )}
+                  </dl>
+                )}
+                <p className="muted">
+                  {item.verification === "codex_reported"
+                    ? "来源由 Codex 提供"
+                    : "来源关联：source_only · 未独立证实"}
+                </p>
+              </details>
+            </li>
+          ))}
+        </ol>
+        <footer className="report-end">本期完</footer>
+      </article>
+      <details className="report-raw">
         <summary>查看结构化 JSON</summary>
-        <pre>{JSON.stringify(report.document, null, 2)}</pre>
+        <pre>{JSON.stringify(doc, null, 2)}</pre>
       </details>
     </section>
   );
