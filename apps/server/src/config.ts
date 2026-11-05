@@ -30,5 +30,5 @@ export function legacyRuntimeConfig(env:NodeJS.ProcessEnv={}):LegacyRuntime {
   if(repository||branch||token){
     if(!repository||!branch||!token||!/^[/A-Za-z0-9_.-]+$/.test(repository)||!/^([A-Za-z0-9][A-Za-z0-9_.-]{0,99})\/([A-Za-z0-9][A-Za-z0-9_.-]{0,99})$/.test(repository)||!/^[A-Za-z0-9][A-Za-z0-9._/-]{0,199}$/.test(branch)||branch.includes('..')||branch.includes('//')||branch.endsWith('/')||branch.endsWith('.')||branch.split('/').some(x=>x.endsWith('.lock'))||!/^[A-Za-z0-9_]{20,255}$/.test(token))throw new AppError('invalid_publication_config');
   }
-  return {logLevel:logLevel as LegacyRuntime['logLevel'],codexBin,model,runTimeoutMs:numeric('AI_NEWS_HUB_RUN_TIMEOUT_MS',120000,1000,3600000),concurrency:numeric('AI_NEWS_HUB_CONCURRENCY',1,1,4),maxQueue:numeric('AI_NEWS_HUB_MAX_QUEUE',20,1,100),publication:repository&&branch&&token?{repository,branch,token}:undefined};
+  return {logLevel:logLevel as LegacyRuntime['logLevel'],codexBin,model,runTimeoutMs:numeric('AI_NEWS_HUB_RUN_TIMEOUT_MS',600000,1000,3600000),concurrency:numeric('AI_NEWS_HUB_CONCURRENCY',1,1,4),maxQueue:numeric('AI_NEWS_HUB_MAX_QUEUE',20,1,100),publication:repository&&branch&&token?{repository,branch,token}:undefined};
 }

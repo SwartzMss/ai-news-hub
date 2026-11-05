@@ -34,3 +34,8 @@ test('legacy values are validated only when explicitly imported, never during bo
  }
  assert.throws(()=>legacyAdminToken({AI_NEWS_HUB_ADMIN_TOKEN:'short'}),{code:'invalid_config'});
 });
+
+test('new installations default to ten minutes while explicit legacy millisecond values remain supported',()=>{
+ assert.equal(legacyRuntimeConfig({}).runTimeoutMs,600000);
+ assert.equal(legacyRuntimeConfig({AI_NEWS_HUB_RUN_TIMEOUT_MS:'120000'}).runTimeoutMs,120000);
+});

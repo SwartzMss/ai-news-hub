@@ -42,3 +42,21 @@ test('unconfigured credentials stay absent until explicitly edited and branch st
  fireEvent.click(screen.getByRole('button',{name:'设置 Token'}));
  expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).value).toBe('');
 });
+
+for(const timeoutMs of [600000,90000,1000])test(`timeout displays minutes and preserves existing ${timeoutMs}ms values`,async()=>{
+ const initial={...value,execution:{...value.execution,timeoutMs}};
+ const api=vi.fn().mockImplementation(async(_url,_signal,body)=>body?{...initial,...body,revision:2}:initial);
+ render(<Settings api={api} onCredentialChanged={()=>{}}/>);
+ const input=await screen.findByLabelText('每轮超时（分钟）');
+ expect((input as HTMLInputElement).value).toBe(String(timeoutMs/60000));
+ fireEvent.click(screen.getByRole('button',{name:'保存设置'}));
+ await screen.findByText('设置已保存并生效。');
+ expect(api.mock.calls.find(call=>call[2])![2].execution.timeoutMs).toBe(timeoutMs);
+});
+test('editing ten minutes submits six hundred thousand milliseconds',async()=>{
+ const api=vi.fn().mockImplementation(async(_url,_signal,body)=>body?{...value,...body,revision:2}:value);
+ render(<Settings api={api} onCredentialChanged={()=>{}}/>);
+ fireEvent.change(await screen.findByLabelText('每轮超时（分钟）'),{target:{value:'10'}});
+ fireEvent.click(screen.getByRole('button',{name:'保存设置'}));await screen.findByText('设置已保存并生效。');
+ expect(api.mock.calls.find(call=>call[2])![2].execution.timeoutMs).toBe(600000);
+});
