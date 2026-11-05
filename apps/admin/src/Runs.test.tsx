@@ -89,7 +89,7 @@ test("managed results default to the report view and label system finalization i
           },
   );
   render(<RunDetail api={api} taskId="task-one" runId="run-one" />);
-  await screen.findByText(/日报生成阶段的原文抓取校验失败/);
+  await screen.findByText(/这条历史执行在原文抓取步骤失败/);
   expect(
     screen.getByRole("tab", { name: "最终结果" }).getAttribute("aria-selected"),
   ).toBe("true");

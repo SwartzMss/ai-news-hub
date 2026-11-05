@@ -37,3 +37,41 @@ test("report distinguishes source-only facts from inference, preserves unknown d
   expect(document.querySelector("img")).toBeNull();
   expect(document.querySelector("a")!.hasAttribute("href")).toBe(false);
 });
+
+test("Codex-reported sources are attributed to Codex without a backend fetch timestamp", () => {
+  const report = {
+    id: "r",
+    status: "validated",
+    version: 1,
+    document: {
+      title: "Codex 日报",
+      reportDate: "2026-11-05",
+      channel: "opensource",
+      collectedAt: "2026-11-05T00:00:00Z",
+      items: [
+        {
+          articleId: "a",
+          category: "ai",
+          importance: 3,
+          factSummary: "模型摘要",
+          analysis: null,
+          evidenceQuote: "Codex returned quote",
+          verification: "codex_reported",
+          source: {
+            name: "example.com",
+            originalUrl: "https://example.com/article.pdf",
+            canonicalUrl: "https://example.com/article.pdf",
+            publishedAt: null,
+            eventAt: null,
+            fetchedAt: null,
+          },
+        },
+      ],
+    },
+  } as ReportRecord;
+  render(<Report report={report} />);
+  expect(screen.getByText("来源由 Codex 提供")).toBeTruthy();
+  expect(screen.getByText("Codex 提供的引文")).toBeTruthy();
+  expect(screen.queryByText("首次抓取时间")).toBeNull();
+  expect(screen.queryByText(/来源关联：source_only/)).toBeNull();
+});

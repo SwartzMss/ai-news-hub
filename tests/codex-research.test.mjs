@@ -51,8 +51,8 @@ test('Codex owns collection: user topic → iterative prompts in one Thread → 
     assert.equal(report.status, 'validated'); assert.equal(report.document.reviewStatus, 'pending');
     const source = report.document.items[0].source;
     assert.equal(source.canonicalUrl, 'https://example.com/ai-release'); assert.equal(source.name, 'example.com');
-    assert.equal(source.publishedAt, '2026-11-02T10:00:00.000Z'); assert.equal(source.eventAt, null);
-    assert.equal(s.fetched.length, 1); assert.ok(!s.fetched[0].includes('/feed'));
+    assert.equal(source.publishedAt, null); assert.equal(source.eventAt, null);assert.equal(source.fetchedAt,null);assert.equal(report.document.items[0].verification,'codex_reported');
+    assert.equal(s.fetched.length, 0);
     assert.equal((await s.post('/runs/' + id + '/turns', finalize)).statusCode, 200);
     assert.equal((await s.post('/runs/' + id + '/turns', { ...finalize, finalize: false })).statusCode, 409);
     assert.equal((await s.post('/runs/' + id + '/turns', { idempotencyKey: 'after', input: 'change it' })).statusCode, 409);
@@ -69,8 +69,8 @@ test('topic and prompt are required; failed finalization can be corrected in the
     assert.equal(started.statusCode, 202); const id = started.json().run.id;
     await s.call(1); s.adapter.succeed(0, 'Search complete.'); await s.settle(id);
     await s.post('/runs/' + id + '/turns', { idempotencyKey: 'bad', input: '生成', finalize: true }); await s.call(2);
-    const bad = proposal(); bad.items[0].evidenceQuote = 'Invented quote not in the page'; s.adapter.succeed(1, JSON.stringify(bad));
-    const failed = await s.settle(id); assert.equal(failed.run.error_code, 'report_evidence_invalid');
+    const bad = proposal(); bad.items[0].importance = 99; s.adapter.succeed(1, JSON.stringify(bad));
+    const failed = await s.settle(id); assert.equal(failed.run.error_code, 'report_schema_invalid');
     assert.equal((await s.get('/news/reports')).reports.length, 0); assert.equal((await s.get('/news/articles')).articles.length, 0);
     await s.post('/runs/' + id + '/turns', { idempotencyKey: 'retry', input: '使用原文准确引用后重新生成', finalize: true });
     await s.call(3); s.adapter.succeed(2, JSON.stringify(proposal())); assert.equal((await s.settle(id)).run.status, 'succeeded');

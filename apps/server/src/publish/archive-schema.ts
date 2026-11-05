@@ -49,6 +49,7 @@ const root = {
       type: "object",
       additionalProperties: false,
       required: Object.keys(properties),
+      allOf:[{if:{properties:{verification:{const:"codex_reported"}}},then:{properties:{source:{type:"object",properties:{fetched_at:{type:"null"}}}}},else:{properties:{source:{type:"object",properties:{fetched_at:{type:"string",format:"date-time"}}}}}}],
       properties,
     },
   },

@@ -30,9 +30,13 @@ export function Report({ report }: { report: ReportRecord }) {
         {report.status === "published"
           ? "已归档"
           : report.status === "approved"
-            ? "已人工批准"
+            ? "已批准"
             : "待人工审核"}{" "}
-        · 格式与来源关联校验通过不等于独立事实核验。
+        {report.document.items.some(
+          (item) => item.verification === "codex_reported",
+        )
+          ? "· 内容与来源由 Codex 整理。"
+          : "· 历史来源记录。"}
       </p>
       <p>
         {report.document.reportDate} · {report.document.channel} · 采集时间{" "}
@@ -50,7 +54,11 @@ export function Report({ report }: { report: ReportRecord }) {
             <p>{item.analysis ?? "无"}</p>
           </div>
           <blockquote>
-            <span>依据原文</span>
+            <span>
+              {item.verification === "codex_reported"
+                ? "Codex 提供的引文"
+                : "依据原文"}
+            </span>
             {item.evidenceQuote}
           </blockquote>
           <a
@@ -65,10 +73,18 @@ export function Report({ report }: { report: ReportRecord }) {
             <dd>{item.source.publishedAt ?? "未知"}</dd>
             <dt>事件时间</dt>
             <dd>{item.source.eventAt ?? "未知"}</dd>
-            <dt>首次抓取时间</dt>
-            <dd>{item.source.fetchedAt}</dd>
+            {item.source.fetchedAt && (
+              <>
+                <dt>首次抓取时间</dt>
+                <dd>{item.source.fetchedAt}</dd>
+              </>
+            )}
           </dl>
-          <p className="muted">来源关联：source_only · 未独立证实</p>
+          <p className="muted">
+            {item.verification === "codex_reported"
+              ? "来源由 Codex 提供"
+              : "来源关联：source_only · 未独立证实"}
+          </p>
         </article>
       ))}
       <details>

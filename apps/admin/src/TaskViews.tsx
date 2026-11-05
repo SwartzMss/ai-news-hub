@@ -428,9 +428,9 @@ export function RunDetail({
                   </h2>
                   <p className="result-explanation">
                     {data.run.error_code === "source_fetch_failed"
-                      ? "日报生成阶段的原文抓取校验失败。前面的研究记录仍然保留，本次没有生成可审核或发布的日报。"
+                      ? "这条历史执行在原文抓取步骤失败，未生成日报。新版本已移除后端抓取，可返回任务重新运行。"
                       : active(data.run.status)
-                        ? "预设研究 Prompt 完成后，系统会额外执行日报生成并核验来源。"
+                        ? "预设研究 Prompt 完成后，系统会额外整理并保存结构化日报。"
                         : "查看各阶段的输出和错误记录，核对后可返回任务重新执行。"}
                   </p>
                   {data.sourceFailures?.length ? (
@@ -687,9 +687,7 @@ export function RunDetail({
               <Icon name="shield" size={19} />
               <p>
                 来源值得多看一眼
-                <small>
-                  结构与引文校验通过后，仍需你核对事实、时间和推断。
-                </small>
+                <small>内容与来源由 Codex 整理，可在生成后查看。</small>
               </p>
             </div>
           )}

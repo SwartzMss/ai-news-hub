@@ -67,3 +67,5 @@ Pages 会安装根目录锁定依赖，不需要启动 Backend 或设置管理/�
 CI 的 `npm test` 包含公开站构建、路由/两日期/历史版本、Schema/链接/路径、RSS XML/GUID/字符、生产测试数据隔离及敏感产物断言；`npm run typecheck` 同时检查 Web。浏览器另验证移动端、主题、无 JS 阅读和 CSP。参见 [验证记录](validation/PUBLIC_WEB.md)。
 
 官方参考：[Pages Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)、[Build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/)、[Build watch paths](https://developers.cloudflare.com/pages/configuration/build-watch-paths/)。
+
+归档 v1 现支持 verification=codex_reported 与 fetched_at=null，表示来源由 Codex 提供而非 Backend 抓取。公共页面和 RSS 不展示不存在的抓取时间；source_only 历史归档保持兼容。使用独立公共站构建器的部署需同步更新 Schema 与生成器后读取新归档。
