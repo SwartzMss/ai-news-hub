@@ -18,7 +18,7 @@ const params = (name: string) => ({ type: 'object', required: [name], properties
 type TaskParams = { taskId: string };
 type RunParams = { runId: string };
 
-export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, auth: AuthStore, newsDb?: DatabaseSync, publications?: PublicationService, settings?: SettingsStore, applySettings?:()=>void): Promise<void> {
+export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, auth: AuthStore, newsDb?: DatabaseSync, publications?: PublicationService, settings?: SettingsStore, applySettings?:()=>void, now:()=>Date=()=>new Date()): Promise<void> {
   app.addHook('onRequest', async (request, reply) => {
     reply.header('cache-control', 'no-store');
     if (!auth.status().initialized) throw new HttpError(503, 'management_disabled');
@@ -38,6 +38,7 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
   }
   if (newsDb) registerNewsRoutes(app, newsDb);
   if (publications) registerPublicationRoutes(app,publications);
+  app.get('/overview', async()=>engine.overview(now()));
   app.get('/tasks', async () => ({ tasks: engine.listTasks() }));
   app.post<{Body:unknown}>('/tasks',{bodyLimit:1024*1024},async(request,reply)=>{const task=engine.createTask(request.body);reply.code(201);return {task};});
   app.put<{Params:TaskParams;Body:unknown}>('/tasks/:taskId',{bodyLimit:1024*1024,schema:{params:params('taskId')}},async request=>({task:engine.updateTask(request.params.taskId,request.body)}));

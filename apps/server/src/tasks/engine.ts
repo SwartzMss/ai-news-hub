@@ -1,3 +1,4 @@
+import { buildOverview } from './overview.js';
 import { listRunSummaries } from './run-summaries.js';
 import type { RunListQuery, RunListResponse } from '../../../../packages/shared/src/index.js';
 import { taskInput, nextOccurrence } from './configuration.js';
@@ -99,6 +100,7 @@ export class TaskEngine {
       try {this.start(task.id,'scheduled:'+String(row.next_run_at),{},'scheduled');}catch(error){if(!(error instanceof HttpError))throw error;}
     }
   }
+  overview(at:Date) {return buildOverview(this.db,at,id=>this.run(id));}
   listAllRuns(query:RunListQuery):RunListResponse {return listRunSummaries(this.db,query,id=>this.run(id));}
   listRuns(taskId: string, limit = 20, offset = 0): RunRecord[] {
     this.task(taskId);

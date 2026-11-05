@@ -45,6 +45,21 @@ function mockFetch(fail?: number) {
       );
     if (url === "/api/auth/login")
       return Response.json({ token: "test_only_0123456789_abcdefghijklmnop" });
+    if (url === "/api/overview")
+      return Response.json({
+        timezone: "Asia/Shanghai",
+        generatedAt: "2026-11-06T00:00:00Z",
+        tasks: { total: 0, manual: 0, scheduled: 0, paused: 0 },
+        todayRuns: 0,
+        running: 0,
+        queued: 0,
+        pendingReview: 0,
+        pendingPublish: 0,
+        publishFailed: 0,
+        recentFailures: 0,
+        daily: [],
+        recentRuns: [],
+      });
     if (url === "/api/tasks") return Response.json({ tasks: [task] });
     if (url === "/api/settings")
       return Response.json({
@@ -96,7 +111,7 @@ async function login() {
     target: { value: "test_only_0123456789_abcdefghijklmnop" },
   });
   fireEvent.click(screen.getByRole("button", { name: "连接后台" }));
-  await screen.findByRole("heading", { name: "任务总览" });
+  await screen.findByRole("heading", { name: "系统概览" });
 }
 test("authenticated Task → Run navigation renders real metadata, safe output and missing-report state", async () => {
   const fetcher = mockFetch();
@@ -107,6 +122,8 @@ test("authenticated Task → Run navigation renders real metadata, safe output a
   await screen.findByRole("heading", { name: "连接检查" });
   fireEvent.click(await screen.findByRole("link", { name: "run-1" }));
   const conversation = await screen.findByRole("tab", { name: "研究会话" });
+  expect(document.querySelectorAll('.primary-nav [aria-current="page"]')).toHaveLength(1);
+  expect(screen.getByRole("link", {name:"运行与结果"}).getAttribute("aria-current")).toBe("page");
   expect(
     screen.getByRole("link", { name: "所属任务" }).getAttribute("href"),
   ).toBe("#/tasks/sample-connectivity");
@@ -268,6 +285,21 @@ test("news prompt and uncertain retry survive log pagination without replacing t
         posts.push(JSON.parse(String(init.body)));
         throw new TypeError("lost response");
       }
+      if (url === "/api/overview")
+        return Response.json({
+          timezone: "Asia/Shanghai",
+          generatedAt: "2026-11-06T00:00:00Z",
+          tasks: { total: 0, manual: 0, scheduled: 0, paused: 0 },
+          todayRuns: 0,
+          running: 0,
+          queued: 0,
+          pendingReview: 0,
+          pendingPublish: 0,
+          publishFailed: 0,
+          recentFailures: 0,
+          daily: [],
+          recentRuns: [],
+        });
       if (url === "/api/tasks") return Response.json({ tasks: [newsTask] });
       if (url.includes("/events"))
         return Response.json({
@@ -332,7 +364,7 @@ test("workspace navigation marks the current page and opens real system settings
   render(<App />);
   await login();
   expect(
-    screen.getByRole("link", { name: "任务总览" }).getAttribute("aria-current"),
+    screen.getByRole("link", { name: "系统概览" }).getAttribute("aria-current"),
   ).toBe("page");
   fireEvent.click(screen.getByRole("link", { name: "模型与执行" }));
   await screen.findByRole("heading", { name: "模型与执行" });

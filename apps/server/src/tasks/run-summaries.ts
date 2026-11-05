@@ -3,7 +3,7 @@ import type { RunListQuery, RunListResponse, RunSummary, RunRecord } from '../..
 
 // Scalar lookups select exactly one child row per Run: pagination never multiplies
 // a Run when it has several Turns, reports or publication attempts.
-const joined = `SELECT r.id, r.created_at, t.name task_name, t.deleted_at task_deleted,
+export const runSummarySelect = `SELECT r.id, r.created_at, r.status run_status, t.name task_name, t.deleted_at task_deleted,
   turn.sequence turn_sequence,turn.mode turn_mode,turn.status turn_status,turn.error_code turn_error,
   report.id report_id,report.status report_status,report.title report_title,
   publication.status publication_status,publication.error_code publication_error,publication.commit_sha,
@@ -19,12 +19,12 @@ const joined = `SELECT r.id, r.created_at, t.name task_name, t.deleted_at task_d
  LEFT JOIN run_turns turn ON turn.id=(SELECT id FROM run_turns WHERE run_id=r.id ORDER BY sequence DESC,id DESC LIMIT 1)
  LEFT JOIN reports report ON report.id=(SELECT id FROM reports WHERE run_id=r.id ORDER BY created_at DESC,id DESC LIMIT 1)
  LEFT JOIN publication_records publication ON publication.id=(SELECT id FROM publication_records WHERE report_id=report.id AND target='github' ORDER BY updated_at DESC,created_at DESC,id DESC LIMIT 1)
- WHERE (? IS NULL OR r.task_id=?)`;
-export function listRunSummaries(db:DatabaseSync, query:RunListQuery, readRun:(id:string)=>RunRecord):RunListResponse {
+`;
+export function listRunSummaries(db:DatabaseSync, query:RunListQuery, readRun:(id:string)=>RunRecord, managedOnly=false):RunListResponse {
   const {limit=20,offset=0,state='all',taskId}=query;
-  const cte=`WITH summaries AS (${joined})`;
+  const cte=`WITH summaries AS (${runSummarySelect} WHERE (? IS NULL OR r.task_id=?) AND (?=0 OR r.configuration_json IS NOT NULL))`;
   const filter=" WHERE (?='all' OR state=?)";
-  const values=[taskId??null,taskId??null,state,state];
+  const values=[taskId??null,taskId??null,managedOnly?1:0,state,state];
   const total=Number(db.prepare(`${cte} SELECT count(*) total FROM summaries${filter}`).get(...values)?.total??0);
   const rows=db.prepare(`${cte} SELECT * FROM summaries${filter} ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?`).all(...values,limit,offset);
   return {total,limit,offset,runs:rows.map(row=>({
