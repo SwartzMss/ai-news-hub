@@ -15,12 +15,12 @@ function setup(){
  const request=(method,url,payload)=>app.inject({method,url:'/api'+url,headers,payload});
  async function wait(fn){for(let i=0;i<200;i++){const value=await fn();if(value)return value;await delay(5);}throw Error('timeout');}
  const db=new DatabaseSync(dir+'/news.db');
- async function execute(autoPublish=false,output=proposal){const task=(await request('POST','/tasks',{...configuration,autoPublish})).json().task;const run=(await request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'run'})).json().run;await wait(()=>adapter.calls[0]);adapter.succeed(0,'Codex finished research');await wait(()=>adapter.calls[1]);adapter.succeed(1,JSON.stringify(output));await wait(async()=>{const d=(await request('GET',`/runs/${run.id}`)).json();return !['queued','running'].includes(d.run.status)&&!d.run.publishing&&d;});return run.id;}
+ async function execute(autoPublish=false,output=proposal){const task=(await request('POST','/tasks',{...configuration,autoPublish})).json().task;const run=(await request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'run'})).json().run;await wait(()=>adapter.calls[0]);adapter.succeed(0,JSON.stringify(output));await wait(async()=>{const d=(await request('GET',`/runs/${run.id}`)).json();return !['queued','running'].includes(d.run.status)&&!d.run.publishing&&d;});return run.id;}
  return {app,adapter,db,request,wait,execute,artifacts,get fetched(){return fetched;},async close(){await app.close();db.close();rmSync(dir,{recursive:true,force:true});}};
 }
 test('Codex proposal saves directly without HTTP fetch, evidence matching, invented dates or repair Turn',async()=>{
  const s=setup();try{
-  const id=await s.execute();const detail=(await s.request('GET',`/runs/${id}`)).json();assert.equal(detail.run.status,'succeeded');assert.equal(detail.turns.length,2);assert.equal(s.adapter.calls.length,2);assert.equal(s.fetched,0);
+  const id=await s.execute();const detail=(await s.request('GET',`/runs/${id}`)).json();assert.equal(detail.run.status,'succeeded');assert.equal(detail.turns.length,1);assert.equal(s.adapter.calls.length,1);assert.equal(s.fetched,0);
   const news=(await s.request('GET',`/news/runs/${id}`)).json().newsRun;const report=(await s.request('GET',`/news/reports/${news.report_id}`)).json().report;
   const item=report.document.items[0];assert.equal(item.verification,'codex_reported');assert.equal(item.evidenceQuote,proposal.items[0].evidenceQuote);assert.equal(item.source.fetchedAt,null);assert.equal(item.source.publishedAt,null);assert.equal(item.source.eventAt,null);
   const snapshot=s.db.prepare('SELECT source_mode,candidates_json FROM codex_news_runs WHERE run_id=?').get(id);assert.equal(snapshot.source_mode,'codex_reported');assert.equal(JSON.parse(snapshot.candidates_json)[0].excerpt,'');
@@ -34,7 +34,7 @@ test('Codex proposal saves directly without HTTP fetch, evidence matching, inven
  }finally{await s.close();}
 });
 test('auto-publish accepts directly reported sources and preserves archive provenance',async()=>{
- const s=setup();try{const id=await s.execute(true);assert.equal(s.fetched,0);assert.equal(s.artifacts.length,1);assert.equal(s.artifacts[0].items[0].verification,'codex_reported');assert.equal((await s.request('GET',`/runs/${id}`)).json().turns.length,2);}finally{await s.close();}
+ const s=setup();try{const id=await s.execute(true);assert.equal(s.fetched,0);assert.equal(s.artifacts.length,1);assert.equal(s.artifacts[0].items[0].verification,'codex_reported');assert.equal((await s.request('GET',`/runs/${id}`)).json().turns.length,1);}finally{await s.close();}
 });
 test('durable source mode prevents changing Codex report flags into verified provenance',async()=>{
  const s=setup();try{
@@ -44,7 +44,7 @@ test('durable source mode prevents changing Codex report flags into verified pro
  }finally{await s.close();}
 });
 for(const [label,modify] of [['private URL',p=>p.items[0].url='https://127.0.0.1/'],['duplicate canonical sources',p=>p.items.push({...p.items[0]})],['model verification flags',p=>p.items[0].verification='source_only']])test(`direct proposal still rejects ${label}`,async()=>{
- const s=setup();try{const output=structuredClone(proposal);modify(output);const id=await s.execute(false,output);assert.equal((await s.request('GET',`/runs/${id}`)).json().run.status,'failed');assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);assert.equal(s.fetched,0);assert.equal(s.adapter.calls.length,2);}finally{await s.close();}
+ const s=setup();try{const output=structuredClone(proposal);modify(output);const id=await s.execute(false,output);assert.equal((await s.request('GET',`/runs/${id}`)).json().run.status,'failed');assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);assert.equal(s.fetched,0);assert.equal(s.adapter.calls.length,1);}finally{await s.close();}
 });
 test('migration preserves existing independently verified Codex reports and their approval hash',async()=>{
  const {migrate,migrations}=await import('../dist/apps/server/src/db/migrations.js');

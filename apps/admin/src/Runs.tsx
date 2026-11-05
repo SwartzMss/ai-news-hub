@@ -118,15 +118,20 @@ export function Runs({
                     )}
                   </td>
                   <td>
-                    {row.latest_turn?.mode === "finalize"
-                      ? row.run.configuration &&
-                        row.latest_turn.sequence >
-                          row.run.configuration.prompts.length + 1
-                        ? "来源修复"
-                        : "日报生成"
-                      : row.latest_turn
-                        ? `研究 ${row.latest_turn.sequence}${row.run.configuration ? ` / ${row.run.configuration.prompts.length}` : ""}`
-                        : "等待执行"}
+                    {row.latest_turn &&
+                    row.run.configuration &&
+                    row.latest_turn.sequence <=
+                      row.run.configuration.prompts.length
+                      ? `Prompt ${row.latest_turn.sequence} / ${row.run.configuration.prompts.length}`
+                      : row.latest_turn?.mode === "finalize"
+                        ? row.run.configuration &&
+                          row.latest_turn.sequence >
+                            row.run.configuration.prompts.length + 1
+                          ? "来源修复"
+                          : "日报生成"
+                        : row.latest_turn
+                          ? `研究 ${row.latest_turn.sequence}${row.run.configuration ? ` / ${row.run.configuration.prompts.length}` : ""}`
+                          : "等待执行"}
                   </td>
                   <td>
                     {row.run.publishing ||

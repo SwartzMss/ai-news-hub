@@ -1,6 +1,6 @@
 # Codex 新闻流水线
 
-用户配置主题和有序 Prompt，由 Codex hosted web search 搜索、打开和整理来源。每次执行建立独立 Thread，各研究轮恢复同一 Thread；最后额外执行一次结构化日报生成。最多 19 个研究 Prompt 加一轮生成，不提供配置任务的交互式追问。
+用户配置主题和有序 Prompt，由 Codex hosted web search 搜索、打开和整理来源。每次执行建立独立 Thread，各研究轮恢复同一 Thread；最后一条配置的 Prompt 直接生成结构化日报。最多 20 个配置 Prompt，不追加额外轮次，不提供配置任务的交互式追问。
 
 Backend 不再再次访问原文、解析网页或比对引文，也不再因为第三方网页 403、429 或网络超时而拒绝日报。来源内容、链接和引文由 Codex 提供。Backend 保留 JSON Schema、条目数/分类/重要性/长度、重复链接与 HTTPS 链接格式检查；这些不代表来源或事实已核验。
 
@@ -23,3 +23,5 @@ Backend 不再再次访问原文、解析网页或比对引文，也不再因为
 旧 news-research 的初始请求仍可携带 topic/input，后续 `/runs/:runId/turns` 携带 input/finalize；配置任务由 Backend 顺序运行。任务 API 见 [TASK_ENGINE.md](TASK_ENGINE.md)，发布规则见 [PUBLISHING.md](PUBLISHING.md)。
 
 新闻 Thread 只允许 hosted web search：逐个禁用继承的 MCP，禁用 Shell、应用和委派，审批仍一律拒绝。Backend 管理/发布凭据不传给 Codex；没有外部 RSS 采集入口，公共站输出 RSS 保留。
+
+当前用户配置任务严格执行 N 条 Prompt = N 次 Codex Turn。最后一条原始 Prompt 直接返回日报结构，Backend 只在开发者格式指令中提供主题/时间/Schema，不改写持久化的用户 Prompt，也不再追加“依据前面所有轮次的研究结果，生成完整日报。”。旧执行记录的额外系统轮仅作为历史保留。

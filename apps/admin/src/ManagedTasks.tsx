@@ -223,13 +223,13 @@ function TaskEditor({
               <button
                 type="button"
                 className="quiet"
-                disabled={config.prompts.length >= 19}
+                disabled={config.prompts.length >= 20}
                 onClick={() => update({ prompts: [...config.prompts, ""] })}
               >
                 添加一轮
               </button>
               <p className="field-help">
-                以上为研究轮次。完成后系统会额外整理一轮结构化日报，并按自动发布开关保存或归档。
+                按顺序执行你配置的 Prompt，最后一轮生成日报，不再额外追加轮次。
               </p>
             </div>
             <div className="form-grid">

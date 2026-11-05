@@ -141,7 +141,7 @@ export class TaskEngine {
     const runId = randomUUID(), turnId = randomUUID();
     this.transaction(() => {
       this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,configuration_json,trigger_kind) VALUES (?,?,?,?,?)').run(runId, taskId, idempotencyKey,managed?JSON.stringify(managed):null,triggerKind);
-      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, research ? 'research' : 'default');
+      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, managed?.prompts.length===1 ? 'finalize' : research ? 'research' : 'default');
       if (research) this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, now().slice(0,10), task.channel);
       this.event(runId, turnId, 'queued', {});
     });
@@ -255,8 +255,8 @@ export class TaskEngine {
     if(!config||this.stopping||this.fatal)return;
     if(run.status!=='succeeded')return;
     const sequence=this.turn(work.turnId).sequence;
-    if(sequence>config.prompts.length)return;
-    const input=config.prompts[sequence]??'依据前面所有轮次的研究结果，生成完整日报。',turnId=randomUUID(),mode=sequence===config.prompts.length?'finalize':'research';
+    if(sequence>=config.prompts.length)return;
+    const input=config.prompts[sequence]!,turnId=randomUUID(),mode=sequence+1===config.prompts.length?'finalize':'research';
     this.transaction(()=>{
       this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,?,?,?,?)').run(turnId,run.id,sequence+1,'automatic:'+String(sequence+1),input,mode);
       this.db.prepare("UPDATE task_runs SET status='queued',finished_at=NULL,turn_id=NULL,updated_at=? WHERE id=?").run(now(),run.id);

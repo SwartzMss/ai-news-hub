@@ -79,7 +79,7 @@ Schema 与迁移规则见 [数据模型](DATA_MODEL.md)。真实开发验证和�
 
 `POST /api/tasks` 新增；`PUT /api/tasks/:taskId` 全量更新；`DELETE /api/tasks/:taskId` 软删除并保留历史；`POST /api/tasks/:taskId/stop` 停止当前执行。新增/更新请求为 `{name,topic,prompts,autoPublish,schedule,timezone,status}`；`status` 为 active/paused。运行中拒绝修改或删除。
 
-计划格式：`{kind:"manual"}`、`{kind:"once",at:"UTC ISO 时间"}`、`{kind:"interval",minutes:60}`、`{kind:"daily",time:"09:00"}`、`{kind:"weekly",time:"09:00",weekday:1}`。周日为 0，默认时区 Asia/Shanghai。每个 Prompt 最多 8000 字符，1–19 轮，系统追加第 20 轮以内的日报生成。启动仍使用 `/tasks/:taskId/runs` 幂等键；配置任务不接受交互式继续 Turn，执行使用不可变配置快照。
+计划格式：`{kind:"manual"}`、`{kind:"once",at:"UTC ISO 时间"}`、`{kind:"interval",minutes:60}`、`{kind:"daily",time:"09:00"}`、`{kind:"weekly",time:"09:00",weekday:1}`。周日为 0，默认时区 Asia/Shanghai。每个 Prompt 最多 8000 字符，1–20 轮，最后一条直接生成日报，不追加额外 Prompt。启动仍使用 `/tasks/:taskId/runs` 幂等键；配置任务不接受交互式继续 Turn，执行使用不可变配置快照。
 
 用户配置任务的 paused 状态暂停定时调度，但仍允许手动启动；历史预定义任务的暂停行为不变。管理界面以单个任务主题同时填写 name/topic，旧 API 字段保持兼容。
 
@@ -90,3 +90,5 @@ Schema 与迁移规则见 [数据模型](DATA_MODEL.md)。真实开发验证和�
 历史 `source_validation_failed` / `source_repair_queued` 事件仅供查询；新任务不执行后端抓取或自动来源修复。
 
 当前日报来源模式为 `codex_reported`：Backend 不再联网核验原文或匹配引文，不再追加来源修复；保留 JSON/HTTPS 链接格式、数据关联和发布哈希检查。后端未抓取时 `fetchedAt/fetched_at` 为 null，不伪造原文发布时间或事件时间。历史 `source_only` 报告仍可读取和归档。
+
+当前用户配置任务严格执行 N 条 Prompt = N 次 Codex Turn。最后一条原始 Prompt 直接返回日报结构，Backend 只在开发者格式指令中提供主题/时间/Schema，不改写持久化的用户 Prompt，也不再追加“依据前面所有轮次的研究结果，生成完整日报。”。旧执行记录的额外系统轮仅作为历史保留。

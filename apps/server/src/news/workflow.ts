@@ -56,12 +56,15 @@ export class NewsWorkflow implements TaskWorkflow {
     if (!snapshot || snapshot.report_id)
       throw new AppError("research_run_unavailable");
     const final = context.mode === "finalize";
+    const managed=!!run.configuration;
     return {
-      input: `研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? "最终生成轮：依据本 Thread 的研究和本轮要求，返回日报 JSON。" : "研究轮：搜索、核实并回答用户，保留来源链接。"}\n用户 prompt：\n${context.input}`,
+      input: managed ? context.input : `研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? "最终生成轮：依据本 Thread 的研究和本轮要求，返回日报 JSON。" : "研究轮：搜索、核实并回答用户，保留来源链接。"}\n用户 prompt：\n${context.input}`,
       outputSchema: final ? RESEARCH_SCHEMA : undefined,
       forbidTools: true,
       webSearch: true,
-      developerInstructions: instructions,
+      developerInstructions: managed
+        ? `${instructions}\n研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? '这是用户配置的最后一个 Prompt；本轮回复使用给定日报 JSON Schema。' : '这是用户配置的研究 Prompt；保留研究结果以供后续配置的 Prompt 使用。'}`
+        : instructions,
       metadata: { topic: String(snapshot.topic), mode: context.mode },
       ...(final
         ? {
