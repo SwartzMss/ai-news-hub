@@ -2,7 +2,7 @@ import { afterEach, expect, test } from "vitest";
 import { cleanup, render, screen } from "@testing-library/react";
 import { Report, type ReportRecord } from "./Report";
 afterEach(cleanup);
-test("report distinguishes source-only facts from inference, preserves unknown dates and escapes content", () => {
+test("report distinguishes source-only facts from inference, hides absent dates and escapes content", () => {
   const report = {
     version: 1,
     document: {
@@ -30,10 +30,12 @@ test("report distinguishes source-only facts from inference, preserves unknown d
     },
   } as ReportRecord;
   render(<Report report={report} />);
-  expect(screen.getByText(/待人工审核/)).toBeTruthy();
+  expect(screen.getByText("版本 1")).toBeTruthy();
   expect(screen.getByText("分析（推断）")).toBeTruthy();
   expect(screen.getByText("来源关联：source_only · 未独立证实")).toBeTruthy();
-  expect(screen.getAllByText("未知")).toHaveLength(2);
+  expect(screen.queryByText("未知")).toBeNull();
+  expect(screen.queryByText("来源发布时间")).toBeNull();
+  expect(screen.getByText("首次抓取时间")).toBeTruthy();
   expect(document.querySelector("img")).toBeNull();
   expect(document.querySelector("a")!.hasAttribute("href")).toBe(false);
 });
@@ -74,4 +76,49 @@ test("Codex-reported sources are attributed to Codex without a backend fetch tim
   expect(screen.getByText("Codex 提供的引文")).toBeTruthy();
   expect(screen.queryByText("首次抓取时间")).toBeNull();
   expect(screen.queryByText(/来源关联：source_only/)).toBeNull();
+});
+
+test("reading preview keeps evidence collapsed, labels categories and omits empty analysis", () => {
+  const report = {
+    id: "preview",
+    version: 2,
+    status: "validated",
+    document: {
+      title: "阅读预览",
+      reportDate: "2026-11-05",
+      channel: "opensource",
+      collectedAt: "2026-11-05T00:00:00Z",
+      items: [
+        {
+          articleId: "a",
+          category: "industry",
+          importance: 5,
+          factSummary: "公司宣布业务增长。",
+          analysis: null,
+          evidenceQuote: "Original release",
+          verification: "codex_reported",
+          source: {
+            name: "example.com",
+            canonicalUrl: "https://example.com/release",
+            publishedAt: null,
+            eventAt: null,
+            fetchedAt: null,
+          },
+        },
+      ],
+    },
+  } as ReportRecord;
+  render(<Report report={report} />);
+  expect(screen.getByText("公司与产业")).toBeTruthy();
+  expect(screen.queryByText("分析（推断）")).toBeNull();
+  expect(screen.queryByText("无", { exact: true })).toBeNull();
+  expect(screen.getByText("Original release").closest("details")?.open).toBe(
+    false,
+  );
+  expect(screen.getByText("查看结构化 JSON").closest("details")?.open).toBe(
+    false,
+  );
+  expect(
+    screen.getByRole("link", { name: /example.com/ }).getAttribute("href"),
+  ).toBe("https://example.com/release");
 });
