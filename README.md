@@ -8,11 +8,11 @@
 
 ## 架构一览
 
-![架构动画：主题和多轮 prompt 经 Backend 驱动 Codex 实时搜索，最终结果通过来源校验存入 SQLite，人工批准后归档 GitHub，构建独立 Web 和输出 RSS。](docs/assets/architecture.gif)
+![架构动画：主题和多轮 prompt 经 Backend 驱动 Codex 实时搜索，最终结构化结果存入 SQLite，人工批准后归档 GitHub，构建独立 Web 和输出 RSS。](docs/assets/architecture.gif)
 
 [查看静态架构图](docs/assets/architecture.svg) · [详细架构](docs/ARCHITECTURE.md)
 
-**Task → Run → Thread → Turn**：主题和会话属于一次具体 Run，后续 prompt 恢复同一个 Thread。Codex 负责搜索、提取和分析；Backend 管理校验、状态、存储和发布。自动发布关闭时需人工批准；开启时来源校验后记录自动授权并归档，公开站只消费已授权的 JSON。SQLite、管理 Token 和运行日志留在私有服务侧。
+**Task → Run → Thread → Turn**：主题和会话属于一次具体 Run，后续 prompt 恢复同一个 Thread。Codex 负责搜索、提取和分析；Backend 管理校验、状态、存储和发布。自动发布关闭时需人工批准；开启时格式检查后记录自动授权并归档，公开站只消费已授权的 JSON。SQLite、管理 Token 和运行日志留在私有服务侧。
 
 ## 已实现的能力
 
@@ -21,7 +21,7 @@
 | Linux Backend | Node.js 22 / TypeScript、Fastify、私有 SQLite、追加式校验迁移、单实例锁、健康检查 |
 | 任务引擎 | 主题与 prompt 输入、多轮 Turn、队列/并发限制、幂等、状态/历史/日志、取消、超时、重启中断 |
 | Codex Adapter | stdio JSON-RPC、独立 Thread/Turn、只读沙箱、拒绝工具审批、子进程清理；过程消息与最终结果分离 |
-| 新闻研究 | Codex 实时搜索原文，多轮筛选/补查，显式生成 JSON；Backend 核对公开原文与精确引文后保存待审核日报 |
+| 新闻研究 | Codex 实时搜索原文，多轮筛选/补查，显式生成 JSON；Backend 检查结构和链接格式后保存 Codex 日报 |
 | 管理后台 | 独立 React/Vite `/admin/`，配置任务、Prompt 顺序、执行计划、自动发布，查看执行历史/日志/日报 |
 | GitHub 归档 | 显式配置目标与凭据，按日期/频道/版本追加 JSON，保存 SHA，幂等及失败显式重试 |
 | 公共阅读站 | 独立 React/Vite 静态首页、开源频道、详情、日期/版本归档、全站/频道 RSS；无 JS 也可阅读 |
@@ -58,9 +58,9 @@ npm start
 
 会话只保存在页面内存，刷新重新登录。配置保存在 SQLite，GitHub Token 加密且不回显，密钥自动保存在私有数据目录。备份、旧版本一次性迁移与 API 见 [设置说明](docs/SETTINGS.md)。任务或归档执行中暂不允许保存设置。
 
-在后台点击“新增任务”，配置任务主题、有序 Prompt、计划与自动发布开关。启动后自动依次执行各轮并追加日报生成轮。每轮使用账户额度；自动发布默认关闭，开启后来源校验通过即归档 GitHub。请先在“GitHub 归档”配置目标、分支和凭据。历史预定义任务仅保留兼容接口，不在任务列表展示。详见 [任务管理](docs/TASK_MANAGEMENT.md)。
+在后台点击“新增任务”，配置任务主题、有序 Prompt、计划与自动发布开关。启动后自动依次执行各轮，最后一条直接生成日报。每轮使用账户额度；自动发布默认关闭，开启后日报保存成功即归档 GitHub。请先在“GitHub 归档”配置目标、分支和凭据。历史预定义任务仅保留兼容接口，不在任务列表展示。详见 [任务管理](docs/TASK_MANAGEMENT.md)。
 
-新闻 Thread 启用 Codex 实时 web search，禁用继承的 MCP、Shell 与委派；服务账户和模型/provider 须支持搜索。最终生成时 Backend 只校验 Codex 选定的公开 HTTPS 原文，不另行采集候选。校验需要服务器能直接访问原文；暂不跟随重定向，也不执行页面 JavaScript。限制与错误处理见 [新闻流程](docs/NEWS_PIPELINE.md)。
+新闻 Thread 启用 Codex 实时 web search，禁用继承的 MCP、Shell 与委派；服务账户和模型/provider 须支持搜索。最终生成后 Backend 直接保存 Codex 的结构化内容和来源链接，仅检查格式，不再要求服务器访问原文。限制与错误处理见 [新闻流程](docs/NEWS_PIPELINE.md)。
 
 `npm run health` 检查本地服务/数据库，不验证 Codex 登录或额度。启动自动迁移，也可显式运行 `npm run db:migrate`；失败不清空旧库。SQLite 使用 Node 22 内置实验性 `node:sqlite`，保留其提示。
 
@@ -81,7 +81,7 @@ Cloudflare Pages 的 GitHub 授权、HTTPS 与自动构建尚待实际验收，�
 ## 工程结构与检查
 
 ```text
-apps/server/src/       Backend、任务引擎、Codex Adapter、SQLite、来源校验与归档
+apps/server/src/       Backend、任务引擎、Codex Adapter、SQLite、日报存储与归档
 apps/admin/            私有管理后台
 apps/web/              公共阅读组件与独立静态生成器
 packages/shared/src/   共享接口、状态与 Agent 环境白名单
@@ -133,8 +133,10 @@ npm run build
 
 任务新增/编辑使用独立模态卡片，表单内部滚动；保存或取消返回任务列表，编辑时不在列表上方展开表单。
 
-任务配置与执行结果分开：任务总览负责配置、计划和启停；独立“运行与结果”提供跨任务历史、任务/状态筛选及分页，包含已删除任务的历史。详情默认展示最终日报，Prompt 输出和日志为次级标签，支持审核与发布。研究 Prompt 完成后额外追加的日报生成标为系统步骤；来源抓取校验失败时不生成可审核/发布日报，研究记录仍可查看。
+任务配置与执行结果分开：任务总览负责配置、计划和启停；独立“运行与结果”提供跨任务历史、任务/状态筛选及分页，包含已删除任务的历史。详情默认展示最终日报，Prompt 输出和日志为次级标签，支持审核与发布。不再追加系统生成 Prompt，最后一条配置直接生成日报；历史来源抓取失败记录保留可查；新执行不再抓取原文。
 
-来源校验最多并行 3 个来源；每个来源对临时连接错误、超时或 429/502/503/504 最多尝试 2 次（单次最多 15 秒、合计约 30.5 秒且服从任务取消/超时）。403、内容格式、无效地址等不做网络重试。失败诊断保存来源 URL、安全错误码、HTTP 状态、网络错误码和尝试次数，不保存原始异常消息。
 
-用户配置任务遇到可更换来源的校验失败，会在同一 Thread 最多追加 1 次“来源修复”系统步骤，让 Codex 替换不可用原文并返回完整日报，再重新校验所有条目；总 Turn 上限仍为 20，已到上限不追加。失败的生成内容保留为未校验文本；仅全部校验成功后保存日报、按开关发布。取消、进程重启、地址安全校验失败不自动修复。旧失败记录不自动重新运行。
+
+当前日报来源模式为 `codex_reported`：Backend 不再联网核验原文或匹配引文，不再追加来源修复；保留 JSON/HTTPS 链接格式、数据关联和发布哈希检查。后端未抓取时 `fetchedAt/fetched_at` 为 null，不伪造原文发布时间或事件时间。历史 `source_only` 报告仍可读取和归档。
+
+当前用户配置任务严格执行 N 条 Prompt = N 次 Codex Turn。最后一条原始 Prompt 直接返回日报结构，Backend 只在开发者格式指令中提供主题/时间/Schema，不改写持久化的用户 Prompt，也不再追加“依据前面所有轮次的研究结果，生成完整日报。”。旧执行记录的额外系统轮仅作为历史保留。

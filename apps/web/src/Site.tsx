@@ -46,7 +46,7 @@ function Empty() {
   return (
     <section className="empty">
       <h2>还没有已发布的日报</h2>
-      <p>内容经人工允许发布并归档后，会出现在这里。</p>
+      <p>内容经已允许发布并归档后，会出现在这里。</p>
     </section>
   );
 }
@@ -181,7 +181,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   让每一条信息，都能找到它的出处。
                 </p>
                 <a href="#highlights">开始阅读 ↓</a>
-                <span>人工允许发布 · 保留来源</span>
+                <span>已允许发布 · 保留来源</span>
               </section>
               <div className="divider-title" id="highlights">
                 <h2>
@@ -263,7 +263,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
               <h1 className="article-title">{story.evidence_quote}</h1>
               <Meta story={story} />
               <p className="review-note">
-                已人工允许发布 · 仅基于所列来源整理，尚未独立事实核验。
+                已已允许发布 · 仅基于所列来源整理，尚未独立事实核验。
               </p>
               <section className="article-section">
                 <h2>来源事实摘要</h2>
@@ -291,8 +291,12 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   <dd>{stamp(story.source.published_at)}</dd>
                   <dt>事件发生时间</dt>
                   <dd>{stamp(story.source.event_at)}</dd>
-                  <dt>首次抓取时间</dt>
-                  <dd>{stamp(story.source.fetched_at)}</dd>
+                  {story.source.fetched_at && (
+                    <>
+                      <dt>首次抓取时间</dt>
+                      <dd>{stamp(story.source.fetched_at)}</dd>
+                    </>
+                  )}
                   <dt>所属日报</dt>
                   <dd>
                     <a href={`/archive/${story.report_date}/`}>
@@ -370,8 +374,10 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   </a>
                   <p className="muted">
                     来源发布：{stamp(s.source.published_at)} · 事件：
-                    {stamp(s.source.event_at)} · 抓取：
-                    {stamp(s.source.fetched_at)}
+                    {stamp(s.source.event_at)}
+                    {s.source.fetched_at && (
+                      <> · 抓取：{stamp(s.source.fetched_at)}</>
+                    )}
                   </p>
                 </section>
               ))}

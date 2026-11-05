@@ -89,13 +89,13 @@ test("managed results default to the report view and label system finalization i
           },
   );
   render(<RunDetail api={api} taskId="task-one" runId="run-one" />);
-  await screen.findByText(/日报生成阶段的原文抓取校验失败/);
+  await screen.findByText(/这条历史执行在原文抓取步骤失败/);
   expect(
     screen.getByRole("tab", { name: "最终结果" }).getAttribute("aria-selected"),
   ).toBe("true");
   fireEvent.click(screen.getByRole("tab", { name: "Prompt 记录" }));
   expect(screen.getByText("日报生成（系统步骤）")).toBeTruthy();
-  expect(screen.getByText("研究第 1 轮")).toBeTruthy();
+  expect(screen.getByText("第 1 轮 Prompt")).toBeTruthy();
   expect(screen.queryByText("第 2 轮")).toBeNull();
   expect(screen.queryByLabelText("下一轮 prompt")).toBeNull();
 });
@@ -211,4 +211,35 @@ test("task filter only offers configured user tasks, retaining legacy run histor
     filter.queryByRole("option", { name: "Codex connectivity sample" }),
   ).toBeNull();
   expect(screen.getByText("Codex connectivity sample")).toBeTruthy();
+});
+
+test("the last configured Prompt is displayed as its own round rather than an extra system step", async () => {
+  const api = vi
+    .fn()
+    .mockImplementation(async (path: string) =>
+      path.includes("/events")
+        ? { events: [] }
+        : path.startsWith("/news/runs/")
+          ? { newsRun: { report_id: null } }
+          : {
+              run: { ...run, status: "running", error_code: null },
+              turns: [
+                {
+                  id: "one",
+                  sequence: 1,
+                  mode: "finalize",
+                  status: "running",
+                  input_text: "我的完整指令",
+                  output_text: null,
+                },
+              ],
+            },
+    );
+  render(<RunDetail api={api} taskId="task-one" runId="run-one" />);
+  await screen.findByRole("tab", { name: "Prompt 记录" });
+  fireEvent.click(screen.getByRole("tab", { name: "Prompt 记录" }));
+  expect(screen.getByText("第 1 轮 Prompt")).toBeTruthy();
+  expect(screen.getByText("我的完整指令")).toBeTruthy();
+  expect(screen.queryByText("日报生成（系统步骤）")).toBeNull();
+  expect(screen.queryByText("系统步骤")).toBeNull();
 });

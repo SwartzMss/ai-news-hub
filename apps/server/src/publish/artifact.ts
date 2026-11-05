@@ -22,10 +22,10 @@ export const sha256 = (value: string) =>
 export function reviewedReport(db: DatabaseSync, id: string) {
   const row = db
     .prepare(
-      `SELECT r.*,n.source_id,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,t.status run_status
+      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,t.status run_status
  FROM reports r JOIN (
- SELECT run_id,report_id,source_id,candidates_json,collected_at,report_date,channel FROM news_runs
- UNION ALL SELECT run_id,report_id,'codex-research' source_id,candidates_json,collected_at,report_date,channel FROM codex_news_runs
+ SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel FROM news_runs
+ UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel FROM codex_news_runs
  ) n ON n.report_id=r.id AND n.run_id=r.run_id JOIN task_runs t ON t.id=r.run_id WHERE r.id=?`,
     )
     .get(id);
@@ -61,6 +61,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
           : sourceUrl(candidate.originalUrl) !== candidate.canonicalUrl || candidate.sourceName !== new URL(candidate.canonicalUrl).hostname)
       )
         throw Error();
+    if(!['verified','codex_reported'].includes(String(row.source_mode))||(row.source_id==='github-blog'&&row.source_mode!=='verified'))throw Error();
     const proposal = {
       title: document.title,
       items: document.items.map(
@@ -86,7 +87,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       runId: String(row.run_id),
       reportDate: String(row.report_date),
       collectedAt: String(row.collected_at),
-    });
+    }, row.source_mode as 'verified'|'codex_reported');
     if (!isDeepStrictEqual(rebuilt, document)) throw Error();
     const links = db
       .prepare(

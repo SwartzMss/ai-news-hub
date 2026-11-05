@@ -12,7 +12,7 @@ const identifier = (name: string) => ({ type: 'object', additionalProperties: fa
 // Registered inside the existing authenticated /api scope, never at the root.
 export function registerNewsRoutes(app: FastifyInstance, db: DatabaseSync): void {
   app.get<{ Querystring: Page }>('/news/articles', { schema: { querystring: page } }, async (request) => ({
-    articles: db.prepare('SELECT * FROM articles ORDER BY fetched_at DESC,id LIMIT ? OFFSET ?').all(request.query.limit, request.query.offset),
+    articles: db.prepare('SELECT * FROM articles ORDER BY fetched_at DESC,id LIMIT ? OFFSET ?').all(request.query.limit, request.query.offset).map(row=>row.source_mode==='codex_reported'?{...row,fetched_at:null,received_at:row.fetched_at}:row),
   }));
   app.get<{ Querystring: Page }>('/news/reports', { schema: { querystring: page } }, async (request) => ({
     reports: db.prepare(`SELECT r.id,r.run_id,r.report_date,r.channel,r.version,r.title,r.status,r.created_at

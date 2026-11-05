@@ -27,7 +27,7 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 
 后台新闻 Run 页面提供同样的两步操作。发布状态按当前仓库/分支的成功记录展示，更换目标后仍须显式点击“归档到 GitHub”；已有当前目标成功记录时，“刷新归档记录”只读取本地状态，不写远端也不重新验证远端文件存在。批准只记录人工许可，不调用 GitHub。归档未配置时返回 503 `publication_disabled`，报告仍可预览/批准。待审核直接归档返回 409 `report_not_approved`；内容或关联变动返回 `report_changed` / `approval_changed` / `report_provenance_invalid`。失败 Run、草稿、缺失来源/关联不允许批准或归档。
 
-批准前重新依据不可变候选快照重建整个日报，比较来源字段、URL 白名单、精确引文、报告日期/频道/ID、标题和文章关联；批准哈希绑定文档、版本、候选与关联。生成 JSON 始终保留原始 pending 快照，关系表记录 approved/published；批准后不可直接修改此版本，修订应显式生成新 Run/报告版本。当前没有撤销/编辑接口，只有同一受保护本地管理员身份，无多用户审批审计。
+批准前重新依据不可变候选快照重建整个日报，比较来源模式、来源字段、URL 格式、报告日期/频道/ID、标题和文章关联；批准哈希绑定文档、版本、候选与关联。生成 JSON 始终保留原始 pending 快照，关系表记录 approved/published；批准后不可直接修改此版本，修订应显式生成新 Run/报告版本。当前没有撤销/编辑接口，只有同一受保护本地管理员身份，无多用户审批审计。
 
 ## 幂等、冲突与恢复
 
@@ -53,10 +53,12 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 ## Codex 主题研究兼容
 
-当前报告来自 news-research 的显式最终生成，发布时重新校验 codex_news_runs 的原文快照、引文和关联；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。新研究主题不改变 archive v1 的 opensource 频道键。
+当前报告来自 news-research 的显式最终生成，发布时比对 codex_news_runs 的持久模式、内容快照和条目关联，不联网访问原文；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。新研究主题不改变 archive v1 的 opensource 频道键。
 
 ## 任务自动发布
 
-任务配置 `autoPublish` 默认 false。开启后执行快照中的 Prompt 全部完成且来源校验通过，Backend 记录 `approval_kind=automatic`，然后复用现有 GitHub create-only 归档；手工批准记录为 manual。GitHub Contents API 成功即生成远端提交，无需本机 Git checkout/push。部署由目标仓库已有 CI/Cloudflare 集成负责，本服务不创建此集成。
+任务配置 `autoPublish` 默认 false。开启后执行快照中的 Prompt 全部完成且结构化日报保存成功，Backend 记录 `approval_kind=automatic`，然后复用现有 GitHub create-only 归档；手工批准记录为 manual。GitHub Contents API 成功即生成远端提交，无需本机 Git checkout/push。部署由目标仓库已有 CI/Cloudflare 集成负责，本服务不创建此集成。
 
-自动推送失败保留日报、发布失败状态和安全错误码，可从发布记录重试。研究成功与发布成功分别呈现，不因一次推送错误重新消耗全部研究轮次。停止或来源验证失败不触发后续发布。
+自动推送失败保留日报、发布失败状态和安全错误码，可从发布记录重试。研究成功与发布成功分别呈现，不因一次推送错误重新消耗全部研究轮次。停止或日报格式不合格不触发后续发布。
+
+当前日报来源模式为 `codex_reported`：Backend 不再联网核验原文或匹配引文，不再追加来源修复；保留 JSON/HTTPS 链接格式、数据关联和发布哈希检查。后端未抓取时 `fetchedAt/fetched_at` 为 null，不伪造原文发布时间或事件时间。历史 `source_only` 报告仍可读取和归档。

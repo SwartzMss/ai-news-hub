@@ -42,14 +42,15 @@ export const REPORT_SCHEMA = {
       type: 'array', minItems: 1, maxItems: 10, items: {
         ...proposalItem,
         required: [...proposalItem.required, 'verification', 'source'],
+        allOf:[{if:{properties:{verification:{const:'codex_reported'}}},then:{properties:{source:{type:'object',properties:{fetchedAt:{type:'null'}}}}},else:{properties:{source:{type:'object',properties:{fetchedAt:{type:'string',format:'date-time'}}}}}}],
         properties: { ...proposalItem.properties,
-          verification: { const: 'source_only' }, source: {
+          verification: { enum: ['source_only','codex_reported'] }, source: {
             type: 'object', additionalProperties: false,
             required: ['name', 'originalUrl', 'canonicalUrl', 'publishedAt', 'eventAt', 'fetchedAt'],
             properties: {
               name: text(200), originalUrl: { type: 'string', format: 'uri', maxLength: 2048 },
               canonicalUrl: { type: 'string', format: 'uri', maxLength: 2048 },
-              publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: { type: 'string', format: 'date-time' },
+              publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: nullableTime,
             },
           },
         },

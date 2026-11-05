@@ -92,3 +92,5 @@ admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历�
 用户配置任务另存 `configuration_json`、`next_run_at`、`deleted_at`；每个 Run 保存配置快照，编辑不能改变已开始的 Prompt 或自动发布策略。批准记录新增 `approval_kind`，区分 manual/automatic。迁移追加，既有 SQL/checksum 保持不变。
 
 版本 8 追加运行时间排序及报告/发布关联查询索引，为跨任务结果列表提供稳定分页；没有改写已应用的迁移。
+
+版本9追加 codex_news_runs.source_mode 与 articles.source_mode。旧记录默认 verified，新日报快照为 codex_reported。后者的报告/归档 fetchedAt/fetched_at 为 null；articles 历史非空 fetched_at 列只存收件时间，API 按模式映射为 fetched_at=null、received_at=收件时间，不当作网页抓取时间。

@@ -38,7 +38,7 @@ export function taskInput(value: unknown): {
   if (
     !Array.isArray(v.prompts) ||
     v.prompts.length < 1 ||
-    v.prompts.length > 19 ||
+    v.prompts.length > 20 ||
     v.prompts.some((p) => typeof p !== "string" || !p.trim() || p.length > 8000)
   )
     return fail();

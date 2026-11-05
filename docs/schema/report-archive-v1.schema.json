@@ -73,6 +73,42 @@
           "verification",
           "source"
         ],
+        "allOf": [
+          {
+            "if": {
+              "properties": {
+                "verification": {
+                  "const": "codex_reported"
+                }
+              }
+            },
+            "then": {
+              "properties": {
+                "source": {
+                  "type": "object",
+                  "properties": {
+                    "fetched_at": {
+                      "type": "null"
+                    }
+                  }
+                }
+              }
+            },
+            "else": {
+              "properties": {
+                "source": {
+                  "type": "object",
+                  "properties": {
+                    "fetched_at": {
+                      "type": "string",
+                      "format": "date-time"
+                    }
+                  }
+                }
+              }
+            }
+          }
+        ],
         "properties": {
           "id": {
             "type": "string",
@@ -118,7 +154,10 @@
             "maxLength": 240
           },
           "verification": {
-            "const": "source_only"
+            "enum": [
+              "source_only",
+              "codex_reported"
+            ]
           },
           "source": {
             "type": "object",
@@ -170,8 +209,15 @@
                 ]
               },
               "fetched_at": {
-                "type": "string",
-                "format": "date-time"
+                "anyOf": [
+                  {
+                    "type": "string",
+                    "format": "date-time"
+                  },
+                  {
+                    "type": "null"
+                  }
+                ]
               }
             }
           }

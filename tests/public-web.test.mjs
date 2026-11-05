@@ -129,3 +129,17 @@ test("removed revision entries remain historical but do not replace current olde
 test('Linux archive paths cannot be disguised by backslashes in a filename',()=>{
  const s=setup();try{writeFileSync(s.dir+'/2026\\11\\03\\opensource\\v000001.json',JSON.stringify(s.doc));assert.throws(()=>readArchives(s.dir,{allowDemo:true}),/unexpected archive file/);}finally{s.close();}
 });
+
+test('Codex-reported archives render without fabricating backend fetch timestamps',async()=>{
+ const s=setup();try{
+  s.doc.items[0].verification='codex_reported';s.doc.items[0].source.fetched_at=null;s.save(s.doc);
+  const data=readArchives(s.dir,{allowDemo:true});assert.equal(data.articles[0].verification,'codex_reported');assert.equal(data.articles[0].source.fetched_at,null);
+  const {rss}=await import('../apps/web/generator/rss.mjs');const feed=rss(data,'https://example.com');
+  assert.match(feed,/来源由 Codex 提供/);assert.ok(!feed.includes('抓取：null'));assert.ok(!feed.includes('人工允许发布'));
+ }finally{s.close();}
+});
+test('archive source mode and fetch timestamp must agree',()=>{
+ for(const [verification,fetched_at]of[['source_only',null],['codex_reported','2026-11-03T00:00:00Z']]){
+  const s=setup();try{s.doc.items[0].verification=verification;s.doc.items[0].source.fetched_at=fetched_at;s.save(s.doc);assert.throws(()=>readArchives(s.dir,{allowDemo:true}),/invalid archive schema/);}finally{s.close();}
+ }
+});

@@ -6,14 +6,14 @@ export interface Story {
   fact_summary: string;
   analysis: string | null;
   evidence_quote: string;
-  verification: "source_only";
+  verification: "source_only" | "codex_reported";
   source: {
     name: string;
     original_url: string;
     canonical_url: string;
     published_at: string | null;
     event_at: string | null;
-    fetched_at: string;
+    fetched_at: string | null;
   };
   report_date: string;
   report_version: number;

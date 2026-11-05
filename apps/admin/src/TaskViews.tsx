@@ -428,9 +428,9 @@ export function RunDetail({
                   </h2>
                   <p className="result-explanation">
                     {data.run.error_code === "source_fetch_failed"
-                      ? "日报生成阶段的原文抓取校验失败。前面的研究记录仍然保留，本次没有生成可审核或发布的日报。"
+                      ? "这条历史执行在原文抓取步骤失败，未生成日报。新版本已移除后端抓取，可返回任务重新运行。"
                       : active(data.run.status)
-                        ? "预设研究 Prompt 完成后，系统会额外执行日报生成并核验来源。"
+                        ? "按顺序执行你配置的 Prompt，最后一轮直接生成并保存结构化日报。"
                         : "查看各阶段的输出和错误记录，核对后可返回任务重新执行。"}
                   </p>
                   {data.sourceFailures?.length ? (
@@ -481,12 +481,15 @@ export function RunDetail({
                   <article className="conversation-turn" key={turn.id}>
                     <div className="turn-divider">
                       <span>
-                        {managed && turn.mode === "finalize"
+                        {managed &&
+                        turn.mode === "finalize" &&
+                        turn.sequence >
+                          (data.run.configuration?.prompts.length ?? 0)
                           ? turn.idempotency_key === "source-repair"
                             ? "来源修复（系统步骤）"
                             : "日报生成（系统步骤）"
                           : managed
-                            ? `研究第 ${turn.sequence} 轮`
+                            ? `第 ${turn.sequence} 轮 Prompt`
                             : `第 ${turn.sequence} 轮`}
                       </span>
                       <Badge status={turn.status} />
@@ -662,18 +665,12 @@ export function RunDetail({
               </div>
             </div>
             <dl>
-              <dt>{managed ? "研究轮次" : "已执行轮次"}</dt>
+              <dt>{managed ? "已执行 Prompt" : "已执行轮次"}</dt>
               <dd>
                 {managed
-                  ? `${data?.turns.filter((turn) => turn.mode === "research").length ?? 0} / ${data?.run.configuration?.prompts.length ?? "—"}`
+                  ? `${data?.turns.filter((turn) => turn.sequence <= (data.run.configuration?.prompts.length ?? 0)).length ?? 0} / ${data?.run.configuration?.prompts.length ?? "—"}`
                   : `${data?.turns.length ?? "—"} / 20`}
               </dd>
-              {managed && (
-                <>
-                  <dt>系统步骤</dt>
-                  <dd>日报生成（额外执行）</dd>
-                </>
-              )}
               <dt>创建时间</dt>
               <dd>{time(data?.run.created_at)}</dd>
               <dt>当前状态</dt>
@@ -687,9 +684,7 @@ export function RunDetail({
               <Icon name="shield" size={19} />
               <p>
                 来源值得多看一眼
-                <small>
-                  结构与引文校验通过后，仍需你核对事实、时间和推断。
-                </small>
+                <small>内容与来源由 Codex 整理，可在生成后查看。</small>
               </p>
             </div>
           )}

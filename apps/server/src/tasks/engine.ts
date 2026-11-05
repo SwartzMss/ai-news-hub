@@ -1,4 +1,3 @@
-import {SourceFailures,sourceRepairInput} from '../news/source-failures.js';
 import { listRunSummaries } from './run-summaries.js';
 import type { RunListQuery, RunListResponse } from '../../../../packages/shared/src/index.js';
 import { taskInput, nextOccurrence } from './configuration.js';
@@ -16,7 +15,7 @@ interface EngineOptions {
   workflows?: ReadonlyMap<string, TaskWorkflow>;
   onAutomaticPublish?: (reportId:string,signal:AbortSignal)=>Promise<void>;
 }
-interface Work { runId: string; turnId: string; input: string; threadId?: string; sourceRepairInput?: string }
+interface Work { runId: string; turnId: string; input: string; threadId?: string }
 interface Slot { controller: AbortController; done: Promise<void>; reason?: 'cancelled' | 'timeout' | 'backend_stopped' }
 const ACTIVE = "('queued','running','waiting_approval')";
 const now = () => new Date().toISOString();
@@ -142,7 +141,7 @@ export class TaskEngine {
     const runId = randomUUID(), turnId = randomUUID();
     this.transaction(() => {
       this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,configuration_json,trigger_kind) VALUES (?,?,?,?,?)').run(runId, taskId, idempotencyKey,managed?JSON.stringify(managed):null,triggerKind);
-      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, research ? 'research' : 'default');
+      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, managed?.prompts.length===1 ? 'finalize' : research ? 'research' : 'default');
       if (research) this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, now().slice(0,10), task.channel);
       this.event(runId, turnId, 'queued', {});
     });
@@ -254,20 +253,10 @@ export class TaskEngine {
   private advance(work:Work):void {
     const config=this.runConfiguration(work.runId),run=this.run(work.runId);
     if(!config||this.stopping||this.fatal)return;
-    if(run.status==='failed' && work.sourceRepairInput) {
-      const turnId=randomUUID(),sequence=this.turn(work.turnId).sequence+1;
-      this.transaction(()=>{
-        this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,?,?,?,?)').run(turnId,run.id,sequence,'source-repair',work.sourceRepairInput!,'finalize');
-        this.db.prepare("UPDATE task_runs SET status='queued',finished_at=NULL,turn_id=NULL,error_code=NULL,updated_at=? WHERE id=?").run(now(),run.id);
-        this.event(run.id,turnId,'source_repair_queued',{system:true});
-      });
-      this.queue.push({runId:run.id,turnId,input:work.sourceRepairInput,threadId:run.thread_id!});
-      return;
-    }
     if(run.status!=='succeeded')return;
     const sequence=this.turn(work.turnId).sequence;
-    if(sequence>config.prompts.length)return;
-    const input=config.prompts[sequence]??'依据前面所有轮次的研究结果，生成完整日报。',turnId=randomUUID(),mode=sequence===config.prompts.length?'finalize':'research';
+    if(sequence>=config.prompts.length)return;
+    const input=config.prompts[sequence]!,turnId=randomUUID(),mode=sequence+1===config.prompts.length?'finalize':'research';
     this.transaction(()=>{
       this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,?,?,?,?)').run(turnId,run.id,sequence+1,'automatic:'+String(sequence+1),input,mode);
       this.db.prepare("UPDATE task_runs SET status='queued',finished_at=NULL,turn_id=NULL,updated_at=? WHERE id=?").run(now(),run.id);
@@ -345,13 +334,6 @@ export class TaskEngine {
       }
       const code = slot.reason ?? (error instanceof AgentError || error instanceof AppError ? error.code : 'event_persistence_failed');
       const status = code === 'cancelled' ? 'cancelled' : code === 'interrupted' || code === 'backend_stopped' ? 'interrupted' : 'failed';
-      if(error instanceof SourceFailures){
-        this.event(work.runId,work.turnId,'source_validation_failed',{failures:error.failures});
-        const turn=this.turn(work.turnId),config=this.runConfiguration(work.runId);
-        const repairable=new Set(['source_fetch_failed','source_timeout','source_http_failed','source_content_type','source_empty','source_too_large','source_html_too_complex']);
-        const repaired=this.db.prepare("SELECT id FROM run_turns WHERE run_id=? AND idempotency_key='source-repair'").get(work.runId);
-        if(config&&!slot.reason&&!slot.controller.signal.aborted&&turn.mode==='finalize'&&turn.sequence<20&&!repaired&&error.failures.every(f=>repairable.has(f.code)))work.sourceRepairInput=sourceRepairInput(error.failures);
-      }
       this.finish(work, status, code, proposedOutput);
     } finally { settled = true; clearTimeout(timer); }
   }

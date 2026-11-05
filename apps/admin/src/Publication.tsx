@@ -105,8 +105,9 @@ export function Publication({
               ? "待人工批准"
               : currentTargetPublished
                 ? "当前目标已归档到 GitHub"
-                : data.approval?.approval_kind === "automatic" ? "已按任务配置自动授权，等待归档" : "已人工批准，当前目标尚未归档"}{" "}
-            · 原始来源仍标记 source_only，不代表独立事实证实。
+                : data.approval?.approval_kind === "automatic"
+                  ? "已按任务配置自动授权，等待归档"
+                  : "已人工批准，当前目标尚未归档"}{" "}
           </p>
           {data.target ? (
             <p>

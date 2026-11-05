@@ -24,7 +24,7 @@ export function rss(data, siteUrl, channel) {
     data.current
       .slice(0, 100)
       .map((item) => {
-        const description = `${data.demo ? "[DEMO / 测试内容]\n" : ""}来源事实摘要：${item.fact_summary}\n分析（推断）：${item.analysis ?? "无"}\n依据引文：${item.evidence_quote}\n原文：${item.source.canonical_url}\n来源发布时间：${item.source.published_at ?? "未知"}；事件时间：${item.source.event_at ?? "未知"}；抓取：${item.source.fetched_at}\n人工允许发布，source_only，未独立事实核验。`;
+        const description = `${data.demo ? "[DEMO / 测试内容]\n" : ""}来源事实摘要：${item.fact_summary}\n分析（推断）：${item.analysis ?? "无"}\n依据引文：${item.evidence_quote}\n原文：${item.source.canonical_url}\n来源发布时间：${item.source.published_at ?? "未知"}；事件时间：${item.source.event_at ?? "未知"}${item.source.fetched_at ? `；抓取：${item.source.fetched_at}` : ""}\n已允许发布；${item.verification === "codex_reported" ? "来源由 Codex 提供" : "source_only，未独立事实核验"}。`;
         return (
           "<item><title>" +
           xml(item.evidence_quote) +

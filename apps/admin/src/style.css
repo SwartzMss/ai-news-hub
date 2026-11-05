@@ -906,6 +906,8 @@ summary {
   min-width: 0;
 }
 .tabs {
+  overflow-x: auto;
+  max-width: 100%;
   display: flex;
   gap: 25px;
   border-bottom: 1px solid #dce3ec;

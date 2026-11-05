@@ -27,8 +27,8 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,409);
   assert.equal((await s.request('POST',`/runs/${id}/turns`,{idempotencyKey:'bad',input:'manual followup'})).statusCode,409);
   s.adapter.succeed(0,'first');await s.wait(()=>s.adapter.calls[1]);assert.equal(s.adapter.calls[1].input.threadId,'thread-0');assert.ok(s.adapter.calls[1].input.input.includes(configuration.prompts[1]));
-  s.adapter.succeed(1,'second');await s.wait(()=>s.adapter.calls[2]);assert.equal(s.adapter.calls[2].input.threadId,'thread-0');assert.ok(s.adapter.calls[2].input.outputSchema);
-  s.adapter.succeed(2,JSON.stringify(proposal));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===3;});
+  assert.ok(s.adapter.calls[1].input.outputSchema);assert.equal(s.adapter.calls[1].input.input,configuration.prompts[1]);
+  s.adapter.succeed(1,JSON.stringify(proposal));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
   const report=(await s.request('GET','/news/reports')).json().reports[0];assert.equal(report.status,'validated');
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,204);
   assert.ok(!(await s.request('GET','/tasks')).json().tasks.some(t=>t.id===task.id));
@@ -58,7 +58,7 @@ for(const fails of [false,true])test(`automatic publishing ${fails?'records fail
  try{
   const task=(await s.request('POST','/tasks',{...configuration,prompts:['搜索'],autoPublish:true})).json().task;
   const id=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'publish'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[0]);s.adapter.succeed(0,'research');await s.wait(()=>s.adapter.calls[1]);s.adapter.succeed(1,JSON.stringify(proposal));
+  await s.wait(()=>s.adapter.calls[0]);assert.ok(s.adapter.calls[0].input.outputSchema);s.adapter.succeed(0,JSON.stringify(proposal));
   await s.wait(()=>writes===1);
   const report=(await s.request('GET','/news/reports')).json().reports[0];
   const inspection=(await s.request('GET',`/news/reports/${report.id}/publication`)).json();
@@ -92,7 +92,7 @@ test('due schedule starts once, skips overlaps, and restart advances missed inte
 
 test('task routes accept maximum configured prompt payload while retaining per-prompt bounds',async()=>{
  const s=setup();try{
-  const payload={...configuration,prompts:Array.from({length:19},()=> '新'.repeat(8000))};
+  const payload={...configuration,prompts:Array.from({length:20},()=> '新'.repeat(8000))};
   const created=await s.request('POST','/tasks',payload);assert.equal(created.statusCode,201);
   const id=created.json().task.id;assert.equal((await s.request('PUT',`/tasks/${id}`,payload)).statusCode,200);
   assert.equal((await s.request('POST','/tasks',{...payload,prompts:['x'.repeat(8001)]})).statusCode,400);
@@ -103,11 +103,39 @@ test('stopping publication does not record success when an adapter ignores abort
  try{
   const task=(await s.request('POST','/tasks',{...configuration,prompts:['搜索'],autoPublish:true})).json().task;
   const id=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'publish-stop'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[0]);s.adapter.succeed(0,'research');await s.wait(()=>s.adapter.calls[1]);s.adapter.succeed(1,JSON.stringify(proposal));
+  await s.wait(()=>s.adapter.calls[0]);assert.ok(s.adapter.calls[0].input.outputSchema);s.adapter.succeed(0,JSON.stringify(proposal));
   await s.wait(()=>resolvePublish);assert.equal((await s.request('GET',`/tasks/${task.id}/runs`)).json().runs[0].publishing,true);
   await s.request('POST',`/tasks/${task.id}/stop`);resolvePublish({sha:'a'.repeat(40),committedAt:'2026-11-04T00:00:00Z'});
   await s.wait(async()=>(await s.request('GET',`/runs/${id}`)).json().run.error_code==='publication_interrupted');
   const report=(await s.request('GET','/news/reports')).json().reports[0];assert.equal(report.status,'approved');
   const inspection=(await s.request('GET',`/news/reports/${report.id}/publication`)).json();assert.equal(inspection.publications[0].status,'failed');
+ }finally{await s.close();}
+});
+for(const count of [1,2,20])test(`${count} configured Prompts execute exactly ${count} original Turns with only the last structured`,async()=>{
+ const s=setup();try{
+  const prompts=Array.from({length:count},(_,i)=>`  Configured Prompt ${i+1}\nPreserve literal input  `);
+  const task=(await s.request('POST','/tasks',{...configuration,prompts})).json().task;
+  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'exact-count'})).json().run;
+  for(let index=0;index<count;index++){
+   await s.wait(()=>s.adapter.calls[index]);const input=s.adapter.calls[index].input;
+   assert.equal(input.input,prompts[index]);assert.equal(!!input.outputSchema,index===count-1);
+   assert.equal(input.threadId,index===0?undefined:'thread-0');assert.ok(input.developerInstructions.includes(configuration.topic));
+   s.adapter.succeed(index,index===count-1?JSON.stringify(proposal):`Research ${index+1}`);
+  }
+  const result=await s.wait(async()=>{const detail=(await s.request('GET',`/runs/${run.id}`)).json();return detail.run.status==='succeeded'&&detail;});
+  await delay(10);assert.equal(s.adapter.calls.length,count);assert.equal(result.turns.length,count);
+  assert.deepEqual(result.turns.map(turn=>turn.input_text),prompts);assert.deepEqual(result.turns.map(turn=>turn.mode),prompts.map((_,index)=>index===count-1?'finalize':'research'));
+  assert.equal(result.turns.some(turn=>turn.input_text==='依据前面所有轮次的研究结果，生成完整日报。'),false);
+  assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
+ }finally{await s.close();}
+});
+test('more than twenty configured Prompts is rejected and stopping the final Prompt adds no Turn',async()=>{
+ const s=setup();try{
+  assert.equal((await s.request('POST','/tasks',{...configuration,prompts:Array(21).fill('Search')})).statusCode,400);
+  const task=(await s.request('POST','/tasks',configuration)).json().task;
+  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'stop-final'})).json().run;
+  await s.wait(()=>s.adapter.calls[0]);s.adapter.succeed(0,'research');await s.wait(()=>s.adapter.calls[1]);assert.ok(s.adapter.calls[1].input.outputSchema);
+  await s.request('POST',`/tasks/${task.id}/stop`);await s.wait(async()=>(await s.request('GET',`/runs/${run.id}`)).json().run.status==='cancelled');
+  assert.equal(s.adapter.calls.length,2);assert.equal((await s.request('GET',`/runs/${run.id}`)).json().turns.length,2);assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);
  }finally{await s.close();}
 });
