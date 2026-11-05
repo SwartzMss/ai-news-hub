@@ -33,7 +33,10 @@ export function Runs({
         api<RunListResponse>("/runs?" + query, signal),
         api<{ tasks: TaskRecord[] }>("/tasks", signal),
       ]);
-      return { ...result, tasks: tasks.tasks };
+      return {
+        ...result,
+        tasks: tasks.tasks.filter((task) => task.configuration),
+      };
     },
     [api, state, taskId, page],
   );
