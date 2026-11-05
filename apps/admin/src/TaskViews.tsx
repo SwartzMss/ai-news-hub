@@ -273,10 +273,17 @@ export function RunDetail({
     );
   const load = useCallback(
     async (signal: AbortSignal) => {
-      const detail = await api<{ run: RunRecord; turns: TurnRecord[] }>(
-        `/runs/${encodeURIComponent(runId)}`,
-        signal,
-      );
+      const detail = await api<{
+        run: RunRecord;
+        turns: TurnRecord[];
+        sourceFailures?: {
+          url: string;
+          code: string;
+          httpStatus?: number;
+          networkCode?: string;
+          attempts: number;
+        }[];
+      }>(`/runs/${encodeURIComponent(runId)}`, signal);
       if (detail.run.task_id !== taskId)
         throw new ApiError(404, "run_not_in_task");
       const events = await api<{ events: RunEvent[] }>(
@@ -412,9 +419,11 @@ export function RunDetail({
                 <section className="panel">
                   <h2>
                     {active(data.run.status)
-                      ? data.turns.at(-1)?.mode === "finalize"
-                        ? "正在生成日报"
-                        : "正在执行研究 Prompt"
+                      ? data.turns.at(-1)?.idempotency_key === "source-repair"
+                        ? "正在修复来源"
+                        : data.turns.at(-1)?.mode === "finalize"
+                          ? "正在生成日报"
+                          : "正在执行研究 Prompt"
                       : "尚无可审核日报"}
                   </h2>
                   <p className="result-explanation">
@@ -424,6 +433,30 @@ export function RunDetail({
                         ? "预设研究 Prompt 完成后，系统会额外执行日报生成并核验来源。"
                         : "查看各阶段的输出和错误记录，核对后可返回任务重新执行。"}
                   </p>
+                  {data.sourceFailures?.length ? (
+                    <div className="source-failures">
+                      <h3>来源校验记录</h3>
+                      <ul>
+                        {data.sourceFailures.map((failure, index) => (
+                          <li key={index}>
+                            <span className="source-failure-url">
+                              {failure.url}
+                            </span>
+                            <p>
+                              {failure.code}
+                              {failure.httpStatus
+                                ? ` · HTTP ${failure.httpStatus}`
+                                : ""}
+                              {failure.networkCode
+                                ? ` · ${failure.networkCode}`
+                                : ""}{" "}
+                              · 已尝试 {failure.attempts} 次
+                            </p>
+                          </li>
+                        ))}
+                      </ul>
+                    </div>
+                  ) : null}
                   <button
                     className="quiet"
                     onClick={() => setTab("conversation")}
@@ -449,7 +482,9 @@ export function RunDetail({
                     <div className="turn-divider">
                       <span>
                         {managed && turn.mode === "finalize"
-                          ? "日报生成（系统步骤）"
+                          ? turn.idempotency_key === "source-repair"
+                            ? "来源修复（系统步骤）"
+                            : "日报生成（系统步骤）"
                           : managed
                             ? `研究第 ${turn.sequence} 轮`
                             : `第 ${turn.sequence} 轮`}
@@ -474,17 +509,29 @@ export function RunDetail({
                             {turn.mode === "finalize" ? "日报整理" : "研究回复"}
                           </span>
                         </span>
-                        {turn.mode === "finalize" && data.report ? (
+                        {turn.mode === "finalize" &&
+                        turn.status === "succeeded" &&
+                        data.report ? (
                           <p className="message-text">
-                            日报已生成，可以在下方核对来源与内容。
+                            日报已生成，可在“最终结果”查看来源与内容。
                           </p>
                         ) : (
-                          <pre className="message-text">
-                            {turn.output_text ??
-                              (active(turn.status)
-                                ? "正在研究中…"
-                                : "暂无输出")}
-                          </pre>
+                          <div>
+                            {managed &&
+                              turn.mode === "finalize" &&
+                              turn.status === "failed" &&
+                              turn.output_text && (
+                                <p className="muted">
+                                  以下生成内容未通过校验，仅供排查，不是可发布日报。
+                                </p>
+                              )}
+                            <pre className="message-text">
+                              {turn.output_text ??
+                                (active(turn.status)
+                                  ? "正在研究中…"
+                                  : "暂无输出")}
+                            </pre>
+                          </div>
                         )}
                         {turn.error_code && (
                           <p className="inline-error">{turn.error_code}</p>

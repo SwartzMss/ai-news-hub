@@ -5,6 +5,7 @@ import {
   render,
   screen,
   waitFor,
+  within,
 } from "@testing-library/react";
 import { Runs } from "./Runs";
 import { RunDetail } from "./TaskViews";
@@ -100,32 +101,73 @@ test("managed results default to the report view and label system finalization i
 });
 
 test("manual publication in progress is shown independently of the completed research run", async () => {
-  const api = vi
-    .fn()
-    .mockImplementation(async (path: string) =>
-      path === "/tasks"
-        ? { tasks: [] }
-        : {
-            runs: [
-              {
-                run: {
-                  ...run,
-                  status: "succeeded",
-                  error_code: null,
-                  publishing: false,
-                },
-                task_name: "研究",
-                task_deleted: false,
-                state: "running",
-                latest_turn: null,
-                report: { id: "report", status: "approved", title: "日报" },
-                publication: { status: "publishing", error_code: null },
+  const api = vi.fn().mockImplementation(async (path: string) =>
+    path === "/tasks"
+      ? { tasks: [] }
+      : {
+          runs: [
+            {
+              run: {
+                ...run,
+                status: "succeeded",
+                error_code: null,
+                publishing: false,
               },
-            ],
-            total: 1,
-          },
-    );
+              task_name: "研究",
+              task_deleted: false,
+              state: "running",
+              latest_turn: null,
+              report: { id: "report", status: "approved", title: "日报" },
+              publication: { status: "publishing", error_code: null },
+            },
+          ],
+          total: 1,
+        },
+  );
   render(<Runs api={api} />);
   await screen.findByText("正在发布");
   expect(screen.queryByText("成功")).toBeNull();
+});
+
+test("source failure diagnostics expose bounded details and keep the repair stage distinct", async () => {
+  const api = vi.fn().mockImplementation(async (path: string) =>
+    path.includes("/events")
+      ? { events: [] }
+      : path.startsWith("/news/runs/")
+        ? { newsRun: { report_id: null } }
+        : {
+            run,
+            sourceFailures: [
+              {
+                url: "https://example.com/blocked",
+                code: "source_http_failed",
+                httpStatus: 403,
+                attempts: 1,
+              },
+            ],
+            turns: [
+              {
+                id: "repair",
+                sequence: 3,
+                idempotency_key: "source-repair",
+                mode: "finalize",
+                status: "failed",
+                input_text: "修复来源",
+                output_text: "未通过的候选JSON",
+              },
+            ],
+          },
+  );
+  render(<RunDetail api={api} taskId="task-one" runId="run-one" />);
+  await screen.findByText("https://example.com/blocked");
+  expect(screen.getByText(/HTTP 403/)).toBeTruthy();
+  expect(screen.getByText(/已尝试 1 次/)).toBeTruthy();
+  fireEvent.click(screen.getByRole("tab", { name: "Prompt 记录" }));
+  expect(screen.getByText("来源修复（系统步骤）")).toBeTruthy();
+  expect(
+    within(screen.getByRole("tabpanel", { name: "Prompt 记录" })).getByText(
+      "未通过的候选JSON",
+    ),
+  ).toBeTruthy();
+  expect(screen.getByText(/以下生成内容未通过校验/)).toBeTruthy();
 });

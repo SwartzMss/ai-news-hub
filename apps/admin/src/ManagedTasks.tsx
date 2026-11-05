@@ -229,7 +229,8 @@ function TaskEditor({
                 添加一轮
               </button>
               <p className="field-help">
-                以上为研究轮次。完成后系统会额外执行“日报生成”，核验来源并保存结果。
+                以上为研究轮次。系统会额外生成日报并核验来源；来源不可用时，最多再执行一次来源修复（总计不超过
+                20 轮）。
               </p>
             </div>
             <div className="form-grid">

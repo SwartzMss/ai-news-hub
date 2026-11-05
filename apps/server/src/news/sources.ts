@@ -63,14 +63,67 @@ export async function resolveSourceAddress(host: string, signal: AbortSignal, re
   } finally { signal.removeEventListener('abort',abort); }
 }
 
-export async function verifySource(raw: string, fetcher: SourceFetch, signal: AbortSignal, now = () => new Date()): Promise<ArticleCandidate> {
-  const canonical = sourceUrl(raw);
+export interface SourceFailureDiagnostic {
+  url: string; code: string; httpStatus?: number; networkCode?: string; attempts: number;
+}
+export class SourceValidationError extends AppError {
+  constructor(public readonly diagnostic: SourceFailureDiagnostic) { super(diagnostic.code); }
+}
+export function sourceFailureDiagnostic(error: unknown): SourceFailureDiagnostic | undefined {
+  return error instanceof SourceValidationError ? {...error.diagnostic} : undefined;
+}
+const sourceErrorCodes = new Set(['source_http_failed','source_content_type','source_empty','source_too_large','source_html_too_complex','invalid_source_address','invalid_source_url','source_cancelled','source_timeout','source_fetch_failed']);
+const transientNetwork = new Set(['ECONNRESET','ECONNREFUSED','ETIMEDOUT','EPIPE','ENETUNREACH','EHOSTUNREACH','EAI_AGAIN','UND_ERR_CONNECT_TIMEOUT','UND_ERR_HEADERS_TIMEOUT','UND_ERR_BODY_TIMEOUT','UND_ERR_SOCKET']);
+const diagnosticNetwork = new Set([...transientNetwork,'ENOTFOUND','CERT_HAS_EXPIRED','DEPTH_ZERO_SELF_SIGNED_CERT','UNABLE_TO_VERIFY_LEAF_SIGNATURE','ERR_TLS_CERT_ALTNAME_INVALID']);
+function networkCode(error: unknown): string | undefined {
+  let value=error;
+  for(let i=0;i<5&&value&&typeof value==='object';i++){
+    const object=value as {code?:unknown;cause?:unknown};
+    if(typeof object.code==='string'&&diagnosticNetwork.has(object.code))return object.code;
+    value=object.cause;
+  }
+  return undefined;
+}
+function retryAfter(value:string|null,now:()=>Date):number|undefined {
+  if(!value)return 250;
+  const milliseconds=/^\d+$/.test(value.trim())?Number(value.trim())*1000:Date.parse(value)-now().getTime();
+  // A long server backoff is not permission to exceed the bounded verification window.
+  return Number.isFinite(milliseconds)&&milliseconds>=0&&milliseconds<=2000?Math.max(250,milliseconds):undefined;
+}
+async function retryDelay(milliseconds:number,signal:AbortSignal):Promise<void>{
+  if(signal.aborted)return;
+  await new Promise<void>(resolve=>{
+    const finish=()=>{clearTimeout(timer);signal.removeEventListener('abort',finish);resolve();};
+    const timer=setTimeout(finish,milliseconds);
+    signal.addEventListener('abort',finish,{once:true});
+  });
+}
+export async function verifySource(raw:string,fetcher:SourceFetch,signal:AbortSignal,now=()=>new Date()):Promise<ArticleCandidate>{
+  const canonical=sourceUrl(raw);
+  if(signal.aborted)throw new SourceValidationError({url:canonical,code:'source_cancelled',attempts:0});
+  const overallDeadline=Date.now()+30500;
+  for(let attempt=1;attempt<=2;attempt++){
+    let retryMilliseconds:number|undefined;
+    try{return await verifySourceAttempt(raw,canonical,fetcher,signal,now,attempt,Math.min(15000,Math.max(1,overallDeadline-Date.now())),delay=>{retryMilliseconds=delay;});}
+    catch(error){
+      const diagnostic=sourceFailureDiagnostic(error);
+      if(signal.aborted)throw new SourceValidationError({url:canonical,code:'source_cancelled',attempts:attempt});
+      const transient=diagnostic&&(diagnostic.code==='source_timeout'||diagnostic.networkCode&&transientNetwork.has(diagnostic.networkCode)||diagnostic.httpStatus!==undefined&&[429,502,503,504].includes(diagnostic.httpStatus));
+      if(attempt===2||!transient||retryMilliseconds===undefined)throw error;
+      await retryDelay(retryMilliseconds,signal);
+      if(signal.aborted)throw new SourceValidationError({url:canonical,code:'source_cancelled',attempts:attempt});
+    }
+  }
+  throw new AppError('source_fetch_failed');
+}
+async function verifySourceAttempt(raw: string, canonical:string, fetcher: SourceFetch, signal: AbortSignal, now: () => Date,attempt:number,timeoutMs:number,setRetry:(milliseconds:number|undefined)=>void): Promise<ArticleCandidate> {
+  setRetry(250);
   if (signal.aborted) throw new AppError('source_cancelled');
-  const deadline = AbortSignal.any([signal, AbortSignal.timeout(15000)]);
+  const deadline = AbortSignal.any([signal, AbortSignal.timeout(timeoutMs)]);
   let response;
   try {
     response = await fetcher(canonical, { method: 'GET', redirect: 'manual', signal: deadline, headers: { accept: 'text/html', 'user-agent': 'AI-News-Hub/0.1 source-verification' } });
-    if (response.status !== 200) throw new AppError('source_http_failed');
+    if (response.status !== 200) {setRetry(retryAfter(response.headers.get('retry-after'),now));throw new AppError('source_http_failed');}
     const contentType = response.headers.get('content-type') ?? '';
     if (!/^text\/html(?:;|$)/i.test(contentType) || /charset\s*=\s*(?!["']?utf-8(?:["']?(?:\s|;|$)))/i.test(contentType)) throw new AppError('source_content_type');
     if (!response.body) throw new AppError('source_empty');
@@ -107,7 +160,8 @@ export async function verifySource(raw: string, fetcher: SourceFetch, signal: Ab
     return { id: createHash('sha256').update(canonical).digest('hex'), title, originalUrl: raw, canonicalUrl: canonical, sourceName: new URL(canonical).hostname,
       publishedAt: times.length === 1 ? times[0] : null, eventAt: null, fetchedAt: now().toISOString(), excerpt };
   } catch (error) {
-    if (deadline.aborted) throw new AppError(signal.aborted ? 'source_cancelled' : 'source_timeout');
-    throw error instanceof AppError ? error : new AppError('source_fetch_failed');
+    const code=deadline.aborted ? signal.aborted ? 'source_cancelled' : 'source_timeout' : error instanceof AppError && sourceErrorCodes.has(error.code) ? error.code : 'source_fetch_failed';
+    const network=networkCode(error);
+    throw new SourceValidationError({url:canonical,code,attempts:attempt,...(response?.status?{httpStatus:response.status}:{}),...(network?{networkCode:network}:{})});
   } finally { if (response?.body && !response.body.locked) await response.body.cancel().catch(() => {}); }
 }
