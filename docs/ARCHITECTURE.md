@@ -98,3 +98,5 @@ Agent 与探针使用环境允许列表，不继承 Backend 管理/发布凭据�
 当前日报来源模式为 `codex_reported`：Backend 不再联网核验原文或匹配引文，不再追加来源修复；保留 JSON/HTTPS 链接格式、数据关联和发布哈希检查。后端未抓取时 `fetchedAt/fetched_at` 为 null，不伪造原文发布时间或事件时间。历史 `source_only` 报告仍可读取和归档。
 
 当前用户配置任务严格执行 N 条 Prompt = N 次 Codex Turn。最后一条原始 Prompt 直接返回日报结构，Backend 只在开发者格式指令中提供主题/时间/Schema，不改写持久化的用户 Prompt，也不再追加“依据前面所有轮次的研究结果，生成完整日报。”。旧执行记录的额外系统轮仅作为历史保留。
+
+每轮执行超时的新安装默认值为10分钟；管理后台按分钟显示和编辑，Backend/API/SQLite保持毫秒存储，已有自定义值不被重置。

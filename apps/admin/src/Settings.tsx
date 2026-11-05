@@ -216,19 +216,20 @@ export function Settings({
                 </div>
                 <div className="form-grid three-columns">
                   <div className="field">
-                    <label htmlFor="run-timeout">每轮超时（毫秒）</label>
+                    <label htmlFor="run-timeout">每轮超时（分钟）</label>
                     <input
                       id="run-timeout"
                       type="number"
-                      min={1000}
-                      max={3600000}
-                      value={data.execution.timeoutMs}
+                      min={1 / 60}
+                      max={60}
+                      step="any"
+                      value={data.execution.timeoutMs / 60000}
                       onChange={(e) =>
                         setData({
                           ...data,
                           execution: {
                             ...data.execution,
-                            timeoutMs: Number(e.target.value),
+                            timeoutMs: Math.round(Number(e.target.value) * 60000),
                           },
                         })
                       }
