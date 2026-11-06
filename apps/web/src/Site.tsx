@@ -1,429 +1,599 @@
 import type { PublicData, Page, Story, Report } from "./types";
-const category: Record<string, string> = {
-  ai: "AI",
-  opensource: "开源",
+
+const categories: Record<string, string> = {
+  ai: "AI 与大模型",
+  opensource: "开源项目",
   developer_tools: "开发工具",
-  security: "安全",
-  industry: "产业",
-  other: "其他",
+  security: "安全动态",
+  industry: "公司与产业",
+  other: "综合资讯",
 };
-const stamp = (s: string | null) =>
-  s
-    ? s.replace("T", " ").replace(".000Z", " UTC").replace("Z", " UTC")
-    : "未知";
 const reportPath = (r: Report) =>
   `/archive/${r.report_date}/opensource/v${String(r.version).padStart(6, "0")}/`;
-function Meta({ story }: { story: Story }) {
+const dateLabel = (value: string) =>
+  new Intl.DateTimeFormat("zh-CN", {
+    timeZone: "UTC",
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  }).format(new Date(value + "T00:00:00Z"));
+const timeLabel = (value: string) =>
+  new Date(value).toLocaleString("zh-CN", {
+    timeZone: "Asia/Shanghai",
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  });
+// Presentation only: keep the archived wording and original quote unchanged.
+function lead(story: Story) {
+  const index = story.fact_summary.search(/[。；\n]/u);
+  return index > 0
+    ? {
+        title: story.fact_summary.slice(0, index),
+        rest: story.fact_summary.slice(index + 1).trim(),
+      }
+    : { title: story.fact_summary, rest: "" };
+}
+function counts(items: Story[]) {
+  return Object.entries(
+    items.reduce<Record<string, number>>((result, item) => {
+      result[item.category] = (result[item.category] ?? 0) + 1;
+      return result;
+    }, {}),
+  ).sort((a, b) => b[1] - a[1]);
+}
+function Source({ story }: { story: Story }) {
   return (
-    <div className="meta">
-      <span>{story.source.name}</span>
-      <span>来源发布 {stamp(story.source.published_at)}</span>
-    </div>
+    <details className="source-details">
+      <summary>来源与引文</summary>
+      <blockquote>{story.evidence_quote}</blockquote>
+      <a
+        href={story.source.canonical_url}
+        target="_blank"
+        rel="noopener noreferrer"
+      >
+        {story.source.name} · 查看原文 ↗
+      </a>
+      {(story.source.published_at ||
+        story.source.event_at ||
+        story.source.fetched_at) && (
+        <dl>
+          {story.source.published_at && (
+            <>
+              <dt>来源发布时间</dt>
+              <dd>
+                <time dateTime={story.source.published_at}>
+                  {timeLabel(story.source.published_at)}
+                </time>
+              </dd>
+            </>
+          )}
+          {story.source.event_at && (
+            <>
+              <dt>事件时间</dt>
+              <dd>
+                <time dateTime={story.source.event_at}>
+                  {timeLabel(story.source.event_at)}
+                </time>
+              </dd>
+            </>
+          )}
+          {story.source.fetched_at && (
+            <>
+              <dt>抓取时间</dt>
+              <dd>
+                <time dateTime={story.source.fetched_at}>
+                  {timeLabel(story.source.fetched_at)}
+                </time>
+              </dd>
+            </>
+          )}
+        </dl>
+      )}
+      {story.verification === "codex_reported" && (
+        <p className="source-attribution">来源由 Codex 提供</p>
+      )}
+    </details>
   );
 }
-function Row({ story }: { story: Story }) {
+function Row({
+  story,
+  index,
+  level = 2,
+}: {
+  story: Story;
+  index: number;
+  level?: 2 | 3;
+}) {
+  const Heading = level === 3 ? "h3" : "h2",
+    text = lead(story);
   return (
-    <article className="entry">
-      <div className="entry-content">
-        <div className="kicker">
-          {category[story.category] ?? story.category}{" "}
-          <span>· {story.report_date}</span>
+    <article className="news-row">
+      <span className="news-number" aria-hidden="true">
+        {String(index + 1).padStart(2, "0")}
+      </span>
+      <div className="news-content">
+        <div className="news-meta">
+          <span className="category-label">
+            {categories[story.category] ?? story.category}
+          </span>
+          <span>{story.source.name}</span>
         </div>
-        <h2>
-          <a href={`/news/${story.key}/`}>{story.evidence_quote}</a>
-        </h2>
-        <p>{story.fact_summary}</p>
-        <Meta story={story} />
-      </div>
-      <div className="priority">
-        <strong>{story.importance}</strong>
-        <span>/ 5</span>
+        <Heading>
+          <a href={`/news/${story.key}/`}>{text.title}</a>
+        </Heading>
+        {text.rest && <p className="news-summary">{text.rest}</p>}
+        <div className="news-footer">
+          <a href={`/news/${story.key}/`}>查看详情</a>
+          <a
+            href={story.source.canonical_url}
+            target="_blank"
+            rel="noopener noreferrer"
+          >
+            原文 ↗
+          </a>
+        </div>
       </div>
     </article>
   );
 }
 function Empty() {
   return (
-    <section className="empty">
+    <div className="empty">
       <h2>还没有已发布的日报</h2>
-      <p>内容经已允许发布并归档后，会出现在这里。</p>
-    </section>
-  );
-}
-function DateList({ reports }: { reports: Report[] }) {
-  return (
-    <div className="date-list">
-      {reports.map((r) => (
-        <article key={r.report_id}>
-          <div className="kicker">{r.report_date} · 开源生态</div>
-          <h2>
-            <a href={`/archive/${r.report_date}/`}>{r.title}</a>
-          </h2>
-          <p>
-            {r.items.length} 条来源 · 当前版本 {r.version} ·{" "}
-            <a href={reportPath(r)}>版本记录</a>
-          </p>
-        </article>
-      ))}
     </div>
   );
 }
+function EditionLinks({
+  reports,
+  versioned = false,
+}: {
+  reports: Report[];
+  versioned?: boolean;
+}) {
+  return (
+    <ol className="edition-links">
+      {reports.map((r) => (
+        <li key={r.report_id}>
+          <a href={versioned ? reportPath(r) : `/archive/${r.report_date}/`}>
+            <time dateTime={r.report_date}>{dateLabel(r.report_date)}</time>
+            <strong>{r.title}</strong>
+            <span>{r.items.length} 条</span>
+          </a>
+        </li>
+      ))}
+    </ol>
+  );
+}
 export function Site({ data, page }: { data: PublicData; page: Page }) {
-  const latestDate = data.latest[0]?.report_date;
-  const today = data.current.filter((x) => x.report_date === latestDate);
-  const story = data.articles.find((x) => x.key === page.key);
-  const daily = page.date
-    ? data.latest.find((r) => r.report_date === page.date)
-    : undefined;
-  const revision =
+  const latest = data.latest[0],
+    latestDate = latest?.report_date;
+  const story = data.articles.find((item) => item.key === page.key);
+  const daily = data.latest.find((r) => r.report_date === page.date);
+  const selected =
     page.kind === "report"
       ? data.reports.find(
           (r) => r.report_date === page.date && r.version === page.version,
         )
-      : undefined;
-  const selected = revision ?? daily;
+      : daily;
   const selectedStories = selected?.items.map((item) => ({
     ...item,
-    key: data.articles.find((x) => x.id === item.id)!.key,
+    key: data.articles.find((s) => s.id === item.id)!.key,
     report_date: selected.report_date,
     report_version: selected.version,
     first_approved_at: selected.approved_at,
   }));
+  const latestStories =
+    latest?.items.map((item) => ({
+      ...item,
+      key: data.articles.find((s) => s.id === item.id)!.key,
+      report_date: latest.report_date,
+      report_version: latest.version,
+      first_approved_at: latest.approved_at,
+    })) ?? [];
+  const owner = story
+    ? data.reports.find(
+        (r) =>
+          r.report_date === story.report_date &&
+          r.version === story.report_version,
+      )
+    : undefined;
+  const nav =
+    page.kind === "home" ||
+    ((page.kind === "article" || page.kind === "date") &&
+      (story?.report_date ?? selected?.report_date) === latestDate)
+      ? "latest"
+      : page.kind === "channel"
+        ? "all"
+        : "archive";
+  const months = [
+    ...new Set(data.latest.map((r) => r.report_date.slice(0, 7))),
+  ];
+  const versions = selected
+    ? data.reports.filter((r) => r.report_date === selected.report_date)
+    : [];
+  const categoryCounts = counts(
+    page.kind === "home" ? latestStories : data.current,
+  );
+  const aside = selectedStories?.length ? (
+    <aside className="reading-aside">
+      <nav aria-label="本期目录">
+        <h2>本期目录</h2>
+        <ol>
+          {selectedStories.map((item, i) => (
+            <li key={item.id}>
+              <a href={`#story-${item.key}`}>
+                <span>{String(i + 1).padStart(2, "0")}</span>
+                {lead(item).title}
+              </a>
+            </li>
+          ))}
+        </ol>
+      </nav>
+    </aside>
+  ) : page.kind === "home" && data.latest.length > 1 ? (
+    <aside className="reading-aside">
+      <h2>往期简报</h2>
+      <EditionLinks reports={data.latest.slice(1, 6)} />
+      <a className="aside-more" href="/archive/">
+        全部往期 →
+      </a>
+    </aside>
+  ) : page.kind === "article" && owner ? (
+    <aside className="reading-aside">
+      <h2>所属简报</h2>
+      <EditionLinks
+        reports={[owner]}
+        versioned={
+          owner.version !==
+          data.latest.find((r) => r.report_date === owner.report_date)?.version
+        }
+      />
+      <a
+        className="aside-more"
+        href={
+          owner.version ===
+          data.latest.find((r) => r.report_date === owner.report_date)?.version
+            ? `/archive/${owner.report_date}/`
+            : reportPath(owner)
+        }
+      >
+        阅读整期 →
+      </a>
+    </aside>
+  ) : null;
   return (
-    <div className="shell">
+    <div className="site-shell">
       <a className="skip-link" href="#content">
         跳到正文
       </a>
       <header className="masthead">
-        <a className="brand" href="/">
-          <span className="brand-mark">
-            N<i />
+        <a className="brand" href="/" aria-label="AI News Hub 首页">
+          <span className="brand-mark" aria-hidden="true">
+            N<span />
           </span>
-          <span>
-            AI <em>News</em> Hub
-          </span>
+          <span>AI News Hub</span>
         </a>
-        <span className="header-note">
-          来源可追溯 <b>·</b> 把判断留给你
-        </span>
+        <nav className="site-nav" aria-label="主导航">
+          <a href="/" aria-current={nav === "latest" ? "page" : undefined}>
+            最新简报
+          </a>
+          <a
+            href="/channel/opensource/"
+            aria-current={nav === "all" ? "page" : undefined}
+          >
+            全部资讯
+          </a>
+          <a
+            href="/archive/"
+            aria-current={nav === "archive" ? "page" : undefined}
+          >
+            往期归档
+          </a>
+        </nav>
         <div className="header-actions">
-          <button id="theme-toggle" aria-label="切换明暗主题" type="button">
+          <a href="/rss/all.xml">RSS 订阅</a>
+          <button
+            id="theme-toggle"
+            aria-label="切换明暗主题"
+            aria-pressed="false"
+            type="button"
+          >
             ◐
           </button>
-          <a className="subscribe" href="/rss/all.xml">
-            ◔ 订阅 RSS
-          </a>
         </div>
       </header>
-      {data.demo && (
-        <p className="demo-banner" role="note">
-          演示 / 测试站点：以下内容只用于验证页面、历史归档与
-          RSS，不作为正式新闻发布。
-        </p>
-      )}
-      <nav className="mobile-nav" aria-label="移动导航">
-        <a href="/">今日精选</a>
-        <a href="/channel/opensource/">开源生态</a>
-        <a href="/archive/">历史归档</a>
-      </nav>
-      <div className="app-grid">
-        <aside className="leftcol">
-          <div className="section-label">探索内容</div>
-          <nav aria-label="主导航">
-            <a className={page.kind === "home" ? "active" : ""} href="/">
-              ◈ 今日精选
-            </a>
-            <a
-              className={page.kind === "channel" ? "active" : ""}
-              href="/channel/opensource/"
-            >
-              ⌘ 开源生态
-            </a>
-            <a
-              className={
-                ["archive", "date", "report"].includes(page.kind)
-                  ? "active"
-                  : ""
-              }
-              href="/archive/"
-            >
-              ◷ 历史归档
-            </a>
-          </nav>
-          <div className="side-card">
-            <strong>少一点噪声，多一点依据。</strong>
-            <p>摘要、分析与来源分开展示。重要信息，始终回到原文核对。</p>
-            <a href="/rss/opensource.xml">订阅开源频道 →</a>
-          </div>
-          <p className="side-bottom">静态阅读 · 无需登录</p>
-        </aside>
-        <main id="content" className="center">
-          {page.kind === "home" && (
-            <>
-              <div className="toprow">
-                <span>
-                  每日精选 / <b>Daily brief</b>
-                </span>
-                <span className="mini-tag">
-                  {latestDate ?? "等待第一份日报"}
-                </span>
-              </div>
-              <section className="hero">
-                <div className="eyebrow">A CLEARER VIEW OF WHAT MATTERS</div>
-                <h1>
-                  每天发生很多事。
-                  <br />
-                  重要的，值得看清。
-                </h1>
-                <p>
-                  精选开发者生态动态，区分来源事实与 AI 推断。
-                  <br />
-                  让每一条信息，都能找到它的出处。
-                </p>
-                <a href="#highlights">开始阅读 ↓</a>
-                <span>已允许发布 · 保留来源</span>
-              </section>
-              <div className="divider-title" id="highlights">
-                <h2>
-                  重点关注 <em>/</em> Editor’s pick
-                </h2>
-                <span>重要性排序</span>
-              </div>
-              {today[0] ? (
-                <>
-                  <section className="feature">
-                    <div>
-                      <div className="kicker">
-                        {category[today[0].category]} · {today[0].source.name}
-                      </div>
-                      <h2>
-                        <a href={`/news/${today[0].key}/`}>
-                          {today[0].evidence_quote}
-                        </a>
-                      </h2>
-                      <p>{today[0].fact_summary}</p>
-                      <a className="text-link" href={`/news/${today[0].key}/`}>
-                        阅读摘要与来源 →
-                      </a>
-                    </div>
-                    <div className="score">
-                      <span>AI PRIORITY</span>
-                      <strong>
-                        {today[0].importance}
-                        <small>/5</small>
-                      </strong>
-                      <span>重要性 · 非热度</span>
-                    </div>
-                  </section>
-                  <div className="divider-title">
-                    <h2>更多值得关注</h2>
-                    <a href="/archive/">历史日报 →</a>
+      {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
+      <div className={`reading-layout${aside ? " has-aside" : ""}`}>
+        <main id="content">
+          {page.kind === "home" &&
+            (latest ? (
+              <>
+                <header className="issue-header latest-header">
+                  <div className="issue-topline">
+                    <span className="issue-label">最新一期</span>
+                    <time dateTime={latest.report_date}>
+                      {dateLabel(latest.report_date)}
+                    </time>
                   </div>
-                  {today.slice(1).map((s) => (
-                    <Row key={s.key} story={s} />
+                  <h1>{latest.title}</h1>
+                  <div className="issue-meta">
+                    <span>{latest.items.length} 条资讯</span>
+                    <a href={`/archive/${latest.report_date}/`}>阅读整期</a>
+                    <a href="/archive/">查看往期</a>
+                  </div>
+                </header>
+                <nav className="category-links" aria-label="本期分类">
+                  {categoryCounts.map(([key, n]) => (
+                    <a key={key} href={`/channel/opensource/#category-${key}`}>
+                      {categories[key] ?? key}
+                      <span>{n}</span>
+                    </a>
                   ))}
-                  {today.length === 1 && (
-                    <p className="muted">
-                      这一期共收录 1 条来源，更多历史内容可在归档中查看。
-                    </p>
-                  )}
-                </>
-              ) : (
+                </nav>
+                <div className="news-list">
+                  {latestStories.map((item, i) => (
+                    <Row key={item.id} story={item} index={i} />
+                  ))}
+                </div>
+              </>
+            ) : (
+              <>
+                <h1>最新简报</h1>
                 <Empty />
+              </>
+            ))}
+          {page.kind === "archive" && (
+            <>
+              <header className="page-heading">
+                <p className="section-kicker">按日期归档</p>
+                <h1>往期简报</h1>
+                <span>{data.latest.length} 期</span>
+              </header>
+              {!data.latest.length ? (
+                <Empty />
+              ) : (
+                months.map((month) => (
+                  <section className="archive-month" key={month}>
+                    <h2>{month.replace("-", " 年 ")} 月</h2>
+                    <ol>
+                      {data.latest
+                        .filter((r) => r.report_date.startsWith(month))
+                        .map((r) => (
+                          <li className="archive-edition" key={r.report_id}>
+                            <a href={`/archive/${r.report_date}/`}>
+                              <div className="archive-date">
+                                <strong>{r.report_date.slice(8)}</strong>
+                                <span>
+                                  {new Intl.DateTimeFormat("zh-CN", {
+                                    timeZone: "UTC",
+                                    weekday: "long",
+                                  }).format(
+                                    new Date(r.report_date + "T00:00:00Z"),
+                                  )}
+                                </span>
+                              </div>
+                              <div className="archive-edition-content">
+                                <div className="archive-labels">
+                                  {r.report_date === latestDate && (
+                                    <span className="issue-label">
+                                      最新一期
+                                    </span>
+                                  )}
+                                  <span>{r.items.length} 条资讯</span>
+                                </div>
+                                <h3>{r.title}</h3>
+                                <div className="archive-categories">
+                                  {counts(r.items).map(([key, n]) => (
+                                    <span key={key}>
+                                      {categories[key] ?? key} {n}
+                                    </span>
+                                  ))}
+                                </div>
+                              </div>
+                              <span className="edition-open" aria-hidden="true">
+                                →
+                              </span>
+                            </a>
+                          </li>
+                        ))}
+                    </ol>
+                  </section>
+                ))
               )}
             </>
           )}
           {page.kind === "channel" && (
             <>
-              <div className="kicker">CURATED CHANNEL</div>
-              <h1>开源生态</h1>
-              <p className="intro">
-                开源项目、开发工具与基础设施。摘要和推断分开看，来源随时可查。
-              </p>
-              <div className="controls">
-                <span>全部 {data.current.length} 条</span>
-                <a href="/rss/opensource.xml">订阅本频道 ↗</a>
-                <span className="muted">按日报日期与重要性排序</span>
-              </div>
-              {data.current.length ? (
-                data.current.map((s) => <Row key={s.key} story={s} />)
-              ) : (
-                <Empty />
-              )}
-            </>
-          )}
-          {page.kind === "article" && story && (
-            <>
-              <div className="breadcrumb">
-                <a href="/channel/opensource/">开源生态</a> / 来源详情
-              </div>
-              <div className="kicker">
-                {category[story.category]} · 重要性 {story.importance}/5
-              </div>
-              <h1 className="article-title">{story.evidence_quote}</h1>
-              <Meta story={story} />
-              <p className="review-note">
-                已已允许发布 · 仅基于所列来源整理，尚未独立事实核验。
-              </p>
-              <section className="article-section">
-                <h2>来源事实摘要</h2>
-                <p>{story.fact_summary}</p>
-              </section>
-              <section className="article-section analysis">
-                <div className="kicker">AI ANALYSIS · INFERENCE</div>
-                <h2>分析与推断</h2>
-                <p>{story.analysis ?? "本条未附加推断。"}</p>
-              </section>
-              <section className="article-section">
-                <h2>来源证据</h2>
-                <blockquote>{story.evidence_quote}</blockquote>
-                <p>
-                  <a
-                    href={story.source.canonical_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                  >
-                    {story.source.name} · 阅读原文 ↗
+              <header className="page-heading">
+                <p className="section-kicker">分类浏览</p>
+                <h1>全部资讯</h1>
+                <span>{data.current.length} 条</span>
+              </header>
+              <nav className="category-links" aria-label="资讯分类">
+                {categoryCounts.map(([key, n]) => (
+                  <a key={key} href={`#category-${key}`}>
+                    {categories[key] ?? key}
+                    <span>{n}</span>
                   </a>
-                </p>
-                <dl>
-                  <dt>来源原始发布时间</dt>
-                  <dd>{stamp(story.source.published_at)}</dd>
-                  <dt>事件发生时间</dt>
-                  <dd>{stamp(story.source.event_at)}</dd>
-                  {story.source.fetched_at && (
-                    <>
-                      <dt>首次抓取时间</dt>
-                      <dd>{stamp(story.source.fetched_at)}</dd>
-                    </>
-                  )}
-                  <dt>所属日报</dt>
-                  <dd>
-                    <a href={`/archive/${story.report_date}/`}>
-                      {story.report_date}
-                    </a>{" "}
-                    · 版本 {story.report_version}
-                  </dd>
-                </dl>
-                <p className="muted">
-                  来源可能继续更新。本文保留归档时的信息，重要事实请结合原文核实。
-                </p>
-              </section>
-              <a href="/channel/opensource/">← 返回频道</a>
-            </>
-          )}
-          {page.kind === "archive" && (
-            <>
-              <div className="kicker">DAILY ARCHIVE</div>
-              <h1>把重要信息留在时间里。</h1>
-              <p className="intro">
-                按日期回看已发布日报，查看每一次修订。日期代表日报归档日，不等于事件发生日。
-              </p>
-              {data.latest.length ? (
-                <DateList reports={data.latest} />
-              ) : (
+                ))}
+              </nav>
+              {!data.current.length ? (
                 <Empty />
+              ) : (
+                categoryCounts.map(([key, n]) => (
+                  <section
+                    className="category-section"
+                    id={`category-${key}`}
+                    key={key}
+                  >
+                    <h2>
+                      {categories[key] ?? key}
+                      <span>{n}</span>
+                    </h2>
+                    {data.current
+                      .filter((item) => item.category === key)
+                      .map((item, i) => (
+                        <Row key={item.key} story={item} index={i} level={3} />
+                      ))}
+                  </section>
+                ))
               )}
             </>
           )}
           {["date", "report"].includes(page.kind) && selected && (
             <>
-              <div className="breadcrumb">
-                <a href="/archive/">历史归档</a> / {selected.report_date}
-              </div>
-              <div className="kicker">
-                DAILY BRIEF · VERSION {selected.version}
-              </div>
-              <h1>{selected.title}</h1>
-              <p className="intro">
-                {selected.report_date} · 开源生态 · {selected.items.length}{" "}
-                条来源
-              </p>
-              <div className="versions">
-                历史版本：
-                {data.reports
-                  .filter((r) => r.report_date === selected.report_date)
-                  .map((r) => (
-                    <a key={r.report_id} href={reportPath(r)}>
-                      v{r.version}
-                    </a>
-                  ))}
-              </div>
-              {page.kind === "report" && (
-                <p className="review-note">
-                  这是不可覆盖的历史版本。
+              <nav className="breadcrumb" aria-label="面包屑">
+                <a href="/archive/">往期归档</a>
+                <span>/</span>
+                <time dateTime={selected.report_date}>
+                  {dateLabel(selected.report_date)}
+                </time>
+              </nav>
+              <header className="issue-header">
+                <div className="issue-topline">
+                  <span className="issue-label">
+                    {page.kind === "report"
+                      ? `第 ${selected.version} 版存档`
+                      : selected.report_date === latestDate
+                        ? "最新一期"
+                        : "往期简报"}
+                  </span>
+                  <span>{selected.items.length} 条资讯</span>
+                </div>
+                <h1>{selected.title}</h1>
+                {page.kind === "report" && (
                   <a href={`/archive/${selected.report_date}/`}>
-                    查看当日最新版本 →
+                    查看本日最新版 →
                   </a>
-                </p>
+                )}
+              </header>
+              {versions.length > 1 && (
+                <details className="revision-list">
+                  <summary>修订记录 · {versions.length} 个版本</summary>
+                  <nav aria-label="修订版本">
+                    {versions.map((r) => (
+                      <a
+                        aria-current={
+                          page.kind === "report" &&
+                          r.version === selected.version
+                            ? "page"
+                            : undefined
+                        }
+                        key={r.version}
+                        href={reportPath(r)}
+                      >
+                        第 {r.version} 版
+                      </a>
+                    ))}
+                  </nav>
+                </details>
               )}
-              {selectedStories?.map((s) => (
-                <section className="historical-story" key={s.key}>
-                  <Row story={s} />
-                  <p>
-                    <b>该版本分析（推断）：</b>
-                    {s.analysis ?? "无"}
-                  </p>
-                  <blockquote>{s.evidence_quote}</blockquote>
-                  <a
-                    href={s.source.canonical_url}
-                    target="_blank"
-                    rel="noopener noreferrer"
+              <div className="issue-stories">
+                {selectedStories?.map((item, i) => (
+                  <article
+                    className="issue-story"
+                    id={`story-${item.key}`}
+                    key={item.id}
                   >
-                    该版本原始来源 ↗
-                  </a>
-                  <p className="muted">
-                    来源发布：{stamp(s.source.published_at)} · 事件：
-                    {stamp(s.source.event_at)}
-                    {s.source.fetched_at && (
-                      <> · 抓取：{stamp(s.source.fetched_at)}</>
+                    <div className="story-heading">
+                      <span className="news-number" aria-hidden="true">
+                        {String(i + 1).padStart(2, "0")}
+                      </span>
+                      <div>
+                        <div className="news-meta">
+                          <span className="category-label">
+                            {categories[item.category] ?? item.category}
+                          </span>
+                          <a
+                            href={item.source.canonical_url}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                          >
+                            {item.source.name} ↗
+                          </a>
+                        </div>
+                        <h2>{lead(item).title}</h2>
+                      </div>
+                    </div>
+                    {lead(item).rest && (
+                      <p className="story-facts">{lead(item).rest}</p>
                     )}
-                  </p>
-                </section>
-              ))}
+                    {item.analysis && (
+                      <div className="story-analysis">
+                        <h3>分析与推断</h3>
+                        <p>{item.analysis}</p>
+                      </div>
+                    )}
+                    <Source story={item} />
+                  </article>
+                ))}
+              </div>
+            </>
+          )}
+          {page.kind === "article" && story && (
+            <>
+              <nav className="breadcrumb" aria-label="面包屑">
+                <a href="/archive/">往期归档</a>
+                <span>/</span>
+                <a
+                  href={
+                    owner ? reportPath(owner) : `/archive/${story.report_date}/`
+                  }
+                >
+                  {dateLabel(story.report_date)}
+                </a>
+              </nav>
+              <header className="article-header">
+                <div className="news-meta">
+                  <span className="category-label">
+                    {categories[story.category] ?? story.category}
+                  </span>
+                  <time dateTime={story.report_date}>
+                    {dateLabel(story.report_date)}
+                  </time>
+                </div>
+                <h1>{lead(story).title}</h1>
+                <a
+                  className="original-link"
+                  href={story.source.canonical_url}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                >
+                  {story.source.name} · 查看原文 ↗
+                </a>
+              </header>
+              <section className="article-body" aria-label="来源事实摘要">
+                {lead(story).rest && <p>{lead(story).rest}</p>}
+                {story.analysis && (
+                  <section className="story-analysis">
+                    <h2>分析与推断</h2>
+                    <p>{story.analysis}</p>
+                  </section>
+                )}
+                <Source story={story} />
+              </section>
             </>
           )}
           {page.kind === "404" && (
-            <section className="empty">
-              <h1>没有找到这页内容</h1>
-              <p>请返回首页或按日期查找历史日报。</p>
-              <a href="/">返回首页 →</a>
-            </section>
-          )}
-          <footer>
-            <span>AI News Hub · 有来源的信息，审慎的判断。</span>
-            <a href="/rss/all.xml">RSS</a>
-          </footer>
-        </main>
-        <aside className="rightcol">
-          <div className="section-label">阅读速览</div>
-          <section className="rail-card">
-            <div className="kicker">LATEST BRIEF</div>
-            <h2>{latestDate ?? "等待更新"}</h2>
-            <div className="rail-number">
-              {today.length}
-              <span> 条来源</span>
+            <div className="empty">
+              <h1>页面不存在</h1>
+              <a href="/">返回最新简报</a>
             </div>
-            <p>当前公开内容：开源生态。其他频道将在有实际来源后开放。</p>
-          </section>
-          <section className="rail-card">
-            <h2>如何阅读这份简报</h2>
-            <ul>
-              <li>先读来源事实摘要</li>
-              <li>将分析视为推断</li>
-              <li>重要事项回到原文核对</li>
-            </ul>
-            <p className="muted">
-              重要性评分由 AI 整理，不是点赞数、热度或投资建议。
-            </p>
-          </section>
-          <section className="rail-card green">
-            <h2>让更新自己到来。</h2>
-            <p>使用你熟悉的 RSS 阅读器，订阅全站或频道更新。</p>
-            <a href="/rss/all.xml">全站 RSS →</a>
-          </section>
-        </aside>
+          )}
+        </main>
+        {aside}
       </div>
+      <footer>
+        <a href="/">AI News Hub</a>
+        <nav aria-label="页脚导航">
+          <a href="/archive/">往期归档</a>
+          <a href="/rss/all.xml">RSS</a>
+        </nav>
+      </footer>
     </div>
   );
 }

@@ -69,3 +69,5 @@ CI 的 `npm test` 包含公开站构建、路由/两日期/历史版本、Schema
 官方参考：[Pages Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)、[Build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/)、[Build watch paths](https://developers.cloudflare.com/pages/configuration/build-watch-paths/)。
 
 归档 v1 现支持 verification=codex_reported 与 fetched_at=null，表示来源由 Codex 提供而非 Backend 抓取。公共页面和 RSS 不展示不存在的抓取时间；source_only 历史归档保持兼容。使用独立公共站构建器的部署需同步更新 Schema 与生成器后读取新归档。
+
+公共阅读站以最新一期、全部资讯和往期归档组织内容，取消宣传区、阅读指南与静态/免登录说明；首页直接展示最新已归档简报及其条目，历史首页按月份列出期次，日期/版本页按对应报告快照呈现，修订记录折叠。展示标题取现有事实摘要首句，原始引文保留在可展开来源区；不修改归档 JSON、现有 URL 或 RSS GUID。缺失来源日期不占位，主题偏好在页面跳转后保留。此布局不根据构建时钟把旧报告标成“今日”。

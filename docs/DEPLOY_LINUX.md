@@ -339,6 +339,8 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 ## 14. Issue #8 公共站构建与 Pages
 
+公共阅读站以最新一期、全部资讯和往期归档组织内容，取消宣传区、阅读指南与静态/免登录说明；首页直接展示最新已归档简报及其条目，历史首页按月份列出期次，日期/版本页按对应报告快照呈现，修订记录折叠。展示标题取现有事实摘要首句，原始引文保留在可展开来源区；不修改归档 JSON、现有 URL 或 RSS GUID。缺失来源日期不占位，主题偏好在页面跳转后保留。此布局不根据构建时钟把旧报告标成“今日”。
+
 公共站不运行 Linux Backend，不需要 Codex、管理 Token、SQLite 或发布 Token。根目录安装锁文件依赖后，运行 `SITE_URL=https://your-project.pages.dev npm run build:web`，仅上传 `dist/web`。不得将 `dist` 根目录、`dist/admin` 或 SSR 构建模块 `dist/web-render` 设为公开输出。
 
 Cloudflare Pages 从本 GitHub 仓库 main 集成，根目录留空、命令 `npm run build:web`、输出 `dist/web`、`NODE_VERSION=22.19.0`、`SITE_URL` 为真实稳定 HTTPS origin。同分支正式 reports 提交触发自动构建；另一归档仓库/分支必须另外安全检出并触发部署，默认不会自动跨分支读取。初次没有正式日报时正常展示空状态。不要将测试归档分支或 demo fixture 当正式新闻。
