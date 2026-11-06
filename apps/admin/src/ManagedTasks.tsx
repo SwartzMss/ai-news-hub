@@ -3,7 +3,7 @@ import { useCallback, useEffect, useMemo, useRef, useState } from "react";
 import type { TaskRecord, RunRecord } from "../../../packages/shared/src";
 import { ApiError, errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
-import { active, PageHeading, pathFor } from "./ui";
+import { active, Badge, PageHeading, pathFor } from "./ui";
 
 type Plan = {
   kind: "manual" | "once" | "interval" | "daily" | "weekly";
@@ -373,7 +373,7 @@ export function ManagedTasks({
       const { tasks } = await api<{ tasks: ManagedTask[] }>("/tasks", signal);
       return Promise.all(
         tasks
-          .filter((t) => !taskId || t.id === taskId)
+          .filter((t) => (taskId ? t.id === taskId : !!t.configuration))
           .map(async (task) => {
             const base = `/tasks/${encodeURIComponent(task.id)}/runs`;
             const { runs } = await api<{ runs: RunRecord[] }>(
@@ -402,7 +402,7 @@ export function ManagedTasks({
       const base = `/tasks/${encodeURIComponent(task.id)}`;
       if (kind === "delete") {
         await api(base, controller.signal, undefined, "DELETE");
-        if (taskId) location.hash = "#";
+        if (taskId) location.hash = "#/tasks";
       } else if (kind === "pause")
         await api(
           base,
@@ -444,6 +444,203 @@ export function ManagedTasks({
       setBusy(undefined);
     }
   }
+  const renderTasks = () =>
+    state.data
+      ?.filter((row) => row.task.configuration || taskId)
+      .map(({ task, current }) => {
+        const running = active(current?.status) || !!current?.publishing;
+        const scheduled = task.configuration?.schedule.kind !== "manual";
+        const controls = (
+          <div className="task-actions">
+            <button
+              disabled={!!busy}
+              onClick={() => void action(task, running ? "stop" : "start")}
+            >
+              {running ? "停止执行" : "立即运行"}
+            </button>
+            <details className="task-more">
+              <summary>更多</summary>
+              <div className="task-more-options">
+                <button
+                  className="quiet"
+                  disabled={!!busy || running}
+                  onClick={(event) => {
+                    closeTaskMenu(event.currentTarget);
+                    setEditing(task);
+                  }}
+                >
+                  编辑
+                </button>
+                {scheduled && (
+                  <button
+                    className="quiet"
+                    disabled={!!busy || running}
+                    onClick={(event) => {
+                      closeTaskMenu(event.currentTarget);
+                      void action(task, "pause");
+                    }}
+                  >
+                    {task.status === "active" ? "暂停定时" : "启用定时"}
+                  </button>
+                )}
+                <button
+                  className="quiet danger-action"
+                  disabled={!!busy || running}
+                  onClick={(event) => {
+                    closeTaskMenu(event.currentTarget);
+                    setDeleting(task.id);
+                  }}
+                >
+                  删除
+                </button>
+              </div>
+            </details>
+          </div>
+        );
+        const confirmation = deleting === task.id && (
+          <div className="delete-confirm" role="alert">
+            <p>删除此任务？执行与发布历史会保留。</p>
+            <button className="quiet" onClick={() => setDeleting(undefined)}>
+              取消
+            </button>
+            <button
+              disabled={!!busy}
+              onClick={() => void action(task, "delete")}
+            >
+              确认删除
+            </button>
+          </div>
+        );
+        if (!taskId)
+          return (
+            <tr key={task.id}>
+              <td>
+                <a className="task-table-name" href={pathFor(task.id)}>
+                  {task.configuration?.topic ?? task.name}
+                </a>
+                <small className="task-table-secondary">
+                  {task.configuration?.prompts.length ?? 1} 轮 Prompt
+                </small>
+              </td>
+              <td>
+                {scheduleLabel(task.configuration)}
+                <small className="task-table-secondary">
+                  <span>{!scheduled
+                    ? "手动任务"
+                    : task.status === "active"
+                      ? "定时已启用"
+                      : "定时已暂停"}</span>{" "}
+                  ·{" "}
+                  {task.configuration?.timezone === "Asia/Shanghai"
+                    ? "上海时间"
+                    : task.configuration?.timezone}
+                </small>
+              </td>
+              <td>
+                {task.status === "paused" && scheduled
+                  ? "已暂停"
+                  : task.next_run_at
+                    ? shortTime(task.next_run_at, task.configuration?.timezone)
+                    : "—"}
+              </td>
+              <td>
+                {running ? (
+                  <span className="task-running-state" role="status">
+                    {current?.publishing
+                      ? "正在发布"
+                      : current?.status === "queued"
+                        ? "排队中"
+                        : "运行中"}
+                  </span>
+                ) : current ? (
+                  <Badge status={current.status} />
+                ) : (
+                  <span className="muted">未运行</span>
+                )}
+              </td>
+              <td>{task.configuration?.autoPublish ? "开启" : "关闭"}</td>
+              <td className="task-table-actions">
+                {controls}
+                <a
+                  className="task-table-history"
+                  href={`#/runs?taskId=${encodeURIComponent(task.id)}`}
+                >
+                  运行记录
+                </a>
+                {confirmation}
+              </td>
+            </tr>
+          );
+        return (
+          <article className="panel managed-task" key={task.id}>
+            <div className="managed-task-heading">
+              {!taskId && (
+                <h2>
+                  <a href={pathFor(task.id)}>
+                    {task.configuration?.topic ?? task.name}
+                  </a>
+                </h2>
+              )}
+              <div className="task-state-group">
+                <span className="task-schedule-state">
+                  {!scheduled
+                    ? "手动任务"
+                    : task.status === "active"
+                      ? "定时已启用"
+                      : "定时已暂停"}
+                </span>
+                {running ? (
+                  <span className="task-running-state" role="status">
+                    {current?.publishing
+                      ? "正在发布"
+                      : current?.status === "queued"
+                        ? "排队中"
+                        : "运行中"}
+                  </span>
+                ) : (
+                  <span className="muted">未运行</span>
+                )}
+              </div>
+            </div>
+            <dl className="managed-facts">
+              <div>
+                <dt>
+                  执行计划
+                  <span className="task-timezone">
+                    {task.configuration?.timezone === "Asia/Shanghai"
+                      ? "上海时间"
+                      : task.configuration?.timezone}
+                  </span>
+                </dt>
+                <dd>{scheduleLabel(task.configuration)}</dd>
+              </div>
+              <div>
+                <dt>下次执行</dt>
+                <dd>
+                  {task.status === "paused"
+                    ? "已暂停"
+                    : shortTime(task.next_run_at, task.configuration?.timezone)}
+                </dd>
+              </div>
+              <div>
+                <dt>研究 Prompt</dt>
+                <dd>{task.configuration?.prompts.length ?? 1} 轮</dd>
+              </div>
+              <div>
+                <dt>自动发布</dt>
+                <dd>{task.configuration?.autoPublish ? "开启" : "关闭"}</dd>
+              </div>
+            </dl>
+            <div className="managed-task-footer">
+              {controls}
+              <a href={`#/runs?taskId=${encodeURIComponent(task.id)}`}>
+                运行记录
+              </a>
+            </div>
+            {confirmation}
+          </article>
+        );
+      });
   const selected = state.data?.[0];
   return (
     <>
@@ -484,152 +681,24 @@ export function ManagedTasks({
       )}
       {!state.data ? (
         <p>正在读取任务…</p>
+      ) : taskId ? (
+        <div className="managed-task-list">{renderTasks()}</div>
       ) : (
-        <div className="managed-task-list">
-          {state.data
-            .filter((row) => row.task.configuration || taskId)
-            .map(({ task, current }) => {
-              const running = active(current?.status) || !!current?.publishing;
-              const scheduled = task.configuration?.schedule.kind !== "manual";
-              return (
-                <article className="panel managed-task" key={task.id}>
-                  <div className="managed-task-heading">
-                    {!taskId && (
-                      <h2>
-                        <a href={pathFor(task.id)}>
-                          {task.configuration?.topic ?? task.name}
-                        </a>
-                      </h2>
-                    )}
-                    <div className="task-state-group">
-                      <span className="task-schedule-state">
-                        {!scheduled
-                          ? "手动任务"
-                          : task.status === "active"
-                            ? "定时已启用"
-                            : "定时已暂停"}
-                      </span>
-                      {running ? (
-                        <span className="task-running-state" role="status">
-                          {current?.publishing
-                            ? "正在发布"
-                            : current?.status === "queued"
-                              ? "排队中"
-                              : "运行中"}
-                        </span>
-                      ) : (
-                        <span className="muted">未运行</span>
-                      )}
-                    </div>
-                  </div>
-                  <dl className="managed-facts">
-                    <div>
-                      <dt>
-                        执行计划
-                        <span className="task-timezone">
-                          {task.configuration?.timezone === "Asia/Shanghai"
-                            ? "上海时间"
-                            : task.configuration?.timezone}
-                        </span>
-                      </dt>
-                      <dd>{scheduleLabel(task.configuration)}</dd>
-                    </div>
-                    <div>
-                      <dt>下次执行</dt>
-                      <dd>
-                        {task.status === "paused"
-                          ? "已暂停"
-                          : shortTime(
-                              task.next_run_at,
-                              task.configuration?.timezone,
-                            )}
-                      </dd>
-                    </div>
-                    <div>
-                      <dt>研究 Prompt</dt>
-                      <dd>{task.configuration?.prompts.length ?? 1} 轮</dd>
-                    </div>
-                    <div>
-                      <dt>自动发布</dt>
-                      <dd>
-                        {task.configuration?.autoPublish ? "开启" : "关闭"}
-                      </dd>
-                    </div>
-                  </dl>
-                  <div className="managed-task-footer">
-                    <div className="task-actions">
-                      <button
-                        disabled={!!busy}
-                        onClick={() =>
-                          void action(task, running ? "stop" : "start")
-                        }
-                      >
-                        {running ? "停止执行" : "立即运行"}
-                      </button>
-                      <details className="task-more">
-                        <summary>更多</summary>
-                        <div className="task-more-options">
-                          <button
-                            className="quiet"
-                            disabled={!!busy || running}
-                            onClick={(event) => {
-                              closeTaskMenu(event.currentTarget);
-                              setEditing(task);
-                            }}
-                          >
-                            编辑
-                          </button>
-                          {scheduled && (
-                            <button
-                              className="quiet"
-                              disabled={!!busy || running}
-                              onClick={(event) => {
-                                closeTaskMenu(event.currentTarget);
-                                void action(task, "pause");
-                              }}
-                            >
-                              {task.status === "active"
-                                ? "暂停定时"
-                                : "启用定时"}
-                            </button>
-                          )}
-                          <button
-                            className="quiet danger-action"
-                            disabled={!!busy || running}
-                            onClick={(event) => {
-                              closeTaskMenu(event.currentTarget);
-                              setDeleting(task.id);
-                            }}
-                          >
-                            删除
-                          </button>
-                        </div>
-                      </details>
-                    </div>
-                    <a href={`#/runs?taskId=${encodeURIComponent(task.id)}`}>
-                      运行记录
-                    </a>
-                  </div>
-                  {deleting === task.id && (
-                    <div className="delete-confirm" role="alert">
-                      <p>删除此任务？执行与发布历史会保留。</p>
-                      <button
-                        className="quiet"
-                        onClick={() => setDeleting(undefined)}
-                      >
-                        取消
-                      </button>
-                      <button
-                        disabled={!!busy}
-                        onClick={() => void action(task, "delete")}
-                      >
-                        确认删除
-                      </button>
-                    </div>
-                  )}
-                </article>
-              );
-            })}
+        <div className="table-wrap task-table">
+          <table>
+            <caption className="sr-only">任务列表</caption>
+            <thead>
+              <tr>
+                <th>任务主题</th>
+                <th>执行计划</th>
+                <th>下次执行</th>
+                <th>最近状态</th>
+                <th>自动发布</th>
+                <th>操作</th>
+              </tr>
+            </thead>
+            <tbody>{renderTasks()}</tbody>
+          </table>
         </div>
       )}
       {!taskId &&

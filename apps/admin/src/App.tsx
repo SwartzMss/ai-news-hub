@@ -1,3 +1,4 @@
+import { Overview } from "./Overview";
 import { Runs } from "./Runs";
 import { useCallback, useEffect, useMemo, useState } from "react";
 import { client, type ApiError } from "./api";
@@ -49,6 +50,10 @@ export function App() {
   const resultsTaskId =
     new URLSearchParams(hash.split("?")[1] ?? "").get("taskId") ?? "";
   const inResults = resultsPage || !!runId;
+  const tasksPage = hash === "#/tasks" || (!!taskId && !runId);
+  const overviewPage = !settings && !inResults && !tasksPage;
+  const resultsState =
+    new URLSearchParams(hash.split("?")[1] ?? "").get("state") ?? "all";
   function logout() {
     void client(token, () => {})(
       "/auth/logout",
@@ -76,13 +81,13 @@ export function App() {
           <Brand />
         </a>
         <nav className="primary-nav" aria-label="主导航">
-          <a
-            href="#"
-            aria-current={!settings && !inResults ? "page" : undefined}
-          >
+          <a href="#" aria-current={overviewPage ? "page" : undefined}>
             <Icon name="grid" />
+            <span>系统概览</span>
+          </a>
+          <a href="#/tasks" aria-current={tasksPage ? "page" : undefined}>
+            <Icon name="clock" />
             <span>任务总览</span>
-            {!settings && !inResults && <span className="nav-marker" />}
           </a>
           <a href="#/runs" aria-current={inResults ? "page" : undefined}>
             <Icon name="file" />
@@ -110,7 +115,7 @@ export function App() {
         className={`workspace-content${settings ? " settings-page" : ""}`}
         id="main-content"
         tabIndex={-1}
-        key={`${token}:${resultsPage}:${resultsTaskId}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
+        key={`${token}:${overviewPage}:${resultsPage}:${resultsTaskId}:${resultsState}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
       >
         {taskId && runId && (
           <div className="run-back-links">
@@ -128,7 +133,13 @@ export function App() {
             hideNavigation
           />
         ) : resultsPage ? (
-          <Runs api={api} initialTaskId={resultsTaskId} />
+          <Runs
+            api={api}
+            initialTaskId={resultsTaskId}
+            initialState={resultsState}
+          />
+        ) : overviewPage ? (
+          <Overview api={api} />
         ) : !taskId ? (
           <Dashboard api={api} />
         ) : runId ? (

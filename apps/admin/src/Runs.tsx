@@ -14,11 +14,15 @@ const states = [
 export function Runs({
   api,
   initialTaskId = "",
+  initialState = "all",
 }: {
   api: Client;
   initialTaskId?: string;
+  initialState?: string;
 }) {
-  const [state, setState] = useState("all"),
+  const [state, setState] = useState(
+      states.some(([id]) => id === initialState) ? initialState : "all",
+    ),
     [taskId, setTaskId] = useState(initialTaskId),
     [page, setPage] = useState(0);
   const load = useCallback(

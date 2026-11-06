@@ -51,3 +51,15 @@ export interface RunSummary {
   publication: {status:string;error_code:string|null;commit_sha:string|null} | null;
 }
 export interface RunListResponse { runs:RunSummary[]; total:number;limit:number;offset:number }
+
+/** Counts cover configured tasks and their run snapshots, including deleted task history. */
+export interface OverviewDay {
+  date: string; total: number; succeeded: number; failed: number; stopped: number; active: number;
+}
+export interface OverviewResponse {
+  timezone: 'Asia/Shanghai'; generatedAt: string;
+  tasks: {total:number; manual:number; scheduled:number; paused:number};
+  todayRuns:number; running:number; queued:number;
+  pendingReview:number; pendingPublish:number; publishFailed:number; recentFailures:number;
+  daily:OverviewDay[]; recentRuns:RunSummary[];
+}

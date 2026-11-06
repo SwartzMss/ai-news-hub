@@ -93,7 +93,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
   app.addHook('preClose', async () => { clearInterval(scheduleTimer); await engine.close(); await publications.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
   app.register(async scope=>{registerAuthRoutes(scope,authentication);},{prefix:'/api'});
-  app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings); }, { prefix: '/api' });
+  app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings,options.now); }, { prefix: '/api' });
   if(!authentication.status().initialized)app.log.info({event:'admin_setup_required'},'admin_setup_required');
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');
