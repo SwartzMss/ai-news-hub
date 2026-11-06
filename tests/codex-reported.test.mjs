@@ -43,14 +43,14 @@ test('durable source mode prevents changing Codex report flags into verified pro
   s.db.prepare("UPDATE codex_news_runs SET source_mode='verified' WHERE run_id=?").run(id);assert.equal((await s.request('GET',`/news/reports/${row.id}/publication`)).statusCode,409);
  }finally{await s.close();}
 });
-for(const [label,modify] of [['private URL',p=>p.items[0].url='https://127.0.0.1/'],['duplicate canonical sources',p=>p.items.push({...p.items[0]})],['model verification flags',p=>p.items[0].verification='source_only']])test(`direct proposal still rejects ${label}`,async()=>{
+for(const [label,modify] of [['private URL',p=>p.items[0].url='https://127.0.0.1/'],['duplicate canonical sources',p=>p.items.push({...p.items[0]})],['model verification flags',p=>p.items[0].verification='source_only'],['model supplied topic',p=>p.topic={id:'t-'+'f'.repeat(24),name:'Invented'}]])test(`direct proposal still rejects ${label}`,async()=>{
  const s=setup();try{const output=structuredClone(proposal);modify(output);const id=await s.execute(false,output);assert.equal((await s.request('GET',`/runs/${id}`)).json().run.status,'failed');assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);assert.equal(s.fetched,0);assert.equal(s.adapter.calls.length,1);}finally{await s.close();}
 });
 test('migration preserves existing independently verified Codex reports and their approval hash',async()=>{
  const {migrate,migrations}=await import('../dist/apps/server/src/db/migrations.js');
  const {buildReport}=await import('../dist/apps/server/src/news/report.js');
  const {PublicationService}=await import('../dist/apps/server/src/publish/service.js');
- const {sha256}=await import('../dist/apps/server/src/publish/artifact.js');
+ const {sha256,archiveArtifact,reviewedReport}=await import('../dist/apps/server/src/publish/artifact.js');
  const db=new DatabaseSync(':memory:');migrate(db,migrations.slice(0,8));
  try{
   const fetchedAt='2026-11-03T00:00:00.000Z',candidate={id:'old-source',title:'A previously verified announcement',originalUrl:'https://example.com/old',canonicalUrl:'https://example.com/old',sourceName:'example.com',publishedAt:null,eventAt:null,fetchedAt,excerpt:'A previously verified announcement'};
@@ -63,9 +63,45 @@ test('migration preserves existing independently verified Codex reports and thei
   db.prepare("INSERT INTO report_articles(report_id,article_id,position) VALUES('old-report',?,0)").run(candidate.id);
   db.prepare("INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel,collected_at,candidates_json,report_id) VALUES('old-run','AI','Search','2026-11-03','opensource',?,?,'old-report')").run(fetchedAt,JSON.stringify([candidate]));
   const oldHash=sha256(JSON.stringify({document,version:1,candidates:[candidate],links:[candidate.id]}));
-  migrate(db);assert.equal(db.prepare("SELECT source_mode FROM codex_news_runs WHERE run_id='old-run'").get().source_mode,'verified');
+  migrate(db);assert.equal(db.prepare("SELECT public_topic_json FROM codex_news_runs WHERE run_id='old-run'").get().public_topic_json,null);assert.equal(db.prepare("SELECT source_mode FROM codex_news_runs WHERE run_id='old-run'").get().source_mode,'verified');
   let saved;const service=new PublicationService(db,{repository:'owner/reports',branch:'reports'},{async publish(artifact){saved=JSON.parse(artifact.content);return {sha:'a'.repeat(40),committedAt:fetchedAt};}});
-  assert.equal(service.inspect('old-report').contentHash,oldHash);service.approve('old-report',oldHash);assert.equal((await service.publish('old-report')).status,'succeeded');
+  assert.equal(service.inspect('old-report').contentHash,oldHash);const legacyArtifact=archiveArtifact(reviewedReport(db,'old-report'),fetchedAt);assert.equal(JSON.parse(legacyArtifact.content).schema_version,1);assert.equal(legacyArtifact.path,'reports/2026/11/03/opensource/v000001.json');service.approve('old-report',oldHash);assert.equal((await service.publish('old-report')).status,'succeeded');
   assert.equal(saved.items[0].verification,'source_only');assert.equal(saved.items[0].source.fetched_at,fetchedAt);await service.close();
  }finally{db.close();}
+});
+
+test('managed report snapshots topic independently of shared sources and later task edits',async()=>{
+ const {createHash}=await import('node:crypto');
+ const s=setup();try{
+  const reports=[];
+  for(const [index,topic] of ['AI','Security'].entries()){
+   const task=(await s.request('POST','/tasks',{...configuration,topic})).json().task;
+   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'topic-run'})).json().run;
+   await s.wait(()=>s.adapter.calls[index]);assert.equal(s.adapter.calls[index].input.input,configuration.prompts[0]);s.adapter.succeed(index,JSON.stringify(proposal));
+   await s.wait(async()=>(await s.request('GET',`/runs/${run.id}`)).json().run.status==='succeeded');
+   const row=s.db.prepare('SELECT * FROM reports WHERE run_id=?').get(run.id),document=JSON.parse(row.content_json);
+   const expected={id:'t-'+createHash('sha256').update(task.id).digest('hex').slice(0,24),name:topic};
+   assert.deepEqual(document.topic,expected);
+   assert.deepEqual(JSON.parse(s.db.prepare('SELECT public_topic_json FROM codex_news_runs WHERE run_id=?').get(run.id).public_topic_json),expected);
+   const inspection=(await s.request('GET',`/news/reports/${row.id}/publication`)).json();assert.ok(inspection.contentHash);
+   assert.equal((await s.request('PUT',`/tasks/${task.id}`,{...configuration,name:'Renamed task',topic:'Renamed topic'})).statusCode,200);
+   assert.equal((await s.request('GET',`/news/reports/${row.id}/publication`)).json().contentHash,inspection.contentHash);
+   await s.request('POST',`/news/reports/${row.id}/approve`,{confirm:true,contentHash:inspection.contentHash});assert.equal((await s.request('POST',`/news/reports/${row.id}/publish`,{})).statusCode,200);
+   assert.equal(s.artifacts[index].schema_version,2);assert.deepEqual(s.artifacts[index].topic,expected);reports.push(row);
+  }
+  assert.equal(reports[0].report_date,reports[1].report_date);assert.equal(reports[1].version,reports[0].version+1);
+  assert.equal(s.artifacts[0].items[0].id,s.artifacts[1].items[0].id);assert.notEqual(s.artifacts[0].topic.id,s.artifacts[1].topic.id);assert.equal(s.adapter.calls.length,2);assert.equal(s.fetched,0);
+ }finally{await s.close();}
+});
+for(const mutation of ['remove','rename','id','snapshot'])test(`managed topic tampering is rejected: ${mutation}`,async()=>{
+ const s=setup();try{
+  const id=await s.execute();const row=s.db.prepare('SELECT * FROM reports WHERE run_id=?').get(id),document=JSON.parse(row.content_json);
+  assert.ok(document.topic);
+  if(mutation==='remove')delete document.topic;
+  else if(mutation==='rename')document.topic.name='tampered';
+  else if(mutation==='id')document.topic.id='t-'+'f'.repeat(24);
+  else s.db.prepare('UPDATE codex_news_runs SET public_topic_json=? WHERE run_id=?').run(JSON.stringify({id:'t-'+'f'.repeat(24),name:'tampered'}),id);
+  s.db.prepare('UPDATE reports SET content_json=? WHERE id=?').run(JSON.stringify(document),row.id);
+  assert.equal((await s.request('GET',`/news/reports/${row.id}/publication`)).statusCode,409);
+ }finally{await s.close();}
 });

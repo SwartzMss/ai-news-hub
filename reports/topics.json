@@ -1,0 +1,12 @@
+{
+  "schema_version": 1,
+  "assignments": [
+    {
+      "report_id": "066bfcaa-d956-4dc0-9987-a39e2317ff42",
+      "topic": {
+        "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+        "name": "每日开源项目"
+      }
+    }
+  ]
+}

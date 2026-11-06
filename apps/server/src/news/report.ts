@@ -13,12 +13,13 @@ export interface ReportItem extends ProposalItem {
   verification: 'source_only' | 'codex_reported';
   source: { name: string; originalUrl: string; canonicalUrl: string; publishedAt: string | null; eventAt: string | null; fetchedAt: string | null };
 }
+export interface PublicTopic { id: string; name: string }
 export interface DailyReport {
   schemaVersion: 1; reportId: string; runId: string; reportDate: string; channel: 'opensource'; reviewStatus: 'pending';
-  title: string; collectedAt: string; items: ReportItem[];
+  title: string; collectedAt: string; items: ReportItem[]; topic?: PublicTopic;
 }
 export function buildReport(output: string, candidates: ArticleCandidate[], metadata: {
-  reportId: string; runId: string; reportDate: string; collectedAt: string;
+  reportId: string; runId: string; reportDate: string; collectedAt: string; topic?: PublicTopic;
 }, mode:'verified'|'codex_reported'='verified'): DailyReport {
   if(mode!=='verified'&&mode!=='codex_reported')throw new AppError('report_provenance_invalid');
   let proposal: unknown;

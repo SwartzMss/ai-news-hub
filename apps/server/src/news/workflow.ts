@@ -57,6 +57,10 @@ export class NewsWorkflow implements TaskWorkflow {
       throw new AppError("research_run_unavailable");
     const final = context.mode === "finalize";
     const managed=!!run.configuration;
+    const topic = run.configuration ? {
+      id: 't-' + createHash('sha256').update(run.task_id).digest('hex').slice(0,24),
+      name: run.configuration.topic,
+    } : undefined;
     return {
       input: managed ? context.input : `研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? "最终生成轮：依据本 Thread 的研究和本轮要求，返回日报 JSON。" : "研究轮：搜索、核实并回答用户，保留来源链接。"}\n用户 prompt：\n${context.input}`,
       outputSchema: final ? RESEARCH_SCHEMA : undefined,
@@ -112,6 +116,7 @@ export class NewsWorkflow implements TaskWorkflow {
                   runId: run.id,
                   reportDate: String(snapshot.report_date),
                   collectedAt,
+                  ...(topic ? {topic} : {}),
                 },
                 "codex_reported",
               );
@@ -157,6 +162,7 @@ export class NewsWorkflow implements TaskWorkflow {
                     runId: run.id,
                     reportDate: document.reportDate,
                     collectedAt,
+                    ...(topic ? {topic} : {}),
                   },
                   "codex_reported",
                 );
@@ -188,11 +194,12 @@ export class NewsWorkflow implements TaskWorkflow {
                     .run(reportId, item.articleId, position),
                 );
                 db.prepare(
-                  "UPDATE codex_news_runs SET report_id=?,collected_at=?,candidates_json=?,source_mode='codex_reported' WHERE run_id=?",
+                  "UPDATE codex_news_runs SET report_id=?,collected_at=?,candidates_json=?,source_mode='codex_reported',public_topic_json=? WHERE run_id=?",
                 ).run(
                   reportId,
                   collectedAt,
                   JSON.stringify(candidates),
+                  topic ? JSON.stringify(topic) : null,
                   run.id,
                 );
               };

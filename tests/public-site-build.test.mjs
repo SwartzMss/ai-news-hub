@@ -33,9 +33,9 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   ).window.document;
   assert.equal(
     homeDoc.querySelector("main h1").textContent,
-    data.latest[0].title,
+    "话题简报",
   );
-  assert.equal(historyDoc.querySelector("main h1").textContent, "往期简报");
+  assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
   const text = homeDoc.body.textContent;
   for (const removed of [
     "静态阅读",
@@ -245,13 +245,97 @@ test("date and revision readers preserve exact archived text and separate curren
     ).window.document;
     assert.equal(
       withdrawnDoc.querySelector(".edition-links a").getAttribute("href"),
-      "/archive/2026-11-02/opensource/v000001/",
+      "/topics/legacy/archive/2026-11-02/v000001/",
     );
-    const current = main("index.html");
-    assert.equal(current.querySelector("h1").textContent, "最新一期日报");
+    const current = main("topics/legacy/index.html");
+    assert.equal(current.querySelector("h2").textContent, "最新一期日报");
     assert.ok(current.textContent.includes("最新一期独有摘要"));
     assert.ok(!current.textContent.includes("原始版本独有摘要"));
   } finally {
     rmSync(dir, { recursive: true, force: true });
   }
+});
+
+test("topic routes, editions, browser selection and RSS isolate shared sources across topics", async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const dir = mkdtempSync("/tmp/public-topic-reading-");
+  const a = { id: "t-" + "a".repeat(24), name: "模型进展" };
+  const b = { id: "t-" + "b".repeat(24), name: "开源工具" };
+  const base = JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json", "utf8"));
+  const save = (doc) => {
+    const path = doc.schema_version === 1
+      ? join(dir, ...doc.report_date.split("-"), "opensource")
+      : join(dir, "topics", doc.topic.id, ...doc.report_date.split("-"));
+    mkdirSync(path, { recursive: true });
+    writeFileSync(join(path, `v${String(doc.version).padStart(6, "0")}.json`), JSON.stringify(doc));
+  };
+  try {
+    save({ ...base, report_id: "legacy-a", title: "甲话题原版",
+      items: base.items.map((item) => ({ ...item, fact_summary: "甲话题原始事实；原始正文。" })) });
+    writeFileSync(join(dir, "topics.json"), JSON.stringify({ schema_version: 1,
+      assignments: [{ report_id: "legacy-a", topic: a }] }));
+    save({ ...base, schema_version: 2, topic: a, version: 2, report_id: "a-revised", title: "甲话题修订版",
+      items: base.items.map((item) => ({ ...item, fact_summary: "甲话题最新事实；甲专属正文。" })) });
+    save({ ...base, schema_version: 2, topic: b, report_id: "b-current", title: "乙话题日报",
+      items: base.items.map((item) => ({ ...item, fact_summary: "乙话题最新事实；乙专属正文。" })) });
+    const built = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", reportsDir: dir });
+    const read = (path) => readFileSync(join(built.output, path), "utf8");
+    const documentAt = (path) => new JSDOM(read(path)).window.document;
+    const mainAt = (path) => documentAt(path).querySelector("main");
+    const home = documentAt("index.html");
+    assert.equal(home.querySelectorAll("[data-topic-panel]").length, 2);
+    assert.equal(home.querySelectorAll("[data-topic-panel]:not([hidden])").length, 1);
+    for (const topic of [a, b]) {
+      assert.ok(home.querySelector(`a[data-topic-choice="${topic.id}"][href="/topics/${topic.id}/"]`));
+      assert.ok(documentAt("archive/index.html").querySelector(`main a[href="/topics/${topic.id}/archive/"]`));
+      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("[data-topic-feed]").getAttribute("href"), `/rss/topics/${topic.id}.xml`);
+      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
+    }
+    const aMain = mainAt(`topics/${a.id}/archive/2026-11-03/index.html`);
+    assert.match(aMain.textContent, /甲话题最新事实/);
+    assert.doesNotMatch(aMain.textContent, /乙话题最新事实|甲话题原始事实/);
+    assert.equal(aMain.querySelectorAll('.revision-list a').length, 2);
+    const old = mainAt(`topics/${a.id}/archive/2026-11-03/v000001/index.html`);
+    assert.match(old.textContent, /甲话题原始事实/);
+    assert.doesNotMatch(old.textContent, /甲话题最新事实|乙话题最新事实/);
+    assert.match(mainAt(`topics/${a.id}/archive/2026-11-03/v000002/index.html`).textContent, /甲话题最新事实/);
+    const bMain = mainAt(`topics/${b.id}/archive/2026-11-03/v000001/index.html`);
+    assert.match(bMain.textContent, /乙话题最新事实/);
+    assert.doesNotMatch(bMain.textContent, /甲话题|修订记录/);
+    assert.match(mainAt("archive/2026-11-03/opensource/v000001/index.html").textContent, /甲话题原始事实/);
+    assert.equal(documentAt("archive/2026-11-03/index.html").querySelector('link[rel="canonical"]').href,
+      `https://demo.invalid/topics/${a.id}/archive/2026-11-03/`);
+    const key = articleKey(base.items[0].id);
+    const bKey = articleKey(base.items[0].id, b.id);
+    assert.match(mainAt(`news/${key}/index.html`).textContent, /甲话题最新事实/);
+    assert.match(mainAt(`topics/${b.id}/news/${bKey}/index.html`).textContent, /乙话题最新事实/);
+    const feedA = read(`rss/topics/${a.id}.xml`), feedB = read(`rss/topics/${b.id}.xml`);
+    assert.match(feedA, /甲话题最新事实/);
+    assert.doesNotMatch(feedA, /乙话题最新事实|甲话题原始事实/);
+    assert.match(feedB, /乙话题最新事实/);
+    assert.doesNotMatch(feedB, /甲话题最新事实/);
+    const parseFeed = (feed) => new JSDOM(feed, { contentType: "application/xml" }).window.document;
+    assert.equal(parseFeed(feedA).querySelectorAll("item").length, 1);
+    assert.equal(parseFeed(feedB).querySelectorAll("item").length, 1);
+    assert.equal(parseFeed(feedA).querySelector("guid").textContent, `urn:ai-news-hub:article:${key}`);
+    assert.equal(parseFeed(feedB).querySelector("guid").textContent, `urn:ai-news-hub:article:${bKey}`);
+    const browser = new JSDOM(read("index.html"), { url: `https://demo.invalid/?topic=${b.id}`, runScripts: "outside-only" });
+    browser.window.matchMedia = () => ({ matches: false });
+    const client = read(browser.window.document.querySelector('script[type="module"]').getAttribute("src").slice(1));
+    browser.window.eval(client);
+    const visible = () => browser.window.document.querySelectorAll("[data-topic-panel]:not([hidden])");
+    assert.equal(visible().length, 1);
+    assert.equal(visible()[0].dataset.topicPanel, b.id);
+    assert.equal(browser.window.localStorage.getItem("news-hub-topic"), b.id);
+    const choice = browser.window.document.querySelector(`a[data-topic-choice="${a.id}"]`);
+    choice.dispatchEvent(new browser.window.MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
+    assert.equal(visible().length, 1);
+    assert.equal(visible()[0].dataset.topicPanel, a.id);
+    assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
+    assert.equal(browser.window.document.querySelector("[data-topic-feed]").getAttribute("href"), `/rss/topics/${a.id}.xml`);
+    browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
+    browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
+    assert.equal(visible()[0].dataset.topicPanel, b.id);
+    browser.window.close();
+  } finally { rmSync(dir, { recursive: true, force: true }); }
 });

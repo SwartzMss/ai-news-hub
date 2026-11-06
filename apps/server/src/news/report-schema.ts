@@ -31,11 +31,16 @@ export const RESEARCH_SCHEMA = {
     properties: Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
   } } },
 };
+export const PUBLIC_TOPIC_SCHEMA = {
+  type: 'object', additionalProperties: false, required: ['id', 'name'],
+  properties: { id: { type: 'string', pattern: '^t-[a-f0-9]{24}$' }, name: text(200) },
+};
 export const REPORT_SCHEMA = {
   $schema: 'http://json-schema.org/draft-07/schema#',
   type: 'object', additionalProperties: false,
   required: ['schemaVersion', 'reportId', 'runId', 'reportDate', 'channel', 'reviewStatus', 'title', 'collectedAt', 'items'],
   properties: {
+    topic: PUBLIC_TOPIC_SCHEMA,
     schemaVersion: { const: 1 }, reportId: text(256), runId: text(256), reportDate: { type: 'string', format: 'date' },
     channel: { const: 'opensource' }, reviewStatus: { const: 'pending' }, title: text(180),
     collectedAt: { type: 'string', format: 'date-time' }, items: {

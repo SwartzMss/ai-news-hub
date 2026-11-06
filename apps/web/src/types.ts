@@ -1,4 +1,13 @@
+export interface Topic {
+  id: string;
+  name: string;
+}
+export interface TopicSummary extends Topic {
+  latest: Report;
+  reportCount: number;
+}
 export interface Story {
+  topic: Topic;
   id: string;
   key: string;
   category: string;
@@ -20,7 +29,8 @@ export interface Story {
   first_approved_at: string;
 }
 export interface Report {
-  schema_version: 1;
+  schema_version: 1 | 2;
+  topic: Topic;
   report_id: string;
   report_date: string;
   channel: string;
@@ -30,6 +40,7 @@ export interface Report {
   items: Story[];
 }
 export interface PublicData {
+  topics: TopicSummary[];
   reports: Report[];
   latest: Report[];
   articles: Story[];
@@ -37,8 +48,19 @@ export interface PublicData {
   demo: boolean;
 }
 export interface Page {
-  kind: "home" | "channel" | "article" | "archive" | "date" | "report" | "404";
+  kind:
+    | "home"
+    | "topic"
+    | "channel"
+    | "article"
+    | "archive"
+    | "topicArchive"
+    | "date"
+    | "report"
+    | "404";
   path: string;
+  topicId?: string;
+  canonicalPath?: string;
   date?: string;
   version?: number;
   key?: string;

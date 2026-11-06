@@ -62,28 +62,71 @@ export async function buildPublic({
   if (!entry) throw Error("missing public client entry");
   const routes = [
     { kind: "home", path: "/" },
-    { kind: "channel", path: "/channel/opensource/" },
     { kind: "archive", path: "/archive/" },
+    { kind: "channel", path: "/channel/opensource/", canonicalPath: "/" },
   ];
-  for (const report of data.latest)
+  const topicRoot = (id) => `/topics/${id}/`;
+  const editionPath = (r, version = false) =>
+    `${topicRoot(r.topic.id)}archive/${r.report_date}/${version ? `v${String(r.version).padStart(6, "0")}/` : ""}`;
+  for (const topic of data.topics) {
+    routes.push(
+      { kind: "topic", path: topicRoot(topic.id), topicId: topic.id },
+      {
+        kind: "topicArchive",
+        path: topicRoot(topic.id) + "archive/",
+        topicId: topic.id,
+      },
+    );
+  }
+  for (const r of data.latest)
     routes.push({
       kind: "date",
-      date: report.report_date,
-      path: `/archive/${report.report_date}/`,
+      date: r.report_date,
+      topicId: r.topic.id,
+      path: editionPath(r),
     });
-  for (const report of data.reports)
+  for (const r of data.reports)
     routes.push({
       kind: "report",
-      date: report.report_date,
-      version: report.version,
-      path: `/archive/${report.report_date}/opensource/v${String(report.version).padStart(6, "0")}/`,
+      date: r.report_date,
+      version: r.version,
+      topicId: r.topic.id,
+      path: editionPath(r, true),
     });
-  for (const article of data.articles)
+  for (const story of data.articles) {
+    const path = topicRoot(story.topic.id) + `news/${story.key}/`;
+    routes.push(
+      { kind: "article", key: story.key, topicId: story.topic.id, path },
+      {
+        kind: "article",
+        key: story.key,
+        topicId: story.topic.id,
+        path: `/news/${story.key}/`,
+        canonicalPath: path,
+      },
+    );
+  }
+  const oldDates = new Set();
+  for (const r of data.reports.filter((r) => r.schema_version === 1)) {
+    if (!oldDates.has(r.report_date)) {
+      oldDates.add(r.report_date);
+      routes.push({
+        kind: "date",
+        date: r.report_date,
+        topicId: r.topic.id,
+        path: `/archive/${r.report_date}/`,
+        canonicalPath: editionPath(r),
+      });
+    }
     routes.push({
-      kind: "article",
-      key: article.key,
-      path: `/news/${article.key}/`,
+      kind: "report",
+      date: r.report_date,
+      version: r.version,
+      topicId: r.topic.id,
+      path: `/archive/${r.report_date}/opensource/v${String(r.version).padStart(6, "0")}/`,
+      canonicalPath: editionPath(r, true),
     });
+  }
   function write(path, content) {
     const target = join(output, path);
     mkdirSync(dirname(target), { recursive: true });
@@ -94,12 +137,18 @@ export async function buildPublic({
       (data.demo ? "[DEMO] " : "") +
       "AI News Hub · " +
       ({
-        home: "最新简报",
-        channel: "全部资讯",
-        archive: "往期简报",
+        home: "话题简报",
+        topic: data.topics.find((t) => t.id === page.topicId)?.name,
+        topicArchive:
+          (data.topics.find((t) => t.id === page.topicId)?.name ?? "") +
+          " · 往期简报",
+        channel: "全部话题",
+        archive: "话题归档",
         date: page.date,
         report: page.date + " 历史版本",
-        article: data.articles.find((x) => x.key === page.key)?.evidence_quote,
+        article: data.articles
+          .find((x) => x.key === page.key)
+          ?.fact_summary.split(/[。；\n]/u)[0],
         404: "页面不存在",
       }[page.kind] ?? "阅读");
     const html =
@@ -110,8 +159,10 @@ export async function buildPublic({
         ? '<meta name="robots" content="noindex,nofollow">'
         : "") +
       '<link rel="canonical" href="' +
-      xml(new URL(page.path, url).href) +
-      '"><link rel="alternate" type="application/rss+xml" title="AI News Hub RSS" href="/rss/all.xml">' +
+      xml(new URL(page.canonicalPath ?? page.path, url).href) +
+      '"><link rel="alternate" type="application/rss+xml" title="AI News Hub RSS" href="' +
+      (page.topicId ? `/rss/topics/${page.topicId}.xml` : "/rss/all.xml") +
+      '">' +
       (entry.css ?? [])
         .map((css) => '<link rel="stylesheet" href="/' + css + '">')
         .join("") +
@@ -127,11 +178,17 @@ export async function buildPublic({
   }
   write("rss/all.xml", rss(data, url.href));
   write("rss/opensource.xml", rss(data, url.href, "opensource"));
+  for (const topic of data.topics)
+    write(
+      `rss/topics/${topic.id}.xml`,
+      rss(data, url.href, undefined, topic.id),
+    );
   write(
     "data/index.json",
     JSON.stringify({
       schema_version: 1,
       demo: data.demo,
+      topics: data.topics,
       reports: data.latest,
       articles: data.current,
     }) + "\n",
@@ -140,6 +197,7 @@ export async function buildPublic({
     "sitemap.xml",
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
       routes
+        .filter((p) => !p.canonicalPath)
         .map(
           (p) => "<url><loc>" + xml(new URL(p.path, url).href) + "</loc></url>",
         )

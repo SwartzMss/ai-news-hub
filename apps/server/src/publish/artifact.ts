@@ -1,7 +1,7 @@
 import { Ajv } from "ajv";
 import addFormats from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
-import { ARCHIVE_SCHEMA } from "./archive-schema.js";
+import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA } from "./archive-schema.js";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { isDeepStrictEqual } from "node:util";
@@ -17,15 +17,16 @@ const validator = new Ajv({
 });
 (addFormats as unknown as FormatsPlugin)(validator);
 const validateArchive = validator.compile(ARCHIVE_SCHEMA);
+const validateArchiveV2 = validator.compile(ARCHIVE_V2_SCHEMA);
 export const sha256 = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 export function reviewedReport(db: DatabaseSync, id: string) {
   const row = db
     .prepare(
-      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,t.status run_status
+      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,n.public_topic_json,t.task_id,t.configuration_json,t.status run_status
  FROM reports r JOIN (
- SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel FROM news_runs
- UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel FROM codex_news_runs
+ SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel,NULL public_topic_json FROM news_runs
+ UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel,public_topic_json FROM codex_news_runs
  ) n ON n.report_id=r.id AND n.run_id=r.run_id JOIN task_runs t ON t.id=r.run_id WHERE r.id=?`,
     )
     .get(id);
@@ -62,6 +63,13 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       )
         throw Error();
     if(!['verified','codex_reported'].includes(String(row.source_mode))||(row.source_id==='github-blog'&&row.source_mode!=='verified'))throw Error();
+    const topic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
+    if (topic !== undefined) {
+      const configuration = JSON.parse(String(row.configuration_json));
+      const expected = {id: 't-' + sha256(String(row.task_id)).slice(0,24), name: configuration.topic};
+      if (!isDeepStrictEqual(topic, expected)) throw Error();
+    }
+    if (!isDeepStrictEqual(document.topic, topic)) throw Error();
     const proposal = {
       title: document.title,
       items: document.items.map(
@@ -87,6 +95,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       runId: String(row.run_id),
       reportDate: String(row.report_date),
       collectedAt: String(row.collected_at),
+      ...(topic === undefined ? {} : {topic}),
     }, row.source_mode as 'verified'|'codex_reported');
     if (!isDeepStrictEqual(rebuilt, document)) throw Error();
     const links = db
@@ -120,7 +129,8 @@ export function archiveArtifact(
 ) {
   const d = report.document;
   const document = {
-    schema_version: 1,
+    schema_version: d.topic ? 2 : 1,
+    ...(d.topic ? {topic: d.topic} : {}),
     report_id: d.reportId,
     report_date: d.reportDate,
     channel: d.channel,
@@ -148,9 +158,11 @@ export function archiveArtifact(
       },
     })),
   };
-  if (!validateArchive(document))
+  if (!(d.topic ? validateArchiveV2(document) : validateArchive(document)))
     throw new HttpError(409, "archive_schema_invalid");
   const content = JSON.stringify(document, null, 2) + "\n";
-  const path = `reports/${d.reportDate.replaceAll("-", "/")}/${d.channel}/v${String(report.version).padStart(6, "0")}.json`;
+  const path = d.topic
+    ? `reports/topics/${d.topic.id}/${d.reportDate.replaceAll("-", "/")}/v${String(report.version).padStart(6, "0")}.json`
+    : `reports/${d.reportDate.replaceAll("-", "/")}/${d.channel}/v${String(report.version).padStart(6, "0")}.json`;
   return { path, content, hash: sha256(content) };
 }

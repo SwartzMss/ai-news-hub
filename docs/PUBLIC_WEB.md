@@ -1,6 +1,6 @@
 # 公共阅读站与 RSS
 
-Issue #8 使用 React 组件和 Vite 在构建时渲染真实静态 HTML：门户首页、开源频道、来源详情、日期归档与不可覆盖的版本页。只发布独立 `dist/web`；浏览器不连接 Backend，不包含管理写操作，即使本机离线也能阅读已生成历史。当前实际数据合同只有 opensource，其他频道不展示假内容。
+Issue #8 使用 React 组件和 Vite 在构建时渲染真实静态 HTML：话题首页、来源详情、分话题日期归档与不可覆盖的版本页。只发布独立 `dist/web`；浏览器不连接 Backend，不包含管理写操作，即使本机离线也能阅读已生成历史。话题来自已归档任务，文章 category 只是条目标签，不作为一级话题。未归档的任务不生成空话题。
 
 ## 构建
 
@@ -19,21 +19,25 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 
 ## 数据与历史
 
-每个输入文件须符合 [archive v1 Schema](schema/report-archive-v1.schema.json)，文件路径必须为 `YYYY/MM/DD/opensource/vNNNNNN.json` 且与内部日期/版本一致。只接受 approved、source_only 数据；拒绝未知字段、非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
+输入支持历史 [archive v1 Schema](schema/report-archive-v1.schema.json) 的 `YYYY/MM/DD/opensource/vNNNNNN.json`，以及带 `topic: {id,name}` 的 [archive v2 Schema](schema/report-archive-v2.schema.json) 的 `topics/<id>/YYYY/MM/DD/vNNNNNN.json`，路径须与内部话题/日期/版本一致。只接受 approved 数据及约定的 source_only/codex_reported 来源模式；拒绝未知字段、非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
 
-同日期/频道展示最高版本；所有版本仍生成独立页面。当前列表与 RSS 只使用各日最新版本，修订移除的条目不会从旧版本混回来；历史版本正文完整保留，详情链接则指向该来源目前保留的最新内容。跨日相同条目 ID 合并为一个来源详情，URL 为 ID 的 SHA-256 前 32 位；不根据标题生成容易改变的链接。详情/归档明确区分事实摘要、分析推断、精确引文和三类来源时间，人工允许发布不代表独立事实核验。
+同话题/日期/频道展示最高版本；所有版本仍生成独立页面。当前列表与 RSS 只使用各日最新版本，修订移除的条目不会从旧版本混回来；历史版本正文完整保留，详情链接则指向该来源目前保留的最新内容。同话题跨日相同条目 ID 合并为一个来源详情，新来源键为 SHA-256(topic-id + ":" + item-id) 前 32 位。历史 v1 来源保留原有 ID 哈希键及 GUID，映射后同话题的新归档继续复用；其他话题的相同来源 ID 使用不同键。详情/归档明确区分事实摘要、分析推断、精确引文和三类来源时间，人工允许发布不代表独立事实核验。
 
 | 路径 | 内容 |
 | --- | --- |
-| `/` | 最新一期门户首页、重点条目 |
-| `/channel/opensource/` | 按日报日期、重要性排列的当前来源列表 |
-| `/news/<stable-key>/` | 来源事实摘要、分析、引文、原文链接与时间 |
-| `/archive/` | 可用日期与当日最新日报 |
-| `/archive/YYYY-MM-DD/` | 当日最新版本 |
-| `/archive/YYYY-MM-DD/opensource/vNNNNNN/` | 完整历史版本 |
-| `/rss/all.xml`、`/rss/opensource.xml` | RSS 2.0 全站/频道订阅 |
+| `/` | 选择话题，仅显示所选话题的最新简报 |
+| `/topics/<id>/` | 该话题的最新一期 |
+| `/topics/<id>/news/<stable-key>/` | 该话题的来源详情 |
+| `/archive/` | 话题归档目录 |
+| `/topics/<id>/archive/` | 该话题按月份排列的期次 |
+| `/topics/<id>/archive/YYYY-MM-DD/` | 该话题当日最新版本 |
+| `/topics/<id>/archive/YYYY-MM-DD/vNNNNNN/` | 该话题完整历史版本 |
+| `/rss/topics/<id>.xml` | 该话题独立 RSS |
+| `/rss/all.xml`、`/rss/opensource.xml` | 兼容全站订阅 |
 | `/data/index.json` | 仅公开日报/来源的静态索引 |
 | `/sitemap.xml`、`/robots.txt`、`/404.html` | 站点索引与真实不存在页面 |
+
+历史 `/news/<stable-key>/`、`/archive/YYYY-MM-DD/`、`/archive/YYYY-MM-DD/opensource/vNNNNNN/` 继续生成，canonical 指向对应话题页面；旧 `/channel/opensource/` 改为话题目录。可选的 `reports/topics.json` 仅为旧 v1 报告提供 `{schema_version:1, assignments:[{report_id, topic:{id,name}}]}` 归属映射，不改旧文件与哈希；未映射的 v1 归入“历史简报”。映射不得重复、引用不存在的报告或覆盖 v2 归属，非法映射会终止构建。
 
 RSS 最多包含 100 个当前来源条目，GUID 为 `urn:ai-news-hub:article:<stable-key>`，修订与重复构建不会更改。pubDate 使用该 ID 最早人工允许发布的时间；来源原始发布时间另列在描述/详情，不用抓取时间冒充。链接指向静态详情，描述另含原文 URL。XML 文本统一转义，非法字符拒绝构建。输出不使用当前构建时钟，因此同一输入内容确定。没有基于全站数据的账户、管理台、收藏同步或复杂搜索。
 
@@ -70,4 +74,4 @@ CI 的 `npm test` 包含公开站构建、路由/两日期/历史版本、Schema
 
 归档 v1 现支持 verification=codex_reported 与 fetched_at=null，表示来源由 Codex 提供而非 Backend 抓取。公共页面和 RSS 不展示不存在的抓取时间；source_only 历史归档保持兼容。使用独立公共站构建器的部署需同步更新 Schema 与生成器后读取新归档。
 
-公共阅读站以最新一期、全部资讯和往期归档组织内容，取消宣传区、阅读指南与静态/免登录说明；首页直接展示最新已归档简报及其条目，历史首页按月份列出期次，日期/版本页按对应报告快照呈现，修订记录折叠。展示标题取现有事实摘要首句，原始引文保留在可展开来源区；不修改归档 JSON、现有 URL 或 RSS GUID。缺失来源日期不占位，主题偏好在页面跳转后保留。此布局不根据构建时钟把旧报告标成“今日”。
+公共阅读站按任务话题组织：一个任务对应稳定话题，首次归档后出现在首页选择器中；首页只展示当前话题的最新一期，每个话题有独立的日期/版本归档、详情与 RSS。同一天不同话题和相同来源条目互不覆盖。浏览器 localStorage 只保存话题 ID 与明暗偏好，首页有效的 `?topic=<id>` 优先于已保存偏好；禁用脚本或存储时仍可通过链接阅读。旧归档 JSON 不改写，兼容原有日期、版本与来源链接。

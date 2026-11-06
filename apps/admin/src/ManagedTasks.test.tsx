@@ -46,7 +46,6 @@ test("editor submits ordered prompts and a kind-specific plan with explicit auto
   const api = fixture();
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
-  fireEvent.click(screen.getByText("更多"));
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[0]);
   fireEvent.click(screen.getAllByRole("button", { name: "上移" })[1]);
   fireEvent.click(screen.getByLabelText("自动发布到 GitHub"));
@@ -73,7 +72,6 @@ test("deletion requires confirmation and uses DELETE without a request body", as
   const api = fixture();
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
-  fireEvent.click(screen.getByText("更多"));
   fireEvent.click(screen.getByRole("button", { name: "删除" }));
   expect(api.mock.calls.some((call) => call[3] === "DELETE")).toBe(false);
   fireEvent.click(screen.getByRole("button", { name: "确认删除" }));
@@ -105,12 +103,10 @@ test("switching the editor target loads the new task instead of carrying previou
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
-  fireEvent.click(screen.getAllByText("更多")[0]);
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[0]);
   expect((screen.getByLabelText("任务主题") as HTMLInputElement).value).toBe(
     "模型公告",
   );
-  fireEvent.click(screen.getAllByText("更多")[1]);
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[1]);
   expect((screen.getByLabelText("任务主题") as HTMLInputElement).value).toBe(
     "新主题",
@@ -275,10 +271,185 @@ test("deleting the last task on a page returns to a valid page", async () => {
   await screen.findByRole("link", { name: "分页任务 0" });
   fireEvent.click(screen.getByRole("button", { name: "下一页" }));
   await screen.findByRole("link", { name: "分页任务 10" });
-  fireEvent.click(screen.getByText("更多"));
   fireEvent.click(screen.getByRole("button", { name: "删除" }));
   fireEvent.click(screen.getByRole("button", { name: "确认删除" }));
   await screen.findByRole("link", { name: "分页任务 0" });
   expect(screen.queryByRole("link", { name: "分页任务 10" })).toBeNull();
   expect(screen.queryByRole("button", { name: "下一页" })).toBeNull();
+});
+
+test("automatic publication switch saves the complete paused task configuration", async () => {
+  let saved = {
+    ...task,
+    status: "paused",
+    configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
+  };
+  const api = vi
+    .fn()
+    .mockImplementation(
+      async (
+        path: string,
+        _signal: AbortSignal,
+        body: typeof saved.configuration & { status: string },
+        method: string,
+      ) => {
+        if (method === "PUT") {
+          saved = { ...saved, status: body.status, configuration: body };
+          return { task: saved };
+        }
+        return path === "/tasks" ? { tasks: [saved] } : { runs: [] };
+      },
+    );
+  render(<ManagedTasks api={api} />);
+  const toggle = await screen.findByRole("switch", {
+    name: "自动发布：模型公告",
+  });
+  expect((toggle as HTMLInputElement).checked).toBe(false);
+  expect(screen.queryByText("更多")).toBeNull();
+  expect(document.querySelector("details")).toBeNull();
+  fireEvent.click(toggle);
+  await waitFor(() =>
+    expect(api.mock.calls.find((call) => call[3] === "PUT")?.[2]).toEqual({
+      name: task.name,
+      ...saved.configuration,
+      autoPublish: true,
+      status: "paused",
+    }),
+  );
+  await waitFor(() =>
+    expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(true),
+  );
+});
+
+test("failed automatic publication save keeps its previous state and displays the error", async () => {
+  const api = vi
+    .fn()
+    .mockImplementation(
+      async (
+        path: string,
+        _signal: AbortSignal,
+        _body: unknown,
+        method: string,
+      ) => {
+        if (method === "PUT") throw new Error("保存失败");
+        return path === "/tasks" ? { tasks: [task] } : { runs: [] };
+      },
+    );
+  render(<ManagedTasks api={api} />);
+  fireEvent.click(
+    await screen.findByRole("switch", { name: "自动发布：模型公告" }),
+  );
+  await screen.findByRole("alert");
+  expect(screen.getByRole("alert").textContent).toContain("请求失败，请重试。");
+  expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(false);
+  expect((screen.getByRole("switch") as HTMLInputElement).disabled).toBe(false);
+});
+
+test("schedule pause and enable are direct controls preserving task configuration", async () => {
+  let saved = {
+    ...task,
+    configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
+  };
+  const api = vi
+    .fn()
+    .mockImplementation(
+      async (
+        path: string,
+        _signal: AbortSignal,
+        body: typeof saved.configuration & { status: string },
+        method: string,
+      ) => {
+        if (method === "PUT") {
+          saved = { ...saved, status: body.status };
+          return { task: saved };
+        }
+        return path === "/tasks" ? { tasks: [saved] } : { runs: [] };
+      },
+    );
+  render(<ManagedTasks api={api} />);
+  fireEvent.click(await screen.findByRole("button", { name: "暂停定时" }));
+  await screen.findByRole("button", { name: "启用定时" });
+  expect(api.mock.calls.find((call) => call[3] === "PUT")?.[2]).toEqual({
+    name: task.name,
+    ...saved.configuration,
+    status: "paused",
+  });
+  fireEvent.click(screen.getByRole("button", { name: "启用定时" }));
+  await screen.findByRole("button", { name: "暂停定时" });
+});
+
+test.each(["running", "publishing"])(
+  "task detail disables editing, switch and deletion during %s",
+  async (mode) => {
+    const api = vi
+      .fn()
+      .mockImplementation(async (path: string) =>
+        path === "/tasks"
+          ? { tasks: [task] }
+          : {
+              runs: [
+                {
+                  status: mode === "running" ? "running" : "succeeded",
+                  publishing: mode === "publishing",
+                },
+              ],
+            },
+      );
+    render(<ManagedTasks api={api} taskId={task.id} />);
+    const toggle = await screen.findByRole("switch", {
+      name: "自动发布：模型公告",
+    });
+    expect((toggle as HTMLInputElement).disabled).toBe(true);
+    for (const name of ["编辑任务", "编辑", "删除"])
+      expect(
+        (screen.getByRole("button", { name }) as HTMLButtonElement)
+          .disabled,
+      ).toBe(true);
+    expect(
+      (screen.getByRole("button", { name: "停止执行" }) as HTMLButtonElement)
+        .disabled,
+    ).toBe(false);
+  },
+);
+
+test("automatic publication cannot be changed again while the save is pending", async () => {
+  let completeSave!: (value: unknown) => void;
+  let enabled = false;
+  const api = vi
+    .fn()
+    .mockImplementation(
+      async (
+        path: string,
+        _signal: AbortSignal,
+        _body: unknown,
+        method: string,
+      ) => {
+        if (method === "PUT") {
+          await new Promise((resolve) => {
+            completeSave = resolve;
+          });
+          enabled = true;
+          return {};
+        }
+        return path === "/tasks"
+          ? {
+              tasks: [
+                { ...task, configuration: { ...config, autoPublish: enabled } },
+              ],
+            }
+          : { runs: [] };
+      },
+    );
+  render(<ManagedTasks api={api} />);
+  fireEvent.click(await screen.findByRole("switch"));
+  expect((screen.getByRole("switch") as HTMLInputElement).disabled).toBe(true);
+  expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(false);
+  expect(
+    (screen.getByRole("button", { name: "立即运行" }) as HTMLButtonElement)
+      .disabled,
+  ).toBe(true);
+  completeSave({});
+  await waitFor(() =>
+    expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(true),
+  );
 });

@@ -139,3 +139,17 @@ test('more than twenty configured Prompts is rejected and stopping the final Pro
   assert.equal(s.adapter.calls.length,2);assert.equal((await s.request('GET',`/runs/${run.id}`)).json().turns.length,2);assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);
  }finally{await s.close();}
 });
+
+test('editing publication, names and prompts preserves due slot; scheduling changes recalculate it',async()=>{
+ const {openDatabase}=await import('../dist/apps/server/src/db/database.js');
+ const {TaskEngine}=await import('../dist/apps/server/src/tasks/engine.js');
+ const dir=mkdtempSync('/tmp/schedule-edit-'),db=openDatabase(dir),engine=new TaskEngine(db,{adapter:new ControlledAdapter(),concurrency:1,maxQueue:20,timeoutMs:120000,cwd:dir});
+ try{
+  const input={...configuration,schedule:{kind:'interval',minutes:5}},task=engine.createTask(input),due='2026-11-04T00:00:00.000Z';
+  db.prepare('UPDATE tasks SET next_run_at=? WHERE id=?').run(due,task.id);
+  for(const change of [{autoPublish:true},{name:'Renamed'},{prompts:['New prompt']},{topic:'Another topic'}])assert.equal(engine.updateTask(task.id,{...input,...change}).next_run_at,due);
+  assert.notEqual(engine.updateTask(task.id,{...input,schedule:{kind:'interval',minutes:10}}).next_run_at,due);
+  assert.equal(engine.updateTask(task.id,{...input,status:'paused'}).next_run_at,null);
+  assert.ok(Date.parse(engine.updateTask(task.id,input).next_run_at)>Date.now());
+ }finally{await engine.close();db.close();rmSync(dir,{recursive:true,force:true});}
+});

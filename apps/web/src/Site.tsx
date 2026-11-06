@@ -1,174 +1,30 @@
-import type { PublicData, Page, Story, Report } from "./types";
-
-const categories: Record<string, string> = {
-  ai: "AI 与大模型",
-  opensource: "开源项目",
-  developer_tools: "开发工具",
-  security: "安全动态",
-  industry: "公司与产业",
-  other: "综合资讯",
-};
-const reportPath = (r: Report) =>
-  `/archive/${r.report_date}/opensource/v${String(r.version).padStart(6, "0")}/`;
-const dateLabel = (value: string) =>
-  new Intl.DateTimeFormat("zh-CN", {
-    timeZone: "UTC",
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  }).format(new Date(value + "T00:00:00Z"));
-const timeLabel = (value: string) =>
-  new Date(value).toLocaleString("zh-CN", {
-    timeZone: "Asia/Shanghai",
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-  });
-// Presentation only: keep the archived wording and original quote unchanged.
-function lead(story: Story) {
-  const index = story.fact_summary.search(/[。；\n]/u);
-  return index > 0
-    ? {
-        title: story.fact_summary.slice(0, index),
-        rest: story.fact_summary.slice(index + 1).trim(),
-      }
-    : { title: story.fact_summary, rest: "" };
-}
-function counts(items: Story[]) {
-  return Object.entries(
-    items.reduce<Record<string, number>>((result, item) => {
-      result[item.category] = (result[item.category] ?? 0) + 1;
-      return result;
-    }, {}),
-  ).sort((a, b) => b[1] - a[1]);
-}
-function Source({ story }: { story: Story }) {
-  return (
-    <details className="source-details">
-      <summary>来源与引文</summary>
-      <blockquote>{story.evidence_quote}</blockquote>
-      <a
-        href={story.source.canonical_url}
-        target="_blank"
-        rel="noopener noreferrer"
-      >
-        {story.source.name} · 查看原文 ↗
-      </a>
-      {(story.source.published_at ||
-        story.source.event_at ||
-        story.source.fetched_at) && (
-        <dl>
-          {story.source.published_at && (
-            <>
-              <dt>来源发布时间</dt>
-              <dd>
-                <time dateTime={story.source.published_at}>
-                  {timeLabel(story.source.published_at)}
-                </time>
-              </dd>
-            </>
-          )}
-          {story.source.event_at && (
-            <>
-              <dt>事件时间</dt>
-              <dd>
-                <time dateTime={story.source.event_at}>
-                  {timeLabel(story.source.event_at)}
-                </time>
-              </dd>
-            </>
-          )}
-          {story.source.fetched_at && (
-            <>
-              <dt>抓取时间</dt>
-              <dd>
-                <time dateTime={story.source.fetched_at}>
-                  {timeLabel(story.source.fetched_at)}
-                </time>
-              </dd>
-            </>
-          )}
-        </dl>
-      )}
-      {story.verification === "codex_reported" && (
-        <p className="source-attribution">来源由 Codex 提供</p>
-      )}
-    </details>
-  );
-}
-function Row({
-  story,
-  index,
-  level = 2,
-}: {
-  story: Story;
-  index: number;
-  level?: 2 | 3;
-}) {
-  const Heading = level === 3 ? "h3" : "h2",
-    text = lead(story);
-  return (
-    <article className="news-row">
-      <span className="news-number" aria-hidden="true">
-        {String(index + 1).padStart(2, "0")}
-      </span>
-      <div className="news-content">
-        <div className="news-meta">
-          <span className="category-label">
-            {categories[story.category] ?? story.category}
-          </span>
-          <span>{story.source.name}</span>
-        </div>
-        <Heading>
-          <a href={`/news/${story.key}/`}>{text.title}</a>
-        </Heading>
-        {text.rest && <p className="news-summary">{text.rest}</p>}
-        <div className="news-footer">
-          <a href={`/news/${story.key}/`}>查看详情</a>
-          <a
-            href={story.source.canonical_url}
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            原文 ↗
-          </a>
-        </div>
-      </div>
-    </article>
-  );
-}
-function Empty() {
-  return (
-    <div className="empty">
-      <h2>还没有已发布的日报</h2>
-    </div>
-  );
-}
-function EditionLinks({
-  reports,
-  versioned = false,
-}: {
-  reports: Report[];
-  versioned?: boolean;
-}) {
-  return (
-    <ol className="edition-links">
-      {reports.map((r) => (
-        <li key={r.report_id}>
-          <a href={versioned ? reportPath(r) : `/archive/${r.report_date}/`}>
-            <time dateTime={r.report_date}>{dateLabel(r.report_date)}</time>
-            <strong>{r.title}</strong>
-            <span>{r.items.length} 条</span>
-          </a>
-        </li>
-      ))}
-    </ol>
-  );
-}
+import type { PublicData, Page } from "./types";
+import {
+  categories,
+  dateLabel,
+  lead,
+  counts,
+  Source,
+  Row,
+  Empty,
+  EditionLinks,
+} from "./ReadingParts";
+import { issuePath, topicArchivePath } from "./paths";
+import { Shell } from "./Shell";
+import { TopicHome, TopicDirectory } from "./TopicHome";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
+  if (page.kind === "home") return <TopicHome data={data} />;
+  if (page.kind === "channel" || page.kind === "archive")
+    return <TopicDirectory data={data} archive={page.kind === "archive"} />;
+  const fullData = data;
+  const topic = fullData.topics.find((t) => t.id === page.topicId);
+  data = {
+    ...data,
+    reports: data.reports.filter((r) => r.topic.id === page.topicId),
+    latest: data.latest.filter((r) => r.topic.id === page.topicId),
+    articles: data.articles.filter((r) => r.topic.id === page.topicId),
+    current: data.current.filter((r) => r.topic.id === page.topicId),
+  };
   const latest = data.latest[0],
     latestDate = latest?.report_date;
   const story = data.articles.find((item) => item.key === page.key);
@@ -181,7 +37,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       : daily;
   const selectedStories = selected?.items.map((item) => ({
     ...item,
-    key: data.articles.find((s) => s.id === item.id)!.key,
+    key: item.key,
     report_date: selected.report_date,
     report_version: selected.version,
     first_approved_at: selected.approved_at,
@@ -189,7 +45,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
   const latestStories =
     latest?.items.map((item) => ({
       ...item,
-      key: data.articles.find((s) => s.id === item.id)!.key,
+      key: item.key,
       report_date: latest.report_date,
       report_version: latest.version,
       first_approved_at: latest.approved_at,
@@ -202,22 +58,17 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       )
     : undefined;
   const nav =
-    page.kind === "home" ||
+    page.kind === "topic" ||
     ((page.kind === "article" || page.kind === "date") &&
       (story?.report_date ?? selected?.report_date) === latestDate)
       ? "latest"
-      : page.kind === "channel"
-        ? "all"
-        : "archive";
+      : "archive";
   const months = [
     ...new Set(data.latest.map((r) => r.report_date.slice(0, 7))),
   ];
   const versions = selected
     ? data.reports.filter((r) => r.report_date === selected.report_date)
     : [];
-  const categoryCounts = counts(
-    page.kind === "home" ? latestStories : data.current,
-  );
   const aside = selectedStories?.length ? (
     <aside className="reading-aside">
       <nav aria-label="本期目录">
@@ -234,11 +85,14 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         </ol>
       </nav>
     </aside>
-  ) : page.kind === "home" && data.latest.length > 1 ? (
+  ) : page.kind === "topic" && data.latest.length > 1 ? (
     <aside className="reading-aside">
       <h2>往期简报</h2>
       <EditionLinks reports={data.latest.slice(1, 6)} />
-      <a className="aside-more" href="/archive/">
+      <a
+        className="aside-more"
+        href={topicArchivePath(page.topicId ?? "legacy")}
+      >
         全部往期 →
       </a>
     </aside>
@@ -257,8 +111,8 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         href={
           owner.version ===
           data.latest.find((r) => r.report_date === owner.report_date)?.version
-            ? `/archive/${owner.report_date}/`
-            : reportPath(owner)
+            ? issuePath(owner)
+            : issuePath(owner, true)
         }
       >
         阅读整期 →
@@ -266,52 +120,21 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
     </aside>
   ) : null;
   return (
-    <div className="site-shell">
-      <a className="skip-link" href="#content">
-        跳到正文
-      </a>
-      <header className="masthead">
-        <a className="brand" href="/" aria-label="AI News Hub 首页">
-          <span className="brand-mark" aria-hidden="true">
-            N<span />
-          </span>
-          <span>AI News Hub</span>
-        </a>
-        <nav className="site-nav" aria-label="主导航">
-          <a href="/" aria-current={nav === "latest" ? "page" : undefined}>
-            最新简报
-          </a>
-          <a
-            href="/channel/opensource/"
-            aria-current={nav === "all" ? "page" : undefined}
-          >
-            全部资讯
-          </a>
-          <a
-            href="/archive/"
-            aria-current={nav === "archive" ? "page" : undefined}
-          >
-            往期归档
-          </a>
-        </nav>
-        <div className="header-actions">
-          <a href="/rss/all.xml">RSS 订阅</a>
-          <button
-            id="theme-toggle"
-            aria-label="切换明暗主题"
-            aria-pressed="false"
-            type="button"
-          >
-            ◐
-          </button>
-        </div>
-      </header>
-      {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
+    <Shell
+      data={fullData}
+      topic={topic}
+      active={nav === "latest" ? "topics" : "archive"}
+      page="reader"
+    >
       <div className={`reading-layout${aside ? " has-aside" : ""}`}>
         <main id="content">
-          {page.kind === "home" &&
+          {page.kind === "topic" &&
             (latest ? (
               <>
+                <div className="topic-heading">
+                  <h1>{topic?.name}</h1>
+                  <span>{topic?.reportCount} 期简报</span>
+                </div>
                 <header className="issue-header latest-header">
                   <div className="issue-topline">
                     <span className="issue-label">最新一期</span>
@@ -319,24 +142,18 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                       {dateLabel(latest.report_date)}
                     </time>
                   </div>
-                  <h1>{latest.title}</h1>
+                  <h2>{latest.title}</h2>
                   <div className="issue-meta">
                     <span>{latest.items.length} 条资讯</span>
-                    <a href={`/archive/${latest.report_date}/`}>阅读整期</a>
-                    <a href="/archive/">查看往期</a>
+                    <a href={issuePath(latest)}>阅读整期</a>
+                    <a href={topicArchivePath(page.topicId ?? "legacy")}>
+                      查看往期
+                    </a>
                   </div>
                 </header>
-                <nav className="category-links" aria-label="本期分类">
-                  {categoryCounts.map(([key, n]) => (
-                    <a key={key} href={`/channel/opensource/#category-${key}`}>
-                      {categories[key] ?? key}
-                      <span>{n}</span>
-                    </a>
-                  ))}
-                </nav>
                 <div className="news-list">
                   {latestStories.map((item, i) => (
-                    <Row key={item.id} story={item} index={i} />
+                    <Row key={item.id} story={item} index={i} level={3} />
                   ))}
                 </div>
               </>
@@ -346,7 +163,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 <Empty />
               </>
             ))}
-          {page.kind === "archive" && (
+          {page.kind === "topicArchive" && (
             <>
               <header className="page-heading">
                 <p className="section-kicker">按日期归档</p>
@@ -364,7 +181,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                         .filter((r) => r.report_date.startsWith(month))
                         .map((r) => (
                           <li className="archive-edition" key={r.report_id}>
-                            <a href={`/archive/${r.report_date}/`}>
+                            <a href={issuePath(r)}>
                               <div className="archive-date">
                                 <strong>{r.report_date.slice(8)}</strong>
                                 <span>
@@ -406,48 +223,12 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
               )}
             </>
           )}
-          {page.kind === "channel" && (
-            <>
-              <header className="page-heading">
-                <p className="section-kicker">分类浏览</p>
-                <h1>全部资讯</h1>
-                <span>{data.current.length} 条</span>
-              </header>
-              <nav className="category-links" aria-label="资讯分类">
-                {categoryCounts.map(([key, n]) => (
-                  <a key={key} href={`#category-${key}`}>
-                    {categories[key] ?? key}
-                    <span>{n}</span>
-                  </a>
-                ))}
-              </nav>
-              {!data.current.length ? (
-                <Empty />
-              ) : (
-                categoryCounts.map(([key, n]) => (
-                  <section
-                    className="category-section"
-                    id={`category-${key}`}
-                    key={key}
-                  >
-                    <h2>
-                      {categories[key] ?? key}
-                      <span>{n}</span>
-                    </h2>
-                    {data.current
-                      .filter((item) => item.category === key)
-                      .map((item, i) => (
-                        <Row key={item.key} story={item} index={i} level={3} />
-                      ))}
-                  </section>
-                ))
-              )}
-            </>
-          )}
           {["date", "report"].includes(page.kind) && selected && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
-                <a href="/archive/">往期归档</a>
+                <a href={topicArchivePath(page.topicId ?? "legacy")}>
+                  往期归档
+                </a>
                 <span>/</span>
                 <time dateTime={selected.report_date}>
                   {dateLabel(selected.report_date)}
@@ -466,9 +247,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 </div>
                 <h1>{selected.title}</h1>
                 {page.kind === "report" && (
-                  <a href={`/archive/${selected.report_date}/`}>
-                    查看本日最新版 →
-                  </a>
+                  <a href={issuePath(selected)}>查看本日最新版 →</a>
                 )}
               </header>
               {versions.length > 1 && (
@@ -484,7 +263,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                             : undefined
                         }
                         key={r.version}
-                        href={reportPath(r)}
+                        href={issuePath(r, true)}
                       >
                         第 {r.version} 版
                       </a>
@@ -537,11 +316,15 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {page.kind === "article" && story && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
-                <a href="/archive/">往期归档</a>
+                <a href={topicArchivePath(page.topicId ?? "legacy")}>
+                  往期归档
+                </a>
                 <span>/</span>
                 <a
                   href={
-                    owner ? reportPath(owner) : `/archive/${story.report_date}/`
+                    owner
+                      ? issuePath(owner, true)
+                      : `${topicArchivePath(story.topic.id)}${story.report_date}/`
                   }
                 >
                   {dateLabel(story.report_date)}
@@ -587,13 +370,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         </main>
         {aside}
       </div>
-      <footer>
-        <a href="/">AI News Hub</a>
-        <nav aria-label="页脚导航">
-          <a href="/archive/">往期归档</a>
-          <a href="/rss/all.xml">RSS</a>
-        </nav>
-      </footer>
-    </div>
+    </Shell>
   );
 }
