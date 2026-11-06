@@ -170,9 +170,7 @@ test("an active execution replaces Run with Stop and separates the schedule stat
   expect(screen.getByRole("status").textContent).toBe("运行中");
   expect(screen.getByRole("button", { name: "停止执行" })).toBeTruthy();
   expect(screen.queryByRole("button", { name: "立即运行" })).toBeNull();
-  expect(
-    screen.getByRole("link", { name: "运行记录" }).getAttribute("href"),
-  ).toContain("managed-one");
+  expect(screen.queryByRole("link", { name: "运行记录" })).toBeNull();
 });
 
 test("task editor is a separate modal that closes on cancel and restores focus", async () => {
@@ -190,4 +188,97 @@ test("task editor is a separate modal that closes on cancel and restores focus",
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(document.documentElement.style.overflow).toBe("");
   expect(document.activeElement).toBe(trigger);
+});
+
+test("many tasks are paged and only the visible tasks load execution state", async () => {
+  const tasks = Array.from({ length: 23 }, (_, i) => ({
+    ...task,
+    id: `task-${i}`,
+    name: `任务 ${i}`,
+    configuration: { ...config, topic: `任务 ${i}` },
+  }));
+  const api = vi
+    .fn()
+    .mockImplementation(async (path: string) =>
+      path === "/tasks" ? { tasks } : { runs: [] },
+    );
+  render(<ManagedTasks api={api} />);
+  await screen.findByRole("link", { name: "任务 0" });
+  expect(screen.queryByRole("link", { name: "任务 10" })).toBeNull();
+  expect(api.mock.calls.filter(([p]) => p.includes("/runs"))).toHaveLength(10);
+  fireEvent.click(screen.getByRole("button", { name: "下一页" }));
+  await screen.findByRole("link", { name: "任务 10" });
+  await new Promise((resolve) => setTimeout(resolve, 300));
+  expect(screen.getByRole("link", { name: "任务 10" })).toBeTruthy();
+  expect(screen.queryByRole("link", { name: "任务 0" })).toBeNull();
+  fireEvent.change(screen.getByRole("searchbox", { name: "搜索任务" }), {
+    target: { value: "任务 22" },
+  });
+  await screen.findByRole("link", { name: "任务 22" });
+  expect(screen.queryByRole("button", { name: "下一页" })).toBeNull();
+  expect(screen.queryByRole("link", { name: "运行记录" })).toBeNull();
+});
+test("plan filter handles manual, enabled and paused schedules without hiding the editor", async () => {
+  const tasks = [
+    task,
+    {
+      ...task,
+      id: "daily",
+      configuration: {
+        ...config,
+        topic: "每日模型",
+        schedule: { kind: "daily", time: "09:00" },
+      },
+    },
+  ];
+  const api = vi
+    .fn()
+    .mockImplementation(async (path: string) =>
+      path === "/tasks" ? { tasks } : { runs: [] },
+    );
+  render(<ManagedTasks api={api} />);
+  await screen.findByText("模型公告");
+  fireEvent.change(screen.getByRole("combobox", { name: "执行计划筛选" }), {
+    target: { value: "scheduled" },
+  });
+  await screen.findByRole("link", { name: "每日模型" });
+  await waitFor(() =>
+    expect(screen.queryByRole("link", { name: "模型公告" })).toBeNull(),
+  );
+  fireEvent.click(screen.getByRole("button", { name: "编辑" }));
+  await screen.findByRole("dialog", { name: "编辑任务" });
+});
+
+test("deleting the last task on a page returns to a valid page", async () => {
+  let tasks = Array.from({ length: 11 }, (_, i) => ({
+    ...task,
+    id: `page-${i}`,
+    configuration: { ...config, topic: `分页任务 ${i}` },
+  }));
+  const api = vi
+    .fn()
+    .mockImplementation(
+      async (
+        path: string,
+        _signal: AbortSignal,
+        _body: unknown,
+        method: string,
+      ) => {
+        if (method === "DELETE") {
+          tasks = tasks.filter((t) => path !== `/tasks/${t.id}`);
+          return {};
+        }
+        return path === "/tasks" ? { tasks } : { runs: [] };
+      },
+    );
+  render(<ManagedTasks api={api} />);
+  await screen.findByRole("link", { name: "分页任务 0" });
+  fireEvent.click(screen.getByRole("button", { name: "下一页" }));
+  await screen.findByRole("link", { name: "分页任务 10" });
+  fireEvent.click(screen.getByText("更多"));
+  fireEvent.click(screen.getByRole("button", { name: "删除" }));
+  fireEvent.click(screen.getByRole("button", { name: "确认删除" }));
+  await screen.findByRole("link", { name: "分页任务 0" });
+  expect(screen.queryByRole("link", { name: "分页任务 10" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "下一页" })).toBeNull();
 });

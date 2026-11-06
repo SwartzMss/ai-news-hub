@@ -2855,3 +2855,219 @@ summary {
   white-space: normal;
   overflow-wrap: anywhere;
 }
+/* Task management: searchable, bounded list with direct editing. */
+.task-toolbar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 12px;
+  margin: 0 0 18px;
+}
+.task-toolbar label {
+  margin: 0;
+}
+.task-search {
+  flex: 1;
+  max-width: 360px;
+  min-width: 180px;
+}
+.task-toolbar input,
+.task-toolbar select {
+  background: #fff;
+  min-height: 40px;
+  font-size: 12px;
+}
+.task-toolbar select {
+  width: 175px;
+}
+.task-total {
+  margin-left: auto;
+  color: var(--muted);
+  font-size: 12px;
+  font-variant-numeric: tabular-nums;
+}
+.task-table td {
+  padding-top: 18px;
+  padding-bottom: 18px;
+  vertical-align: middle;
+}
+.task-table .task-table-name {
+  font-size: 14px;
+  font-weight: 600;
+}
+.task-table .task-table-secondary {
+  font-size: 11px;
+}
+.task-table tbody tr:hover {
+  background: #fafcfb;
+}
+.task-table .task-actions {
+  gap: 8px;
+  align-items: center;
+}
+.task-table .task-actions > button {
+  min-height: 34px;
+}
+.task-table .task-more summary {
+  padding: 8px;
+}
+.task-table .task-more-options {
+  position: static;
+  box-shadow: none;
+}
+.task-table td:last-child {
+  width: 205px;
+}
+.task-auto-enabled {
+  color: var(--green);
+  font-weight: 500;
+}
+.task-pagination {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-top: 18px;
+  color: var(--muted);
+  font-size: 11px;
+}
+.task-pagination p {
+  margin: 0;
+}
+.task-pagination > div {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+}
+.task-pagination button {
+  font-size: 11px;
+  min-height: 34px;
+}
+.task-list-empty {
+  padding: 40px 24px;
+  text-align: center;
+}
+.task-list-empty h2 {
+  font-size: 16px;
+  margin: 0 0 12px;
+}
+.task-list-empty p {
+  font-size: 12px;
+  color: var(--muted);
+  margin-bottom: 18px;
+}
+@media (max-width: 1100px) {
+  .task-toolbar {
+    gap: 10px;
+  }
+  .task-search {
+    max-width: none;
+    flex-basis: 100%;
+  }
+  .task-toolbar select {
+    width: 175px;
+  }
+  .task-table {
+    overflow: visible;
+    border: 0;
+    background: transparent;
+  }
+  .task-table table {
+    display: block;
+    min-width: 0;
+    white-space: normal;
+  }
+  .task-table thead {
+    display: none;
+  }
+  .task-table tbody {
+    display: grid;
+    gap: 14px;
+  }
+  .task-table tbody tr {
+    display: grid;
+    grid-template-columns: minmax(0, 1fr) minmax(0, 1fr);
+    gap: 18px 14px;
+    padding: 20px;
+    background: #fff;
+    border: 1px solid var(--line);
+    border-radius: 10px;
+  }
+  .task-table td {
+    display: block;
+    padding: 0;
+    border: 0 !important;
+    min-width: 0;
+  }
+  .task-table td:first-child {
+    grid-column: 1/-1;
+    max-width: none;
+    min-width: 0;
+    padding-bottom: 14px;
+    border-bottom: 1px solid var(--line) !important;
+  }
+  .task-table td[data-label]::before {
+    content: attr(data-label);
+    display: block;
+    color: var(--muted);
+    font-size: 10px;
+    margin-bottom: 7px;
+  }
+  .task-table td.task-table-actions {
+    grid-column: 1/-1;
+    width: auto;
+    padding-top: 14px;
+    border-top: 1px solid var(--line) !important;
+  }
+  .task-table .task-actions {
+    display: flex;
+    width: 100%;
+  }
+  .task-table .task-actions > button:first-child {
+    flex: 1;
+  }
+  .task-table .task-actions > button {
+    min-height: 40px;
+  }
+  .task-table .task-more {
+    margin-left: auto;
+  }
+  .task-table .task-more-options {
+    min-width: 130px;
+    position: absolute;
+    left: auto;
+    right: 0;
+    top: 100%;
+    z-index: 12;
+    box-shadow: 0 8px 24px var(--menu-shadow);
+  }
+  .task-pagination {
+    align-items: flex-start;
+    flex-direction: column;
+    gap: 14px;
+  }
+  .task-pagination > div {
+    width: 100%;
+    justify-content: space-between;
+  }
+  .task-pagination button {
+    min-height: 40px;
+  }
+}
+
+@media (min-width: 701px) and (max-width: 1100px) {
+  .task-table tbody { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+}
+
+.task-table .task-table-name {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+  white-space: normal;
+  max-width: 280px;
+  line-height: 1.7;
+}
+@media (max-width: 1100px) {
+  .task-table .task-table-name { max-width: none; }
+}
