@@ -94,9 +94,9 @@ export async function buildPublic({
       (data.demo ? "[DEMO] " : "") +
       "AI News Hub · " +
       ({
-        home: "今日精选",
-        channel: "开源生态",
-        archive: "历史归档",
+        home: "最新简报",
+        channel: "全部资讯",
+        archive: "往期简报",
         date: page.date,
         report: page.date + " 历史版本",
         article: data.articles.find((x) => x.key === page.key)?.evidence_quote,
@@ -105,7 +105,7 @@ export async function buildPublic({
     const html =
       '<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' +
       xml(title) +
-      '</title><meta name="description" content="有来源的开发者生态简报。来源事实摘要、分析推断与证据分开展示。">' +
+      '</title><meta name="description" content="AI、开源项目与产业资讯，按日期整理的新闻简报。">' +
       (data.demo || page.kind === "404"
         ? '<meta name="robots" content="noindex,nofollow">'
         : "") +
