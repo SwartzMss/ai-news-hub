@@ -20,14 +20,12 @@ export function Settings({
     [error, setError] = useState<unknown>(),
     [saved, setSaved] = useState(false),
     [busy, setBusy] = useState(false),
-    [token, setToken] = useState(""),
-    [clearToken, setClearToken] = useState(false);
+    [token, setToken] = useState("");
   const [current, setCurrent] = useState(""),
     [password, setPassword] = useState(""),
     [confirm, setConfirm] = useState(""),
     [passwordBusy, setPasswordBusy] = useState(false);
   const original = useRef<SettingsView>(undefined);
-  const [editingToken, setEditingToken] = useState(false);
   const pending = useRef(false),
     passwordPending = useRef(false),
     controller = useMemo(() => new AbortController(), []);
@@ -55,11 +53,10 @@ export function Settings({
       logLevel: section === "settings-codex" ? data.logLevel : original.current!.logLevel,
       codex: section === "settings-codex" ? data.codex : original.current!.codex,
       execution: section === "settings-codex" ? data.execution : original.current!.execution,
-      github: section !== "settings-github" ? { enabled: original.current!.github.enabled, repository: original.current!.github.repository, branch: original.current!.github.branch } : {
-        enabled: data.github.enabled,
+      github: section !== "settings-github" ? { repository: original.current!.github.repository, branch: original.current!.github.branch } : {
         repository: data.github.repository,
         branch: data.github.branch,
-        ...(token ? { token } : clearToken ? { clearToken: true } : {}),
+        ...(token ? { token } : {}),
       },
     };
     try {
@@ -72,9 +69,7 @@ export function Settings({
       if (!controller.signal.aborted) {
         original.current = result;
         setData(result);
-        setEditingToken(false);
         setToken("");
-        setClearToken(false);
         setSaved(true);
       }
     } catch (cause) {
@@ -116,8 +111,6 @@ export function Settings({
     setError(undefined);
     if (original.current) setData(original.current);
     setToken("");
-    setClearToken(false);
-    setEditingToken(false);
   }
   const disabled = busy || passwordBusy;
   const navigation = (
@@ -312,29 +305,6 @@ export function Settings({
                 aria-label="GitHub 归档"
                 disabled={disabled}
               >
-                <div className="settings-inline-row archive-toggle">
-                  <div>
-                    <strong>归档已批准的日报</strong>
-                    <p className="field-help">
-                      将审核通过的内容保存到你指定的仓库。
-                    </p>
-                  </div>
-                  <label className="switch-control">
-                    <input
-                      type="checkbox"
-                      aria-label="启用 GitHub 归档"
-                      checked={data.github.enabled}
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          github: { ...data.github, enabled: e.target.checked },
-                        })
-                      }
-                    />
-                    <span className="switch-track" />
-                    <span className="sr-only">启用 GitHub 归档</span>
-                  </label>
-                </div>
                 <div className="form-grid">
                   <div className="field">
                     <label htmlFor="github-repository">GitHub 仓库</label>
@@ -351,7 +321,6 @@ export function Settings({
                         })
                       }
                       placeholder="owner/repository"
-                      required={data.github.enabled}
                     />
                   </div>
                   <div className="field">
@@ -368,7 +337,6 @@ export function Settings({
                       autoComplete="off"
                       name="archive-target-branch"
                       placeholder="填写目标分支"
-                      required={data.github.enabled}
                     />
                   </div>
                 </div>
@@ -381,42 +349,17 @@ export function Settings({
                       {data.github.tokenConfigured ? "已保存" : "未配置"}
                     </span>
                   </label>
-                  {!editingToken ? <button type="button" className="quiet" onClick={() => setEditingToken(true)}>{data.github.tokenConfigured ? "更换 Token" : "设置 Token"}</button> : <input
+                  <input
                     id="github-token"
                     aria-label="GitHub Token"
                     type="password"
                     value={token}
-                    onChange={(e) => {
-                      setToken(e.target.value);
-                      setClearToken(false);
-                    }}
+                    onChange={(e) => setToken(e.target.value)}
                     autoComplete="new-password"
                     name="archive-access-token"
-                    disabled={clearToken}
-                    placeholder={
-                      data.github.tokenConfigured
-                        ? "留空保留现有 Token"
-                        : "输入具有目标仓库权限的 Token"
-                    }
-                  />}
-                  <p className="field-help">
-                    {data.github.tokenConfigured
-                      ? "已配置；留空保留原 Token。"
-                      : "尚未配置 Token。"}
-                    只授予目标仓库所需的内容读写权限。
-                  </p>
-                </div>
-                {data.github.tokenConfigured && <label className="check clear-secret">
-                  <input
-                    type="checkbox"
-                    checked={clearToken}
-                    onChange={(e) => {
-                      setClearToken(e.target.checked);
-                      setToken("");
-                    }}
+                    placeholder={data.github.tokenConfigured ? "留空保留现有 Token" : "输入 GitHub Token"}
                   />
-                  清除已存 Token
-                </label>}
+                </div>
               </fieldset>}
               <button type="submit" disabled={disabled}>{busy ? "正在保存…" : "保存设置"}</button>
             </form>

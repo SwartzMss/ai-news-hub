@@ -10,36 +10,38 @@ test('settings submit explicit target and omit blank token to preserve the saved
  fireEvent.click(screen.getByRole('button',{name:'GitHub 归档'}));
  expect(screen.queryByLabelText('Codex 可执行文件')).toBeNull();
  expect(screen.queryByLabelText('当前密码或旧 Token')).toBeNull();
- expect(screen.queryByLabelText('GitHub Token')).toBeNull();
- fireEvent.click(screen.getByRole('button',{name:'更换 Token'}));
+ expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).type).toBe('password');
+ expect(screen.queryByRole('button',{name:'更换 Token'})).toBeNull();
  const repository=await screen.findByLabelText('GitHub 仓库');
  expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).value).toBe('');
- expect(screen.getByText(/已配置；留空保留原 Token/)).toBeTruthy();
- fireEvent.click(screen.getByLabelText('启用 GitHub 归档'));fireEvent.change(repository,{target:{value:'owner/archive'}});fireEvent.change(screen.getByLabelText('GitHub 分支'),{target:{value:'reports'}});
+ expect(screen.queryByText(/推荐使用细粒度/)).toBeNull();
+ expect(screen.queryByLabelText('清除已存 Token')).toBeNull();
+ expect(screen.queryByLabelText('启用 GitHub 归档')).toBeNull();fireEvent.change(repository,{target:{value:'owner/archive'}});fireEvent.change(screen.getByLabelText('GitHub 分支'),{target:{value:'reports'}});
  fireEvent.click(screen.getByRole('button',{name:'保存设置'}));await screen.findByText('设置已保存并生效。');
- const sent=api.mock.calls.find(call=>call[2])![2];expect(sent.github).toEqual({enabled:true,repository:'owner/archive',branch:'reports'});expect(sent.revision).toBe(1);
+ const sent=api.mock.calls.find(call=>call[2])![2];expect(sent.github).toEqual({repository:'owner/archive',branch:'reports'});expect(sent.revision).toBe(1);
  expect(api.mock.calls.filter(call=>call[2])).toHaveLength(1);
 });
-test('secret clearing is explicit and password rotation replaces the in-memory session',async()=>{
+test('a new token replaces the secret and password rotation replaces the in-memory session',async()=>{
  const changed=vi.fn();const api=vi.fn().mockImplementation(async(url,_signal,body)=>url==='/auth/password'?{token:'new-session'}:body?{...value,revision:2,github:{...body.github,tokenConfigured:false}}:value);
  render(<Settings api={api} onCredentialChanged={changed}/>);
- await screen.findByLabelText('Codex 可执行文件');fireEvent.click(screen.getByRole('button',{name:'GitHub 归档'}));fireEvent.click(screen.getByLabelText('清除已存 Token'));fireEvent.click(screen.getByRole('button',{name:'保存设置'}));await screen.findByText('设置已保存并生效。');
- expect(api.mock.calls.find(call=>call[2])![2].github.clearToken).toBe(true);
+ await screen.findByLabelText('Codex 可执行文件');fireEvent.click(screen.getByRole('button',{name:'GitHub 归档'}));fireEvent.change(screen.getByLabelText('GitHub Token'),{target:{value:'replacement_token_0123456789'}});fireEvent.click(screen.getByRole('button',{name:'保存设置'}));await screen.findByText('设置已保存并生效。');
+ expect(api.mock.calls.find(call=>call[2])![2].github.token).toBe('replacement_token_0123456789');
+ expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).value).toBe('');
  fireEvent.click(screen.getByRole('button',{name:'安全设置'}));
  expect(screen.queryByRole('button',{name:'保存设置'})).toBeNull();
  fireEvent.change(screen.getByLabelText('当前密码或旧 Token'),{target:{value:'old-password'}});fireEvent.change(screen.getByLabelText('新管理员密码'),{target:{value:'new-password-1234'}});fireEvent.change(screen.getByLabelText('确认新密码'),{target:{value:'new-password-1234'}});
  fireEvent.click(screen.getByRole('button',{name:'更新管理员密码'}));await waitFor(()=>expect(changed).toHaveBeenCalledWith('new-session'));
 });
 
-test('unconfigured credentials stay absent until explicitly edited and branch starts blank',async()=>{
+test('unconfigured token input is always visible and empty, and branch starts blank',async()=>{
  const api=vi.fn().mockResolvedValue({...value,github:{...value.github,tokenConfigured:false}});
  render(<Settings api={api} onCredentialChanged={()=>{}}/>);
  await screen.findByLabelText('Codex 可执行文件');
  fireEvent.click(screen.getByRole('button',{name:'GitHub 归档'}));
  expect((screen.getByLabelText('GitHub 分支') as HTMLInputElement).value).toBe('');
- expect(screen.queryByLabelText('GitHub Token')).toBeNull();
+ expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).value).toBe('');
  expect(screen.queryByLabelText('清除已存 Token')).toBeNull();
- fireEvent.click(screen.getByRole('button',{name:'设置 Token'}));
+ expect(screen.queryByRole('button',{name:'设置 Token'})).toBeNull();
  expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).value).toBe('');
 });
 
