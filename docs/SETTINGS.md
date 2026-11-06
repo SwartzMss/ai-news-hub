@@ -69,3 +69,5 @@ PUT 的 GitHub 对象含 enabled/repository/branch，可选 token 或 clearToken
 旧版本 setup-code 文件不再生成或接受为初始化凭据；升级无需删除数据库或重设已有密码。未初始化实例在新页面完成设置后会清理该旧文件。
 
 GitHub 归档不再设全局启用开关：仓库、分支和已保存 Token 完整即为可用；允许保存未完整配置，清除凭据后恢复未配置。旧 `github.enabled` 写入参数为可选兼容字段且被忽略，返回值表示派生配置状态，旧数据库中的 false 不再禁用完整目标。任务 `autoPublish` 继续独立控制自动归档。建议创建 fine-grained PAT，仅选择归档仓库并授予 Contents read/write；后台不展示已保存 Token。
+
+GitHub Token 使用始终可见的空白密码输入框，移除说明段落及设置/更换按钮、清除复选框；保存时留空保留已存 Token，输入新值替换，成功保存后再次清空输入框，不回显凭据。
