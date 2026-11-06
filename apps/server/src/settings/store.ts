@@ -26,20 +26,22 @@ export class SettingsStore {
     this.publication();
   }
   private row():Row{return this.db.prepare('SELECT * FROM app_settings WHERE id=1').get() as Row;}
-  runtime():RuntimeSettings{return JSON.parse(this.row().config_json) as RuntimeSettings;}
-  view():SettingsView {const row=this.row(),settings=JSON.parse(row.config_json) as RuntimeSettings;return {...settings,revision:Number(row.revision),github:{...settings.github,tokenConfigured:!!row.github_secret}};}
+  private normalized(row:Row):RuntimeSettings {
+    const settings=JSON.parse(row.config_json) as RuntimeSettings;
+    return {...settings,github:{...settings.github,enabled:!!(row.github_secret&&settings.github.repository&&settings.github.branch)}};
+  }
+  runtime():RuntimeSettings{return this.normalized(this.row());}
+  view():SettingsView {const row=this.row(),settings=this.normalized(row);return {...settings,revision:Number(row.revision),github:{...settings.github,tokenConfigured:!!row.github_secret}};}
   publication():{repository:string;branch:string;token:string}|undefined {
     const row=this.row(),settings=JSON.parse(row.config_json) as RuntimeSettings;
-    if(!settings.github.enabled)return undefined;
-    if(!row.github_secret || !settings.github.repository || !settings.github.branch)throw new AppError('invalid_publication_config');
+    if(!row.github_secret || !settings.github.repository || !settings.github.branch)return undefined;
     return {repository:settings.github.repository,branch:settings.github.branch,token:this.decrypt(row.github_secret)};
   }
   update(raw:unknown):SettingsView {
     const input:SettingsUpdate=settingsInput(raw),row=this.row();
     if(input.revision!==row.revision)throw new HttpError(409,'settings_changed');
     const secret=input.github.token?this.encrypt(input.github.token):input.github.clearToken?null:row.github_secret;
-    if(input.github.enabled&&(!input.github.repository||!input.github.branch||!secret))throw new HttpError(400,'invalid_publication_config');
-    const settings:RuntimeSettings={logLevel:input.logLevel,codex:input.codex,execution:input.execution,github:{enabled:input.github.enabled,repository:input.github.repository,branch:input.github.branch}};
+    const settings:RuntimeSettings={logLevel:input.logLevel,codex:input.codex,execution:input.execution,github:{enabled:!!(secret&&input.github.repository&&input.github.branch),repository:input.github.repository,branch:input.github.branch}};
     const result=this.db.prepare('UPDATE app_settings SET config_json=?,github_secret=?,revision=revision+1,updated_at=? WHERE id=1 AND revision=?').run(JSON.stringify(settings),secret,new Date().toISOString(),input.revision);
     if(!result.changes)throw new HttpError(409,'settings_changed');
     return this.view();

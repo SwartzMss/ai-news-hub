@@ -10,6 +10,6 @@ export interface SettingsView extends Omit<RuntimeSettings,'github'> {
 }
 export interface SettingsUpdate extends Omit<RuntimeSettings,'github'> {
   revision: number;
-  github: RuntimeSettings['github'] & { token?: string; clearToken?: boolean };
+  github: Omit<RuntimeSettings['github'],'enabled'> & { /** Legacy input, ignored; readiness is derived from complete credentials. */ enabled?: boolean; token?: string; clearToken?: boolean };
 }
 export interface AuthStatus { initialized: boolean; mode: 'setup' | 'password' | 'token'; setupToken?: string }

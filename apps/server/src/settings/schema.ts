@@ -9,7 +9,7 @@ export const SETTINGS_SCHEMA = object({
   logLevel:{type:'string',enum:['fatal','error','warn','info','debug','trace','silent']},
   codex:object({binary:text(1024,1),model:text(128)}),
   execution:object({timeoutMs:{type:'integer',minimum:1000,maximum:3600000},concurrency:{type:'integer',minimum:1,maximum:4},maxQueue:{type:'integer',minimum:1,maximum:100}}),
-  github:object({enabled:{type:'boolean'},repository:text(201),branch:text(200),token:text(255,20),clearToken:{type:'boolean'}},['enabled','repository','branch']),
+  github:object({enabled:{type:'boolean'},repository:text(201),branch:text(200),token:text(255,20),clearToken:{type:'boolean'}},['repository','branch']),
 });
 const validate = new Ajv({strict:true,coerceTypes:false,removeAdditional:false}).compile<SettingsUpdate>(SETTINGS_SCHEMA);
 export function settingsInput(input:unknown): SettingsUpdate {

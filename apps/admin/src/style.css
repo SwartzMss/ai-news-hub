@@ -3071,3 +3071,5 @@ summary {
 @media (max-width: 1100px) {
   .task-table .task-table-name { max-width: none; }
 }
+
+.archive-config-help { margin: 0 0 24px; font-size: 12px; line-height: 1.8; color: var(--muted); }

@@ -15,9 +15,9 @@ test('settings submit explicit target and omit blank token to preserve the saved
  const repository=await screen.findByLabelText('GitHub 仓库');
  expect((screen.getByLabelText('GitHub Token') as HTMLInputElement).value).toBe('');
  expect(screen.getByText(/已配置；留空保留原 Token/)).toBeTruthy();
- fireEvent.click(screen.getByLabelText('启用 GitHub 归档'));fireEvent.change(repository,{target:{value:'owner/archive'}});fireEvent.change(screen.getByLabelText('GitHub 分支'),{target:{value:'reports'}});
+ expect(screen.queryByLabelText('启用 GitHub 归档')).toBeNull();fireEvent.change(repository,{target:{value:'owner/archive'}});fireEvent.change(screen.getByLabelText('GitHub 分支'),{target:{value:'reports'}});
  fireEvent.click(screen.getByRole('button',{name:'保存设置'}));await screen.findByText('设置已保存并生效。');
- const sent=api.mock.calls.find(call=>call[2])![2];expect(sent.github).toEqual({enabled:true,repository:'owner/archive',branch:'reports'});expect(sent.revision).toBe(1);
+ const sent=api.mock.calls.find(call=>call[2])![2];expect(sent.github).toEqual({repository:'owner/archive',branch:'reports'});expect(sent.revision).toBe(1);
  expect(api.mock.calls.filter(call=>call[2])).toHaveLength(1);
 });
 test('secret clearing is explicit and password rotation replaces the in-memory session',async()=>{

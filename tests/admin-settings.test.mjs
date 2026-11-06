@@ -132,3 +132,20 @@ test('setup proof is same-origin only, changes on restart and cannot initialize 
   const status=(await get(f,'/auth/status')).json();assert.deepEqual(status,{initialized:true,mode:'password'});assert.ok(!JSON.stringify(status).includes(setupToken));assert.equal(existsSync(join(f.dir,'setup-code')),false);
  }finally{await f.close();}
 });
+
+test('archive readiness follows repository, branch and saved token without a global switch',async()=>{
+ const f=fixture();try{
+  let session=await initialize(f),v=(await get(f,'/settings',session)).json();
+  const payload=github=>({revision:v.revision,logLevel:v.logLevel,codex:v.codex,execution:v.execution,github});
+  let result=await save(f,payload({repository:'owner/archive',branch:''}),session);
+  assert.equal(result.statusCode,200,result.body);v=result.json();assert.equal(v.github.enabled,false);
+  result=await save(f,payload({repository:'owner/archive',branch:'main',token:'fixture_secret_012345678901234'}),session);
+  assert.equal(result.statusCode,200,result.body);v=result.json();assert.equal(v.github.enabled,true);
+  result=await save(f,payload({enabled:false,repository:'owner/archive',branch:'main'}),session);
+  assert.equal(result.statusCode,200,result.body);v=result.json();assert.equal(v.github.enabled,true);
+  const db=new DatabaseSync(join(f.dir,'news.db'));const row=db.prepare('SELECT config_json FROM app_settings').get();const old=JSON.parse(row.config_json);old.github.enabled=false;db.prepare('UPDATE app_settings SET config_json=?').run(JSON.stringify(old));db.close();
+  await f.restart();session=(await post(f,'/auth/login',{password})).json().token;v=(await get(f,'/settings',session)).json();assert.equal(v.github.enabled,true);assert.equal(v.github.tokenConfigured,true);
+  result=await save(f,payload({repository:'owner/archive',branch:'main',clearToken:true}),session);
+  assert.equal(result.statusCode,200,result.body);assert.equal(result.json().github.enabled,false);assert.equal(result.json().github.tokenConfigured,false);
+ }finally{await f.close();}
+});

@@ -55,8 +55,7 @@ export function Settings({
       logLevel: section === "settings-codex" ? data.logLevel : original.current!.logLevel,
       codex: section === "settings-codex" ? data.codex : original.current!.codex,
       execution: section === "settings-codex" ? data.execution : original.current!.execution,
-      github: section !== "settings-github" ? { enabled: original.current!.github.enabled, repository: original.current!.github.repository, branch: original.current!.github.branch } : {
-        enabled: data.github.enabled,
+      github: section !== "settings-github" ? { repository: original.current!.github.repository, branch: original.current!.github.branch } : {
         repository: data.github.repository,
         branch: data.github.branch,
         ...(token ? { token } : clearToken ? { clearToken: true } : {}),
@@ -312,29 +311,7 @@ export function Settings({
                 aria-label="GitHub 归档"
                 disabled={disabled}
               >
-                <div className="settings-inline-row archive-toggle">
-                  <div>
-                    <strong>归档已批准的日报</strong>
-                    <p className="field-help">
-                      将审核通过的内容保存到你指定的仓库。
-                    </p>
-                  </div>
-                  <label className="switch-control">
-                    <input
-                      type="checkbox"
-                      aria-label="启用 GitHub 归档"
-                      checked={data.github.enabled}
-                      onChange={(e) =>
-                        setData({
-                          ...data,
-                          github: { ...data.github, enabled: e.target.checked },
-                        })
-                      }
-                    />
-                    <span className="switch-track" />
-                    <span className="sr-only">启用 GitHub 归档</span>
-                  </label>
-                </div>
+                <p className="archive-config-help">填写归档目标和访问凭据；是否自动发布在各任务中设置。</p>
                 <div className="form-grid">
                   <div className="field">
                     <label htmlFor="github-repository">GitHub 仓库</label>
@@ -351,7 +328,6 @@ export function Settings({
                         })
                       }
                       placeholder="owner/repository"
-                      required={data.github.enabled}
                     />
                   </div>
                   <div className="field">
@@ -368,7 +344,6 @@ export function Settings({
                       autoComplete="off"
                       name="archive-target-branch"
                       placeholder="填写目标分支"
-                      required={data.github.enabled}
                     />
                   </div>
                 </div>
@@ -403,7 +378,8 @@ export function Settings({
                     {data.github.tokenConfigured
                       ? "已配置；留空保留原 Token。"
                       : "尚未配置 Token。"}
-                    只授予目标仓库所需的内容读写权限。
+                    推荐使用细粒度 Token，仅选择目标仓库，Contents 设为 Read and write。
+                    {" "}<a href="https://github.com/settings/personal-access-tokens/new" target="_blank" rel="noopener noreferrer">创建细粒度 Token ↗</a>
                   </p>
                 </div>
                 {data.github.tokenConfigured && <label className="check clear-secret">
