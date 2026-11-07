@@ -105,3 +105,19 @@ for(const mutation of ['remove','rename','id','snapshot'])test(`managed topic ta
   assert.equal((await s.request('GET',`/news/reports/${row.id}/publication`)).statusCode,409);
  }finally{await s.close();}
 });
+test('regenerating after deletion allocates a fresh version and keeps the original run history', async () => {
+ const s=setup();try {
+  const firstRun=await s.execute();
+  const first=(await s.request('GET','/news/reports')).json().reports[0];
+  assert.equal((await s.request('DELETE',`/news/reports/${first.id}`,{confirm:true})).statusCode,200);
+  assert.equal((await s.request('GET',`/runs/${firstRun}`)).json().turns.length,1);
+  const task=s.db.prepare('SELECT task_id FROM task_runs WHERE id=?').get(firstRun).task_id;
+  const second=(await s.request('POST',`/tasks/${task}/runs`,{idempotencyKey:'regenerate'})).json().run;
+  await s.wait(()=>s.adapter.calls[1]);s.adapter.succeed(1,JSON.stringify(proposal));
+  await s.wait(async()=>(await s.request('GET',`/runs/${second.id}`)).json().run.status==='succeeded');
+  const next=(await s.request('GET','/news/reports')).json().reports[0];
+  assert.equal(next.version,first.version+1);
+  assert.notEqual(next.id,first.id);
+  assert.equal(s.db.prepare('PRAGMA foreign_key_check').all().length,0);
+ }finally{await s.close();}
+});

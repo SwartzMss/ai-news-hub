@@ -64,7 +64,10 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     requestTimeout: 10000,
     forceCloseConnections: true,
   });
-  const github:GitHubAdapter=options.githubAdapter??{async publish(artifact,signal){
+  const github:GitHubAdapter=options.githubAdapter??{async remove(artifact,target,signal){
+    const configured=settings.publication();if(!configured)throw new AppError('publication_disabled');
+    const client=new GitHubArchive(target,configured.token);try{await client.remove(artifact,target,signal);}finally{await client.close();}
+  },async publish(artifact,signal){
     const target=settings.publication();if(!target)throw new AppError('publication_disabled');
     const client=new GitHubArchive(target,target.token);try{return await client.publish(artifact,signal);}finally{await client.close();}
   }};

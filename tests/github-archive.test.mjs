@@ -149,3 +149,39 @@ test('invalid topic archive paths and oversized content fail before any GitHub r
   const s=setup();await assert.rejects(s.adapter.publish({...artifact,path:prefix+'/2026/11/07/v000001.json',content:'x'.repeat(256*1024+1)},new AbortController().signal),/archive_invalid/);
   assert.equal(s.calls.length,0);await s.adapter.close();
 });
+test('removal atomically drops report and legacy assignment with a non-forced branch update', async () => {
+  const {createHash} = await import('node:crypto');
+  const calls = [];
+  const mapping = {schema_version:1,assignments:[{report_id:'r',topic:{id:'t-x',name:'Test'}},{report_id:'keep',topic:{id:'t-y',name:'Keep'}}]};
+  const adapter = new GitHubArchive(target,'SECRET',async (url,init) => {
+    calls.push({url,init});
+    const path = new URL(url).pathname;
+    if(path.includes('/git/ref/')) return Response.json({object:{type:'commit',sha}});
+    if(path.includes('/contents/')) return Response.json({type:'file',encoding:'base64',content:Buffer.from(path.endsWith('topics.json')?JSON.stringify(mapping):artifact.content).toString('base64')});
+    if(path.endsWith('/git/commits/'+sha)) return Response.json({tree:{sha:blob}});
+    if(path.endsWith('/git/trees') || path.endsWith('/git/commits')) return Response.json({sha:blob});
+    if(init.method==='PATCH') return Response.json({object:{sha:blob}});
+    throw Error('unexpected request');
+  });
+  await adapter.remove({reportId:'r',path:artifact.path,hash:createHash('sha256').update(artifact.content).digest('hex')},target,new AbortController().signal);
+  const tree = JSON.parse(calls.find(c=>c.url.endsWith('/git/trees')).init.body);
+  assert.equal(tree.base_tree,blob);
+  assert.equal(tree.tree[0].sha,null);
+  assert.equal(tree.tree[0].path,artifact.path);
+  assert.deepEqual(JSON.parse(tree.tree[1].content).assignments,[mapping.assignments[1]]);
+  assert.deepEqual(JSON.parse(calls.at(-1).init.body),{sha:blob,force:false});
+  assert.ok(calls.filter(c=>c.url.includes('/contents/')).every(c=>c.url.endsWith('?ref='+sha)));
+  await adapter.close();
+});
+test('removal of a missing report is idempotent and changed content is refused', async () => {
+  for(const exists of [false,true]) {
+    const adapter=new GitHubArchive(target,'SECRET',async (url,init)=> {
+      if(new URL(url).pathname.includes('/git/ref/')) return Response.json({object:{type:'commit',sha}});
+      assert.equal(init.method,'GET');
+      return exists?Response.json({type:'file',encoding:'base64',content:Buffer.from('changed').toString('base64')}):new Response('{}',{status:404});
+    });
+    const operation=adapter.remove({reportId:'r',path:artifact.path,hash:'a'.repeat(64)},target,new AbortController().signal);
+    if(exists) await assert.rejects(operation,/archive_conflict/); else await operation;
+    await adapter.close();
+  }
+});

@@ -11,7 +11,11 @@ export interface ArchiveArtifact {
   content: string;
   hash: string;
 }
+export interface ArchiveRemoval {
+  reportId: string; path: string; hash: string;
+}
 export interface GitHubAdapter {
+  remove?(artifact: ArchiveRemoval, target: PublishTarget, signal: AbortSignal): Promise<void>;
   publish(
     artifact: ArchiveArtifact,
     signal: AbortSignal,
@@ -26,6 +30,7 @@ type Publication = {
 } & Record<string, unknown>;
 export class PublicationService {
   private active?: Promise<Publication>;
+  private deletion?: Promise<{ deleted: true }>;
   private controller?: AbortController;
   private stopped = false;
   constructor(
@@ -37,9 +42,9 @@ export class PublicationService {
       "UPDATE publication_records SET status='failed',error_code='publication_interrupted',updated_at=? WHERE target='github' AND status='publishing'",
     ).run(new Date().toISOString());
   }
-  busy():boolean{return !!this.active;}
+  busy():boolean{return !!(this.active || this.deletion);}
   configure(target:PublishTarget|undefined,adapter:GitHubAdapter|undefined):void {
-    if(this.active)throw new HttpError(409,'settings_busy');
+    if(this.busy())throw new HttpError(409,'settings_busy');
     this.target=target;this.adapter=adapter;
   }
   inspect(id: string) {
@@ -63,6 +68,7 @@ export class PublicationService {
     };
   }
   approve(id: string, expectedHash: string, kind: 'manual'|'automatic' = 'manual') {
+    this.assertNotDeleting(id);
     const report = reviewedReport(this.db, id);
     if (report.contentHash !== expectedHash)
       throw new HttpError(409, "report_changed");
@@ -94,7 +100,7 @@ export class PublicationService {
   publish(id: string): Promise<Publication> {
     if (this.stopped)
       return Promise.reject(new HttpError(503, "publisher_stopped"));
-    if (this.active)
+    if (this.busy())
       return Promise.reject(new HttpError(409, "publication_busy"));
     this.controller = new AbortController();
     const promise = this.perform(id, this.controller.signal);
@@ -107,6 +113,7 @@ export class PublicationService {
     return promise;
   }
   private async perform(id: string, signal: AbortSignal): Promise<Publication> {
+    this.assertNotDeleting(id);
     const report = reviewedReport(this.db, id);
     const approval = this.db
       .prepare("SELECT * FROM report_approvals WHERE report_id=?")
@@ -202,10 +209,68 @@ export class PublicationService {
     }
     return get();
   }
+  private assertNotDeleting(id: string) {
+    if (this.db.prepare("SELECT report_id FROM report_deletions WHERE report_id=?").get(id))
+      throw new HttpError(409, "report_deleting");
+  }
+  remove(id: string): Promise<{ deleted: true }> {
+    if (this.stopped) return Promise.reject(new HttpError(503, "publisher_stopped"));
+    if (this.busy()) return Promise.reject(new HttpError(409, "publication_busy"));
+    this.controller = new AbortController();
+    const promise = this.performRemoval(id, this.controller.signal);
+    this.deletion = promise;
+    void promise.finally(() => { if (this.deletion === promise) this.deletion = undefined; }).catch(() => {});
+    return promise;
+  }
+  private async performRemoval(id: string, signal: AbortSignal): Promise<{ deleted: true }> {
+    const prior = this.db.prepare("SELECT status FROM report_deletions WHERE report_id=?").get(id);
+    if (prior?.status === "succeeded") return { deleted: true };
+    const report = this.db.prepare("SELECT * FROM reports WHERE id=?").get(id);
+    if (!report) throw new HttpError(404, "report_not_found");
+    const run = this.db.prepare("SELECT status FROM task_runs WHERE id=?").get(String(report.run_id));
+    if (run && ["running", "queued", "waiting_approval"].includes(String(run.status)))
+      throw new HttpError(409, "report_busy");
+    const records = this.db.prepare("SELECT * FROM publication_records WHERE report_id=? AND target='github'").all(id);
+    if (records.length && !this.adapter?.remove) throw new HttpError(503, "publication_disabled");
+    const timestamp = new Date().toISOString();
+    this.db.prepare(`INSERT INTO report_deletions(report_id,channel,report_date,version,status,created_at,updated_at)
+      VALUES (?,?,?,?,'pending',?,?) ON CONFLICT(report_id) DO UPDATE SET status='pending',error_code=NULL,updated_at=excluded.updated_at`)
+      .run(id, String(report.channel), String(report.report_date), Number(report.version), timestamp, timestamp);
+    try {
+      for (const record of records) {
+        if (!record.repository || !record.branch || !record.artifact_path || !record.content_hash)
+          throw new AppError("archive_target_unknown");
+        await this.adapter!.remove!({reportId:id,path:String(record.artifact_path),hash:String(record.content_hash)},
+          {repository:String(record.repository),branch:String(record.branch)}, signal);
+      }
+      signal.throwIfAborted();
+      this.db.exec("BEGIN IMMEDIATE");
+      try {
+        this.db.prepare("UPDATE news_runs SET report_id=NULL WHERE report_id=?").run(id);
+        this.db.prepare("UPDATE codex_news_runs SET report_id=NULL WHERE report_id=?").run(id);
+        this.db.prepare("DELETE FROM report_articles WHERE report_id=?").run(id);
+        this.db.prepare("DELETE FROM report_approvals WHERE report_id=?").run(id);
+        this.db.prepare("DELETE FROM publication_records WHERE report_id=?").run(id);
+        this.db.prepare("DELETE FROM reports WHERE id=?").run(id);
+        this.db.prepare("UPDATE report_deletions SET status='succeeded',error_code=NULL,updated_at=? WHERE report_id=?")
+          .run(new Date().toISOString(),id);
+        this.db.prepare("INSERT INTO run_events(run_id,kind,data_json) VALUES (?,'report_deleted',?)")
+          .run(String(report.run_id),JSON.stringify({reportId:id}));
+        this.db.exec("COMMIT");
+      } catch (error) { this.db.exec("ROLLBACK"); throw error; }
+      return { deleted: true };
+    } catch (error) {
+      const code = error instanceof AppError ? error.code : signal.aborted ? "publication_interrupted" : "github_unavailable";
+      this.db.prepare("UPDATE report_deletions SET status='failed',error_code=?,updated_at=? WHERE report_id=?")
+        .run(code,new Date().toISOString(),id);
+      throw new HttpError(502,code);
+    }
+  }
   interrupt():void { this.controller?.abort(); }
   async close() {
     this.stopped = true;
     this.controller?.abort();
     await this.active?.catch(() => {});
+    await this.deletion?.catch(() => {});
   }
 }

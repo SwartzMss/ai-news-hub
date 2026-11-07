@@ -95,3 +95,17 @@ test("reading a successful current-target record never invokes the publishing en
     ),
   ).toBe(false);
 });
+test('report deletion waits for explicit confirmation and reports successful removal', async () => {
+  const onDeleted = vi.fn();
+  const api = vi.fn(async (_path, _signal, _body, method) => method === 'DELETE' ? {deleted:true} : {
+    contentHash:'a'.repeat(64),status:'validated',configured:false,target:null,publications:[],
+  }) as Client;
+  render(<Publication api={api} reportId="r" onDeleted={onDeleted} />);
+  fireEvent.click(await screen.findByRole('button',{name:'删除日报'}));
+  expect(onDeleted).not.toHaveBeenCalled();
+  expect(vi.mocked(api).mock.calls.some(c=>c[3]==='DELETE')).toBe(false);
+  fireEvent.click(screen.getByRole('button',{name:'确认删除日报和归档'}));
+  await screen.findByText('日报已删除');
+  expect(api).toHaveBeenCalledWith('/news/reports/r',expect.anything(),{confirm:true},'DELETE');
+  expect(onDeleted).toHaveBeenCalledOnce();
+});

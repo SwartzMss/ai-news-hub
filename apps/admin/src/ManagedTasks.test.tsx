@@ -37,7 +37,7 @@ function fixture() {
       ) => {
         if (method === "DELETE") return { deleted: true };
         if (body) return { task };
-        return path === "/tasks" ? { tasks: [task] } : { runs: [] };
+        return path === "/tasks" ? { tasks: [task] } : { runs: [], templates: [] };
       },
     );
   return api;
@@ -99,7 +99,7 @@ test("switching the editor target loads the new task instead of carrying previou
   const api = vi
     .fn()
     .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks: [task, second] } : { runs: [] },
+      path === "/tasks" ? { tasks: [task, second] } : { runs: [], templates: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
@@ -127,7 +127,7 @@ test("a paused schedule still allows manual execution with a single primary acti
           ? { run: { id: "started" } }
           : path === "/tasks"
             ? { tasks: [paused] }
-            : { runs: [] },
+            : { runs: [], templates: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("定时已暂停");
@@ -196,7 +196,7 @@ test("many tasks are paged and only the visible tasks load execution state", asy
   const api = vi
     .fn()
     .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks } : { runs: [] },
+      path === "/tasks" ? { tasks } : { runs: [], templates: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByRole("link", { name: "任务 0" });
@@ -230,7 +230,7 @@ test("plan filter handles manual, enabled and paused schedules without hiding th
   const api = vi
     .fn()
     .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks } : { runs: [] },
+      path === "/tasks" ? { tasks } : { runs: [], templates: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
@@ -264,7 +264,7 @@ test("deleting the last task on a page returns to a valid page", async () => {
           tasks = tasks.filter((t) => path !== `/tasks/${t.id}`);
           return {};
         }
-        return path === "/tasks" ? { tasks } : { runs: [] };
+        return path === "/tasks" ? { tasks } : { runs: [], templates: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -297,7 +297,7 @@ test("automatic publication switch saves the complete paused task configuration"
           saved = { ...saved, status: body.status, configuration: body };
           return { task: saved };
         }
-        return path === "/tasks" ? { tasks: [saved] } : { runs: [] };
+        return path === "/tasks" ? { tasks: [saved] } : { runs: [], templates: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -332,7 +332,7 @@ test("failed automatic publication save keeps its previous state and displays th
         method: string,
       ) => {
         if (method === "PUT") throw new Error("保存失败");
-        return path === "/tasks" ? { tasks: [task] } : { runs: [] };
+        return path === "/tasks" ? { tasks: [task] } : { runs: [], templates: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -363,7 +363,7 @@ test("schedule pause and enable are direct controls preserving task configuratio
           saved = { ...saved, status: body.status };
           return { task: saved };
         }
-        return path === "/tasks" ? { tasks: [saved] } : { runs: [] };
+        return path === "/tasks" ? { tasks: [saved] } : { runs: [], templates: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -437,7 +437,7 @@ test("automatic publication cannot be changed again while the save is pending", 
                 { ...task, configuration: { ...config, autoPublish: enabled } },
               ],
             }
-          : { runs: [] };
+          : { runs: [], templates: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -452,4 +452,19 @@ test("automatic publication cannot be changed again while the save is pending", 
   await waitFor(() =>
     expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(true),
   );
+});
+test('selecting a versioned template fills all ordered prompts without changing publication settings', async () => {
+  const base = fixture();
+  const api = vi.fn(async (path: string, ...args: unknown[]) => path === '/prompt-templates' ? {
+    templates:[{id:'sample',version:2,name:'模板样例',topic:'新主题',prompts:['第一轮模板','第二轮模板']}],
+  } : base(path,...args));
+  render(<ManagedTasks api={api} />);
+  await screen.findByText('模型公告');
+  fireEvent.click(screen.getAllByRole('button',{name:'编辑'})[0]);
+  await screen.findByRole('option',{name:'模板样例 · v2'});
+  fireEvent.change(screen.getByLabelText('Prompt 模板'),{target:{value:'sample@2'}});
+  expect((screen.getByLabelText('任务主题') as HTMLInputElement).value).toBe('新主题');
+  expect((screen.getByLabelText('第 1 轮') as HTMLTextAreaElement).value).toBe('第一轮模板');
+  expect((screen.getByLabelText('第 2 轮') as HTMLTextAreaElement).value).toBe('第二轮模板');
+  expect((screen.getByLabelText('自动发布到 GitHub') as HTMLInputElement).checked).toBe(false);
 });

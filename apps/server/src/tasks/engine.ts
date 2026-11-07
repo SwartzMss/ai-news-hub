@@ -166,7 +166,7 @@ export class TaskEngine {
       if (prior.input_text !== input || prior.mode !== mode) throw new HttpError(409, 'idempotency_conflict');
       return { run, turn: prior, reused: true };
     }
-    if (research && this.db.prepare('SELECT report_id FROM codex_news_runs WHERE run_id=?').get(runId)?.report_id) throw new HttpError(409, 'workflow_run_finalized');
+    if (research && (this.db.prepare('SELECT report_id FROM codex_news_runs WHERE run_id=?').get(runId)?.report_id || this.db.prepare("SELECT id FROM run_events WHERE run_id=? AND kind='report_deleted' LIMIT 1").get(runId))) throw new HttpError(409, 'workflow_run_finalized');
     if (!run.thread_id) throw new HttpError(409, 'thread_unavailable');
     if (this.task(run.task_id).status !== 'active') throw new HttpError(409, 'task_paused');
     this.capacity(run.task_id);

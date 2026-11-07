@@ -98,3 +98,5 @@ admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历�
 Migration 10 为 `codex_news_runs` 追加 nullable `public_topic_json`。新受管任务报告写入从 Run 配置派生的稳定话题 `{id,name}` 并纳入文档哈希；归档时与 Run 快照核对。旧记录保持 NULL，继续按 v1 校验和输出，不回填或改写历史内容。
 
 可选邮件订阅使用独立 Cloudflare D1，迁移位于 `newsletter/migrations/`，与 Backend SQLite 迁移分开。订阅者、确认令牌哈希、日快照、发送记录与限流状态均为私有数据，不进入公共输出和 GitHub 归档。详见 [邮件订阅](NEWSLETTER.md)。
+
+Migration 11 追加 `report_deletions`，保存日报 ID、频道、日期、版本、删除状态和安全错误码，不保存正文或凭据；不以外键依赖被删除的日报。成功删除日报及批准、发布与条目关联，news_runs/codex_news_runs.report_id 置空，写入 report_deleted 运行事件。运行、轮次、来源原文和快照历史保留。版本分配同时查询日报和删除记录，避免复用已经删除的归档路径。失败或中断的删除由用户显式重试，不自动恢复发布。

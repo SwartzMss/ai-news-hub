@@ -671,7 +671,7 @@ export function RunDetail({
             </dl>
           </section>
           {data?.report ? (
-            <Publication api={api} reportId={data.report.id} />
+            <Publication api={api} reportId={data.report.id} onDeleted={() => setRefresh(v => v + 1)} />
           ) : managed ? null : (
             <div className="rail-note">
               <Icon name="shield" size={19} />

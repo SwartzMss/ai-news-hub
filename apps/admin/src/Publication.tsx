@@ -22,9 +22,11 @@ interface State {
 export function Publication({
   api,
   reportId,
+  onDeleted,
 }: {
   api: Client;
   reportId: string;
+  onDeleted?: () => void;
 }) {
   const base = `/news/reports/${encodeURIComponent(reportId)}`;
   const load = useCallback(
@@ -46,6 +48,8 @@ export function Publication({
   const [confirmed, setConfirmed] = useState(false),
     [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>();
+  const [deleteConfirmed, setDeleteConfirmed] = useState(false);
+  const [deleted, setDeleted] = useState(false);
   const pending = useRef(false);
   const controller = useMemo(() => new AbortController(), []);
   useEffect(() => () => controller.abort(), [controller]);
@@ -78,6 +82,19 @@ export function Publication({
       if (!controller.signal.aborted) setBusy(false);
     }
   }
+  async function remove() {
+    if (pending.current) return;
+    pending.current = true;
+    setBusy(true);
+    setError(undefined);
+    try {
+      await api(base, controller.signal, {confirm:true}, "DELETE");
+      setDeleted(true);
+      onDeleted?.();
+    } catch (cause) { if (!controller.signal.aborted) setError(cause); }
+    finally { pending.current = false; if (!controller.signal.aborted) setBusy(false); }
+  }
+  if (deleted) return <p role="status">日报已删除</p>;
   return (
     <section className="panel approval-panel">
       <div className="approval-title">
@@ -153,6 +170,13 @@ export function Publication({
           <p className="muted">
             批准不会自动归档；失败后可显式重试，同一内容不产生重复 Commit。
           </p>
+          <div className="delete-confirm">
+            {deleteConfirmed ? <>
+              <p>删除此日报及所有对应的 GitHub 归档？公开站与 RSS 在重新构建后更新。执行历史和 Git 提交历史保留。</p>
+              <button disabled={busy} onClick={() => void remove()}>确认删除日报和归档</button>
+              <button className="quiet" disabled={busy} onClick={() => setDeleteConfirmed(false)}>取消删除</button>
+            </> : <button className="quiet" disabled={busy} onClick={() => setDeleteConfirmed(true)}>删除日报</button>}
+          </div>
           {data.publications.map((p) => (
             <div key={p.id}>
               <p className="muted">

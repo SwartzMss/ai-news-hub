@@ -114,3 +114,5 @@ npm start
 - 开机启动与后台常驻：按 [Linux 部署指南](docs/DEPLOY_LINUX.md) 安装 systemd 服务。
 
 更多操作见 [后台使用说明](docs/ADMIN.md)。
+
+后台任务编辑器支持从 `prompt-templates/*.vN.json` 选择仓库版本化 Prompt，当前三组模板来自现有任务原文。日报详情支持确认后同步删除 SQLite 日报和对应 GitHub 归档，公开站与 RSS 随后续构建更新。
