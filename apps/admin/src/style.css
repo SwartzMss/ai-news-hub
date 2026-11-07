@@ -2535,7 +2535,7 @@ summary {
 .overview-trend {
   display: block;
   width: 100%;
-  height: auto;
+  height: 180px;
   margin: 12px 0 0;
 }
 .overview-gridline {
@@ -2569,8 +2569,8 @@ summary {
 .overview-date-axis {
   display: grid;
   grid-template-columns: repeat(7, minmax(0, 1fr));
-  padding-left: 4.7%;
-  padding-right: 1.6%;
+  padding-left: 30px;
+  padding-right: 10px;
   font-size: 11px;
   color: var(--muted);
   text-align: center;
@@ -2766,15 +2766,6 @@ summary {
   }
   .overview-trend-summary {
     gap: 7px;
-  }
-  .overview-axis {
-    font-size: 18px;
-  }
-  .overview-total {
-    font-size: 20px;
-  }
-  .overview-date-axis {
-    font-size: 10px;
   }
   .overview-attention {
     padding: 20px 17px;
@@ -3032,3 +3023,7 @@ summary {
 @media (max-width: 1100px) {
   .task-table .task-actions { flex-wrap: wrap; }
 }
+
+.overview-chart-panel .overview-section-heading { margin-bottom: 12px; }
+.overview-chart-panel .overview-legend { margin-top: 12px; }
+.overview-chart-panel .overview-chart-data { margin-top: 12px; }

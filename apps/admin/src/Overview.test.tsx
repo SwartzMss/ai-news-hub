@@ -1,5 +1,5 @@
 import { afterEach, expect, test, vi } from "vitest";
-import { cleanup, render, screen } from "@testing-library/react";
+import { act, cleanup, render, screen, waitFor } from "@testing-library/react";
 import { Overview } from "./Overview";
 import type { OverviewResponse } from "../../../packages/shared/src";
 afterEach(cleanup);
@@ -91,4 +91,32 @@ test("overview surfaces load errors without presenting made-up zero counts", asy
   render(<Overview api={vi.fn().mockRejectedValue(new Error("network"))} />);
   await screen.findByRole("alert");
   expect(screen.queryByRole("link", { name: /任务总数/ })).toBeNull();
+});
+
+
+test("execution trend measures width while keeping a compact coordinate height", async () => {
+  let measuredWidth = 1200;
+  let resize: ResizeObserverCallback | undefined;
+  const disconnect = vi.fn();
+  vi.spyOn(SVGElement.prototype, "getBoundingClientRect").mockImplementation(() => ({width: measuredWidth}) as DOMRect);
+  vi.stubGlobal("ResizeObserver", class {
+    constructor(callback: ResizeObserverCallback) { resize = callback; }
+    observe() {}
+    disconnect = disconnect;
+  });
+  const view = render(<Overview api={vi.fn().mockResolvedValue(empty)} />);
+  try {
+    const chart = await screen.findByRole("img", {name:"最近 7 天执行趋势"});
+    await waitFor(() => expect(chart.getAttribute("viewBox")).toBe("0 0 1200 180"));
+    expect(chart.querySelector("rect")!.getAttribute("width")).toBe("32");
+    act(() => { measuredWidth = 280; resize!([], {} as ResizeObserver); });
+    expect(chart.getAttribute("viewBox")).toBe("0 0 280 180");
+    const width = Number(chart.querySelector("rect")!.getAttribute("width"));
+    expect(width).toBeGreaterThanOrEqual(8);
+    expect(width).toBeLessThan(32);
+  } finally {
+    view.unmount();
+    expect(disconnect).toHaveBeenCalled();
+    vi.restoreAllMocks();vi.unstubAllGlobals();
+  }
 });
