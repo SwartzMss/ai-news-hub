@@ -23,9 +23,22 @@ test('public body parsing is bounded independently of a claimed Content-Length',
 test('mail transport bounds responses and hides provider bodies, using explicit deduplication keys',async()=>{
  const config=getConfig(env),payload={from:config.from,to:['reader@example.com'],subject:'日报',html:'<p>日报</p>',text:'日报'};
  const calls=[];assert.equal(await sendMail(config,payload,'same-key',async(url,init)=>{calls.push({url,init});return Response.json({id:'mail-id'});}),'mail-id');
- assert.equal(calls[0].url,'https://api.resend.com/emails');assert.equal(calls[0].init.redirect,'error');assert.equal(calls[0].init.headers['idempotency-key'],'same-key');
+ assert.equal(calls[0].url,'https://api.resend.com/emails');assert.equal(calls[0].init.redirect,'manual');assert.equal(calls[0].init.headers['idempotency-key'],'same-key');
  await assert.rejects(sendMail(config,payload,'same-key',async()=>new Response('secret provider response',{status:429})),/^Error: mail_http_429$/);
  await assert.rejects(sendMail(config,payload,'same-key',async()=>new Response('x'.repeat(9000))),/mail_unavailable/);
  const response=page('<img src=x>','<script>bad</script>',{action:'/api/newsletter/confirm',token:'"><script>x</script>'});const html=await response.text();assert.ok(!html.includes('<script>'));assert.ok(html.includes('&lt;script&gt;'));
  assert.equal(response.headers.get('cache-control'),'no-store');assert.equal(response.headers.get('referrer-policy'),'strict-origin');
+});
+
+
+test('Workers-compatible mail fetch rejects provider redirects without forwarding credentials',async()=>{
+ const config=getConfig(env),payload={from:config.from,to:['reader@example.com'],subject:'日报',html:'<p>日报</p>',text:'日报'};
+ let calls=0;
+ await assert.rejects(sendMail(config,payload,'redirect-test',async(url,init)=>{
+  calls++;assert.equal(url,'https://api.resend.com/emails');
+  // Workers rejects redirect:error before making any outbound request.
+  if(init.redirect==='error')throw new TypeError('Invalid redirect value');
+  assert.equal(init.redirect,'manual');return new Response(null,{status:307,headers:{location:'https://untrusted.example/collect'}});
+ }),/^Error: mail_http_307$/);
+ assert.equal(calls,1);
 });

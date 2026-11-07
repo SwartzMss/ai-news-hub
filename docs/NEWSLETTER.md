@@ -75,3 +75,9 @@ D1 保存订阅邮箱、确认状态、确认令牌哈希、每日快照和发�
 D1 备份/导出含个人信息，应按私有数据处理。Linux 私有 Backend、Codex 和系统任务不需要读取订阅数据库或邮件密钥。
 
 参考：[Pages Functions](https://developers.cloudflare.com/pages/functions/)、[D1 绑定](https://developers.cloudflare.com/pages/functions/bindings/)、[Resend 发信接口](https://resend.com/docs/api-reference/emails/send-email)。
+
+## 确认邮件未收到
+
+先检查 Resend 的 Emails/Logs，再到 Pages 最新生产部署的 Functions 查看实时日志。数据库为 `pending` 只说明申请已保存，不代表邮件发送成功。日志中的 `newsletter_confirmation_failed` 包含脱敏错误码，不需要复制 API Key 或完整请求头。
+
+Cloudflare Workers 的 `fetch` 不支持 `redirect: error`，此前会在请求 Resend 前抛错并记录 `mail_unavailable`。发信与公共日报索引请求现使用 `manual` 并拒绝非 2xx 响应，保持禁止跟随重定向。重新部署修复后，等待同一邮箱的一小时冷却结束再重试；需要立即测试时，仅针对自己的未确认订阅清空 `confirmation_sent_at`，不要将状态手工改为 `active`。

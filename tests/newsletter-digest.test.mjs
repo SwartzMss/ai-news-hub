@@ -98,7 +98,7 @@ test('expired leases can retry, but ambiguous delivery beyond 23 hours becomes u
 test('public fetch uses redirect rejection and bounded response, provider rate limit stops page',async()=>{
   const f=fixture();try{
     subscribe(f);subscribe(f);let sends=0;
-    const fetcher=async(url,options)=>{assert.equal(options.redirect,'error');assert.ok(options.signal);if(url.endsWith('/data/index.json'))return new Response('x'.repeat(2*1024*1024+1));throw Error();};
+    const fetcher=async(url,options)=>{assert.equal(options.redirect,'manual');assert.ok(options.signal);if(url.endsWith('/data/index.json'))return new Response('x'.repeat(2*1024*1024+1));throw Error();};
     assert.equal((await sendDigest(context(f,fetcher))).status,502);
     const limited=async url=>{if(url.endsWith('/data/index.json'))return Response.json(index());sends++;return new Response('',{status:429});};
     const result=await stats(await sendDigest(context(f,limited)));assert.equal(result.failed,1);assert.equal(sends,1);assert.equal(result.pending,2);
@@ -125,4 +125,18 @@ test('a full cold-start batch fits the Cloudflare Free query and subrequest limi
     assert.ok(f.queryCount<=50,'D1 query limit');
     assert.ok(f.queryCount+requests<=50,'combined subrequest budget');
   }finally{f.close();}
+});
+
+
+test('Workers-compatible public fetch rejects redirect responses before reserving deliveries',async()=>{
+ const f=fixture();try{
+  subscribe(f);let calls=0,redirect;
+  const response=await sendDigest(context(f,async(url,init)=>{
+   calls++;redirect=init.redirect;assert.equal(url,'https://news.example/data/index.json');
+   if(init.redirect==='error')throw new TypeError('Invalid redirect value');
+   assert.equal(init.redirect,'manual');return new Response(null,{status:302,headers:{location:'https://untrusted.example/index.json'}});
+  }));
+  assert.equal(response.status,502);assert.deepEqual(await response.json(),{error:'public_data_unavailable'});
+  assert.equal(calls,1);assert.equal(redirect,'manual');assert.equal(f.db.prepare('SELECT COUNT(*) n FROM newsletter_deliveries').get().n,0);
+ }finally{f.close();}
 });
