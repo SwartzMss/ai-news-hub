@@ -77,6 +77,7 @@ test("overview shows server counts, actionable failures and a recent execution d
   render(<Overview api={api} />);
   await screen.findByText("每日研究");
   expect(screen.getByText("成功率 67%")).toBeTruthy();
+  expect(screen.queryByRole("heading", { name: "任务分布" })).toBeNull();
   expect(screen.getByText("2分13秒")).toBeTruthy();
   expect(
     screen.getByRole("link", { name: "查看结果" }).getAttribute("href"),
