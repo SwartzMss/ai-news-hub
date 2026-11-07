@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "d218c6d2-80c1-40f5-a40e-c5ee221cc9ec",
+  "report_date": "2026-11-07",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目简报｜2026-11-07｜近 24 小时精选 5 项",
+  "collected_at": "2026-11-07T01:00:10.408Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-07T01:00:10.410Z",
+  "reviewed_content_sha256": "d29e821492543efa6c2b89f8c42981ec47285171f98ea8c1bd9d8d3b25ea78bc",
+  "items": [
+    {
+      "id": "3772b98a252811ee1c38632b1af0330609c842aa9b2d1fbbc1285b85c9369edc",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "OpenHands 是 AI 软件开发工具，适合希望用智能体辅助开发与自动化的团队。官方于 11 月 6 日发布 v1.37.0：用 Mermaid 图解释每项自动化，修复恢复会话的排序、启动时标题显示及会话回放问题，并避免实时更新中反复扫描历史记录。公告注明 macOS 应用尚未使用 Apple Developer ID 签名。",
+      "analysis": "推断：自动化流程可视化有助于检查执行逻辑，会话修复则更利于持续使用。此次更新主要改善可理解性与交互稳定性，不能据此认定智能体编码能力提升；macOS 安装仍有签名方面的限制。",
+      "evidence_quote": "feat(automations): explain each automation with a Mermaid diagram",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/OpenHands/OpenHands/releases/tag/v1.37.0",
+        "canonical_url": "https://github.com/OpenHands/OpenHands/releases/tag/v1.37.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "516fb7bbef5404ab55884d20e93f255f31f3e0ef81213e0da9d15d8f03c7831f",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "llama.cpp 是用 C/C++ 实现的大模型推理项目，适合本地部署模型的开发者。官方于 11 月 6 日发布 b12171，调整 Vulkan 后端：检测 ReBAR 支持，在不支持的设备上避免 BAR 内存分配。该版本在 Release 页面标记为预发布。",
+      "analysis": "推断：使用 Vulkan、尤其设备不支持 ReBAR 的部署值得优先测试这一兼容性改动。收益取决于硬件和后端，公告未提供速度或显存改善数据，不能外推到 CUDA 部署。",
+      "evidence_quote": "vulkan: detect ReBAR support, avoid BAR allocations if unavailable",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ggml-org/llama.cpp/releases/tag/b12171",
+        "canonical_url": "https://github.com/ggml-org/llama.cpp/releases/tag/b12171",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7c4b4cdaa975211ec83d14c8624dfe3b119770d0bf0c1f86491c207a8649bc2d",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "Preact 是面向前端开发者的轻量组件与虚拟 DOM 库。官方于 11 月 6 日发布 11.2.0：支持在 Shadow Root 内渲染时使用作用域自定义元素注册表，修复无效事件处理器、异常边界和卸载节点的事件冒泡问题，并缩减 core、hooks、compat 的包体积；公告未给出缩减幅度。",
+      "analysis": "推断：结合 Web Components 开发嵌入式组件的团队最值得关注。更新涉及事件与异常处理，升级后宜回归测试这些边界行为；不能据此推断所有应用都会明显提速。",
+      "evidence_quote": "Support scoped custom element registries when rendering into shadow roots",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/preactjs/preact/releases/tag/11.2.0",
+        "canonical_url": "https://github.com/preactjs/preact/releases/tag/11.2.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "71824e8f7a7fc7710b7369c29488d48b5679b984b9e590f28b7b048ca7bb146a",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "CrewAI 是多智能体任务编排框架，适合构建自动化工作流的开发者。官方于 11 月 6 日发布 1.15.36：增加实验性对话式 Agent 会话，启动时提示补充缺失的 API key，记录项目加载错误类别，并修复同步工具的异步调用上下文及写入 ChromaDB 时的空元数据处理。",
+      "analysis": "推断：现有用户可重点验证工具调用和存储链路修复，减少运行时排障成本。对话会话明确仍属实验功能，更适合先做原型验证，不宜假定接口和行为已经稳定。",
+      "evidence_quote": "Add experimental conversational Agent sessions.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/crewAIInc/crewAI/releases/tag/1.15.36",
+        "canonical_url": "https://github.com/crewAIInc/crewAI/releases/tag/1.15.36",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b51c2d7e7872a1bfdcdb0578c7d23b9c0ccd7376f59df8e434e3bedda6eff303",
+      "category": "developer_tools",
+      "importance": 3,
+      "fact_summary": "LangGraph 用于构建有状态智能体工作流，其 SDK 面向接入运行服务的应用开发者。官方于 11 月 6 日发布 Python SDK 0.4.14：为 runs.create、stream、wait 增加 strict_resume 参数，并为 StreamMode 增加 tools 和 lifecycle。此条更新属于 SDK，并非整个框架的新版本。",
+      "analysis": "推断：需要控制任务恢复、展示工具执行及生命周期事件的客户端值得评估。发布说明未详细解释新参数的边界行为，接入前仍应核对服务端支持并测试中断恢复场景。",
+      "evidence_quote": "feat(sdk-py): add strict_resume to runs.create, stream and wait",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/langchain-ai/langgraph/releases/tag/sdk==0.4.14",
+        "canonical_url": "https://github.com/langchain-ai/langgraph/releases/tag/sdk==0.4.14",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
