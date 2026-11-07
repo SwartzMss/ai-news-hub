@@ -51,7 +51,7 @@ h3 {
   overflow-wrap: anywhere;
 }
 .site-shell {
-  max-width: 1120px;
+  max-width: none;
   padding: 0 32px;
   margin: auto;
 }
@@ -849,30 +849,133 @@ footer nav {
   max-width: 900px;
   margin: 28px auto 56px;
 }
+.brief-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 230px;
+  gap: 36px;
+  align-items: start;
+}
+.brief-main {
+  min-width: 0;
+}
 .brief-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 12px 24px;
-  padding-bottom: 22px;
+  display: block;
+  padding-bottom: 24px;
   border-bottom: 1px solid var(--line);
 }
-.brief-heading h1 {
-  font-size: 27px;
+.brief-edition-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  margin-bottom: 12px;
+}
+.brief-topic {
+  font-size: 14px;
+  font-weight: 600;
+}
+.brief-date {
+  display: flex;
+  align-items: baseline;
+  flex-wrap: wrap;
+  gap: 14px;
+}
+.brief-date h1 {
+  font-size: 32px;
   line-height: 1.5;
   font-weight: 650;
   letter-spacing: -0.5px;
 }
-.brief-date {
-  display: flex;
-  gap: 18px;
-  flex-wrap: wrap;
+.brief-date > span {
+  font-size: 14px;
   color: var(--muted);
-  font-size: 12px;
-}
-.brief-date span {
   white-space: nowrap;
+}
+.brief-generation {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px 18px;
+  margin-top: 10px;
+  font-size: 12px;
+  color: var(--muted);
+}
+.brief-toc {
+  position: sticky;
+  top: 28px;
+  max-height: calc(100dvh - 56px);
+  overflow-y: auto;
+  padding-left: 20px;
+  border-left: 1px solid var(--line);
+}
+.brief-toc h2 {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  font-size: 13px;
+  color: var(--accent);
+  margin: 0 0 14px;
+  font-weight: 600;
+}
+.brief-toc h2::before {
+  content: "";
+  width: 14px;
+  height: 2px;
+  background: currentColor;
+}
+.brief-layout nav[aria-label="本期目录"] {
+  display: flex;
+  flex-direction: column;
+}
+.brief-layout nav[aria-label="本期目录"] a {
+  display: grid;
+  grid-template-columns: 20px minmax(0, 1fr);
+  gap: 8px;
+  min-height: 44px;
+  padding: 12px 0;
+  border-bottom: 1px solid var(--line);
+  font-size: 12px;
+  line-height: 1.8;
+  color: var(--muted);
+}
+.brief-layout nav[aria-label="本期目录"] a > span:first-child {
+  font-size: 10px;
+  color: var(--accent);
+  font-variant-numeric: tabular-nums;
+}
+.brief-layout nav[aria-label="本期目录"] a > span:last-child {
+  overflow-wrap: anywhere;
+}
+.brief-layout nav[aria-label="本期目录"] a[aria-current="location"] {
+  color: var(--accent);
+  font-weight: 600;
+}
+.brief-mobile-toc {
+  display: none;
+  border-bottom: 1px solid var(--line);
+  padding: 12px 0;
+}
+.brief-mobile-toc summary {
+  cursor: pointer;
+  min-height: 32px;
+  color: var(--accent);
+  font-size: 13px;
+}
+.news-row[data-brief-story] {
+  scroll-margin-top: 28px;
+}
+.topic-home {
+  max-width: none;
+}
+@media (max-width: 1000px) {
+  .brief-layout {
+    display: block;
+  }
+  .brief-toc {
+    display: none;
+  }
+  .brief-mobile-toc {
+    display: block;
+  }
 }
 .topic-directory {
   display: grid;
@@ -923,12 +1026,13 @@ footer nav {
     display: block;
     padding-bottom: 18px;
   }
-  .brief-heading h1 {
-    font-size: 24px;
+  .brief-date h1 {
+    font-size: 26px;
   }
   .brief-date {
-    gap: 14px;
-    margin-top: 8px;
+    gap: 12px;
+  }
+  .brief-generation {
     font-size: 12px;
   }
   .topic-directory {
@@ -945,7 +1049,7 @@ footer nav {
 /* Keep topic navigation beside the reading column on desktop. */
 @media (min-width: 1001px) {
   .site-shell {
-    max-width: 1320px;
+    max-width: none;
   }
   .reader-body.has-topics {
     display: grid;
@@ -984,6 +1088,38 @@ footer nav {
   }
 }
 @media (min-width: 1001px) and (max-width: 1200px) {
-  .reader-body > .reading-layout.has-aside { display: block; }
-  .reader-body .reading-aside { display: none; }
+  .reader-body > .reading-layout.has-aside {
+    display: block;
+  }
+  .reader-body .reading-aside {
+    display: none;
+  }
+}
+
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .reader-body.has-topics {
+    grid-template-columns: 160px minmax(0, 1fr);
+    gap: 28px;
+  }
+  .brief-layout {
+    grid-template-columns: minmax(0, 1fr) 190px;
+    gap: 24px;
+  }
+  .brief-toc {
+    padding-left: 16px;
+  }
+}
+.reading-layout.latest-layout {
+  max-width: none;
+}
+.brief-layout .news-summary,
+.brief-layout .news-content h2 a {
+  display: block;
+  -webkit-line-clamp: unset;
+}
+.brief-toc a > span:last-child {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
 }

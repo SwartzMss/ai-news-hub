@@ -69,7 +69,7 @@ function selectTopic(
   if (navigation) {
     const url = new URL(location.href);
     url.searchParams.set("topic", id);
-    url.hash = "";
+    if (navigation === "push") url.hash = "";
     if (navigation === "push") history.pushState(null, "", url);
     else history.replaceState(null, "", url);
   }
@@ -121,3 +121,64 @@ document.addEventListener("click", (event) => {
     selectTopic(id, "push");
   }
 });
+
+// Keep the directory in sync with the visible story, including after topic changes.
+function markBriefStory(id: string) {
+  document
+    .querySelectorAll<HTMLAnchorElement>("a[data-brief-target]")
+    .forEach((link) => {
+      if (link.dataset.briefTarget === id)
+        link.setAttribute("aria-current", "location");
+      else link.removeAttribute("aria-current");
+    });
+}
+document.addEventListener("click", (event) => {
+  const link =
+    event.target instanceof Element
+      ? event.target.closest<HTMLAnchorElement>("a[data-brief-target]")
+      : null;
+  if (
+    !link ||
+    event.defaultPrevented ||
+    event.button !== 0 ||
+    event.metaKey ||
+    event.ctrlKey ||
+    event.shiftKey ||
+    event.altKey
+  )
+    return;
+  markBriefStory(link.dataset.briefTarget!);
+  const details = link.closest<HTMLDetailsElement>("details.brief-mobile-toc");
+  if (details) details.open = false;
+});
+if (typeof IntersectionObserver !== "undefined") {
+  const visible = new Map<Element, number>();
+  const observer = new IntersectionObserver(
+    (entries) => {
+      for (const entry of entries) {
+        if (entry.isIntersecting)
+          visible.set(entry.target, entry.boundingClientRect.top);
+        else visible.delete(entry.target);
+      }
+      const current = [...visible.entries()]
+        .filter(([node]) => node.getClientRects().length > 0)
+        .sort((a, b) => a[1] - b[1])[0]?.[0];
+      if (current?.id) markBriefStory(current.id);
+    },
+    { rootMargin: "-5% 0px -55% 0px", threshold: 0 },
+  );
+  document
+    .querySelectorAll("[data-brief-story]")
+    .forEach((story) => observer.observe(story));
+}
+if (location.hash) {
+  try {
+    const target = document.getElementById(
+      decodeURIComponent(location.hash.slice(1)),
+    );
+    if (target?.matches("[data-brief-story]") && target.getClientRects().length)
+      target.scrollIntoView();
+  } catch {
+    /* Malformed fragments do not prevent reading. */
+  }
+}
