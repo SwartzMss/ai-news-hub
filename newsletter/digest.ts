@@ -27,7 +27,8 @@ async function publicSnapshot(ctx: NewsletterContext, config: NewsletterConfig, 
   const controller = new AbortController(), timer = setTimeout(()=>controller.abort(),10000);
   let value: Obj;
   try {
-    const response = await (ctx.fetcher ?? fetch)(config.origin+'/data/index.json',{redirect:'error',signal:controller.signal,headers:{accept:'application/json'}});
+    // Workers rejects redirect:error before I/O; manual plus the status check forbids redirects.
+    const response = await (ctx.fetcher ?? fetch)(config.origin+'/data/index.json',{redirect:'manual',signal:controller.signal,headers:{accept:'application/json'}});
     if (!response.ok) { await response.body?.cancel(); throw Error(); }
     const reader = response.body?.getReader(); const chunks: Uint8Array[] = []; let size = 0;
     if (reader) for (;;) { const part=await reader.read(); if(part.done)break; size+=part.value.byteLength; if(size>2*1024*1024){await reader.cancel();throw Error();} chunks.push(part.value); }

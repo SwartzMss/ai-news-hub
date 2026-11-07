@@ -89,7 +89,8 @@ export interface MailPayload { from: string; to: string[]; subject: string; html
 export async function sendMail(config: NewsletterConfig, payload: MailPayload, idempotencyKey: string, fetcher: typeof fetch = fetch): Promise<string> {
   const controller=new AbortController(),timer=setTimeout(()=>controller.abort(),10000);
   try {
-    const response=await fetcher('https://api.resend.com/emails',{method:'POST',redirect:'error',signal:controller.signal,headers:{authorization:'Bearer '+config.apiKey,'content-type':'application/json','idempotency-key':idempotencyKey},body:JSON.stringify(payload)});
+    // Workers supports manual/follow only. Reject non-2xx responses below without following redirects.
+    const response=await fetcher('https://api.resend.com/emails',{method:'POST',redirect:'manual',signal:controller.signal,headers:{authorization:'Bearer '+config.apiKey,'content-type':'application/json','idempotency-key':idempotencyKey},body:JSON.stringify(payload)});
     if(!response.ok){await response.body?.cancel();throw new NewsletterError('mail_http_'+response.status,502);}
     const reader=response.body?.getReader();let text='';if(reader)for(;;){const item=await reader.read();if(item.done)break;text+=new TextDecoder().decode(item.value);if(text.length>8192){await reader.cancel();throw Error();}}
     const value=JSON.parse(text);if(typeof value.id!=='string'||value.id.length>128||!value.id)throw Error();return value.id;
