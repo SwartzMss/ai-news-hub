@@ -2,6 +2,14 @@
 
 设置感兴趣的话题，让 Codex 每天搜索并整理资讯。你可以在后台查看结果、审核内容，也可以发布到 GitHub 并生成公开阅读网站。
 
+## 架构一览
+
+![动态架构图，展示 Prompt、Linux Backend、Codex、SQLite、GitHub、Cloudflare Pages、D1、Resend 与订阅者之间的数据流。](docs/assets/architecture.gif)
+
+[查看 SVG 动画](docs/assets/architecture.svg) · [详细架构](docs/ARCHITECTURE.md)
+
+Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。GitHub Actions 定时触发每日汇总，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。邮件投递需完成生产环境配置。
+
 ## 开始使用
 
 准备 Linux 环境、Node.js 22.19.0 或更新的 22.x，以及已安装并登录的 Codex CLI。

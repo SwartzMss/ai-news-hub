@@ -12,27 +12,39 @@ from PIL import Image, ImageDraw, ImageFont
 
 ROOT = Path(__file__).resolve().parents[1]
 OUT = ROOT / 'docs/assets'
-W, H, SCALE = 1000, 480, 2
+W, H, SCALE = 1000, 750, 2
 INK, MUTED, GREEN, LINE = '#17392e', '#6a8176', '#08765b', '#c9dcd2'
 FONT = Path('/usr/share/fonts/truetype/dejavu')
 NODES = {
-    'prompt': (48, 142, 150, 76, 'Topic + prompt', 'User research input'),
-    'backend': (246, 142, 166, 76, 'Backend', 'Fastify / Task → Run'),
-    'codex': (460, 142, 164, 76, 'Codex', 'Live search / Thread → Turn'),
+    'prompt': (48, 142, 150, 76, 'Topic + input', 'Versioned templates'),
+    'backend': (246, 142, 166, 76, 'Backend', 'Fastify / scheduled tasks'),
+    'codex': (460, 142, 164, 76, 'Codex', 'Hosted search / stdio'),
     'db': (246, 284, 166, 76, 'SQLite', 'Private state + reports'),
-    'review': (460, 284, 164, 76, 'Admin + Review', 'Explicit human approval'),
-    'github': (708, 284, 240, 76, 'GitHub archive', 'Approved, versioned JSON'),
-    'web': (708, 142, 240, 76, 'Static Web + RSS', 'React / Vite build'),
+    'review': (460, 284, 164, 76, 'Approval', 'Manual / automatic'),
+    'github': (708, 284, 240, 76, 'GitHub archive', 'Versioned report JSON'),
+    'web': (708, 142, 240, 76, 'Cloudflare Pages', 'Public Web + RSS'),
+    'schedule': (48, 284, 166, 76, 'GitHub Actions', 'Daily 09:30 + retries'),
+    'functions': (48, 480, 200, 76, 'Pages Functions', 'Subscribe / confirm / send'),
+    'subscribers': (284, 480, 200, 76, 'Cloudflare D1', 'Emails + delivery state'),
+    'resend': (520, 480, 200, 76, 'Resend', 'Confirmation + daily digest'),
+    'readers': (756, 480, 200, 76, 'Subscribers', 'Inbox + unsubscribe'),
 }
 STEPS = [
-    ('Choose a topic and an initial prompt', 'prompt', 'backend', [(198, 180), (246, 180)]),
-    ('Search sources; continue in the same Thread', 'backend', 'codex', [(412, 170), (460, 170)]),
-    ('Finalize explicitly; verify original sources', 'codex', 'backend', [(460, 192), (412, 192)]),
-    ('Persist Run, sources and report', 'backend', 'db', [(329, 218), (329, 284)]),
-    ('Review sources and approve this version', 'db', 'review', [(412, 322), (460, 322)]),
+    ('Choose a topic and ordered prompts', 'prompt', 'backend', [(198, 180), (246, 180)]),
+    ('Research sources in the same Thread', 'backend', 'codex', [(412, 170), (460, 170)]),
+    ('The final prompt returns a structured daily report', 'codex', 'backend', [(460, 192), (412, 192)]),
+    ('Validate structure and persist the report', 'backend', 'db', [(329, 218), (329, 284)]),
+    ('Approve manually or by configured task policy', 'db', 'review', [(412, 322), (460, 322)]),
     ('Archive approved JSON, idempotently', 'review', 'github', [(624, 322), (708, 322)]),
-    ('Build independent reading pages and RSS', 'github', 'web', [(828, 284), (828, 218)]),
+    ('Build public reading pages and RSS', 'github', 'web', [(828, 284), (828, 218)]),
+    ('Trigger the daily aggregate and bounded retries', 'schedule', 'functions', [(48, 322), (20, 322), (20, 518), (48, 518)]),
+    ('Read the published reports for every selected topic', 'web', 'functions', [(948, 180), (984, 180), (984, 460), (148, 460), (148, 480)]),
+    ('Store confirmations and daily delivery state', 'functions', 'subscribers', [(248, 508), (284, 508)]),
+    ('Load confirmed subscribers and delivery records', 'subscribers', 'functions', [(284, 530), (248, 530)]),
+    ('Send confirmation emails and the daily aggregate', 'functions', 'resend', [(148, 556), (148, 602), (620, 602), (620, 556)]),
+    ('Deliver one daily aggregate per confirmed reader', 'resend', 'readers', [(720, 518), (756, 518)]),
 ]
+
 
 
 class Canvas:
@@ -41,7 +53,7 @@ class Canvas:
         self.draw = ImageDraw.Draw(self.image)
         self.svg = [f'<svg xmlns="http://www.w3.org/2000/svg" width="{W}" height="{H}" viewBox="0 0 {W} {H}" role="img" aria-labelledby="title desc">',
                     '<title id="title">AI News Hub architecture</title>',
-                    '<desc id="desc">User topics and iterative prompts drive Codex live source research via the private Linux Backend and stdio. Explicit finalization verifies original sources before SQLite storage. Human approval precedes GitHub archiving and independent static Web/RSS builds. Cloudflare deployment and native systemd acceptance remain pending.</desc>',
+                    '<desc id="desc">Versioned prompts and scheduled tasks drive Codex hosted web search via a private systemd-managed Linux Backend. Structured reports are stored in SQLite and approved manually or by configured policy before GitHub archiving. Cloudflare Pages builds the public website and RSS. GitHub Actions triggers a daily aggregate. Pages Functions reads published reports, stores subscriber confirmations and delivery state in private Cloudflare D1, and sends confirmation emails and daily aggregates through Resend to confirmed subscribers.</desc>',
                     '<rect width="100%" height="100%" fill="#f6f9f7"/>']
 
     def box(self, x, y, w, h, fill, stroke=LINE, radius=12, width=1):
@@ -70,10 +82,11 @@ class Canvas:
 def frame(stage=None, progress=0):
     c = Canvas()
     c.text(30, 21, 'AI News Hub', 25, bold=True)
-    c.text(31, 57, 'Your topic. Codex research. Human judgment.', 12, MUTED)
+    c.text(31, 57, 'Research, publish and deliver a daily digest.', 12, MUTED)
     c.text(671, 30, 'Task → Run → Thread → Turn', 12, GREEN, True)
     c.box(226, 92, 424, 298, '#edf5f0', '#d6e6dc', 17)
     c.box(682, 92, 294, 298, '#f0f4ed', '#d6e6dc', 17)
+    c.box(28, 410, 948, 228, '#edf5f0', '#d6e6dc', 17)
     c.text(246, 108, 'LINUX BACKEND / PRIVATE', 10, GREEN, True)
     c.text(48, 108, 'USER INPUT', 10, GREEN, True)
     c.text(700, 108, 'ARCHIVE / PUBLIC OUTPUT', 10, GREEN, True)
@@ -84,21 +97,37 @@ def frame(stage=None, progress=0):
         c.box(x, y, w, h, '#dff1e7' if focused else '#ffffff', GREEN if focused else '#cfdfd5', 11, 2 if focused else 1)
         c.text(x+15, y+18, title, 15, INK, True)
         c.text(x+15, y+46, subtitle, 10, MUTED)
-    c.text(47, 249, 'Multi-turn prompts.', 10, MUTED)
-    c.text(47, 268, 'Codex selects the sources.', 10, MUTED)
-    c.text(246, 368, 'Native systemd acceptance: pending', 9, '#956e24')
-    c.box(711, 235, 233, 27, '#fff4d7', '#e8d6a6', 7)
-    c.text(722, 243, 'Cloudflare deployment: pending', 10, '#956e24')
-    c.text(36, 412, 'PIPELINE', 9, MUTED, True)
-    for i in range(7):
-        c.box(36+i*22, 436, 16, 4, GREEN if stage == i else '#c9dbd1', GREEN if stage == i else '#c9dbd1', 2)
-    caption = f'{stage+1:02d}  {STEPS[stage][0]}' if stage is not None else 'Only approved reports reach GitHub.'
-    c.text(218, 411, caption, 13, GREEN, True)
-    c.text(218, 439, 'Manual trigger and approval today. Scheduling is not implemented.', 10, MUTED)
+    c.text(48, 261, 'EMAIL SCHEDULE', 10, GREEN, True)
+    c.text(246, 368, 'systemd service + persistent task schedules', 9, MUTED)
+    c.text(48, 428, 'EMAIL SUBSCRIPTION / CLOUDFLARE + RESEND', 10, GREEN, True)
+    c.text(284, 578, 'Pages Functions dispatches through Resend', 10, MUTED)
+    c.text(48, 617, 'Private D1 stores subscriber data. Email delivery requires production configuration.', 10, MUTED)
+    c.text(36, 682, 'PIPELINE', 9, MUTED, True)
+    for i in range(len(STEPS)):
+        c.box(36+i*14, 706, 10, 4, GREEN if stage == i else '#c9dbd1', GREEN if stage == i else '#c9dbd1', 2)
+    caption = f'{stage+1:02d}  {STEPS[stage][0]}' if stage is not None else 'Research → approved archive → public Web, RSS and email.'
+    c.text(240, 681, caption, 13, GREEN, True)
+    c.text(240, 709, 'Private research state and subscriber data stay in their own databases.', 10, MUTED)
     if stage is not None:
         path = STEPS[stage][3]
-        a, b = path[0], path[-1]
-        c.dot(a[0]+(b[0]-a[0])*progress, a[1]+(b[1]-a[1])*progress)
+        distance = progress * sum(hypot(b[0]-a[0], b[1]-a[1]) for a, b in zip(path, path[1:]))
+        for a, b in zip(path, path[1:]):
+            length = hypot(b[0]-a[0], b[1]-a[1])
+            if distance <= length:
+                c.dot(a[0]+(b[0]-a[0])*distance/length, a[1]+(b[1]-a[1])*distance/length)
+                break
+            distance -= length
+    else:
+        # SVG animates without scripts. GIF remains the README-compatible preview.
+        cycle = len(STEPS) * 1.12 + 1.8
+        active = 1.12 / cycle
+        c.svg.append('<style>@media (prefers-reduced-motion: reduce) {.flow-dot {display:none}}</style>')
+        for i, (_, _, _, path) in enumerate(STEPS):
+            route = 'M ' + ' L '.join(f'{x},{y}' for x, y in path)
+            c.svg.append(f'<circle class="flow-dot" r="4" fill="{GREEN}" opacity="0">'
+                         f'<animateMotion path="{route}" dur="{cycle:.2f}s" begin="{i*1.12:.2f}s" repeatCount="indefinite" keyTimes="0;{active:.5f};1" keyPoints="0;1;1" calcMode="linear"/>'
+                         f'<animate attributeName="opacity" values="1;1;0;0" keyTimes="0;{active:.5f};{active+.001:.5f};1" dur="{cycle:.2f}s" begin="{i*1.12:.2f}s" repeatCount="indefinite"/>'
+                         '</circle>')
     c.svg.append('</svg>')
     return c.image.resize((W, H), Image.Resampling.LANCZOS), '\n'.join(c.svg)+'\n'
 
@@ -109,7 +138,7 @@ def main():
     (OUT/'architecture.svg').write_text(svg)
     static.save('/tmp/ai-news-hub-architecture-preview.png')
     frames, durations = [], []
-    for stage in range(7):
+    for stage in range(len(STEPS)):
         for step in range(8):
             image, _ = frame(stage, step/7)
             frames.append(image)

@@ -1,12 +1,13 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="480" viewBox="0 0 1000 480" role="img" aria-labelledby="title desc">
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="750" viewBox="0 0 1000 750" role="img" aria-labelledby="title desc">
 <title id="title">AI News Hub architecture</title>
-<desc id="desc">User topics and iterative prompts drive Codex live source research via the private Linux Backend and stdio. Explicit finalization verifies original sources before SQLite storage. Human approval precedes GitHub archiving and independent static Web/RSS builds. Cloudflare deployment and native systemd acceptance remain pending.</desc>
+<desc id="desc">Versioned prompts and scheduled tasks drive Codex hosted web search via a private systemd-managed Linux Backend. Structured reports are stored in SQLite and approved manually or by configured policy before GitHub archiving. Cloudflare Pages builds the public website and RSS. GitHub Actions triggers a daily aggregate. Pages Functions reads published reports, stores subscriber confirmations and delivery state in private Cloudflare D1, and sends confirmation emails and daily aggregates through Resend to confirmed subscribers.</desc>
 <rect width="100%" height="100%" fill="#f6f9f7"/>
 <text x="30" y="42.25" font-family="DejaVu Sans,Arial,sans-serif" font-size="25" font-weight="700" fill="#17392e">AI News Hub</text>
-<text x="31" y="67.2" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="400" fill="#6a8176">Your topic. Codex research. Human judgment.</text>
+<text x="31" y="67.2" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="400" fill="#6a8176">Research, publish and deliver a daily digest.</text>
 <text x="671" y="40.2" font-family="DejaVu Sans,Arial,sans-serif" font-size="12" font-weight="700" fill="#08765b">Task → Run → Thread → Turn</text>
 <rect x="226" y="92" width="424" height="298" rx="17" fill="#edf5f0" stroke="#d6e6dc" stroke-width="1"/>
 <rect x="682" y="92" width="294" height="298" rx="17" fill="#f0f4ed" stroke="#d6e6dc" stroke-width="1"/>
+<rect x="28" y="410" width="948" height="228" rx="17" fill="#edf5f0" stroke="#d6e6dc" stroke-width="1"/>
 <text x="246" y="116.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">LINUX BACKEND / PRIVATE</text>
 <text x="48" y="116.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">USER INPUT</text>
 <text x="700" y="116.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">ARCHIVE / PUBLIC OUTPUT</text>
@@ -24,40 +25,87 @@
 <polyline points="702.0,325.0 708,322 702.0,319.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
 <polyline points="828,284 828,218" fill="none" stroke="#b4c9be" stroke-width="2"/>
 <polyline points="831.0,224.0 828,218 825.0,224.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="48,322 20,322 20,518 48,518" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="42.0,521.0 48,518 42.0,515.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="948,180 984,180 984,460 148,460 148,480" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="145.0,474.0 148,480 151.0,474.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="248,508 284,508" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="278.0,511.0 284,508 278.0,505.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="284,530 248,530" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="254.0,527.0 248,530 254.0,533.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="148,556 148,602 620,602 620,556" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="623.0,562.0 620,556 617.0,562.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="720,518 756,518" fill="none" stroke="#b4c9be" stroke-width="2"/>
+<polyline points="750.0,521.0 756,518 750.0,515.0" fill="none" stroke="#b4c9be" stroke-width="2"/>
 <rect x="48" y="142" width="150" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
-<text x="63" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Topic + prompt</text>
-<text x="63" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">User research input</text>
+<text x="63" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Topic + input</text>
+<text x="63" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Versioned templates</text>
 <rect x="246" y="142" width="166" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
 <text x="261" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Backend</text>
-<text x="261" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Fastify / Task → Run</text>
+<text x="261" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Fastify / scheduled tasks</text>
 <rect x="460" y="142" width="164" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
 <text x="475" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Codex</text>
-<text x="475" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Live search / Thread → Turn</text>
+<text x="475" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Hosted search / stdio</text>
 <rect x="246" y="284" width="166" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
 <text x="261" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">SQLite</text>
 <text x="261" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Private state + reports</text>
 <rect x="460" y="284" width="164" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
-<text x="475" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Admin + Review</text>
-<text x="475" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Explicit human approval</text>
+<text x="475" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Approval</text>
+<text x="475" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Manual / automatic</text>
 <rect x="708" y="284" width="240" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
 <text x="723" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">GitHub archive</text>
-<text x="723" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Approved, versioned JSON</text>
+<text x="723" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Versioned report JSON</text>
 <rect x="708" y="142" width="240" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
-<text x="723" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Static Web + RSS</text>
-<text x="723" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">React / Vite build</text>
-<text x="47" y="257.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Multi-turn prompts.</text>
-<text x="47" y="276.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Codex selects the sources.</text>
-<text x="246" y="375.65" font-family="DejaVu Sans,Arial,sans-serif" font-size="9" font-weight="400" fill="#956e24">Native systemd acceptance: pending</text>
-<rect x="711" y="235" width="233" height="27" rx="7" fill="#fff4d7" stroke="#e8d6a6" stroke-width="1"/>
-<text x="722" y="251.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#956e24">Cloudflare deployment: pending</text>
-<text x="36" y="419.65" font-family="DejaVu Sans,Arial,sans-serif" font-size="9" font-weight="700" fill="#6a8176">PIPELINE</text>
-<rect x="36" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<rect x="58" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<rect x="80" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<rect x="102" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<rect x="124" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<rect x="146" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<rect x="168" y="436" width="16" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
-<text x="218" y="422.05" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" font-weight="700" fill="#08765b">Only approved reports reach GitHub.</text>
-<text x="218" y="447.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Manual trigger and approval today. Scheduling is not implemented.</text>
+<text x="723" y="172.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Cloudflare Pages</text>
+<text x="723" y="196.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Public Web + RSS</text>
+<rect x="48" y="284" width="166" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="63" y="314.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">GitHub Actions</text>
+<text x="63" y="338.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Daily 09:30 + retries</text>
+<rect x="48" y="480" width="200" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="63" y="510.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Pages Functions</text>
+<text x="63" y="534.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Subscribe / confirm / send</text>
+<rect x="284" y="480" width="200" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="299" y="510.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Cloudflare D1</text>
+<text x="299" y="534.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Emails + delivery state</text>
+<rect x="520" y="480" width="200" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="535" y="510.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Resend</text>
+<text x="535" y="534.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Confirmation + daily digest</text>
+<rect x="756" y="480" width="200" height="76" rx="11" fill="#ffffff" stroke="#cfdfd5" stroke-width="1"/>
+<text x="771" y="510.75" font-family="DejaVu Sans,Arial,sans-serif" font-size="15" font-weight="700" fill="#17392e">Subscribers</text>
+<text x="771" y="534.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Inbox + unsubscribe</text>
+<text x="48" y="269.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">EMAIL SCHEDULE</text>
+<text x="246" y="375.65" font-family="DejaVu Sans,Arial,sans-serif" font-size="9" font-weight="400" fill="#6a8176">systemd service + persistent task schedules</text>
+<text x="48" y="436.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="700" fill="#08765b">EMAIL SUBSCRIPTION / CLOUDFLARE + RESEND</text>
+<text x="284" y="586.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Pages Functions dispatches through Resend</text>
+<text x="48" y="625.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Private D1 stores subscriber data. Email delivery requires production configuration.</text>
+<text x="36" y="689.65" font-family="DejaVu Sans,Arial,sans-serif" font-size="9" font-weight="700" fill="#6a8176">PIPELINE</text>
+<rect x="36" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="50" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="64" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="78" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="92" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="106" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="120" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="134" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="148" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="162" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="176" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="190" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<rect x="204" y="706" width="10" height="4" rx="2" fill="#c9dbd1" stroke="#c9dbd1" stroke-width="1"/>
+<text x="240" y="692.05" font-family="DejaVu Sans,Arial,sans-serif" font-size="13" font-weight="700" fill="#08765b">Research → approved archive → public Web, RSS and email.</text>
+<text x="240" y="717.5" font-family="DejaVu Sans,Arial,sans-serif" font-size="10" font-weight="400" fill="#6a8176">Private research state and subscriber data stay in their own databases.</text>
+<style>@media (prefers-reduced-motion: reduce) {.flow-dot {display:none}}</style>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 198,180 L 246,180" dur="16.36s" begin="0.00s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="0.00s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 412,170 L 460,170" dur="16.36s" begin="1.12s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="1.12s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 460,192 L 412,192" dur="16.36s" begin="2.24s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="2.24s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 329,218 L 329,284" dur="16.36s" begin="3.36s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="3.36s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 412,322 L 460,322" dur="16.36s" begin="4.48s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="4.48s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 624,322 L 708,322" dur="16.36s" begin="5.60s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="5.60s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 828,284 L 828,218" dur="16.36s" begin="6.72s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="6.72s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 48,322 L 20,322 L 20,518 L 48,518" dur="16.36s" begin="7.84s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="7.84s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 948,180 L 984,180 L 984,460 L 148,460 L 148,480" dur="16.36s" begin="8.96s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="8.96s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 248,508 L 284,508" dur="16.36s" begin="10.08s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="10.08s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 284,530 L 248,530" dur="16.36s" begin="11.20s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="11.20s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 148,556 L 148,602 L 620,602 L 620,556" dur="16.36s" begin="12.32s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="12.32s" repeatCount="indefinite"/></circle>
+<circle class="flow-dot" r="4" fill="#08765b" opacity="0"><animateMotion path="M 720,518 L 756,518" dur="16.36s" begin="13.44s" repeatCount="indefinite" keyTimes="0;0.06846;1" keyPoints="0;1;1" calcMode="linear"/><animate attributeName="opacity" values="1;1;0;0" keyTimes="0;0.06846;0.06946;1" dur="16.36s" begin="13.44s" repeatCount="indefinite"/></circle>
 </svg>
