@@ -49,11 +49,6 @@ function shortTime(value?: string | null, timezone = "Asia/Shanghai") {
     hour12: false,
   }).format(new Date(value));
 }
-function closeTaskMenu(button: HTMLButtonElement) {
-  const menu = button.closest("details");
-  menu?.removeAttribute("open");
-  menu?.querySelector("summary")?.focus();
-}
 function TaskEditor({
   api,
   task,
@@ -442,7 +437,7 @@ export function ManagedTasks({
   useEffect(() => () => controller.abort(), [controller]);
   async function action(
     task: ManagedTask,
-    kind: "start" | "stop" | "pause" | "delete",
+    kind: "start" | "stop" | "pause" | "delete" | "autoPublish",
   ) {
     if (busy) return;
     setBusy(task.id);
@@ -452,14 +447,23 @@ export function ManagedTasks({
       if (kind === "delete") {
         await api(base, controller.signal, undefined, "DELETE");
         if (taskId) location.hash = "#/tasks";
-      } else if (kind === "pause")
+      } else if (kind === "pause" || kind === "autoPublish")
         await api(
           base,
           controller.signal,
           {
             name: task.name,
             ...task.configuration,
-            status: task.status === "active" ? "paused" : "active",
+            autoPublish:
+              kind === "autoPublish"
+                ? !task.configuration?.autoPublish
+                : task.configuration?.autoPublish,
+            status:
+              kind === "pause"
+                ? task.status === "active"
+                  ? "paused"
+                  : "active"
+                : task.status,
           },
           "PUT",
         );
@@ -508,44 +512,42 @@ export function ManagedTasks({
           <button
             className="quiet"
             disabled={!!busy || running}
-            onClick={(event) => {
-              event.currentTarget
-                .closest(".task-actions")
-                ?.querySelector("details")
-                ?.removeAttribute("open");
-              setEditing(task);
-            }}
+            onClick={() => setEditing(task)}
           >
             编辑
           </button>
-          <details className="task-more">
-            <summary>更多</summary>
-            <div className="task-more-options">
-              {scheduled && (
-                <button
-                  className="quiet"
-                  disabled={!!busy || running}
-                  onClick={(event) => {
-                    closeTaskMenu(event.currentTarget);
-                    void action(task, "pause");
-                  }}
-                >
-                  {task.status === "active" ? "暂停定时" : "启用定时"}
-                </button>
-              )}
-              <button
-                className="quiet danger-action"
-                disabled={!!busy || running}
-                onClick={(event) => {
-                  closeTaskMenu(event.currentTarget);
-                  setDeleting(task.id);
-                }}
-              >
-                删除
-              </button>
-            </div>
-          </details>
+          {scheduled && (
+            <button
+              className="quiet"
+              disabled={!!busy || running}
+              onClick={() => void action(task, "pause")}
+            >
+              {task.status === "active" ? "暂停定时" : "启用定时"}
+            </button>
+          )}
+          <button
+            className="quiet danger-action"
+            disabled={!!busy || running}
+            onClick={() => setDeleting(task.id)}
+          >
+            删除
+          </button>
         </div>
+      );
+      const autoPublish = (
+        <label className="task-auto-switch">
+          <input
+            type="checkbox"
+            role="switch"
+            aria-label={`自动发布：${task.configuration?.topic ?? task.name}`}
+            checked={!!task.configuration?.autoPublish}
+            disabled={!!busy || running || !task.configuration}
+            onChange={() => void action(task, "autoPublish")}
+          />
+          <span aria-hidden="true">
+            {task.configuration?.autoPublish ? "开启" : "关闭"}
+          </span>
+        </label>
       );
       const confirmation = deleting === task.id && (
         <div className="delete-confirm" role="alert">
@@ -611,17 +613,7 @@ export function ManagedTasks({
                 <span className="muted">未运行</span>
               )}
             </td>
-            <td data-label="自动发布">
-              <span
-                className={
-                  task.configuration?.autoPublish
-                    ? "task-auto-enabled"
-                    : "muted"
-                }
-              >
-                {task.configuration?.autoPublish ? "开启" : "关闭"}
-              </span>
-            </td>
+            <td data-label="自动发布">{autoPublish}</td>
             <td className="task-table-actions">
               {controls}
               {confirmation}
@@ -685,7 +677,7 @@ export function ManagedTasks({
             </div>
             <div>
               <dt>自动发布</dt>
-              <dd>{task.configuration?.autoPublish ? "开启" : "关闭"}</dd>
+              <dd>{autoPublish}</dd>
             </div>
           </dl>
           <div className="managed-task-footer">{controls}</div>
@@ -706,6 +698,13 @@ export function ManagedTasks({
         }
         action={
           <button
+            disabled={
+              !!taskId &&
+              (!selected ||
+                !!busy ||
+                active(selected.current?.status) ||
+                !!selected.current?.publishing)
+            }
             onClick={() =>
               setEditing(taskId && selected ? selected.task : "new")
             }

@@ -4,14 +4,14 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 
 ## 内容与归档协议
 
-归档只输出严格 JSON，格式为 [archive v1 Schema](schema/report-archive-v1.schema.json)，代码中的 `ARCHIVE_SCHEMA` 与该文件保持一致：
+归档只输出严格 JSON。旧报告继续使用 [archive v1 Schema](schema/report-archive-v1.schema.json)，新建的受管任务报告使用带话题的 [archive v2 Schema](schema/report-archive-v2.schema.json)；代码中的 Schema 与对应文件保持一致：
 
 - `schema_version: 1`、稳定 `report_id`、`report_date`（UTC 日期）、`channel`、报告 `version`、标题和采集时间。
 - `review_status: approved`、批准时间与 `reviewed_content_sha256`；来源仍为 `verification: source_only`，人工允许发布不等于独立事实证实。
 - 条目稳定 `id`、分类、重要性、`fact_summary`、单独的推断 `analysis`、精确依据 `evidence_quote`。
 - 来源名称、原始/canonical URL、来源发布时间、事件时间、首次抓取时间；未知时间为 NULL。
 
-路径固定为 `reports/YYYY/MM/DD/opensource/vNNNNNN.json`，例如 `reports/2026/11/03/opensource/v000001.json`。修订须生成新报告/版本，旧路径永不覆盖；其他日期也不改动。当前仅实现 opensource 频道。Markdown 保留于私有 SQLite 预览，不在本次额外提交。未来 Schema 变化需递增 schema_version 并更新消费者。
+历史 v1 路径为 `reports/YYYY/MM/DD/opensource/vNNNNNN.json`，例如 `reports/2026/11/03/opensource/v000001.json`。修订须生成新报告/版本，旧路径永不覆盖；其他日期也不改动。当前仅实现 opensource 频道。Markdown 保留于私有 SQLite 预览，不在本次额外提交。v2 使用 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`，消费者须同时支持两个版本。话题 ID 为 `t-` 加任务 ID 的 SHA-256 前 24 位，名字使用该 Run 的不可变配置快照；migration 10 持久化 `public_topic_json` 并在批准/归档时比对，不能从模型输出伪造。报告版本仍沿用数据库按频道/日期分配的序号，不保证某话题内部连续。历史报告的空快照及 v1 字节/哈希保持不变。
 
 归档不包含 Run/Thread/Turn 标识、候选完整快照、Agent 输入/日志、SQLite、Token、代理配置或审批私密笔记。目标仓库已有的源代码/历史不由归档器复制或删除；应选择干净的专用归档仓库/分支。不要把管理后台和数据库目录作为公开产物。
 
@@ -53,7 +53,7 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 ## Codex 主题研究兼容
 
-当前报告来自 news-research 的显式最终生成，发布时比对 codex_news_runs 的持久模式、内容快照和条目关联，不联网访问原文；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。新研究主题不改变 archive v1 的 opensource 频道键。
+当前报告来自 news-research 的显式最终生成，发布时比对 codex_news_runs 的持久模式、内容快照和条目关联，不联网访问原文；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。底层 opensource 频道键保持兼容；公共阅读边界由 v2 话题区分。
 
 ## 任务自动发布
 

@@ -1,3 +1,4 @@
+import { isDeepStrictEqual } from 'node:util';
 import { buildOverview } from './overview.js';
 import { listRunSummaries } from './run-summaries.js';
 import type { RunListQuery, RunListResponse } from '../../../../packages/shared/src/index.js';
@@ -76,7 +77,9 @@ export class TaskEngine {
   updateTask(id:string,value:unknown):TaskRecord {
     const prior=this.task(id);if(!prior.configuration||prior.deleted_at)throw new HttpError(409,'task_not_editable');
     this.capacityForMutation(id);const input=taskInput(value);
-    this.db.prepare('UPDATE tasks SET name=?,prompt=?,status=?,configuration_json=?,next_run_at=?,timezone=?,updated_at=? WHERE id=?').run(input.name,input.configuration.prompts[0]!,input.status,JSON.stringify(input.configuration),input.status==='active'?nextOccurrence(input.configuration,new Date()):null,input.configuration.timezone,now(),id);
+    const sameSchedule = prior.status === input.status && prior.configuration.timezone === input.configuration.timezone && isDeepStrictEqual(prior.configuration.schedule,input.configuration.schedule);
+    const nextRunAt = sameSchedule ? prior.next_run_at ?? null : input.status==='active' ? nextOccurrence(input.configuration,new Date()) : null;
+    this.db.prepare('UPDATE tasks SET name=?,prompt=?,status=?,configuration_json=?,next_run_at=?,timezone=?,updated_at=? WHERE id=?').run(input.name,input.configuration.prompts[0]!,input.status,JSON.stringify(input.configuration),nextRunAt,input.configuration.timezone,now(),id);
     return this.task(id);
   }
   deleteTask(id:string):void {

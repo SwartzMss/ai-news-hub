@@ -339,7 +339,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 ## 14. Issue #8 公共站构建与 Pages
 
-公共阅读站以最新一期、全部资讯和往期归档组织内容，取消宣传区、阅读指南与静态/免登录说明；首页直接展示最新已归档简报及其条目，历史首页按月份列出期次，日期/版本页按对应报告快照呈现，修订记录折叠。展示标题取现有事实摘要首句，原始引文保留在可展开来源区；不修改归档 JSON、现有 URL 或 RSS GUID。缺失来源日期不占位，主题偏好在页面跳转后保留。此布局不根据构建时钟把旧报告标成“今日”。
+公共阅读站按任务话题组织：一个任务对应稳定话题，首次归档后出现在首页选择器中；首页只展示当前话题的最新一期，每个话题有独立的日期/版本归档、详情与 RSS。同一天不同话题和相同来源条目互不覆盖。浏览器 localStorage 只保存话题 ID 与明暗偏好，首页有效的 `?topic=<id>` 优先于已保存偏好；禁用脚本或存储时仍可通过链接阅读。旧归档 JSON 不改写，兼容原有日期、版本与来源链接。
 
 公共站不运行 Linux Backend，不需要 Codex、管理 Token、SQLite 或发布 Token。根目录安装锁文件依赖后，运行 `SITE_URL=https://your-project.pages.dev npm run build:web`，仅上传 `dist/web`。不得将 `dist` 根目录、`dist/admin` 或 SSR 构建模块 `dist/web-render` 设为公开输出。
 

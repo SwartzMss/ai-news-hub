@@ -1,4 +1,4 @@
-import { REPORT_SCHEMA } from "../news/report-schema.js";
+import { REPORT_SCHEMA, PUBLIC_TOPIC_SCHEMA } from "../news/report-schema.js";
 const original = REPORT_SCHEMA.properties.items.items.properties;
 const source = original.source.properties;
 const properties = {
@@ -60,4 +60,10 @@ export const ARCHIVE_SCHEMA = {
   additionalProperties: false,
   required: Object.keys(root),
   properties: root,
+};
+
+export const ARCHIVE_V2_SCHEMA = {
+  ...ARCHIVE_SCHEMA,
+  required: [...ARCHIVE_SCHEMA.required, 'topic'],
+  properties: { ...ARCHIVE_SCHEMA.properties, schema_version: { const: 2 }, topic: PUBLIC_TOPIC_SCHEMA },
 };

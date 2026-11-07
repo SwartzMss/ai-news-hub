@@ -29,7 +29,7 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 | Source verifier | 公网 HTTPS、DNS 固定连接、HTML 解析、精确引文和源元数据 |
 | SQLite | 私有历史/正文、来源快照、报告、批准和归档记录 |
 | Admin | 主题/prompt、继续研究、生成、日志、来源审核、独立批准和归档 |
-| Publisher | 哈希批准、严格 archive v1、GitHub 追加文件、显式重试 |
+| Publisher | 哈希批准、严格 archive v1/v2、GitHub 追加文件、显式重试 |
 | Public Web | 读取 approved 归档构建实际 HTML 路由/RSS，不读取 Backend 或 SQLite |
 
 ## Task / Run / Thread / Turn
@@ -56,21 +56,21 @@ SQLite 在 Linux 持久目录（如 `/var/lib/ai-news-hub`），目录 0700、�
 
 迁移 1 为基础数据，2 为执行历史/锁，3 的 RSS 表仅留历史，4 为批准/归档；5 新增 codex_news_runs、Turn mode 并停用旧 RSS 任务；6 新增数据库设置、管理员凭据和会话。归档 v1 保持 `opensource` 频道键，主题可自由填写；新发布频道另行扩展合同。
 
-人工批准绑定文档、版本、来源快照和关联 ID 哈希；原始生成文档仍为 pending。发布重新核对成功 Run 和快照，archive v1 不导出 Run/Thread、日志、SQLite 或凭据。Markdown 仅留 SQLite。
+人工批准绑定文档、版本、来源快照和关联 ID 哈希；原始生成文档仍为 pending。发布重新核对成功 Run 和快照，archive v1/v2 不导出 Run/Thread、日志、SQLite 或凭据。Markdown 仅留 SQLite。
 
-GitHub 路径 `reports/YYYY/MM/DD/opensource/vNNNNNN.json` 只追加；相同字节复用提交，不同字节拒绝。网络不占事务，发布串行；响应丢失后显式重试。repository/branch/token 由受保护后台显式配置到 SQLite，默认关闭。见 [数据模型](DATA_MODEL.md)、[归档协议](PUBLISHING.md)。
+新任务归档使用 archive v2，路径 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`；历史 v1 的 `reports/YYYY/MM/DD/opensource/vNNNNNN.json` 保持兼容，均只追加；相同字节复用提交，不同字节拒绝。网络不占事务，发布串行；响应丢失后显式重试。repository/branch/token 由受保护后台显式配置到 SQLite，默认关闭。见 [数据模型](DATA_MODEL.md)、[归档协议](PUBLISHING.md)。
 
 ## 管理和公开站
 
-公共阅读站以最新一期、全部资讯和往期归档组织内容，取消宣传区、阅读指南与静态/免登录说明；首页直接展示最新已归档简报及其条目，历史首页按月份列出期次，日期/版本页按对应报告快照呈现，修订记录折叠。展示标题取现有事实摘要首句，原始引文保留在可展开来源区；不修改归档 JSON、现有 URL 或 RSS GUID。缺失来源日期不占位，主题偏好在页面跳转后保留。此布局不根据构建时钟把旧报告标成“今日”。
+公共阅读站按任务话题组织：一个任务对应稳定话题，首次归档后出现在首页选择器中；首页只展示当前话题的最新一期，每个话题有独立的日期/版本归档、详情与 RSS。同一天不同话题和相同来源条目互不覆盖。浏览器 localStorage 只保存话题 ID 与明暗偏好，首页有效的 `?topic=<id>` 优先于已保存偏好；禁用脚本或存储时仍可通过链接阅读。旧归档 JSON 不改写，兼容原有日期、版本与来源链接。
 
 Admin 采用独立的响应式工作台壳、任务列表与研究会话视图；Run 的日志/运行信息用标签组织，切换时保留研究输入与幂等请求。系统设置按模型/执行、归档和密码分组。
 
 Admin 独立构建到 dist/admin，Backend 只提供 `/admin/` 壳和有限 JS/CSS，私有读写均经 Bearer `/api`。初始化后用密码登录，临时 Bearer 会话仅在页面内存，刷新重新认证。每 2 秒顺序轮询，导航/退出中断旧请求。研究请求保存页面内幂等 payload，不确定时锁定输入并重试原请求；刷新后先查历史。
 
-公开站唯一输出 dist/web，构建模块 dist/web-render 不公开。正式构建读取 checkout 的 approved reports/；无数据为空状态；demo 独立并标记 DEMO/noindex，正式拒绝测试标记。HTML 包括首页、频道、来源详情、日期/版本页；无 JS 可阅读，浏览器脚本仅切主题。同日最高版本进入列表，历史页保留版本。
+公开站唯一输出 dist/web，构建模块 dist/web-render 不公开。正式构建读取 checkout 的 approved reports/；无数据为空状态；demo 独立并标记 DEMO/noindex，正式拒绝测试标记。HTML 包括话题首页、来源详情、各话题日期/版本页；无 JS 可阅读，浏览器脚本只切换并记住话题与明暗偏好。每个话题同日最高版本进入列表，历史页保留版本。
 
-输出 `/rss/all.xml`、`/rss/opensource.xml`，正确转义 XML、稳定 GUID、首次批准 pubDate。公共产物不依赖 Backend 在线。Cloudflare Git 授权/HTTPS/自动部署待验收，只上传 dist/web。见 [后台](ADMIN.md)、[公共站](PUBLIC_WEB.md)。
+输出 `/rss/topics/<topic-id>.xml`、兼容 `/rss/all.xml`、`/rss/opensource.xml`，正确转义 XML、稳定 GUID、首次批准 pubDate。公共产物不依赖 Backend 在线。Cloudflare Git 授权/HTTPS/自动部署待验收，只上传 dist/web。见 [后台](ADMIN.md)、[公共站](PUBLIC_WEB.md)。
 
 ## Linux 安全与未完成事项
 

@@ -2414,13 +2414,7 @@ summary {
 .task-timezone { margin-left: 8px; font-size: 11px; color: var(--muted); }
 .managed-task-footer { border-top: 1px solid var(--line); padding-top: 16px; flex-wrap: wrap; }
 .managed-task-footer .task-actions { margin-top: 0; align-items: center; }
-.task-more { position: relative; }
-.task-more summary { cursor: pointer; padding: 8px 12px; border-radius: 6px; color: var(--muted); }
-.task-more summary:focus-visible { outline: 3px solid var(--green); outline-offset: 2px; }
-.task-more-options { position: absolute; top: 100%; left: 0; z-index: 10; min-width: 136px; padding: 6px; display: grid; gap: 4px; border: 1px solid var(--line); border-radius: 8px; background: var(--menu-surface); box-shadow: 0 8px 24px var(--menu-shadow); }
-:root { --menu-surface: #fff; --menu-shadow: #17212f14; --danger: #a32c2c; }
-.task-more-options button { width: 100%; justify-content: flex-start; border-color: transparent; }
-.task-more-options .danger-action { color: var(--danger); }
+:root { --menu-surface: #fff; --danger: #a32c2c; }
 .task-latest { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; font-size: 12px; color: var(--muted); }
 @media(max-width:680px) { .managed-task { padding: 18px; } .managed-task-heading { align-items: flex-start; flex-direction: column; gap: 10px; } .task-latest { width: 100%; } .task-timezone { display: block; margin-left: 0; } }
 
@@ -2721,7 +2715,7 @@ summary {
   font-size: 12px;
   line-height: 1.8;
 }
-/* Compact management table; menus expand inside rows to remain visible in scroll containers. */
+/* Compact management table with direct task controls. */
 .task-table table {
   min-width: 880px;
 }
@@ -2756,18 +2750,6 @@ summary {
 .task-table .task-actions button {
   font-size: 11px;
   white-space: nowrap;
-}
-.task-table .task-more {
-  margin: 0;
-}
-.task-table .task-more summary {
-  font-size: 11px;
-}
-.task-table .task-more-options {
-  position: static;
-  box-shadow: none;
-  min-width: 100px;
-  margin-top: 4px;
 }
 .task-table-history {
   display: inline-block;
@@ -2908,19 +2890,8 @@ summary {
 .task-table .task-actions > button {
   min-height: 34px;
 }
-.task-table .task-more summary {
-  padding: 8px;
-}
-.task-table .task-more-options {
-  position: static;
-  box-shadow: none;
-}
 .task-table td:last-child {
-  width: 205px;
-}
-.task-auto-enabled {
-  color: var(--green);
-  font-weight: 500;
+  width: 285px;
 }
 .task-pagination {
   display: flex;
@@ -3029,18 +3000,6 @@ summary {
   .task-table .task-actions > button {
     min-height: 40px;
   }
-  .task-table .task-more {
-    margin-left: auto;
-  }
-  .task-table .task-more-options {
-    min-width: 130px;
-    position: absolute;
-    left: auto;
-    right: 0;
-    top: 100%;
-    z-index: 12;
-    box-shadow: 0 8px 24px var(--menu-shadow);
-  }
   .task-pagination {
     align-items: flex-start;
     flex-direction: column;
@@ -3070,4 +3029,44 @@ summary {
 }
 @media (max-width: 1100px) {
   .task-table .task-table-name { max-width: none; }
+}
+
+.task-actions .danger-action { color: var(--danger); }
+.task-auto-switch {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  width: max-content;
+  cursor: pointer;
+  font-size: 12px;
+  white-space: nowrap;
+}
+.task-auto-switch input {
+  appearance: none;
+  position: relative;
+  width: 32px;
+  height: 18px;
+  margin: 0;
+  padding: 0;
+  border: 1px solid var(--muted);
+  border-radius: 999px;
+  background: var(--line);
+  cursor: pointer;
+}
+.task-auto-switch input::before {
+  content: "";
+  position: absolute;
+  top: 2px;
+  left: 2px;
+  width: 12px;
+  height: 12px;
+  border-radius: 50%;
+  background: white;
+}
+.task-auto-switch input:checked { background: var(--green); border-color: var(--green); }
+.task-auto-switch input:checked::before { transform: translateX(14px); }
+.task-auto-switch input:focus-visible { outline: 3px solid var(--green); outline-offset: 3px; }
+.task-auto-switch input:disabled { cursor: default; opacity: .5; }
+@media (max-width: 1100px) {
+  .task-table .task-actions { flex-wrap: wrap; }
 }
