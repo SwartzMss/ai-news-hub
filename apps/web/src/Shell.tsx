@@ -29,10 +29,11 @@ export function Shell({
         </a>
         <nav className="site-nav" aria-label="主导航">
           <a href="/" aria-current={active === "topics" ? "page" : undefined}>
-            话题首页
+            首页
           </a>
           <a
             href={topic ? topicArchivePath(topic.id) : "/archive/"}
+            data-topic-archive
             aria-current={active === "archive" ? "page" : undefined}
           >
             往期归档
@@ -53,32 +54,39 @@ export function Shell({
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
-      {data.topics.length > 0 && (
-        <nav className="topic-picker" aria-label="话题选择">
-          {data.topics.map((t) => (
-            <a
-              key={t.id}
-              href={
-                active === "archive" ? topicArchivePath(t.id) : topicPath(t.id)
-              }
-              data-topic-choice={t.id}
-              aria-current={
-                (topic?.id ??
-                  (page === "home" ? data.topics[0]?.id : undefined)) === t.id
-                  ? "page"
-                  : undefined
-              }
-            >
-              {t.name}
-            </a>
-          ))}
-        </nav>
-      )}
-      {children}
+      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>
+        {data.topics.length > 0 && (
+          <nav className="topic-picker" aria-label="话题选择">
+            {data.topics.map((t) => (
+              <a
+                key={t.id}
+                href={
+                  active === "archive"
+                    ? topicArchivePath(t.id)
+                    : topicPath(t.id)
+                }
+                data-topic-choice={t.id}
+                aria-current={
+                  (topic?.id ??
+                    (page === "home" ? data.topics[0]?.id : undefined)) === t.id
+                    ? "page"
+                    : undefined
+                }
+              >
+                {t.name}
+              </a>
+            ))}
+          </nav>
+        )}
+        {children}
+      </div>
       <footer>
         <a href="/">AI News Hub</a>
         <nav aria-label="页脚导航">
-          <a href={topic ? topicArchivePath(topic.id) : "/archive/"}>
+          <a
+            href={topic ? topicArchivePath(topic.id) : "/archive/"}
+            data-topic-archive
+          >
             往期归档
           </a>
           <a href={rss} data-topic-feed>

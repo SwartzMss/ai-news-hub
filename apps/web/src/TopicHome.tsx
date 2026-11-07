@@ -1,15 +1,35 @@
 import type { PublicData } from "./types";
 import { Shell } from "./Shell";
 import { Row, Empty, dateLabel } from "./ReadingParts";
-import { topicPath, topicArchivePath, issuePath } from "./paths";
+import { topicPath, topicArchivePath } from "./paths";
+export function LatestBrief({
+  topic,
+}: {
+  topic: PublicData["topics"][number];
+}) {
+  return (
+    <>
+      <header className="brief-heading">
+        <h1>{topic.name}</h1>
+        <div className="brief-date">
+          <time dateTime={topic.latest.report_date}>
+            {dateLabel(topic.latest.report_date)}
+          </time>
+          <span>{topic.latest.items.length} 条资讯</span>
+        </div>
+      </header>
+      <div className="news-list">
+        {topic.latest.items.map((story) => (
+          <Row key={story.key} story={story} />
+        ))}
+      </div>
+    </>
+  );
+}
 export function TopicHome({ data }: { data: PublicData }) {
   return (
-    <Shell data={data} page="home">
+    <Shell data={data} topic={data.topics[0]} page="home">
       <main id="content" className="topic-home">
-        <header className="topic-heading">
-          <h1>话题简报</h1>
-          <span>{data.topics.length} 个话题</span>
-        </header>
         {!data.topics.length ? (
           <Empty />
         ) : (
@@ -20,30 +40,7 @@ export function TopicHome({ data }: { data: PublicData }) {
               hidden={i !== 0}
               aria-label={topic.name}
             >
-              <header className="topic-panel-header">
-                <div>
-                  <h2>{topic.name}</h2>
-                  <span>
-                    <time dateTime={topic.latest.report_date}>
-                      {dateLabel(topic.latest.report_date)}
-                    </time>{" "}
-                    · {topic.latest.items.length} 条资讯
-                  </span>
-                </div>
-                <a href={topicPath(topic.id)}>进入话题 →</a>
-              </header>
-              <div className="topic-issue-heading">
-                <h3>{topic.latest.title}</h3>
-                <div>
-                  <a href={issuePath(topic.latest)}>阅读整期</a>
-                  <a href={topicArchivePath(topic.id)}>往期简报</a>
-                </div>
-              </div>
-              <div className="news-list">
-                {topic.latest.items.map((story, index) => (
-                  <Row key={story.key} story={story} index={index} level={3} />
-                ))}
-              </div>
+              <LatestBrief topic={topic} />
             </section>
           ))
         )}

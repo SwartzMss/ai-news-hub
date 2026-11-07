@@ -1,3 +1,4 @@
+import { InlineText } from "./InlineText";
 import type { Story, Report } from "./types";
 import { issuePath, storyPath } from "./paths";
 export const categories: Record<string, string> = {
@@ -99,39 +100,37 @@ export function Source({ story }: { story: Story }) {
 }
 export function Row({
   story,
-  index,
   level = 2,
 }: {
   story: Story;
-  index: number;
   level?: 2 | 3;
 }) {
   const Heading = level === 3 ? "h3" : "h2",
     text = lead(story);
   return (
     <article className="news-row">
-      <span className="news-number" aria-hidden="true">
-        {String(index + 1).padStart(2, "0")}
-      </span>
       <div className="news-content">
+        <Heading>
+          <a href={storyPath(story)} title={text.title}>
+            {text.title}
+          </a>
+        </Heading>
+        {text.rest && (
+          <p className="news-summary">
+            <InlineText text={text.rest} />
+          </p>
+        )}
         <div className="news-meta">
           <span className="category-label">
             {categories[story.category] ?? story.category}
           </span>
-          <span>{story.source.name}</span>
-        </div>
-        <Heading>
-          <a href={storyPath(story)}>{text.title}</a>
-        </Heading>
-        {text.rest && <p className="news-summary">{text.rest}</p>}
-        <div className="news-footer">
-          <a href={storyPath(story)}>查看详情</a>
           <a
             href={story.source.canonical_url}
             target="_blank"
             rel="noopener noreferrer"
+            aria-label={`查看原文：${story.source.name}`}
           >
-            原文 ↗
+            {story.source.name} <span aria-hidden="true">↗</span>
           </a>
         </div>
       </div>
