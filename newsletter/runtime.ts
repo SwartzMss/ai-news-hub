@@ -1,3 +1,6 @@
+import {renderNewsletterPage} from './page.js';
+export {escapeHtml} from './page.js';
+
 export interface D1Result { meta: { changes: number }; results?: Record<string, unknown>[] }
 export interface D1Statement {
   bind(...values: unknown[]): D1Statement;
@@ -25,7 +28,6 @@ export class NewsletterError extends Error {
   constructor(public code: string, public status = 400) { super(code); }
 }
 export const nowMs = (ctx: NewsletterContext) => (ctx.now?.() ?? new Date()).getTime();
-export const escapeHtml = (text: string) => text.replace(/[&<>"']/g, (c) => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]!));
 export function normalizeEmail(input: unknown): string {
   if (typeof input !== 'string') throw new NewsletterError('invalid_email');
   const value = input.trim().toLowerCase();
@@ -62,11 +64,11 @@ export async function readBody(request: Request): Promise<Record<string, unknown
 }
 const responseHeaders = { 'cache-control':'no-store', 'referrer-policy':'no-referrer', 'x-content-type-options':'nosniff', 'x-robots-tag':'noindex, nofollow' };
 export function json(data: unknown, status = 200): Response { return Response.json(data,{status,headers:responseHeaders}); }
-export function page(title: string, message: string, form?: {action: string; token: string}, status = 200): Response {
+export function page(title: string, message: string, form?: {action: string; token: string}, status = 200, outcome: 'notice' | 'success' | 'unsubscribed' = 'notice'): Response {
   // Preserve Origin on native form POSTs without sending token URLs as Referer.
   const nonce=randomToken();
-  const css='body{margin:0;background:#f7f9f8;color:#202d29;font:16px/1.8 system-ui,sans-serif}main{max-width:520px;margin:12vh auto;padding:32px}h1{font-size:26px}button{background:#08745a;color:#fff;border:0;border-radius:6px;padding:12px 20px;font:inherit;cursor:pointer}a{color:#08745a}p{overflow-wrap:anywhere}';
-  return new Response(`<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} · AI News Hub</title><style nonce="${nonce}">${css}</style></head><body><main><h1>${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p>${form ? `<form method="post" action="${escapeHtml(form.action)}"><input type="hidden" name="token" value="${escapeHtml(form.token)}"><button type="submit">${escapeHtml(title)}</button></form>`:''}<p><a href="/">返回 AI News Hub</a></p></main></body></html>`,{status,headers:{...responseHeaders,'referrer-policy':'strict-origin','content-type':'text/html; charset=utf-8','content-security-policy':`default-src 'none'; style-src 'nonce-${nonce}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`}});
+  const state = status >= 400 ? 'error' : form ? form.action.endsWith('/unsubscribe') ? 'unsubscribe' : 'confirm' : outcome;
+  return new Response(renderNewsletterPage({title,message,nonce,form,status,state}),{status,headers:{...responseHeaders,'referrer-policy':'strict-origin','content-type':'text/html; charset=utf-8','content-security-policy':`default-src 'none'; style-src 'nonce-${nonce}'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'`}});
 }
 export const randomToken = () => { const bytes = crypto.getRandomValues(new Uint8Array(32)); return toBase64(bytes); };
 function toBase64(bytes: Uint8Array): string { return btoa(String.fromCharCode(...bytes)).replaceAll('+','-').replaceAll('/','_').replace(/=+$/,''); }

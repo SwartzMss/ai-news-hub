@@ -134,3 +134,5 @@ GitHub 上传路径校验兼容 v1 日期归档和 v2 话题归档。升级后�
 Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 `/api/prompt-templates` 读取模板；编辑器复制主题和全部轮次，任务及 Run 继续保存完整配置快照。删除日报使用现有发布服务互斥锁，先核对归档字节哈希，以 Git tree/commit 和非强制 ref 更新原子移除日报及旧话题映射，再事务删除本地日报、批准和发布记录及来源关联，并解除研究快照的 report_id。Run、Turn、来源原文和 Git 历史保留。删除状态持久化以支持显式重试，并禁止重新批准/发布进入删除流程的日报。
 
 邮件订阅修复 Cloudflare Workers 发信/读取日报前的请求兼容问题：使用 `redirect: manual` 并拒绝非 2xx，禁止自动跟随重定向。需重新部署 Pages，已有待确认订阅不会自动补发。排查步骤见 [邮件订阅](NEWSLETTER.md)。
+
+邮件确认、成功、退订与失效页面由 `newsletter/page.ts` 统一渲染，与公共站共用视觉风格，提供响应式和系统深色配色；原生表单继续使用既有确认流程与 nonce CSP。
