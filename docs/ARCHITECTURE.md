@@ -136,3 +136,5 @@ Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 
 邮件订阅修复 Cloudflare Workers 发信/读取日报前的请求兼容问题：使用 `redirect: manual` 并拒绝非 2xx，禁止自动跟随重定向。需重新部署 Pages，已有待确认订阅不会自动补发。排查步骤见 [邮件订阅](NEWSLETTER.md)。
 
 邮件确认、成功、退订与失效页面由 `newsletter/page.ts` 统一渲染，与公共站共用视觉风格，提供响应式和系统深色配色；原生表单继续使用既有确认流程与 nonce CSP。
+
+源码目录部署支持 `scripts/install-service.mjs`：从运行账号和 Node/Codex/环境文件路径生成系统级 systemd unit，校验后安装并启用开机启动；默认不接管现有进程，不迁移数据库或认证，不在 unit 中嵌入环境文件内容。原有独立服务账号的 `/opt` 部署模板继续可用。
