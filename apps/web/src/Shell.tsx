@@ -29,10 +29,11 @@ export function Shell({
         </a>
         <nav className="site-nav" aria-label="主导航">
           <a href="/" aria-current={active === "topics" ? "page" : undefined}>
-            话题首页
+            首页
           </a>
           <a
             href={topic ? topicArchivePath(topic.id) : "/archive/"}
+            data-topic-archive
             aria-current={active === "archive" ? "page" : undefined}
           >
             往期归档
@@ -78,7 +79,10 @@ export function Shell({
       <footer>
         <a href="/">AI News Hub</a>
         <nav aria-label="页脚导航">
-          <a href={topic ? topicArchivePath(topic.id) : "/archive/"}>
+          <a
+            href={topic ? topicArchivePath(topic.id) : "/archive/"}
+            data-topic-archive
+          >
             往期归档
           </a>
           <a href={rss} data-topic-feed>

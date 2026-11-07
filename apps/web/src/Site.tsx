@@ -1,3 +1,4 @@
+import { InlineText } from "./InlineText";
 import type { PublicData, Page } from "./types";
 import {
   categories,
@@ -5,13 +6,12 @@ import {
   lead,
   counts,
   Source,
-  Row,
   Empty,
   EditionLinks,
 } from "./ReadingParts";
 import { issuePath, topicArchivePath } from "./paths";
 import { Shell } from "./Shell";
-import { TopicHome, TopicDirectory } from "./TopicHome";
+import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "channel" || page.kind === "archive")
@@ -42,14 +42,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
     report_version: selected.version,
     first_approved_at: selected.approved_at,
   }));
-  const latestStories =
-    latest?.items.map((item) => ({
-      ...item,
-      key: item.key,
-      report_date: latest.report_date,
-      report_version: latest.version,
-      first_approved_at: latest.approved_at,
-    })) ?? [];
   const owner = story
     ? data.reports.find(
         (r) =>
@@ -85,17 +77,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         </ol>
       </nav>
     </aside>
-  ) : page.kind === "topic" && data.latest.length > 1 ? (
-    <aside className="reading-aside">
-      <h2>往期简报</h2>
-      <EditionLinks reports={data.latest.slice(1, 6)} />
-      <a
-        className="aside-more"
-        href={topicArchivePath(page.topicId ?? "legacy")}
-      >
-        全部往期 →
-      </a>
-    </aside>
   ) : page.kind === "article" && owner ? (
     <aside className="reading-aside">
       <h2>所属简报</h2>
@@ -129,40 +110,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       <div className={`reading-layout${aside ? " has-aside" : ""}`}>
         <main id="content">
           {page.kind === "topic" &&
-            (latest ? (
-              <>
-                <div className="topic-heading">
-                  <h1>{topic?.name}</h1>
-                  <span>{topic?.reportCount} 期简报</span>
-                </div>
-                <header className="issue-header latest-header">
-                  <div className="issue-topline">
-                    <span className="issue-label">最新一期</span>
-                    <time dateTime={latest.report_date}>
-                      {dateLabel(latest.report_date)}
-                    </time>
-                  </div>
-                  <h2>{latest.title}</h2>
-                  <div className="issue-meta">
-                    <span>{latest.items.length} 条资讯</span>
-                    <a href={issuePath(latest)}>阅读整期</a>
-                    <a href={topicArchivePath(page.topicId ?? "legacy")}>
-                      查看往期
-                    </a>
-                  </div>
-                </header>
-                <div className="news-list">
-                  {latestStories.map((item, i) => (
-                    <Row key={item.id} story={item} index={i} level={3} />
-                  ))}
-                </div>
-              </>
-            ) : (
-              <>
-                <h1>最新简报</h1>
-                <Empty />
-              </>
-            ))}
+            (topic ? <LatestBrief topic={topic} /> : <Empty />)}
           {page.kind === "topicArchive" && (
             <>
               <header className="page-heading">
@@ -299,12 +247,16 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                       </div>
                     </div>
                     {lead(item).rest && (
-                      <p className="story-facts">{lead(item).rest}</p>
+                      <p className="story-facts">
+                        <InlineText text={lead(item).rest} />
+                      </p>
                     )}
                     {item.analysis && (
                       <div className="story-analysis">
                         <h3>分析与推断</h3>
-                        <p>{item.analysis}</p>
+                        <p>
+                          <InlineText text={item.analysis} />
+                        </p>
                       </div>
                     )}
                     <Source story={item} />
@@ -350,11 +302,17 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 </a>
               </header>
               <section className="article-body" aria-label="来源事实摘要">
-                {lead(story).rest && <p>{lead(story).rest}</p>}
+                {lead(story).rest && (
+                  <p>
+                    <InlineText text={lead(story).rest} />
+                  </p>
+                )}
                 {story.analysis && (
                   <section className="story-analysis">
                     <h2>分析与推断</h2>
-                    <p>{story.analysis}</p>
+                    <p>
+                      <InlineText text={story.analysis} />
+                    </p>
                   </section>
                 )}
                 <Source story={story} />

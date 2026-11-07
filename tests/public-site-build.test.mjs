@@ -33,9 +33,14 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   ).window.document;
   assert.equal(
     homeDoc.querySelector("main h1").textContent,
-    "话题简报",
+    data.topics[0].name,
   );
   assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
+  assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
+  assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
+  assert.ok(homeDoc.querySelector(".news-row h2 a[href*='/news/']"));
+  assert.ok(homeDoc.querySelector(".news-row .news-meta a[target='_blank']"));
+  assert.ok(!homeDoc.querySelector("main").textContent.includes("进入话题"));
   const text = homeDoc.body.textContent;
   for (const removed of [
     "静态阅读",
@@ -248,7 +253,9 @@ test("date and revision readers preserve exact archived text and separate curren
       "/topics/legacy/archive/2026-11-02/v000001/",
     );
     const current = main("topics/legacy/index.html");
-    assert.equal(current.querySelector("h2").textContent, "最新一期日报");
+    assert.equal(current.querySelector("h1").textContent, "历史简报");
+    assert.equal(current.querySelector(".brief-date time").getAttribute("datetime"), base.report_date);
+    assert.ok(!current.textContent.includes("最新一期日报"));
     assert.ok(current.textContent.includes("最新一期独有摘要"));
     assert.ok(!current.textContent.includes("原始版本独有摘要"));
   } finally {
@@ -338,4 +345,27 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(visible()[0].dataset.topicPanel, b.id);
     browser.window.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
+test("reading previews render explicit source links without executing markup or changing archives", async () => {
+  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
+  const dir=mkdtempSync('/tmp/public-inline-text-');
+  try {
+    const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+    report.items=report.items.slice(0,1).map(item=>({...item,fact_summary:'一条完整的标题。参考[官方公告](https://example.com/release)与[不安全地址](javascript:alert(1))、[带凭据地址](https://user:secret@example.com/private)，<img src=x onerror=alert(1)>。'}));
+    const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});
+    const file=join(folder,'v000001.json'),bytes=JSON.stringify(report);writeFileSync(file,bytes);
+    const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
+    for(const path of ['index.html',`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`]) {
+      const doc=new JSDOM(readFileSync(join(built.output,path),'utf8')).window.document;
+      const content=doc.querySelector('main');
+      const link=content.querySelector('a[href="https://example.com/release"]');
+      assert.equal(link.textContent,'官方公告');assert.equal(link.target,'_blank');assert.equal(link.rel,'noopener noreferrer');
+      assert.ok(!content.textContent.includes('[官方公告]('));
+      assert.equal(content.querySelectorAll('img, script').length,0);
+      assert.equal(content.querySelectorAll('a[href^="javascript:"], a[href*="user:secret"]').length,0);
+      assert.ok(content.textContent.includes('<img src=x onerror=alert(1)>'));
+    }
+    assert.equal(readFileSync(file,'utf8'),bytes);
+  } finally {rmSync(dir,{recursive:true,force:true});}
 });
