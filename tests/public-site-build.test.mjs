@@ -405,7 +405,8 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.equal(form.querySelector('[name="email"]').type, "email");
     assert.ok(form.querySelector('[name="email"]').required);
     assert.equal(form.querySelector('[name="website"]').tabIndex, -1);
-    assert.equal(window.document.querySelector('.header-actions a[href="#newsletter-signup"]').textContent, "邮件订阅");
+    assert.equal(window.document.querySelector(".header-actions a"), null);
+    assert.ok(window.document.querySelector('footer a[data-topic-feed]'));
     assert.equal(window.document.querySelector(".topic-picker #newsletter-signup, .brief-toc #newsletter-signup"), null);
     assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /connect-src 'self'/);
     assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /Referrer-Policy: strict-origin/);
