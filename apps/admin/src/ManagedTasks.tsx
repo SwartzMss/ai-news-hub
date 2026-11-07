@@ -27,7 +27,7 @@ const initial: Configuration = {
   topic: "",
   prompts: [""],
   autoPublish: false,
-  schedule: { kind: "manual" },
+  schedule: { kind: "daily", time: "08:00" },
   timezone: "Asia/Shanghai",
 };
 export function scheduleLabel(config?: Configuration) {
@@ -238,7 +238,7 @@ function TaskEditor({
                       schedule: {
                         kind: e.target.value as Plan["kind"],
                         minutes: 60,
-                        time: "09:00",
+                        time: "08:00",
                         weekday: 1,
                       },
                     })
@@ -306,7 +306,7 @@ function TaskEditor({
                 <input
                   type="time"
                   required
-                  value={config.schedule.time ?? "09:00"}
+                  value={config.schedule.time ?? "08:00"}
                   onChange={(e) => plan({ time: e.target.value })}
                 />
               </label>

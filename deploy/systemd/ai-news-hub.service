@@ -17,7 +17,9 @@ Environment=PATH=/usr/local/bin:/usr/bin:/bin
 EnvironmentFile=/etc/ai-news-hub/ai-news-hub.env
 StateDirectory=ai-news-hub
 StateDirectoryMode=0700
-ExecStart=/usr/bin/node /opt/ai-news-hub/dist/apps/server/src/main.js
+LogsDirectory=ai-news-hub
+LogsDirectoryMode=0700
+ExecStart=/usr/bin/bash /opt/ai-news-hub/scripts/start.sh --log-dir /var/log/ai-news-hub --no-env-file
 Restart=on-failure
 RestartSec=5
 KillMode=control-group

@@ -268,7 +268,7 @@ export function RunDetail({
   ].includes(taskId);
   const [after, setAfter] = useState(0),
     [refresh, setRefresh] = useState(0),
-    [tab, setTab] = useState<"result" | "conversation" | "logs" | "info">(
+    [tab, setTab] = useState<"result" | "conversation" | "logs">(
       managed ? "result" : "conversation",
     );
   const load = useCallback(
@@ -330,7 +330,7 @@ export function RunDetail({
         : active(data.run.status)
           ? [
               research ? "研究进行中" : "任务执行中",
-              "完成后可查看回复与执行日志。",
+              "完成后可查看回复与诊断日志。",
             ]
           : !research
             ? [
@@ -348,11 +348,10 @@ export function RunDetail({
       : []),
     {
       id: "conversation",
-      label: managed ? "Prompt 记录" : "研究会话",
+      label: managed ? "Prompt 与回复" : "研究会话",
       icon: "message",
     },
-    { id: "logs", label: "执行日志", icon: "activity" },
-    { id: "info", label: "运行信息", icon: "info" },
+    { id: "logs", label: "诊断日志", icon: "activity" },
   ] as const;
   return (
     <>
@@ -461,7 +460,7 @@ export function RunDetail({
                     className="quiet"
                     onClick={() => setTab("conversation")}
                   >
-                    查看 Prompt 记录
+                    查看 Prompt 与回复
                   </button>
                 </section>
               )}
@@ -515,9 +514,15 @@ export function RunDetail({
                         {turn.mode === "finalize" &&
                         turn.status === "succeeded" &&
                         data.report ? (
-                          <p className="message-text">
-                            日报已生成，可在“最终结果”查看来源与内容。
-                          </p>
+                          <div>
+                            <Report report={data.report} />
+                            {turn.output_text && (
+                              <details>
+                                <summary>原始回复</summary>
+                                <pre className="message-text">{turn.output_text}</pre>
+                              </details>
+                            )}
+                          </div>
                         ) : (
                           <div>
                             {managed &&
@@ -560,7 +565,9 @@ export function RunDetail({
               />
             )}
             {managed ? null : data?.report ? (
-              <Report report={data.report} />
+              data.turns.some((turn) => turn.mode === "finalize" && turn.status === "succeeded")
+                ? null
+                : <Report report={data.report} />
             ) : data && !research ? (
               <div className="panel">
                 <EmptyState title="此 Run 尚无日报">
@@ -578,50 +585,6 @@ export function RunDetail({
             role="tabpanel"
             aria-labelledby="tab-logs"
             hidden={tab !== "logs"}
-          >
-            <section className="panel log-panel">
-              <div className="section-heading">
-                <h2>执行日志</h2>
-                <span className="muted">每页最多 100 条</span>
-              </div>
-              {data?.events.length ? (
-                <ol className="logs">
-                  {data.events.map((event) => (
-                    <li key={event.id}>
-                      <div className="log-heading">
-                        <strong>{event.kind}</strong>
-                        <time>{time(event.created_at)}</time>
-                      </div>
-                      <pre>{JSON.stringify(event.data, null, 2)}</pre>
-                    </li>
-                  ))}
-                </ol>
-              ) : (
-                <p className="muted">暂无执行日志。</p>
-              )}
-              <div className="pagination">
-                <button
-                  className="quiet"
-                  disabled={!after}
-                  onClick={() => setAfter(0)}
-                >
-                  回到首条
-                </button>
-                <button
-                  className="quiet"
-                  disabled={!data || data.events.length < 100}
-                  onClick={() => setAfter(data!.events.at(-1)!.id)}
-                >
-                  后续日志
-                </button>
-              </div>
-            </section>
-          </div>
-          <div
-            id="panel-info"
-            role="tabpanel"
-            aria-labelledby="tab-info"
-            hidden={tab !== "info"}
           >
             <section className="panel">
               <h2>运行信息</h2>
@@ -641,16 +604,46 @@ export function RunDetail({
                   <dd>{time(data.run.finished_at)}</dd>
                 </dl>
               )}
-              {data?.turns.map((turn) => (
-                <details key={turn.id}>
-                  <summary>
-                    Turn {turn.sequence} · {labels[turn.status] ?? turn.status}
-                  </summary>
-                  <pre>{turn.output_text ?? "暂无输出"}</pre>
-                </details>
-              ))}
+            </section>
+            <section className="panel log-panel">
+              <div className="section-heading">
+                <h2>诊断日志</h2>
+                <span className="muted">每页最多 100 条</span>
+              </div>
+              {data?.events.length ? (
+                <ol className="logs">
+                  {data.events.map((event) => (
+                    <li key={event.id}>
+                      <div className="log-heading">
+                        <strong>{event.kind}</strong>
+                        <time>{time(event.created_at)}</time>
+                      </div>
+                      <pre>{JSON.stringify(event.data, null, 2)}</pre>
+                    </li>
+                  ))}
+                </ol>
+              ) : (
+                <p className="muted">暂无诊断日志。</p>
+              )}
+              <div className="pagination">
+                <button
+                  className="quiet"
+                  disabled={!after}
+                  onClick={() => setAfter(0)}
+                >
+                  回到首条
+                </button>
+                <button
+                  className="quiet"
+                  disabled={!data || data.events.length < 100}
+                  onClick={() => setAfter(data!.events.at(-1)!.id)}
+                >
+                  后续日志
+                </button>
+              </div>
             </section>
           </div>
+
         </div>
         <aside className="run-rail">
           <section className="panel run-summary">
