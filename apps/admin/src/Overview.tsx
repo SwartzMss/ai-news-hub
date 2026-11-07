@@ -250,48 +250,7 @@ export function Overview({ api }: { api: Client }) {
               </div>
               <Trend days={data.daily} />
             </section>
-            <section
-              className="panel overview-distribution"
-              aria-labelledby="distribution-heading"
-            >
-              <div className="overview-section-heading">
-                <h2 id="distribution-heading">任务分布</h2>
-                <span>{data.tasks.total} 个任务</span>
-              </div>
-              {(
-                [
-                  ["scheduled", "定时已启用"],
-                  ["manual", "手动任务"],
-                  ["paused", "定时已暂停"],
-                ] as const
-              ).map(([key, label]) => (
-                <div className="overview-distribution-row" key={key}>
-                  <div>
-                    <span>{label}</span>
-                    <strong>{data.tasks[key]}</strong>
-                  </div>
-                  <svg viewBox="0 0 300 7" aria-hidden="true">
-                    <rect
-                      width="300"
-                      height="7"
-                      rx="3"
-                      className="overview-track"
-                    />
-                    <rect
-                      width={
-                        data.tasks.total
-                          ? (data.tasks[key] / data.tasks.total) * 300
-                          : 0
-                      }
-                      height="7"
-                      rx="3"
-                      className={`distribution-${key}`}
-                    />
-                  </svg>
-                </div>
-              ))}
-              <p className="overview-scope">统计当前任务，不含已删除任务。</p>
-            </section>
+
           </div>
           <section
             className="panel overview-attention"
