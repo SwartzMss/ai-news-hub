@@ -47,6 +47,7 @@ export interface PublicData {
   articles: Story[];
   current: Story[];
   demo: boolean;
+  newsletterEnabled?: boolean;
 }
 export interface Page {
   kind:

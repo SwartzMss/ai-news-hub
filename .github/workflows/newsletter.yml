@@ -1,0 +1,30 @@
+name: Daily public newsletter
+on:
+  schedule:
+    # 09:30 Asia/Shanghai, then bounded retries until 10:30.
+    - cron: '30,45 1 * * *'
+    - cron: '0,15,30 2 * * *'
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: production-newsletter
+  cancel-in-progress: false
+jobs:
+  send:
+    if: github.ref == 'refs/heads/main'
+    runs-on: ubuntu-24.04
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: main
+          persist-credentials: false
+      - uses: actions/setup-node@v4
+        with:
+          node-version: 22.19.0
+      - name: Send approved production daily aggregate
+        env:
+          NEWSLETTER_SITE_URL: ${{ vars.NEWSLETTER_SITE_URL }}
+          NEWSLETTER_SEND_SECRET: ${{ secrets.NEWSLETTER_SEND_SECRET }}
+        run: node scripts/send-newsletter.mjs

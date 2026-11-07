@@ -10,6 +10,7 @@ export async function buildPublic({
   demo = false,
   siteUrl = process.env.SITE_URL,
   reportsDir = process.env.PUBLIC_REPORTS_DIR,
+  newsletterEnabled = process.env.NEWSLETTER_ENABLED === "1",
 } = {}) {
   if (!siteUrl) throw Error("SITE_URL is required");
   const url = new URL(siteUrl);
@@ -30,6 +31,7 @@ export async function buildPublic({
     allowDemo: demo,
     allowMissing: !reportsDir && !demo,
   });
+  data.newsletterEnabled = newsletterEnabled === true && !demo;
   const output = join(repo, "dist/web"),
     ssr = join(repo, "dist/web-render");
   const config = join(root, "vite.config.ts");
@@ -188,6 +190,7 @@ export async function buildPublic({
     JSON.stringify({
       schema_version: 1,
       demo: data.demo,
+      ...(data.newsletterEnabled ? { newsletterEnabled: true } : {}),
       topics: data.topics,
       reports: data.latest,
       articles: data.current,
@@ -214,7 +217,7 @@ export async function buildPublic({
   );
   write(
     "_headers",
-    `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: no-referrer\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src 'none'\n/rss/*\n  Content-Type: application/rss+xml; charset=utf-8\n/data/*\n  Content-Type: application/json; charset=utf-8\n`,
+    `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${data.newsletterEnabled ? "strict-origin" : "no-referrer"}\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src '${data.newsletterEnabled ? "self" : "none"}'; form-action 'self'\n/rss/*\n  Content-Type: application/rss+xml; charset=utf-8\n/data/*\n  Content-Type: application/json; charset=utf-8\n`,
   );
   rmSync(join(output, ".vite"), { recursive: true, force: true });
   return {
