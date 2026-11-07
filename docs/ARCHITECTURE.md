@@ -138,3 +138,5 @@ Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 
 邮件确认、成功、退订与失效页面由 `newsletter/page.ts` 统一渲染，与公共站共用视觉风格，提供响应式和系统深色配色；原生表单继续使用既有确认流程与 nonce CSP。
 
 源码目录部署支持 `scripts/install-service.mjs`：从运行账号和 Node/Codex/环境文件路径生成系统级 systemd unit，校验后安装并启用开机启动；默认不接管现有进程，不迁移数据库或认证，不在 unit 中嵌入环境文件内容。原有独立服务账号的 `/opt` 部署模板继续可用。
+
+公共站订阅入口集中在页脚，邮件订阅使用页底表单，RSS 使用页脚链接；页头操作区仅显示明暗主题切换。
