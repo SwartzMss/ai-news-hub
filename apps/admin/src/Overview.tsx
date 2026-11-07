@@ -1,4 +1,4 @@
-import { useCallback } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
 import type {
   OverviewDay,
   OverviewResponse,
@@ -41,12 +41,33 @@ function duration(row: RunSummary) {
     : `${Math.floor(seconds / 60)}分${seconds % 60}秒`;
 }
 function Trend({ days }: { days: OverviewDay[] }) {
+  const chart = useRef<SVGSVGElement>(null);
+  const [width, setWidth] = useState(640);
+  useEffect(() => {
+    const element = chart.current!;
+    const measure = () => {
+      const measured = element.getBoundingClientRect().width;
+      if (measured > 0) setWidth(Math.round(measured));
+    };
+    measure();
+    if (typeof ResizeObserver !== "undefined") {
+      const observer = new ResizeObserver(measure);
+      observer.observe(element);
+      return () => observer.disconnect();
+    }
+    window.addEventListener("resize", measure);
+    return () => window.removeEventListener("resize", measure);
+  }, []);
+  const plotWidth = Math.max(1, width - 40);
+  const dayCount = Math.max(1, days.length);
+  const barWidth = Math.max(8, Math.min(32, (plotWidth / dayCount) * 0.38));
   const max = Math.ceil(Math.max(2, ...days.map((day) => day.total)) / 2) * 2;
   return (
     <>
       <svg
+        ref={chart}
         className="overview-trend"
-        viewBox="0 0 640 185"
+        viewBox={`0 0 ${width} 180`}
         role="img"
         aria-label="最近 7 天执行趋势"
       >
@@ -54,14 +75,14 @@ function Trend({ days }: { days: OverviewDay[] }) {
           <g key={i}>
             <line
               x1="30"
-              x2="630"
-              y1={170 - i * 70}
-              y2={170 - i * 70}
+              x2={width - 10}
+              y1={160 - i * 65}
+              y2={160 - i * 65}
               className="overview-gridline"
             />
             <text
               x="20"
-              y={174 - i * 70}
+              y={164 - i * 65}
               textAnchor="end"
               className="overview-axis"
             >
@@ -70,8 +91,8 @@ function Trend({ days }: { days: OverviewDay[] }) {
           </g>
         ))}
         {days.map((day, index) => {
-          const x = 30 + (600 / 7) * (index + 0.5) - 18;
-          let y = 170;
+          const x = 30 + (plotWidth / dayCount) * (index + 0.5) - barWidth / 2;
+          let y = 160;
           return (
             <g key={day.date} tabIndex={0}>
               <title>
@@ -81,14 +102,14 @@ function Trend({ days }: { days: OverviewDay[] }) {
                   .join("，")}
               </title>
               {series.map(([key]) => {
-                const height = (day[key] / max) * 140;
+                const height = (day[key] / max) * 130;
                 y -= height;
                 return (
                   <rect
                     key={key}
                     x={x}
                     y={y}
-                    width="36"
+                    width={barWidth}
                     height={height}
                     rx="2"
                     className={`trend-${key}`}
@@ -96,7 +117,7 @@ function Trend({ days }: { days: OverviewDay[] }) {
                 );
               })}
               <text
-                x={x + 18}
+                x={x + barWidth / 2}
                 y={y - 10}
                 textAnchor="middle"
                 className="overview-total"
@@ -107,7 +128,7 @@ function Trend({ days }: { days: OverviewDay[] }) {
           );
         })}
       </svg>
-      <div className="overview-date-axis" aria-hidden="true">
+      <div className="overview-date-axis" aria-hidden="true" style={{gridTemplateColumns: `repeat(${dayCount}, minmax(0, 1fr))`}}>
         {days.map((day) => (
           <span key={day.date}>{day.date.slice(5).replace("-", "/")}</span>
         ))}
