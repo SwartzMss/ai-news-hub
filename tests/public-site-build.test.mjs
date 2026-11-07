@@ -33,13 +33,21 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   ).window.document;
   assert.equal(
     homeDoc.querySelector("main h1").textContent,
-    data.topics[0].name,
+    new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
   );
   assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
   assert.ok(homeDoc.querySelector(".reader-body > main"));
+  assert.equal(homeDoc.querySelectorAll(".brief-toc").length,data.topics.length);
+  for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
+    const links=panel.querySelectorAll(".brief-toc a[data-brief-target]");
+    assert.equal(links.length,panel.querySelectorAll(".news-row").length);
+    for(const link of links) assert.ok(panel.querySelector(`[id="${link.dataset.briefTarget}"]`));
+    assert.ok(panel.querySelector(".brief-generation time[datetime]"));
+    assert.equal(panel.querySelector(".brief-date time").getAttribute("datetime"),data.topics.find(t=>t.id===panel.dataset.topicPanel).latest.report_date);
+  }
   assert.ok(homeDoc.querySelector(".news-row h2 a[href*='/news/']"));
   assert.ok(homeDoc.querySelector(".news-row .news-meta a[target='_blank']"));
   assert.ok(!homeDoc.querySelector("main").textContent.includes("进入话题"));
@@ -255,7 +263,7 @@ test("date and revision readers preserve exact archived text and separate curren
       "/topics/legacy/archive/2026-11-02/v000001/",
     );
     const current = main("topics/legacy/index.html");
-    assert.equal(current.querySelector("h1").textContent, "历史简报");
+    assert.equal(current.querySelector(".brief-topic").textContent, "历史简报");
     assert.equal(current.querySelector(".brief-date time").getAttribute("datetime"), base.report_date);
     assert.ok(!current.textContent.includes("最新一期日报"));
     assert.ok(current.textContent.includes("最新一期独有摘要"));
@@ -341,6 +349,12 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(visible().length, 1);
     assert.equal(visible()[0].dataset.topicPanel, a.id);
     assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
+    const tocLink = visible()[0].querySelector(".brief-toc a[data-brief-target]");
+    tocLink.dispatchEvent(new browser.window.MouseEvent("click", {bubbles:true,cancelable:true,button:0}));
+    assert.equal(tocLink.getAttribute("aria-current"), "location");
+    assert.equal(visible()[0].querySelector(".brief-toc time"), null);
+    assert.equal(visible()[0].querySelector(".brief-toc .brief-topic"), null);
+
     assert.equal(browser.window.document.querySelector("[data-topic-feed]").getAttribute("href"), `/rss/topics/${a.id}.xml`);
     browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
     browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));

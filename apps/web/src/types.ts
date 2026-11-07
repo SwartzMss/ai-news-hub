@@ -37,6 +37,7 @@ export interface Report {
   version: number;
   title: string;
   approved_at: string;
+  collected_at: string;
   items: Story[];
 }
 export interface PublicData {

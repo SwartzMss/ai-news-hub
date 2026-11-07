@@ -1,29 +1,89 @@
 import type { PublicData } from "./types";
 import { Shell } from "./Shell";
-import { Row, Empty, dateLabel } from "./ReadingParts";
+import { Row, Empty, dateLabel, lead } from "./ReadingParts";
 import { topicPath, topicArchivePath } from "./paths";
+function BriefLinks({ topic }: { topic: PublicData["topics"][number] }) {
+  return (
+    <nav aria-label="本期目录">
+      {topic.latest.items.map((story, i) => {
+        const id = `brief-${topic.id}-${story.key}`;
+        return (
+          <a
+            key={story.key}
+            href={`#${id}`}
+            data-brief-target={id}
+            title={lead(story).title}
+          >
+            <span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
+            <span>{lead(story).title}</span>
+          </a>
+        );
+      })}
+    </nav>
+  );
+}
 export function LatestBrief({
   topic,
 }: {
   topic: PublicData["topics"][number];
 }) {
+  const report = topic.latest;
+  const weekday = new Intl.DateTimeFormat("zh-CN", {
+    weekday: "long",
+    timeZone: "UTC",
+  }).format(new Date(report.report_date + "T00:00:00Z"));
+  const generated = new Intl.DateTimeFormat("zh-CN", {
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+    timeZone: "Asia/Shanghai",
+  }).format(new Date(report.collected_at));
   return (
-    <>
-      <header className="brief-heading">
-        <h1>{topic.name}</h1>
-        <div className="brief-date">
-          <time dateTime={topic.latest.report_date}>
-            {dateLabel(topic.latest.report_date)}
-          </time>
-          <span>{topic.latest.items.length} 条资讯</span>
+    <div className="brief-layout">
+      <div className="brief-main">
+        <header className="brief-heading">
+          <div className="brief-edition-top">
+            <span className="brief-topic">{topic.name}</span>
+            <span className="issue-label">最新一期</span>
+          </div>
+          <div className="brief-date">
+            <h1>
+              <time dateTime={report.report_date}>
+                {dateLabel(report.report_date)}
+              </time>
+            </h1>
+            <span>{weekday}</span>
+          </div>
+          <div className="brief-generation">
+            <span>{report.items.length} 条资讯</span>
+            <span>
+              生成于 <time dateTime={report.collected_at}>{generated}</time>
+              （北京时间）
+            </span>
+          </div>
+        </header>
+        <details className="brief-mobile-toc">
+          <summary>本期目录 · {report.items.length} 条</summary>
+          <BriefLinks topic={topic} />
+        </details>
+        <div className="news-list">
+          {report.items.map((story) => (
+            <Row
+              key={story.key}
+              story={story}
+              id={`brief-${topic.id}-${story.key}`}
+            />
+          ))}
         </div>
-      </header>
-      <div className="news-list">
-        {topic.latest.items.map((story) => (
-          <Row key={story.key} story={story} />
-        ))}
       </div>
-    </>
+      <aside className="brief-toc">
+        <h2>本期目录</h2>
+        <BriefLinks topic={topic} />
+      </aside>
+    </div>
   );
 }
 export function TopicHome({ data }: { data: PublicData }) {

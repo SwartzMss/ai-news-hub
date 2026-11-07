@@ -107,7 +107,9 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       active={nav === "latest" ? "topics" : "archive"}
       page="reader"
     >
-      <div className={`reading-layout${aside ? " has-aside" : ""}`}>
+      <div
+        className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}`}
+      >
         <main id="content">
           {page.kind === "topic" &&
             (topic ? <LatestBrief topic={topic} /> : <Empty />)}

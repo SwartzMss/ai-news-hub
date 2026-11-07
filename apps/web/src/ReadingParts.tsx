@@ -100,15 +100,17 @@ export function Source({ story }: { story: Story }) {
 }
 export function Row({
   story,
+  id,
   level = 2,
 }: {
   story: Story;
+  id?: string;
   level?: 2 | 3;
 }) {
   const Heading = level === 3 ? "h3" : "h2",
     text = lead(story);
   return (
-    <article className="news-row">
+    <article className="news-row" id={id} data-brief-story={id}>
       <div className="news-content">
         <Heading>
           <a href={storyPath(story)} title={text.title}>
