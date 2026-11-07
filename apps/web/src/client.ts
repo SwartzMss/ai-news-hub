@@ -1,4 +1,48 @@
 import "./style.css";
+
+const newsletterForm = document.querySelector<HTMLFormElement>("[data-newsletter-form]");
+if (newsletterForm) {
+  const email = newsletterForm.querySelector<HTMLInputElement>('[name="email"]')!;
+  const website = newsletterForm.querySelector<HTMLInputElement>('[name="website"]')!;
+  const submit = newsletterForm.querySelector<HTMLButtonElement>('button[type="submit"]')!;
+  const status = newsletterForm.querySelector<HTMLElement>("[data-newsletter-status]")!;
+  let pending = false;
+  newsletterForm.addEventListener("submit", async (event) => {
+    event.preventDefault();
+    if (pending || !newsletterForm.reportValidity()) return;
+    pending = true;
+    submit.disabled = true;
+    status.textContent = "正在提交…";
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 15000);
+    try {
+      const response = await fetch("/api/newsletter/subscribe", {
+        method: "POST",
+        headers: { "Content-Type": "application/json", Accept: "application/json" },
+        credentials: "omit",
+        signal: controller.signal,
+        body: JSON.stringify({ email: email.value.trim(), website: website.value }),
+      });
+      if (response.status === 202) {
+        status.textContent = "如邮箱可接收订阅邮件，请查收并确认。";
+        newsletterForm.reset();
+      } else if (response.status === 429) {
+        status.textContent = "提交过于频繁，请稍后再试。";
+      } else if (response.status === 503) {
+        status.textContent = "邮件订阅暂不可用，请稍后再试。";
+      } else {
+        status.textContent = "订阅未提交，请检查邮箱后重试。";
+      }
+    } catch {
+      status.textContent = "暂时无法提交，请稍后重试。";
+    } finally {
+      clearTimeout(timeout);
+      pending = false;
+      submit.disabled = false;
+    }
+  });
+}
+
 const button = document.getElementById("theme-toggle");
 function applyTheme(mode: string) {
   document.documentElement.dataset.theme = mode;

@@ -1,6 +1,7 @@
 import type { ReactNode } from "react";
 import type { PublicData, TopicSummary } from "./types";
 import { topicPath, topicArchivePath } from "./paths";
+import { Newsletter } from "./Newsletter";
 export function Shell({
   data,
   topic,
@@ -40,6 +41,7 @@ export function Shell({
           </a>
         </nav>
         <div className="header-actions">
+          {data.newsletterEnabled && <a href="#newsletter-signup">邮件订阅</a>}
           <a href={rss} data-topic-feed>
             RSS 订阅
           </a>
@@ -81,6 +83,7 @@ export function Shell({
         {children}
       </div>
       <footer>
+        {data.newsletterEnabled && <Newsletter />}
         <a href="/">AI News Hub</a>
         <nav aria-label="页脚导航">
           <a

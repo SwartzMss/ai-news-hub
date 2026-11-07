@@ -96,3 +96,5 @@ admin_credentials 单行保存 password/token 模式、scrypt 盐/哈希或历�
 版本9追加 codex_news_runs.source_mode 与 articles.source_mode。旧记录默认 verified，新日报快照为 codex_reported。后者的报告/归档 fetchedAt/fetched_at 为 null；articles 历史非空 fetched_at 列只存收件时间，API 按模式映射为 fetched_at=null、received_at=收件时间，不当作网页抓取时间。
 
 Migration 10 为 `codex_news_runs` 追加 nullable `public_topic_json`。新受管任务报告写入从 Run 配置派生的稳定话题 `{id,name}` 并纳入文档哈希；归档时与 Run 快照核对。旧记录保持 NULL，继续按 v1 校验和输出，不回填或改写历史内容。
+
+可选邮件订阅使用独立 Cloudflare D1，迁移位于 `newsletter/migrations/`，与 Backend SQLite 迁移分开。订阅者、确认令牌哈希、日快照、发送记录与限流状态均为私有数据，不进入公共输出和 GitHub 归档。详见 [邮件订阅](NEWSLETTER.md)。

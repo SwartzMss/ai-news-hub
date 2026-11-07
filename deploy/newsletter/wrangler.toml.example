@@ -1,0 +1,10 @@
+# Copy to the repository root as wrangler.toml; do not commit the local copy.
+name = "ai-news-hub"
+pages_build_output_dir = "./dist/web"
+compatibility_date = "2026-11-07"
+
+[[d1_databases]]
+binding = "NEWSLETTER_DB"
+database_name = "ai-news-hub-newsletter"
+database_id = "replace-with-your-d1-database-id"
+migrations_dir = "newsletter/migrations"

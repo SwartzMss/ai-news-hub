@@ -35,3 +35,9 @@ Thumbs.db
 # Test / local output
 .playwright/
 test-results/
+
+# Local newsletter / Cloudflare configuration
+.dev.vars
+.dev.vars.*
+.wrangler/
+wrangler.toml

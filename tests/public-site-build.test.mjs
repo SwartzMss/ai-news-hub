@@ -385,3 +385,64 @@ test("reading previews render explicit source links without executing markup or 
     assert.equal(readFileSync(file,'utf8'),bytes);
   } finally {rmSync(dir,{recursive:true,force:true});}
 });
+
+test("newsletter is opt-in, works as a native POST form and keeps email out of storage and URLs", async () => {
+  const { mkdtempSync, rmSync } = await import("node:fs");
+  const dir = mkdtempSync("/tmp/public-newsletter-");
+  try {
+    const disabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: false });
+    assert.doesNotMatch(readFileSync(join(disabled.output, "index.html"), "utf8"), /newsletter-signup/);
+    assert.match(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src 'none'/);
+    const enabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: true });
+    const html = readFileSync(join(enabled.output, "index.html"), "utf8");
+    const browser = new JSDOM(html, { url: "https://news.example/", runScripts: "outside-only" });
+    const { window } = browser;
+    window.matchMedia = () => ({ matches: false });
+    const form = window.document.querySelector("#newsletter-signup form");
+    assert.ok(form, "enabled build has a signup form");
+    assert.equal(form.getAttribute("method"), "post");
+    assert.equal(form.getAttribute("action"), "/api/newsletter/subscribe");
+    assert.equal(form.querySelector('[name="email"]').type, "email");
+    assert.ok(form.querySelector('[name="email"]').required);
+    assert.equal(form.querySelector('[name="website"]').tabIndex, -1);
+    assert.equal(window.document.querySelector('.header-actions a[href="#newsletter-signup"]').textContent, "邮件订阅");
+    assert.equal(window.document.querySelector(".topic-picker #newsletter-signup, .brief-toc #newsletter-signup"), null);
+    assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /connect-src 'self'/);
+    assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /Referrer-Policy: strict-origin/);
+    assert.equal(JSON.parse(readFileSync(join(enabled.output, "data/index.json"), "utf8")).newsletterEnabled, true);
+    assert.doesNotMatch(html, /RESEND_API_KEY|NEWSLETTER_TOKEN_SECRET/);
+    const client = readFileSync(join(enabled.output, window.document.querySelector('script[type="module"]').getAttribute("src").slice(1)), "utf8");
+    let complete;
+    const calls = [];
+    window.fetch = (...args) => {
+      calls.push(args);
+      return new Promise((resolve) => { complete = resolve; });
+    };
+    window.eval(client);
+    const email = form.querySelector('[name="email"]');
+    const submit = form.querySelector('button[type="submit"]');
+    const status = form.querySelector('[role="status"]');
+    const send = () => form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
+    const settle = () => new Promise((resolve) => setTimeout(resolve, 0));
+    email.value = "reader@example.com";
+    send(); send();
+    assert.equal(calls.length, 1);
+    assert.equal(submit.disabled, true);
+    assert.equal(calls[0][0], "/api/newsletter/subscribe");
+    assert.equal(calls[0][1].method, "POST");
+    assert.equal(calls[0][1].headers.Accept, "application/json");
+    assert.deepEqual(JSON.parse(calls[0][1].body), { email: "reader@example.com", website: "" });
+    complete({ status: 429 }); await settle();
+    assert.match(status.textContent, /频繁/);
+    assert.equal(submit.disabled, false);
+    send(); complete({ status: 503 }); await settle();
+    assert.match(status.textContent, /暂不可用/);
+    send(); complete({ status: 202 }); await settle();
+    assert.match(status.textContent, /确认/);
+    assert.equal(email.value, "");
+    assert.doesNotMatch(window.location.href + JSON.stringify(window.localStorage), /reader@/);
+    browser.window.close();
+    const demo = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", newsletterEnabled: true });
+    assert.doesNotMatch(readFileSync(join(demo.output, "index.html"), "utf8"), /newsletter-signup/);
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
