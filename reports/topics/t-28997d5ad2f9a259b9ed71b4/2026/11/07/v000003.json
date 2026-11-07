@@ -1,0 +1,120 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "e3894a7b-8a5f-4e54-8ff1-69a09ea1a64d",
+  "report_date": "2026-11-07",
+  "channel": "opensource",
+  "version": 3,
+  "title": "今日热点简报｜2026年11月7日｜观察窗口：北京时间11月6日08:55—11月7日08:55",
+  "collected_at": "2026-11-07T01:01:25.144Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-07T01:01:25.146Z",
+  "reviewed_content_sha256": "5a24e3612fe00b820e18d2321d5a3d2d2478399a934f7ccbdd38c4d26de12b75",
+  "items": [
+    {
+      "id": "22b7ccb97b16286c3765d2c245c75c415c76b9a5338a1e2152fac08ba3086841",
+      "category": "other",
+      "importance": 5,
+      "fact_summary": "检察公益诉讼法获通过。新华社11月6日21:49发布的受权全文确认，该法当天经全国人大常委会通过，规定检察公益诉讼的调查、起诉、审判和执行程序。本条聚焦本轮立法中的公共利益保护制度，不重复收录会议其他议题。配套实施及实际执行效果仍待观察。",
+      "analysis": "分析：统一程序规则可能提高公益诉讼的可预期性，值得关注其对公共利益保护和行政机关履职监督的实际作用；通过法律本身不能证明执行效果已经改善。",
+      "evidence_quote": "受权发布丨中华人民共和国检察公益诉讼法",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.xinhuanet.com",
+        "original_url": "https://www.xinhuanet.com/legal/20261106/a0a69ea861f041d1b52ff4f3545c8b90/c.html",
+        "canonical_url": "https://www.xinhuanet.com/legal/20261106/a0a69ea861f041d1b52ff4f3545c8b90/c.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6612cdd9c41b5d1e9831bbcafbfd8cad4075a30d7b83e9a914a28366aaa5d059",
+      "category": "other",
+      "importance": 5,
+      "fact_summary": "国常会部署经济政策落实与社会救助。新华社通稿称，11月6日会议要求加快重大项目建设、支持设备更新投资、化解地方债务和中小金融机构风险，并听取社会救助工作汇报。中新网于当日21:32刊载通稿；关于困难家庭帮扶的部署另见[第一财经转引央视报道](https://www.yicai.com/brief/103430165.html)。这些材料不能算作多份独立调查证据，尚未公布统一提高救助标准或新增财政规模。",
+      "analysis": "分析：政策同时涉及投资、就业与困难群体保障，公共影响较广；后续应关注资金拨付、具体救助规则和地方执行情况，而非仅依据会议部署判断成效。",
+      "evidence_quote": "李强主持召开国务院常务会议",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.chinanews.com",
+        "original_url": "https://www.chinanews.com/gn/2026/11-06/10727589.shtml",
+        "canonical_url": "https://www.chinanews.com/gn/2026/11-06/10727589.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b1f85f1ee54dcb5605e562ef3dd4eeedbb7f4e20f09b7845b5baf3dac436eac0",
+      "category": "other",
+      "importance": 5,
+      "fact_summary": "美国公布10月就业数据。美国劳工统计局11月6日08:30美东时间、即北京时间21:30宣布，非农就业增加16.5万人，失业率为4.1%，8、9月就业增量合计上修8.4万人。[NPR记者Scott Horsley的署名报道](https://www.hawaiipublicradio.org/national-international/2026-11-06/hiring-jumps-the-economy-added-165-000-jobs-last-month)核对了相同数字，但数据仍同源于官方调查。后续修订及货币政策反应尚不确定。",
+      "analysis": "分析：就业与工资变化是评估美国需求和利率走向的重要信息，可能影响全球资产定价；单月数据不足以确定经济趋势，也不能直接推出美联储下一次决策。",
+      "evidence_quote": "THE EMPLOYMENT SITUATION - OCTOBER 2026",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.bls.gov",
+        "original_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+        "canonical_url": "https://www.bls.gov/news.release/empsit.nr0.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "69affc3a88296816dd81b0086867b0ffbdac7fc2f7819e9870172822c77c0541",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "澳门区锦新案一审宣判。澳门初级法院11月6日10:48通报称，当日上午判处区锦新12年6个月徒刑，另有两项颠覆国家政权罪指控不成立。[德国之声署名报道](https://amp.dw.com/zh/澳门国安首案民主派前议员区锦新被重判12年半/a-79874856)记载家属及人权组织对审判程序提出异议；法院则称已保障辩护和探视权。判刑结果与各方评价应分开理解，本轮未确认上诉进展。",
+      "analysis": "分析：作为澳门首宗涉及维护国家安全法的案件，其法律适用和程序保障具有公共关注价值。公开材料不足以独立解决关于律师选择、家属接触和审判公平性的争议。",
+      "evidence_quote": "初级法院今早就国安首案宣判 嫌犯区锦新罪成获刑12年半",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.gov.mo",
+        "original_url": "https://www.gov.mo/zh-hans/news/948879/",
+        "canonical_url": "https://www.gov.mo/zh-hans/news/948879/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "854c6abb84aeff00676b867cd17e6149752e57e5ad6e622a676223bbcdfa75af",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "中央网信办公布健康科普谣言专项整治。11月6日16:00公告宣布开展为期两个月的行动，涵盖冒用专业身份、AI生成健康谣言、虚构康复案例和私域诱骗消费。[央视报道的转载页](https://www.cqnews.net/web/content_1568295488185798656.html)与公告一致，但不构成独立效果验证。通知仅称部署于“近日”，不能认定11月6日就是启动日；处置规模及治理效果尚未公布。",
+      "analysis": "分析：虚假医疗与养生信息可能影响就医选择和消费者支出，因此值得关注。政策效果还取决于专业判断、平台执行及误判纠正机制，不能由行动宣布直接推定。",
+      "evidence_quote": "中央网信办部署开展“清朗·整治科普健康类网络谣言”专项行动",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.cac.gov.cn",
+        "original_url": "https://www.cac.gov.cn/2026-11/06/c_1795719652932799.htm",
+        "canonical_url": "https://www.cac.gov.cn/2026-11/06/c_1795719652932799.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c300b15fab27fbb0336c56b15a9d171db1e7b311cee9f5d0624d157e1cda5701",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "中国启动涉及欧盟产品的反倾销调查。商务部11月6日15:00公告确认，当天对欧盟对位芳纶长丝立案；[联合早报报道](https://www.zaobao.com.sg/news/china/story20261106-9958832)同时记载针对欧盟和日本乙叉降冰片烯的调查，两案合并呈现。已确认的是立案程序；倾销和产业损害仍属申请人主张，尚无最终裁定。本轮未取得涉案企业或欧方针对两案的完整回应。",
+      "analysis": "分析：相关材料用于通信、汽车和安全防护等领域，调查可能增加企业贸易与采购安排的不确定性；目前不能据此认定已加征反倾销税或终端价格必然上涨。",
+      "evidence_quote": "商务部公告2026年第57号 公布对原产于欧盟的进口对位芳纶长丝发起反倾销立案调查",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.mofcom.gov.cn",
+        "original_url": "https://www.mofcom.gov.cn/zcfb/gpmy/art/2026/art_b545d55da00c48f0b77e3dcb2e0cabcc.html",
+        "canonical_url": "https://www.mofcom.gov.cn/zcfb/gpmy/art/2026/art_b545d55da00c48f0b77e3dcb2e0cabcc.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
