@@ -114,3 +114,38 @@ test('byte comparison rejects invalid UTF-8 that decodes to the same replacement
  });
  await assert.rejects(adapter.publish(a,new AbortController().signal),/archive_conflict/);
 });
+
+test('topic archive uploads to its scoped path and retries without duplicate commits', async () => {
+  const scoped={...artifact,path:'reports/topics/t-1a6fc6fdf1b7b68419a6c5b2/2026/11/07/v000002.json'};
+  for(const lostResponse of [false,true]){
+    const s=setup(undefined,lostResponse);
+    if(lostResponse) await assert.rejects(s.adapter.publish(scoped,new AbortController().signal),/github_unavailable/);
+    else assert.equal((await s.adapter.publish(scoped,new AbortController().signal)).sha,sha);
+    assert.equal((await s.adapter.publish(scoped,new AbortController().signal)).sha,sha);
+    assert.equal(s.commits,1);
+    assert.ok(s.calls.some(c=>c.init.method==='PUT'&&new URL(c.url).pathname.endsWith('/contents/'+scoped.path)));
+    await s.adapter.close();
+  }
+  const conflict=setup('different');
+  await assert.rejects(conflict.adapter.publish(scoped,new AbortController().signal),/archive_conflict/);
+  assert.equal(conflict.commits,0);
+  await conflict.adapter.close();
+});
+test('invalid topic archive paths and oversized content fail before any GitHub request',async()=>{
+  const prefix='reports/topics/t-'+ 'a'.repeat(24);
+  for(const path of [
+    'reports/topics/../../2026/11/07/v000001.json',
+    prefix.replace('t-','x-')+'/2026/11/07/v000001.json',
+    prefix+'a/2026/11/07/v000001.json',
+    prefix+'/2026/11/07/v1.json',
+    prefix+'/2026/11/07/v000001.json/extra',
+    prefix+'/2026/11/07/v000001.json?token=x',
+    prefix+'/2026/11/07/v000001.md',
+    'reports/2026/11/07/other/v000001.json',
+  ]){
+    const s=setup();await assert.rejects(s.adapter.publish({...artifact,path},new AbortController().signal),/archive_invalid/);
+    assert.equal(s.calls.length,0);await s.adapter.close();
+  }
+  const s=setup();await assert.rejects(s.adapter.publish({...artifact,path:prefix+'/2026/11/07/v000001.json',content:'x'.repeat(256*1024+1)},new AbortController().signal),/archive_invalid/);
+  assert.equal(s.calls.length,0);await s.adapter.close();
+});
