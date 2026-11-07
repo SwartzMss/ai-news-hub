@@ -169,7 +169,7 @@ export class NewsWorkflow implements TaskWorkflow {
                 const version = Number(
                   db
                     .prepare(
-                      "SELECT coalesce(max(version),0)+1 n FROM reports WHERE channel=? AND report_date=?",
+                      "SELECT coalesce(max(version),0)+1 n FROM (SELECT channel,report_date,version FROM reports UNION ALL SELECT channel,report_date,version FROM report_deletions) WHERE channel=? AND report_date=?",
                     )
                     .get(NEWS_CHANNEL, document.reportDate)?.n,
                 );

@@ -63,6 +63,17 @@ function TaskEditor({
   const [config, setConfig] = useState<Configuration>(() =>
     structuredClone(task?.configuration ?? initial),
   );
+  const [templates, setTemplates] = useState<{id:string;version:number;name:string;topic:string;prompts:string[]}[]>([]);
+  useEffect(() => {
+    const controller = new AbortController();
+    void api<{templates:typeof templates}>("/prompt-templates", controller.signal)
+      .then(result => {
+        if (!Array.isArray(result.templates)) throw new Error("invalid_prompt_templates");
+        if (!controller.signal.aborted) setTemplates(result.templates);
+      })
+      .catch(cause => { if (!controller.signal.aborted) setError(cause); });
+    return () => controller.abort();
+  }, [api]);
   const [busy, setBusy] = useState(false),
     [error, setError] = useState<unknown>();
   const dialogRef = useRef<HTMLDialogElement>(null);
@@ -140,6 +151,16 @@ function TaskEditor({
       <form onSubmit={save}>
         <div className="task-editor-body">
           <fieldset disabled={busy} className="task-editor-fields">
+            <label>
+              Prompt 模板
+              <select defaultValue="" onChange={event => {
+                const template = templates.find(t => `${t.id}@${t.version}` === event.target.value);
+                if (template) update({topic:template.topic,prompts:[...template.prompts]});
+              }}>
+                <option value="">选择模板以填入主题和全部 Prompt</option>
+                {templates.map(t => <option key={`${t.id}@${t.version}`} value={`${t.id}@${t.version}`}>{t.name} · v{t.version}</option>)}
+              </select>
+            </label>
             <label>
               任务主题
               <input

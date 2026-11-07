@@ -10,6 +10,11 @@ export function registerPublicationRoutes(
   app: FastifyInstance,
   service: PublicationService,
 ) {
+  app.delete<{ Params: { reportId: string }; Body: { confirm: boolean } }>(
+    "/news/reports/:reportId",
+    { schema: { params, body: { type: "object", additionalProperties: false, required: ["confirm"], properties: { confirm: { const: true } } } } },
+    async request => service.remove(request.params.reportId),
+  );
   app.get<{ Params: { reportId: string } }>(
     "/news/reports/:reportId/publication",
     { schema: { params } },

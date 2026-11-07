@@ -1,3 +1,4 @@
+import { promptTemplates } from "./prompt-templates.js";
 import type { RunListQuery } from '../../../../packages/shared/src/index.js';
 import type { FastifyInstance } from 'fastify';
 import { HttpError } from '../errors.js';
@@ -39,6 +40,7 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
   if (newsDb) registerNewsRoutes(app, newsDb);
   if (publications) registerPublicationRoutes(app,publications);
   app.get('/overview', async()=>engine.overview(now()));
+  app.get('/prompt-templates', async () => ({ templates: promptTemplates() }));
   app.get('/tasks', async () => ({ tasks: engine.listTasks() }));
   app.post<{Body:unknown}>('/tasks',{bodyLimit:1024*1024},async(request,reply)=>{const task=engine.createTask(request.body);reply.code(201);return {task};});
   app.put<{Params:TaskParams;Body:unknown}>('/tasks/:taskId',{bodyLimit:1024*1024,schema:{params:params('taskId')}},async request=>({task:engine.updateTask(request.params.taskId,request.body)}));
