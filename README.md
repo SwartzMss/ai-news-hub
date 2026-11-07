@@ -133,4 +133,4 @@ sudo systemctl start ai-news-hub.service
 
 更多操作见 [后台使用说明](docs/ADMIN.md)。
 
-后台任务编辑器支持从 `prompt-templates/*.vN.json` 选择仓库版本化 Prompt，提供每日开源项目、每日科技资讯和每日热点观察模板。开源项目模板包含选题、来源核实及许可证等检查要求，并沿用现有日报格式。日报详情支持确认后同步删除 SQLite 日报和对应 GitHub 归档，公开站与 RSS 随后续构建更新。
+后台任务编辑器支持从 `prompt-templates/*.vN.json` 选择仓库版本化 Prompt，提供每日开源项目、每日科技资讯和每日热点观察模板。开源项目模板关注来源、许可证和使用条件，科技资讯模板关注技术阶段、产业影响和合作落地；均沿用现有日报格式。日报详情支持确认后同步删除 SQLite 日报和对应 GitHub 归档，公开站与 RSS 随后续构建更新。
