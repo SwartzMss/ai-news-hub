@@ -50,7 +50,7 @@ export function Settings({
     setError(undefined);
     const body: SettingsUpdate = {
       revision: data.revision,
-      logLevel: section === "settings-codex" ? data.logLevel : original.current!.logLevel,
+      logLevel: "info",
       codex: section === "settings-codex" ? data.codex : original.current!.codex,
       execution: section === "settings-codex" ? data.execution : original.current!.execution,
       github: section !== "settings-github" ? { repository: original.current!.github.repository, branch: original.current!.github.branch } : {
@@ -269,34 +269,6 @@ export function Settings({
                       required
                     />
                   </div>
-                </div>
-                <div className="settings-inline-row">
-                  <div>
-                    <label htmlFor="log-level">日志级别</label>
-                    <p className="field-help">控制服务日志的详细程度。</p>
-                  </div>
-                  <select
-                    id="log-level"
-                    value={data.logLevel}
-                    onChange={(e) =>
-                      setData({
-                        ...data,
-                        logLevel: e.target.value as SettingsView["logLevel"],
-                      })
-                    }
-                  >
-                    {[
-                      "fatal",
-                      "error",
-                      "warn",
-                      "info",
-                      "debug",
-                      "trace",
-                      "silent",
-                    ].map((v) => (
-                      <option key={v}>{v}</option>
-                    ))}
-                  </select>
                 </div>
               </fieldset>}
               {section === "settings-github" && <fieldset

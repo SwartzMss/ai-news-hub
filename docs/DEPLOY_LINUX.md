@@ -241,7 +241,7 @@ npm run build
 sudo useradd --system --home-dir /var/lib/ai-news-hub --shell /usr/sbin/nologin ai-news-hub
 sudo install -d -o ai-news-hub -g ai-news-hub -m 0700 /var/lib/ai-news-hub
 sudo install -d -o root -g root -m 0755 /opt/ai-news-hub
-sudo cp -R dist package.json package-lock.json /opt/ai-news-hub/
+sudo cp -R dist scripts package.json package-lock.json /opt/ai-news-hub/
 sudo /usr/bin/npm ci --omit=dev --ignore-scripts --prefix /opt/ai-news-hub
 sudo install -d -o root -g root -m 0700 /etc/ai-news-hub
 sudo install -o root -g root -m 0600 .env.example /etc/ai-news-hub/ai-news-hub.env
@@ -277,7 +277,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 端口或监听地址修改后，健康检查 URL 同步调整。也可用 `AI_NEWS_HUB_PORT=3000 node /opt/ai-news-hub/dist/scripts/health.js`，它有 3 秒超时且拒绝重定向，失败非零退出。
 预期：HTTP 200、`{"status":"ok","database":"ok"}`；日志有 `server_ready`，SQLite 迁移表和业务表存在，数据库 0600。Node 22 的 SQLite 实验性提示是已知 API 状态，不屏蔽它来冒充稳定接口。
 
-启动/停止/重启可直接 `sudo systemctl start|stop|restart ai-news-hub.service`（选择一个动作），或在源码目录用 `sudo bash scripts/service.sh start` / `stop` / `restart` / `status`。前台开发使用 `npm start`，Ctrl+C 会关闭 HTTP 和数据库。
+启动/停止/重启可直接 `sudo systemctl start|stop|restart ai-news-hub.service`（选择一个动作），或在源码目录用 `sudo bash scripts/service.sh start` / `stop` / `restart` / `status`。开发启动使用 `npm start`，默认追加写入项目 `logs/backend.log`，Ctrl+C 会关闭 HTTP 和数据库。可用 `npm start -- --log-dir /absolute/path` 指定目录；相对目录以项目根目录解析。启动脚本自动创建日志目录，以私有权限创建日志文件，不覆盖已有日志。`tail -f logs/backend.log` 实时查看。systemd 模板使用同一 `scripts/start.sh`，通过 `LogsDirectory` 创建 `/var/log/ai-news-hub`，服务日志追加到该目录的 `backend.log`；journal 保留启动脚本与 systemd 生命周期信息。生产传入 `--no-env-file`，只使用 unit 的 EnvironmentFile。
 验证完成后才启用开机启动：`sudo systemctl enable ai-news-hub.service`。
 
 ### 目标主机验收与当前限制
@@ -379,3 +379,7 @@ Cloudflare Pages 从本 GitHub 仓库 main 集成，根目录留空、命令 `np
 GitHub 归档不再设全局启用开关：仓库、分支和已保存 Token 完整即为可用；允许保存未完整配置，清除凭据后恢复未配置。旧 `github.enabled` 写入参数为可选兼容字段且被忽略，返回值表示派生配置状态，旧数据库中的 false 不再禁用完整目标。任务 `autoPublish` 继续独立控制自动归档。建议创建 fine-grained PAT，仅选择归档仓库并授予 Contents read/write；后台不展示已保存 Token。
 
 GitHub Token 使用始终可见的空白密码输入框，移除说明段落及设置/更换按钮、清除复选框；保存时留空保留已存 Token，输入新值替换，成功保存后再次清空输入框，不回显凭据。
+
+服务日志统一使用 `info`，前端不提供日志级别配置。
+
+运行详情保留“最终结果”“Prompt 与回复”“诊断日志”三个标签，运行元数据合并到诊断日志顶部；成功生成日报的回复直接提供阅读预览及可展开的原始输出。

@@ -51,7 +51,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
   } catch (error) { release(); db.close(); throw error; }
   const app = Fastify({
     logger: {
-      level: settings.runtime().logLevel,
+      level: "info",
       serializers: {
         // Log no headers, body, query string or arbitrary Error message/stack.
         req: (req: { method?: string }) => ({ method: req.method }),
@@ -87,7 +87,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     const runtime=settings.runtime(),target=settings.publication();
     engine.configure({...runtime.execution,model:runtime.codex.model||undefined});
     publications.configure(target,target?github:undefined);
-    app.log.level=runtime.logLevel;
+    app.log.level="info";
   };
   registerAdmin(app);
   app.addHook('preClose', async () => { clearInterval(scheduleTimer); await engine.close(); await publications.close(); await http.close(); });

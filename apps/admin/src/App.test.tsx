@@ -130,10 +130,10 @@ test("authenticated Task → Run navigation renders real metadata, safe output a
   expect(conversation.getAttribute("aria-selected")).toBe("true");
   fireEvent.keyDown(conversation, { key: "End" });
   expect(
-    screen.getByRole("tab", { name: "运行信息" }).getAttribute("aria-selected"),
+    screen.getByRole("tab", { name: "诊断日志" }).getAttribute("aria-selected"),
   ).toBe("true");
   await screen.findByText("thread-1");
-  fireEvent.keyDown(screen.getByRole("tab", { name: "运行信息" }), {
+  fireEvent.keyDown(screen.getByRole("tab", { name: "诊断日志" }), {
     key: "Home",
   });
   expect(conversation.getAttribute("aria-selected")).toBe("true");
@@ -337,7 +337,7 @@ test("news prompt and uncertain retry survive log pagination without replacing t
   fireEvent.change(await screen.findByLabelText("下一轮 prompt"), {
     target: { value: "补查原始公告" },
   });
-  fireEvent.click(screen.getByRole("tab", { name: "执行日志" }));
+  fireEvent.click(screen.getByRole("tab", { name: "诊断日志" }));
   fireEvent.click(await screen.findByRole("button", { name: "后续日志" }));
   fireEvent.click(screen.getByRole("tab", { name: "研究会话" }));
   await waitFor(() =>
@@ -350,7 +350,7 @@ test("news prompt and uncertain retry survive log pagination without replacing t
   ).toBe("补查原始公告");
   fireEvent.click(screen.getByRole("button", { name: "继续研究" }));
   await screen.findByRole("button", { name: "重试原请求" });
-  fireEvent.click(screen.getByRole("tab", { name: "执行日志" }));
+  fireEvent.click(screen.getByRole("tab", { name: "诊断日志" }));
   fireEvent.click(screen.getByRole("button", { name: "回到首条" }));
   fireEvent.click(screen.getByRole("tab", { name: "研究会话" }));
   const retry = await screen.findByRole("button", { name: "重试原请求" });
