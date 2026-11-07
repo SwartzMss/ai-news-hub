@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技资讯"
+  },
+  "report_id": "fe34f953-1513-4701-81bb-84e655ab6021",
+  "report_date": "2026-11-07",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日科技资讯｜2026年11月7日｜北京时间近24小时（截至08:57）",
+  "collected_at": "2026-11-07T00:59:17.072Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-07T00:59:17.076Z",
+  "reviewed_content_sha256": "96c50c74c1ed79319a7c4c377128b4e4ef01572ea2ced56c5de9aeb110c79de1",
+  "items": [
+    {
+      "id": "0663f751da68d42c18b3f122e28f9c8775b879400cf1d3cc74a07c9d4ba8535b",
+      "category": "industry",
+      "importance": 5,
+      "fact_summary": "C114于11月6日报道，中国移动董事长陈忠岳宣布，2027年计划算力投资超过1000亿元、采购总额超过5000亿元，并计划再建两个吉瓦级智算园区，使总数达到七个。公司还将扩展400G OTN、推进算力资源互联和统一调度；这些属于投资与建设计划。",
+      "analysis": "推断：服务器、数据中心网络和光通信供应商将面临新增需求，企业算力用户可能获得更多资源选择；实际影响取决于采购和交付进度。",
+      "evidence_quote": "中国移动陈忠岳：2027年算力投资超千亿元",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.c114.com.cn",
+        "original_url": "https://www.c114.com.cn/news/118/a1320559.html",
+        "canonical_url": "https://www.c114.com.cn/news/118/a1320559.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "bcc572cd0f61e11e8b07e22af4cf086b755c5d031e9193eb466d2f8381de33ed",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "KDDI于11月6日宣布与newmo建立资本合作，并联合KDDI Smart Mobility签署业务合作协议，目标是2028年在大阪府堺市商业运营自动驾驶出租车。KDDI将提供通信、计算基础设施、远程监控和高精度定位；公告注明，初期商业运营预计配备随车安全驾驶员。",
+      "analysis": "推断：合作把车辆技术与运营所需的通信、监控能力整合起来，主要影响当地乘客、出租车运营商及后续接入的平台伙伴。",
+      "evidence_quote": "newmoとKDDI、自動運転タクシーの社会実装に向け資本業務提携",
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.kddi.com",
+        "original_url": "https://newsroom.kddi.com/news/detail/kddi_nr_s-83_4819.html",
+        "canonical_url": "https://newsroom.kddi.com/news/detail/kddi_nr_s-83_4819.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c46341a117344bc3685add0d22cd8627757eada0b3807ee930214f0a695a7395",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "Embodied AI在11月6日发布的公司新闻稿中宣布推出工厂机器人AIR，采用轮式底盘和腱驱动轻量机械臂，将电机、减速器及电子部件集中于躯干。公司称产品正在制造企业测试，任务从人工遥操作与示范采集开始；CE标志计划于2027年取得，尚不能据此视为已完成安全认证。",
+      "analysis": "推断：该设计适合平整厂房中的多变重复作业，可能降低机械臂运动惯量，但工厂采购仍需验证具体任务表现及安全条件。",
+      "evidence_quote": "Embodied AI Unveils AIR, a Physically Safe Humanoid Robot That Learns on the Job",
+      "verification": "codex_reported",
+      "source": {
+        "name": "markets.chroniclejournal.com",
+        "original_url": "https://markets.chroniclejournal.com/thepilotnews/article/bizwire-2026-11-6-embodied-ai-unveils-air-a-physically-safe-humanoid-robot-that-learns-on-the-job",
+        "canonical_url": "https://markets.chroniclejournal.com/thepilotnews/article/bizwire-2026-11-6-embodied-ai-unveils-air-a-physically-safe-humanoid-robot-that-learns-on-the-job",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2494b2d5e4a0f7c5a72afe337c016f488605575742fae54c1a1c68fa3bc31cd8",
+      "category": "other",
+      "importance": 3,
+      "fact_summary": "Gizmochina于11月6日报道，荣耀公布700、700 Pro及700S的官方外观，并在中国开启预约，三款均配备内置后置副屏，官方展示包括时间组件和后摄自拍预览。颜色与存储组合已公开，但正式发布日、最终售价及完整硬件规格尚未公布。",
+      "analysis": "推断：全系后置副屏可能改变消费者使用后摄自拍的方式；现阶段属于外观公布和预约，购买比较仍需等待正式规格。",
+      "evidence_quote": "Honor 700 Pro, 700, 700S officially revealed with rear display ahead of launch",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.gizmochina.com",
+        "original_url": "https://www.gizmochina.com/2026/11/06/honor-700-pro-700-700s-revealed-rear-display-ahead-of-launch/",
+        "canonical_url": "https://www.gizmochina.com/2026/11/06/honor-700-pro-700-700s-revealed-rear-display-ahead-of-launch/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e662c8ef4a1ac4ffe7e06937b233783f65be6d8b05c568782a812f9cb730479e",
+      "category": "other",
+      "importance": 3,
+      "fact_summary": "微软11月6日发布Windows 11实验频道预览版26340.9882，逐步推出Windows Hello登录改进：用户无需等待人脸或指纹识别结束即可输入PIN，并新增供IT管理员使用的登录审计事件。更新还支持选择实时字幕音源，以及在可刷新盲文显示器上呈现数学公式；目前面向预览测试用户。",
+      "analysis": "推断：更新对企业登录故障排查、听障用户和依赖盲文学习数学的用户更有实际价值，正式版覆盖时间尚不能由此次预览发布确定。",
+      "evidence_quote": "Windows 11 Insider Experimental Preview Build 26340.9882",
+      "verification": "codex_reported",
+      "source": {
+        "name": "learn.microsoft.com",
+        "original_url": "https://learn.microsoft.com/en-us/windows-insider/release-notes/experimental/preview-build-26340-9882",
+        "canonical_url": "https://learn.microsoft.com/en-us/windows-insider/release-notes/experimental/preview-build-26340-9882",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
