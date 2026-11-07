@@ -64,3 +64,5 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 当前日报来源模式为 `codex_reported`：Backend 不再联网核验原文或匹配引文，不再追加来源修复；保留 JSON/HTTPS 链接格式、数据关联和发布哈希检查。后端未抓取时 `fetchedAt/fetched_at` 为 null，不伪造原文发布时间或事件时间。历史 `source_only` 报告仍可读取和归档。
 
 GitHub 归档不再设全局启用开关：仓库、分支和已保存 Token 完整即为可用；允许保存未完整配置，清除凭据后恢复未配置。旧 `github.enabled` 写入参数为可选兼容字段且被忽略，返回值表示派生配置状态，旧数据库中的 false 不再禁用完整目标。任务 `autoPublish` 继续独立控制自动归档。建议创建 fine-grained PAT，仅选择归档仓库并授予 Contents read/write；后台不展示已保存 Token。
+
+GitHub 上传器同时允许历史 v1 日期路径与 v2 话题路径，话题 ID 必须为 `t-` 加 24 位小写十六进制；保留路径边界、256 KiB 大小上限和只追加检查。旧版上传器若对 v2 报告返回 `archive_invalid`，更新服务后可直接重试归档，无需重跑研究。

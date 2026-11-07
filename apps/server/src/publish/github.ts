@@ -16,8 +16,9 @@ export class GitHubArchive implements GitHubAdapter {
   }
   async publish(artifact: ArchiveArtifact, signal: AbortSignal) {
     if (
-      !/^reports\/\d{4}\/\d{2}\/\d{2}\/opensource\/v\d{6}\.json$/.test(
-        artifact.path,
+      !(
+        /^reports\/\d{4}\/\d{2}\/\d{2}\/opensource\/v\d{6}\.json$/.test(artifact.path) ||
+        /^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path)
       ) ||
       Buffer.byteLength(artifact.content) > 256 * 1024
     )
