@@ -83,7 +83,7 @@ export async function handleConfirm(ctx: NewsletterContext): Promise<Response> {
     confirmation_hash=NULL,confirmation_expires_at=NULL,confirmed_at=?,updated_at=?
     WHERE status='pending' AND confirmation_hash=? AND confirmation_expires_at>?`).bind(now, now, tokenHash, now).run();
   return result.meta.changes
-    ? page('订阅已确认', '你将开始收到 AI News Hub 每日简报。可随时通过邮件中的链接退订。')
+    ? page('订阅已确认', '你将开始收到 AI News Hub 每日简报。可随时通过邮件中的链接退订。', undefined, 200, 'success')
     : page('链接已失效', '确认链接无效、已使用或已过期。请重新申请订阅。', undefined, 400);
 }
 
@@ -103,5 +103,5 @@ export async function handleUnsubscribe(ctx: NewsletterContext): Promise<Respons
   const now = nowMs(ctx);
   await config.db.prepare(`UPDATE newsletter_subscribers SET status='unsubscribed',
     confirmation_hash=NULL,confirmation_expires_at=NULL,updated_at=? WHERE id=? AND status!='unsubscribed'`).bind(now,id).run();
-  return page('已退订', '你将不再收到 AI News Hub 每日简报。');
+  return page('已退订', '你将不再收到 AI News Hub 每日简报。', undefined, 200, 'unsubscribed');
 }

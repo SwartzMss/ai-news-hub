@@ -399,3 +399,5 @@ GitHub 上传路径校验兼容 v1 日期归档和 v2 话题归档。升级后�
 部署须连同仓库根目录 `prompt-templates/` 一起更新，Backend 工作目录保持仓库根目录（现有启动脚本自动切换）。启动自动应用 migration 11；升级前备份完整私有数据目录。日报删除需要 GitHub Token 对历史归档仓库具备写入权限；归档服务忙碌时拒绝并发操作，远端失败保留本地日报供重试。公开站需在归档删除提交后重新构建。
 
 邮件订阅修复 Cloudflare Workers 发信/读取日报前的请求兼容问题：使用 `redirect: manual` 并拒绝非 2xx，禁止自动跟随重定向。需重新部署 Pages，已有待确认订阅不会自动补发。排查步骤见 [邮件订阅](NEWSLETTER.md)。
+
+邮件确认/退订页面样式随 Pages Functions 部署；更新后重新部署 Pages 即可，不需要新增 D1 迁移或重启 Linux 后台。
