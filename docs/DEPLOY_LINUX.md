@@ -219,9 +219,46 @@ journalctl --user -u ai-news-hub-probe-restart.service -n 40 --no-pager
 
 协议与认证参考：[App Server 官方文档](https://developers.openai.com/codex/app-server)、[CLI 认证官方文档](https://developers.openai.com/codex/auth)。使用已安装 CLI 的 `generate-json-schema` 核对字段；不要提交个人配置或原始日志。
 
+## 源码目录安装开机启动服务
+
+已有项目检出目录可使用 `scripts/install-service.mjs`，不需要把代码复制到固定的 `/opt` 路径。先用普通用户安装依赖、构建并配置 `.env`，以服务账号安装并登录 Codex；服务账号必须已经存在且不是 root。安装过程不会改动 SQLite、Codex 配置或认证文件。
+
+先查看生成的服务文件，确认账号、绝对路径、HOME、Codex 配置目录和环境文件：
+
+```bash
+node scripts/install-service.mjs --user "$(id -un)" \
+  --codex "$(command -v codex)" --dry-run
+```
+
+确认后安装：
+
+```bash
+sudo "$(command -v node)" scripts/install-service.mjs \
+  --user "$(id -un)" --codex "$(command -v codex)"
+sudo systemctl is-enabled ai-news-hub.service
+```
+
+安装器先检查非 root 运行账号、Node 22.19.0 或更新的 22.x、构建产物和账号访问权限，再使用 `systemd-analyze verify` 检查服务文件。服务写入 `/etc/systemd/system/ai-news-hub.service`，执行 `daemon-reload` 和 `enable`。它不启动、停止或重启当前后台；手动实例可继续运行到关机，下次开机由系统服务启动，无需用户登录。需要立即交给 systemd 时，先正常停止手动实例，再执行 `sudo systemctl start ai-news-hub.service`，避免同一数据目录的两个 Backend 冲突。
+
+| 选项 | 用途 |
+| --- | --- |
+| `--user` | 已存在的非 root 服务账号，默认 sudo 的调用账号 |
+| `--node` | 名为 `node` 的 Node 可执行文件绝对路径，默认运行安装器的 Node |
+| `--codex` | 名为 `codex` 的可执行文件绝对路径，默认在当前 PATH 中查找 |
+| `--env-file` | systemd 环境文件，默认项目 `.env` |
+| `--extra-env-file` | 可选的额外私有环境文件，如代理和 CA 配置 |
+| `--codex-home` | Codex 配置/认证目录，默认服务账号 HOME 下的 `.codex` |
+| `--log-dir` | 日志目录，默认项目 `logs/`；已有目录须为服务账号所有、0700 且不是符号链接 |
+| `--dry-run` | 仅显示服务文件，不安装或启用 |
+| `--replace` | 显式覆盖已有服务文件，不会自动重启 |
+
+安装器将所选 Node/Codex 的目录加入服务 PATH，并拒绝会被同名文件遮蔽的选择。后台已保存的 Codex 可执行文件设置仍优先，若它是自定义路径，应确认服务账号也能访问；安装器不会替你修改网站设置。终端的代理和其他环境不会自动带入 systemd，可放在上述环境文件中（限制权限，不提交 Git）。环境文件使用 systemd 的变量赋值格式，不执行 shell 或展开 `$HOME`；数据目录填写绝对路径。
+
+已有 unit 会拒绝覆盖，检查旧配置后使用 `--replace`。若 `daemon-reload` 或 `enable` 失败，错误会说明服务文件已写入并保留，修正原因后可用 `--replace` 重试。仓库测试覆盖生成、权限/覆盖保护和安装命令顺序；本机验证过系统服务文件语法，以及临时用户服务下带空格/百分号路径的实际解析。系统级安装及真实重启仍须在目标机完成，不能以 dry-run 代替验收。
+
 ## 9. Issue #3 Backend 基础服务部署
 
-以下命令面向原生 Ubuntu Server 24.04 LTS，假设系统级 Node.js 22 与 npm 位于 `/usr/bin`。实际路径不同时先修改 unit 与命令；不要把个人用户的 nvm 安装作为正式服务依赖。目标主机的安装和 systemd 生命周期必须实测后才能验收。
+以下命令面向原生 Ubuntu Server 24.04 LTS，假设系统级 Node.js 22 与 npm 位于 `/usr/bin`。实际路径不同时先修改 unit 与命令；若采用源码目录安装器，可显式选择现有 Node/Codex 的绝对路径，但应确保这些路径在开机后仍然存在。目标主机的安装和 systemd 生命周期必须实测后才能验收。
 
 ### 构建并准备文件
 
