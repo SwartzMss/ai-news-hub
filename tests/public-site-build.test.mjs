@@ -38,6 +38,8 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
+  assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
+  assert.ok(homeDoc.querySelector(".reader-body > main"));
   assert.ok(homeDoc.querySelector(".news-row h2 a[href*='/news/']"));
   assert.ok(homeDoc.querySelector(".news-row .news-meta a[target='_blank']"));
   assert.ok(!homeDoc.querySelector("main").textContent.includes("进入话题"));

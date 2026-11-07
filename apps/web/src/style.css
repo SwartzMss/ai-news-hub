@@ -941,3 +941,49 @@ footer nav {
     font-size: 23px;
   }
 }
+
+/* Keep topic navigation beside the reading column on desktop. */
+@media (min-width: 1001px) {
+  .site-shell {
+    max-width: 1320px;
+  }
+  .reader-body.has-topics {
+    display: grid;
+    grid-template-columns: 190px minmax(0, 1fr);
+    gap: 40px;
+    align-items: start;
+  }
+  .reader-body > .topic-picker {
+    position: sticky;
+    top: 28px;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    align-self: start;
+    max-height: calc(100dvh - 56px);
+    overflow-y: auto;
+    margin: 28px 0;
+    padding: 0 18px 0 0;
+    border-bottom: 0;
+    border-right: 1px solid var(--line);
+  }
+  .reader-body > .topic-picker a {
+    padding: 11px 12px;
+    border-bottom: 0;
+    border-left: 2px solid transparent;
+    min-height: 44px;
+  }
+  .reader-body > .topic-picker a[aria-current="page"] {
+    border-left-color: var(--accent);
+    background: var(--tint);
+  }
+  .reader-body > .topic-home,
+  .reader-body > .reading-layout {
+    width: 100%;
+    min-width: 0;
+  }
+}
+@media (min-width: 1001px) and (max-width: 1200px) {
+  .reader-body > .reading-layout.has-aside { display: block; }
+  .reader-body .reading-aside { display: none; }
+}

@@ -54,28 +54,32 @@ export function Shell({
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
-      {data.topics.length > 0 && (
-        <nav className="topic-picker" aria-label="话题选择">
-          {data.topics.map((t) => (
-            <a
-              key={t.id}
-              href={
-                active === "archive" ? topicArchivePath(t.id) : topicPath(t.id)
-              }
-              data-topic-choice={t.id}
-              aria-current={
-                (topic?.id ??
-                  (page === "home" ? data.topics[0]?.id : undefined)) === t.id
-                  ? "page"
-                  : undefined
-              }
-            >
-              {t.name}
-            </a>
-          ))}
-        </nav>
-      )}
-      {children}
+      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>
+        {data.topics.length > 0 && (
+          <nav className="topic-picker" aria-label="话题选择">
+            {data.topics.map((t) => (
+              <a
+                key={t.id}
+                href={
+                  active === "archive"
+                    ? topicArchivePath(t.id)
+                    : topicPath(t.id)
+                }
+                data-topic-choice={t.id}
+                aria-current={
+                  (topic?.id ??
+                    (page === "home" ? data.topics[0]?.id : undefined)) === t.id
+                    ? "page"
+                    : undefined
+                }
+              >
+                {t.name}
+              </a>
+            ))}
+          </nav>
+        )}
+        {children}
+      </div>
       <footer>
         <a href="/">AI News Hub</a>
         <nav aria-label="页脚导航">
