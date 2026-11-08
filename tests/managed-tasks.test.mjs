@@ -36,14 +36,14 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   assert.equal((await s.request('GET',`/runs/${id}`)).statusCode,200);
  }finally{await s.close();}
 });
-test('fixed-eight technology template rejects underfilled reports before persistence',async()=>{
+for(const count of [8,10])test(`fixed-${count} technology prompt rejects underfilled reports before persistence`,async()=>{
  const s=setup();try{
   const template=promptTemplates().find(t=>t.id==='daily-technology');
-  const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:template.prompts})).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:[template.prompts[0].replace(/【固定 \d+ 条】/,`【固定 ${count} 条】`)]})).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'underfilled'})).json().run;
   const call=await s.wait(()=>s.adapter.calls[0]);
   assert.equal(call.input.outputSchema.properties.items.minItems,1);
-  assert.equal(call.input.outputSchema.properties.items.maxItems,8);
+  assert.equal(call.input.outputSchema.properties.items.maxItems,count);
   s.adapter.succeed(0,JSON.stringify(proposal));
   const failed=await s.wait(async()=>{const r=(await s.request('GET',`/runs/${run.id}`)).json().run;return r.status==='failed'&&r;});
   assert.equal(failed.error_code,'report_item_count_invalid');
@@ -56,8 +56,8 @@ test('later runs receive recent same-task report summaries for seven-day dedupli
   const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:template.prompts})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first'})).json().run.id;
   await s.wait(()=>s.adapter.calls[0]);
-  const eight={...proposal,items:Array.from({length:8},(_,i)=>({...proposal.items[0],url:`https://example.com/model-${i}`}))};
-  s.adapter.succeed(0,JSON.stringify(eight));
+  const ten={...proposal,items:Array.from({length:10},(_,i)=>({...proposal.items[0],url:`https://example.com/model-${i}`}))};
+  s.adapter.succeed(0,JSON.stringify(ten));
   await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
   await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second'});
   const second=await s.wait(()=>s.adapter.calls[1]);
