@@ -152,8 +152,9 @@ h3 {
   margin: 28px auto 64px;
 }
 .reading-layout.project-layout {
-  max-width: none;
-  margin-inline: 0;
+  width: 100%;
+  max-width: 760px;
+  margin-inline: auto;
 }
 .reading-layout.has-aside {
   max-width: none;
