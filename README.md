@@ -80,13 +80,13 @@ npm start
 
 ## 开机启动（可选）
 
-在已完成构建、配置 `.env` 并登录 Codex 的项目目录，以普通用户运行（先停止已有手动实例）：
+在已安装依赖、配置 `.env` 并登录 Codex 的项目目录，以普通用户运行（先停止已有手动实例）：
 
 ```bash
 bash scripts/service.sh start
 ```
 
-脚本先检查 systemd 服务，未安装时使用当前用户的 Node / Codex 路径安装并启用开机启动，再启动后台；需要权限时自动调用 sudo。已有服务直接启动，不覆盖安装配置。
+`start` / `restart` 每次先自动编译 Backend 和 Admin，编译失败时退出，不安装、启动或重启服务。编译成功后检查 systemd 服务，未安装时使用当前用户的 Node / Codex 路径安装并启用开机启动，再启动后台；需要权限时自动调用 sudo。已有服务执行指定的启动或重启动作，不覆盖安装配置。开机自启直接运行已有构建，不执行编译。
 
 ```bash
 bash scripts/service.sh status     # 查看状态

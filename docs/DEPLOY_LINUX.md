@@ -221,7 +221,7 @@ journalctl --user -u ai-news-hub-probe-restart.service -n 40 --no-pager
 
 ## 源码目录安装开机启动服务
 
-已有项目检出目录可使用 `scripts/install-service.mjs`，不需要把代码复制到固定的 `/opt` 路径。先用普通用户安装依赖、构建并配置 `.env`，以服务账号安装并登录 Codex；服务账号必须已经存在且不是 root。安装过程不会改动 SQLite、Codex 配置或认证文件。
+已有项目检出目录可使用 `scripts/install-service.mjs`，不需要把代码复制到固定的 `/opt` 路径。先用普通用户安装依赖并配置 `.env`，以服务账号安装并登录 Codex；服务账号必须已经存在且不是 root。安装过程不会改动 SQLite、Codex 配置或认证文件。
 
 日常入口为 `service.sh`，以已配置 Node 22 / Codex 的普通用户调用，脚本按需请求 sudo。先停止已有手动后台，再运行：
 
@@ -233,9 +233,11 @@ bash scripts/service.sh restart
 bash scripts/service.sh uninstall
 ```
 
-`start` / `restart` 查询 systemd 安装状态，仅在 `not-found` 时调用现有安装器并启用开机自启，安装成功后启动；已安装配置不会被覆盖。查询或安装失败时立即退出。首次安装仍需完成构建、`.env` 和 Codex 登录；使用普通用户入口可在 sudo 前保留当前 nvm 的 Node / Codex 绝对路径。`stop` 只停止，重启机器仍会自启。`uninstall` 依次停止、禁用、移除 `/etc/systemd/system/ai-news-hub.service` 并重新加载 systemd；遇到其他位置的 unit 拒绝删除。卸载保留代码、环境文件、数据库、密钥、Codex 认证和日志，重复卸载已不存在的服务成功返回；再次 `start` 可重新安装。也可使用 `npm run service:uninstall`。
+`start` / `restart` 每次先在项目根目录执行 `npm run build`，编译 Backend 和 Admin；失败立即退出，不调用安装器或变更服务运行状态。编译成功后查询 systemd 安装状态，仅在 `not-found` 时调用现有安装器并启用开机自启，安装成功后启动；已安装配置不会被覆盖。查询或安装失败时立即退出。首次安装仍需安装依赖、配置 `.env` 和完成 Codex 登录；使用普通用户入口可在 sudo 前保留当前 nvm 的 Node / Codex 绝对路径。`stop` 只停止，重启机器仍会自启。`uninstall` 依次停止、禁用、移除 `/etc/systemd/system/ai-news-hub.service` 并重新加载 systemd；遇到其他位置的 unit 拒绝删除。卸载保留代码、环境文件、数据库、密钥、Codex 认证和日志，重复卸载已不存在的服务成功返回；再次 `start` 可重新安装。也可使用 `npm run service:uninstall`。
 
-以下为高级安装方式，用于自定义账号/路径、预览或更新已有 unit。
+开机自启和 systemd 故障重启仍直接运行现有构建，不执行编译。已运行的服务执行 `start` 不会重新加载代码，更新后使用 `restart`。
+
+以下为高级安装方式，用于自定义账号/路径、预览或更新已有 unit。直接使用安装器前仍需手动执行 `npm run build`。
 
 先查看生成的服务文件，确认账号、绝对路径、HOME、Codex 配置目录和环境文件：
 
