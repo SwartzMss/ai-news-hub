@@ -52,11 +52,20 @@ h3 {
   overflow-wrap: anywhere;
 }
 .site-shell {
+  display: flex;
+  flex-direction: column;
+  min-height: 100vh;
+  min-height: 100dvh;
   max-width: none;
   padding: 0 32px;
   margin: auto;
 }
+.reader-body {
+  flex: 1;
+  min-width: 0;
+}
 .masthead {
+  flex-shrink: 0;
   display: flex;
   align-items: center;
   gap: 36px;
@@ -592,6 +601,7 @@ main {
   font-weight: 500;
 }
 footer {
+  flex-shrink: 0;
   border-top: 1px solid var(--line);
   padding: 22px 0 28px;
   display: flex;
