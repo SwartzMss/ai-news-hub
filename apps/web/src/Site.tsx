@@ -12,7 +12,7 @@ import {
 import { issuePath, topicArchivePath, topicPath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
-import { ProjectDetail, projectDetail } from "./ProjectDetail";
+import { ProjectAside, ProjectDetail, projectDetail } from "./ProjectDetail";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "channel" || page.kind === "archive")
@@ -108,7 +108,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       topic={topic}
       active={nav === "latest" ? "topics" : "archive"}
       page="reader"
-      hideTopicPicker={page.kind === "article" && Boolean(project)}
     >
       <div
         className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && project ? " project-layout" : ""}`}
@@ -344,6 +343,9 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           )}
         </main>
         {aside}
+        {page.kind === "article" && project && story && (
+          <ProjectAside project={project} related={owner?.items.filter((item) => item.key !== story.key) ?? []} />
+        )}
       </div>
     </Shell>
   );

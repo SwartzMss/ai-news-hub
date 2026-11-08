@@ -405,6 +405,7 @@ test("project detail presents verified fields as readable sections", async () =>
     report.items = report.items.slice(0, 1);
     report.items[0].fact_summary = "Mesh LLM 发布分布式推理系统。官方【新发布】；用途：把多台电脑组成推理网络；技术要点：Rust 服务通过 QUIC 连接节点；按模型阶段分配计算；近期证据：官方仓库公开了代码；适用场景：多机推理实验；许可证：Apache-2.0。[项目仓库](https://github.com/example/mesh-llm)";
     report.items[0].analysis = "推荐理由：便于研究异构设备的推理调度；限制：需要自行验证性能。";
+    report.items.push({ ...report.items[0], id: "related-project", fact_summary: "Sandcastle 发布隔离 Agent 环境。用途：并行运行开发任务；技术要点：通过容器隔离工作区；近期证据：官方发布新版本；适用场景：多 Agent 开发；许可证：MIT。[项目仓库](https://github.com/example/sandcastle)" });
     const folder = join(dir, ...report.report_date.split("-"), "opensource");
     mkdirSync(folder, { recursive: true });
     writeFileSync(join(folder, "v000001.json"), JSON.stringify(report));
@@ -416,8 +417,10 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
     assert.equal(doc.querySelector(".reading-aside"), null);
     assert.ok(doc.querySelector(".reading-layout.project-layout > main > .project-detail"));
-    assert.equal(doc.querySelector(".topic-picker"), null);
-    assert.equal(doc.querySelector(".reader-body.has-topics"), null);
+    assert.ok(doc.querySelector(".reader-body.has-topics > .topic-picker"));
+    assert.ok(doc.querySelector(".project-aside nav[aria-label='本文目录'] a[href='#project-fact-0']"));
+    assert.ok(doc.querySelector("#project-fact-0"));
+    assert.equal(doc.querySelectorAll(".project-related a").length, 1);
     assert.equal(doc.querySelector(".breadcrumb a:first-child").textContent, "历史简报");
     for (const heading of ["核心用途", "技术要点", "近期关注原因", "适用场景", "许可证", "推荐理由", "限制"])
       assert.ok([...doc.querySelectorAll(".project-detail h2")].some((h) => h.textContent === heading), heading);
