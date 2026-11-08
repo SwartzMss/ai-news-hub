@@ -397,6 +397,32 @@ test("reading previews render explicit source links without executing markup or 
   } finally {rmSync(dir,{recursive:true,force:true});}
 });
 
+test("project detail presents verified fields as readable sections", async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const dir = mkdtempSync("/tmp/public-project-detail-");
+  try {
+    const report = JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json", "utf8"));
+    report.items = report.items.slice(0, 1);
+    report.items[0].fact_summary = "Mesh LLM 发布分布式推理系统。官方【新发布】；用途：把多台电脑组成推理网络；技术要点：Rust 服务通过 QUIC 连接节点；按模型阶段分配计算；近期证据：官方仓库公开了代码；适用场景：多机推理实验；许可证：Apache-2.0。[项目仓库](https://github.com/example/mesh-llm)";
+    report.items[0].analysis = "推荐理由：便于研究异构设备的推理调度；限制：需要自行验证性能。";
+    const folder = join(dir, ...report.report_date.split("-"), "opensource");
+    mkdirSync(folder, { recursive: true });
+    writeFileSync(join(folder, "v000001.json"), JSON.stringify(report));
+    const built = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", reportsDir: dir });
+    const key = articleKey(report.items[0].id);
+    const doc = new JSDOM(readFileSync(join(built.output, `topics/legacy/news/${key}/index.html`), "utf8")).window.document;
+    assert.equal(doc.querySelector(".project-detail h1").textContent, "Mesh LLM");
+    assert.equal(doc.querySelector(".project-detail .project-subtitle").textContent, "Mesh LLM 发布分布式推理系统");
+    assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
+    assert.equal(doc.querySelector(".reading-aside"), null);
+    for (const heading of ["核心用途", "技术要点", "近期关注原因", "适用场景", "许可证", "推荐理由", "限制"])
+      assert.ok([...doc.querySelectorAll(".project-detail h2")].some((h) => h.textContent === heading), heading);
+    assert.equal(doc.querySelectorAll(".project-detail .project-technical li").length, 2);
+    assert.equal(doc.querySelectorAll(".project-detail a[href=\"https://github.com/example/mesh-llm\"]").length, 1);
+    assert.ok(doc.querySelector(".project-detail .source-details"));
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
+
 test("newsletter is opt-in, works as a native POST form and keeps email out of storage and URLs", async () => {
   const { mkdtempSync, rmSync } = await import("node:fs");
   const dir = mkdtempSync("/tmp/public-newsletter-");

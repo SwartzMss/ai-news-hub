@@ -576,6 +576,89 @@ main {
 .article-body > p {
   margin-bottom: 26px;
 }
+.project-detail {
+  max-width: 760px;
+  padding-bottom: 48px;
+}
+.project-header {
+  padding-bottom: 28px;
+  border-bottom: 1px solid var(--line);
+}
+.project-heading {
+  display: flex;
+  align-items: baseline;
+  gap: 12px;
+}
+.project-number {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 700;
+  font-variant-numeric: tabular-nums;
+}
+.project-heading h1 {
+  font-size: clamp(28px, 3vw, 40px);
+  font-weight: 720;
+  line-height: 1.35;
+  letter-spacing: -0.03em;
+}
+.project-subtitle {
+  margin: 12px 0 10px;
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1.6;
+}
+.project-repository {
+  font-size: 14px;
+}
+.project-status {
+  width: fit-content;
+  margin-top: 16px;
+  padding: 2px 9px;
+  color: var(--accent);
+  background: var(--tint);
+  font-size: 12px;
+  font-weight: 650;
+}
+.project-sections > section {
+  padding: 24px 0;
+  border-bottom: 1px solid var(--line);
+}
+.project-sections h2 {
+  margin-bottom: 10px;
+  font-size: 17px;
+  font-weight: 700;
+  line-height: 1.5;
+}
+.project-sections p,
+.project-sections li {
+  font-size: 15px;
+  line-height: 1.95;
+}
+.project-technical ul {
+  margin: 0;
+  padding-left: 22px;
+}
+.project-technical li + li,
+.project-judgement div + div {
+  margin-top: 10px;
+}
+.project-flow {
+  overflow-x: auto;
+  padding: 18px 20px;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--tint);
+  font-size: 13px;
+  line-height: 1.8;
+  white-space: pre-wrap;
+  overflow-wrap: anywhere;
+}
+.project-sections > .project-judgement {
+  background: var(--tint);
+  margin: 24px 0;
+  padding: 20px 24px;
+  border-bottom: 0;
+}
 .category-section {
   margin-bottom: 32px;
   scroll-margin-top: 24px;
