@@ -280,3 +280,60 @@ test.each(['task-one', 'news-research'])('successful final Prompt shows one read
   expect(diagnostics.getByText('run-one')).toBeTruthy();
   expect(diagnostics.getByText('暂无诊断日志。')).toBeTruthy();
 });
+
+test('deleting a failed execution requires confirmation and refreshes the list',async()=>{
+ let deleted=false;
+ const api=vi.fn().mockImplementation(async(path:string,_signal:unknown,body:unknown,method:string)=>{
+  if(method==='DELETE'){expect(path).toBe('/runs/run-one');expect(body).toEqual({confirm:true});deleted=true;return {deleted:true};}
+  if(path==='/tasks')return {tasks:[]};
+  return {runs:deleted?[]:[{run,task_name:'每日研究',task_deleted:false,state:'failed',latest_turn:null,report:null,publication:null}],total:deleted?0:1};
+ });
+ render(<Runs api={api}/>);
+ fireEvent.click(await screen.findByRole('button',{name:'删除记录'}));
+ expect(api.mock.calls.some(c=>c[3]==='DELETE')).toBe(false);
+ expect(screen.getByRole('alertdialog',{name:'删除执行记录'})).toBeTruthy();
+ fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
+ await screen.findByText('没有符合条件的执行记录。');
+ expect(api.mock.calls.filter(c=>c[3]==='DELETE')).toHaveLength(1);
+});
+
+test('run deletion failure retains the row and permits retry of GitHub cleanup',async()=>{
+ let fail=true,deleted=false;
+ const api=vi.fn().mockImplementation(async(path:string,_signal:unknown,_body:unknown,method:string)=>{
+  if(method==='DELETE'){if(fail)throw new Error('remote unavailable');deleted=true;return {deleted:true};}
+  if(path==='/tasks')return {tasks:[]};
+  return {runs:deleted?[]:[{run,task_name:'每日研究',task_deleted:false,state:'publish_failed',latest_turn:null,report:{id:'r',status:'approved'},publication:{status:'failed'}}],total:deleted?0:1};
+ });
+ render(<Runs api={api}/>);
+ fireEvent.click(await screen.findByRole('button',{name:'删除记录'}));
+ expect(screen.getByRole('alertdialog').textContent).toMatch(/GitHub/);
+ fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
+ await screen.findByRole('alert');
+ expect(screen.getByText('每日研究')).toBeTruthy();
+ fail=false;fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
+ await screen.findByText('没有符合条件的执行记录。');
+});
+
+test('queued, running and publishing executions have deletion disabled',async()=>{
+ const rows=[{status:'queued'},{status:'running'},{status:'succeeded',publishing:true},{status:'succeeded',publishing:false}];
+ const api=vi.fn().mockImplementation(async(path:string)=>path==='/tasks'?{tasks:[]}:{runs:rows.map((r,i)=>({run:{...run,...r,id:'run-'+i},task_name:'任务 '+i,state:'running',latest_turn:null,report:null,publication:i===3?{status:'publishing'}:null})),total:4});
+ render(<Runs api={api}/>);
+ const buttons=await screen.findAllByRole('button',{name:'删除记录'});
+ expect(buttons).toHaveLength(4);
+ for(const button of buttons)expect((button as HTMLButtonElement).disabled).toBe(true);
+});
+
+test('deleting the last result on a later page returns to the preceding page',async()=>{
+ let deleted=false;
+ const api=vi.fn().mockImplementation(async(path:string,_signal:unknown,_body:unknown,method:string)=>{
+  if(method==='DELETE'){deleted=true;return {deleted:true};}
+  if(path==='/tasks')return {tasks:[]};
+  const later=path.includes('offset=20');
+  return {runs:later&&deleted?[]:[{run:{...run,id:later?'last-run':'first-run'},task_name:later?'末页执行':'首页执行',task_deleted:false,state:'failed',latest_turn:null,report:null,publication:null}],total:deleted?20:21};
+ });
+ render(<Runs api={api}/>);
+ await screen.findByText('首页执行');fireEvent.click(screen.getByRole('button',{name:'下一页'}));
+ await screen.findByText('末页执行');fireEvent.click(screen.getByRole('button',{name:'删除记录'}));
+ fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
+ await screen.findByText('首页执行');expect(screen.getByText('共 20 条，第 1 页')).toBeTruthy();
+});

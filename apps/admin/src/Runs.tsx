@@ -1,8 +1,8 @@
-import { useCallback, useState } from "react";
-import type { RunListResponse, TaskRecord } from "../../../packages/shared/src";
+import { useCallback, useEffect, useRef, useState } from "react";
+import type { RunListResponse, RunSummary, TaskRecord } from "../../../packages/shared/src";
 import { errorText, type Client } from "./api";
 import { usePolling } from "./usePolling";
-import { Badge, PageHeading, pathFor, time } from "./ui";
+import { active, Badge, PageHeading, pathFor, time } from "./ui";
 const states = [
   ["all", "全部"],
   ["running", "运行中"],
@@ -25,6 +25,14 @@ export function Runs({
     ),
     [taskId, setTaskId] = useState(initialTaskId),
     [page, setPage] = useState(0);
+  const [refresh, setRefresh] = useState(0);
+  const [selected, setSelected] = useState<RunSummary>();
+  const [deleting, setDeleting] = useState(false);
+  const [deleteError, setDeleteError] = useState<unknown>();
+  const pending = useRef(false);
+  const confirmButton = useRef<HTMLButtonElement>(null);
+  const opener = useRef<HTMLButtonElement | null>(null);
+  useEffect(() => { confirmButton.current?.focus(); }, [selected]);
   const load = useCallback(
     async (signal: AbortSignal) => {
       const query = new URLSearchParams({
@@ -42,9 +50,26 @@ export function Runs({
         tasks: tasks.tasks.filter((task) => task.configuration),
       };
     },
-    [api, state, taskId, page],
+    [api, state, taskId, page, refresh],
   );
   const { data, error } = usePolling(load);
+  async function remove() {
+    if (!selected || pending.current) return;
+    pending.current = true;
+    setDeleting(true);
+    setDeleteError(undefined);
+    try {
+      await api(`/runs/${encodeURIComponent(selected.run.id)}`, AbortSignal.timeout(120000), {confirm:true}, 'DELETE');
+      setSelected(undefined);
+      if (page > 0 && data?.runs.length === 1) setPage(value => value - 1);
+      else setRefresh(value => value + 1);
+    } catch (cause) {
+      setDeleteError(cause);
+    } finally {
+      pending.current = false;
+      setDeleting(false);
+    }
+  }
   return (
     <>
       <PageHeading title="运行与结果" />
@@ -93,6 +118,17 @@ export function Runs({
           {errorText(error)}
         </p>
       ) : null}
+      {selected && (
+        <section className="panel" role="alertdialog" aria-label="删除执行记录">
+          <p>删除「{selected.task_name}」在 {time(selected.run.created_at)} 的执行记录？</p>
+          <p>将删除本次执行、对话和日志。有日报时会同步删除日报与 GitHub 归档，公开站和 RSS 随后续构建更新。</p>
+          {deleteError ? <p role="alert" className="error">{errorText(deleteError)}</p> : null}
+          <div className="run-row-actions">
+            <button ref={confirmButton} disabled={deleting} onClick={() => void remove()}>{deleting ? '正在删除…' : '确认删除'}</button>
+            <button className="quiet" disabled={deleting} onClick={() => { setSelected(undefined); opener.current?.focus(); }}>取消</button>
+          </div>
+        </section>
+      )}
       {!data ? (
         <p>正在读取执行记录…</p>
       ) : !data.runs.length ? (
@@ -164,9 +200,18 @@ export function Runs({
                   </td>
                   <td>{time(row.run.created_at)}</td>
                   <td>
-                    <a href={pathFor(row.run.task_id, row.run.id)}>
-                      {row.report ? "查看日报" : "查看执行"}
-                    </a>
+                    <div className="run-row-actions">
+                      <a href={pathFor(row.run.task_id, row.run.id)}>
+                        {row.report ? "查看日报" : "查看执行"}
+                      </a>
+                      <button
+                        className="quiet"
+                        disabled={deleting || active(row.run.status) || row.run.publishing || row.publication?.status === 'publishing'}
+                        onClick={event => { opener.current = event.currentTarget; setSelected(row); setDeleteError(undefined); }}
+                      >
+                        删除记录
+                      </button>
+                    </div>
                   </td>
                 </tr>
               ))}

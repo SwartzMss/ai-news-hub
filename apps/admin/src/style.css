@@ -3027,3 +3027,5 @@ summary {
 .overview-chart-panel .overview-section-heading { margin-bottom: 12px; }
 .overview-chart-panel .overview-legend { margin-top: 12px; }
 .overview-chart-panel .overview-chart-data { margin-top: 12px; }
+
+.run-row-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }

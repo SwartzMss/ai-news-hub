@@ -56,6 +56,8 @@ export function errorText(error: unknown): string {
     task_not_editable: "历史预定义任务仅供查看，请新建研究任务。",
     managed_run_automatic: "此任务按已配置的 Prompt 自动执行。",
     invalid_schedule: "执行计划不正确，请检查时间与时区。",
+    run_busy: "执行或发布仍在进行，请完成或停止后再删除记录。",
+    run_deleting: "此执行记录正在删除，请稍后重试。",
     report_deleting: "日报已进入删除流程，请重试删除。",
     report_busy: "日报仍在生成，请等待执行结束。",
     archive_target_unknown: "历史归档目标信息不完整，无法删除，请核对归档记录。",
