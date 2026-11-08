@@ -36,6 +36,8 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 
 主机网络环境通过项目根目录中的私有 `network.env` 管理。`npm run network:configure` 从当前服务用户环境复制 HTTP(S) 代理，systemd 经 `--extra-env-file` 加载，手动启动经 `--network-env-file` 加载。GitHub 的 EnvHttpProxyAgent 和 Codex 白名单共用代理变量，管理员界面继续管理模型及业务配置。
 
+主机代理提供根目录 `network.env.example`，安装器默认识别已有的 `network.env` 并把文件路径写入 systemd unit；服务每次启动读取内容，日常编辑后统一通过 `service.sh restart` 生效，显式额外环境文件保留覆盖优先级。
+
 ## Task / Run / Thread / Turn
 
 每个 Run 新建 Thread，每轮启动新的 stdio App Server 子进程。握手、读取账户后，新闻轮读取有效配置并禁用继承的 MCP，再创建/恢复 Thread 和启动 Turn。一个 Run 最多 20 轮，日志/会话/结果都属于任务，没有独立 Agent 工作台。
@@ -150,3 +152,5 @@ Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 
 README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 systemd、任务调度、GitHub 归档、Cloudflare Pages/Web/RSS，以及 GitHub Actions → Pages Functions ↔ 私有 D1、Pages Functions → Resend → 订阅者的邮件链路。架构图作为文档资源生成，邮件投递仍以生产配置和实际验收为准。
 
 公共站话题归档列表使用侧栏旁的完整可用宽度，取消居中的 900px 限制；邮件订阅保持在页脚，正文阅读页宽度规则不变。
+
+源码目录服务控制现支持 `service.sh start/restart` 检测缺失 unit 后安装并启用，再启动服务；`uninstall` 停止、禁用并删除固定系统 unit，保留业务数据与私有配置。权限通过按需 sudo 获取，安装仍复用现有校验；相关系统级运行验收由 #2 跟踪。

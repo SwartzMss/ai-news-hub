@@ -23,7 +23,8 @@
     "build:web": "node apps/web/generator/build.mjs",
     "build:web:demo": "node apps/web/generator/build.mjs --demo",
     "service:restart": "bash scripts/service.sh restart",
-    "service:status": "bash scripts/service.sh status"
+    "service:status": "bash scripts/service.sh status",
+    "service:uninstall": "bash scripts/service.sh uninstall"
   },
   "devDependencies": {
     "@eslint/js": "10.0.1",

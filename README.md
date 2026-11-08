@@ -44,6 +44,15 @@ chmod 700 "$HOME/.local/share/ai-news-hub"
 
 ### 按需配置代理
 
+代理示例见 [`network.env.example`](network.env.example)。在项目根目录首次手动创建：
+
+```bash
+cp -n network.env.example network.env
+chmod 600 network.env
+```
+
+用编辑器填写代理地址，大小写成对变量保持一致。已有 `network.env` 可直接编辑。服务安装器自动识别根目录中已存在的该文件，日常修改后执行 `sudo bash scripts/service.sh restart` 即可重新加载。
+
 在已经配置 `.env` 的普通服务用户终端执行，读取当前用户的代理环境变量：
 
 ```bash
@@ -58,7 +67,7 @@ npm run network:configure
 npm start -- --network-env-file network.env
 ```
 
-systemd 安装命令追加 `--extra-env-file "$PWD/network.env"`，更新已有服务时同时使用 `--replace`，然后重启服务。GitHub HTTPS 归档客户端和 Codex 子进程均使用代理环境变量。代理服务须在开机后可用，配置步骤见 [Linux 部署指南](docs/DEPLOY_LINUX.md#代理网络配置)。
+systemd 安装器默认识别项目根目录已有的 `network.env`。已有服务首次接入该文件时使用 `--replace` 重新安装一次，后续编辑后重启服务。自定义文件路径可用 `--extra-env-file /absolute/path/network.env`。GitHub HTTPS 归档客户端和 Codex 子进程均使用代理环境变量。代理服务须在开机后可用，配置步骤见 [Linux 部署指南](docs/DEPLOY_LINUX.md#代理网络配置)。
 
 ### 3. 启动
 
@@ -71,20 +80,22 @@ npm start
 
 ## 开机启动（可选）
 
-在已完成构建、配置 `.env` 并登录 Codex 的项目目录，运行：
+在已完成构建、配置 `.env` 并登录 Codex 的项目目录，以普通用户运行（先停止已有手动实例）：
 
 ```bash
-sudo "$(command -v node)" scripts/install-service.mjs \
-  --user "$(id -un)" --codex "$(command -v codex)"
+bash scripts/service.sh start
 ```
 
-脚本会安装系统级 systemd 服务并启用开机启动，使用当前项目目录、指定的普通用户及已有数据。安装不会立即启动或重启后台；若要现在启动，先停止手动运行的后台，再执行：
+脚本先检查 systemd 服务，未安装时使用当前用户的 Node / Codex 路径安装并启用开机启动，再启动后台；需要权限时自动调用 sudo。已有服务直接启动，不覆盖安装配置。
 
 ```bash
-sudo systemctl start ai-news-hub.service
+bash scripts/service.sh status     # 查看状态
+bash scripts/service.sh stop       # 停止，保留开机自启
+bash scripts/service.sh restart    # 重启，未安装时先安装
+bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 ```
 
-可用 `sudo systemctl status ai-news-hub.service` 查看状态。更多选项见 [Linux 部署指南](docs/DEPLOY_LINUX.md#源码目录安装开机启动服务)。
+卸载保留项目、`.env`、`network.env`、SQLite、认证和日志；之后再次 `start` 会重新安装。也可使用 `npm run service:start` 等同名命令。自定义账号/路径及更新已有 unit 继续使用安装器，见 [Linux 部署指南](docs/DEPLOY_LINUX.md#源码目录安装开机启动服务)。
 
 ## 创建任务
 
