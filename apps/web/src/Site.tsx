@@ -12,6 +12,7 @@ import {
 import { issuePath, topicArchivePath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
+import { ProjectDetail, projectDetail } from "./ProjectDetail";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "channel" || page.kind === "archive")
@@ -49,6 +50,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           r.version === story.report_version,
       )
     : undefined;
+  const project = story ? projectDetail(story) : null;
   const nav =
     page.kind === "topic" ||
     ((page.kind === "article" || page.kind === "date") &&
@@ -77,7 +79,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         </ol>
       </nav>
     </aside>
-  ) : page.kind === "article" && owner ? (
+  ) : page.kind === "article" && owner && !project ? (
     <aside className="reading-aside">
       <h2>所属简报</h2>
       <EditionLinks
@@ -284,38 +286,47 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   {dateLabel(story.report_date)}
                 </a>
               </nav>
-              <header className="article-header">
-                <div className="news-meta">
-                  <span className="category-label">
-                    {categories[story.category] ?? story.category}
-                  </span>
-                </div>
-                <h1>{lead(story).title}</h1>
-                <a
-                  className="original-link"
-                  href={story.source.canonical_url}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                >
-                  {story.source.name} · 查看原文 ↗
-                </a>
-              </header>
-              <section className="article-body" aria-label="来源事实摘要">
-                {lead(story).rest && (
-                  <p>
-                    <InlineText text={lead(story).rest} />
-                  </p>
-                )}
-                {story.analysis && (
-                  <section className="story-analysis">
-                    <h2>分析与推断</h2>
-                    <p>
-                      <InlineText text={story.analysis} />
-                    </p>
+              {project ? (
+                <ProjectDetail
+                  story={story}
+                  number={owner ? owner.items.findIndex((item) => item.key === story.key) + 1 : undefined}
+                />
+              ) : (
+                <>
+                  <header className="article-header">
+                    <div className="news-meta">
+                      <span className="category-label">
+                        {categories[story.category] ?? story.category}
+                      </span>
+                    </div>
+                    <h1>{lead(story).title}</h1>
+                    <a
+                      className="original-link"
+                      href={story.source.canonical_url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                    >
+                      {story.source.name} · 查看原文 ↗
+                    </a>
+                  </header>
+                  <section className="article-body" aria-label="来源事实摘要">
+                    {lead(story).rest && (
+                      <p>
+                        <InlineText text={lead(story).rest} />
+                      </p>
+                    )}
+                    {story.analysis && (
+                      <section className="story-analysis">
+                        <h2>分析与推断</h2>
+                        <p>
+                          <InlineText text={story.analysis} />
+                        </p>
+                      </section>
+                    )}
+                    <Source story={story} />
                   </section>
-                )}
-                <Source story={story} />
-              </section>
+                </>
+              )}
             </>
           )}
           {page.kind === "404" && (
