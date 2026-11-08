@@ -289,9 +289,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   <span className="category-label">
                     {categories[story.category] ?? story.category}
                   </span>
-                  <time dateTime={story.report_date}>
-                    {dateLabel(story.report_date)}
-                  </time>
                 </div>
                 <h1>{lead(story).title}</h1>
                 <a
