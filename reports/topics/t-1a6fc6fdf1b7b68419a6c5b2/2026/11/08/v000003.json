@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "453b7826-241f-42d7-a6e5-759fa9e5f535",
+  "report_date": "2026-11-08",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日开源项目简报｜统计区间：北京时间 2026-11-07 13:11:51—2026-11-08 13:11:51",
+  "collected_at": "2026-11-08T05:13:12.097Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-08T05:13:12.099Z",
+  "reviewed_content_sha256": "9e4ddbb7f43cece2f1b506c71909c6d9cba208babcdd31a44ef8134085a6bb61",
+  "items": [
+    {
+      "id": "8360d46727d0afeb38511eda097852152ecc6c4b20e0f1801d9bdebf72c55571",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "portop 新版识别多路径 TCP 并修正防火墙误判。官方于北京时间 11 月 7 日 19:30 发布 v0.4.0。该工具面向开发者和运维人员，检查端口对应的进程、Docker 容器及 systemd 服务；本次增加 Linux MPTCP 标识和 JSON 字段，修复 ufw 全端口子网规则及规则顺序导致的状态误判。限制：ufw 的 OpenSSH 等应用配置规则仍会被跳过。",
+      "analysis": "这些变化有助于排查 Linux 服务的监听协议及访问范围；由于仍有未解析的规则类型，端口状态不能替代完整的防火墙审计。",
+      "evidence_quote": "feat: identify MPTCP sockets on Linux",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/padovanl/portop/releases/tag/v0.4.0",
+        "canonical_url": "https://github.com/padovanl/portop/releases/tag/v0.4.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "f73597dd13c8f18bbb98f1cea85742f5fb6567acdfe9da92fef5a1d8bca702f5",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Excaliself 新版支持经人工确认的智能体改图。官方于北京时间 11 月 7 日 19:31 发布 v0.9.0。这个自托管 Excalidraw 团队白板新增 MCP edit_drawing 工具，可提出形状、文字和箭头修改，预览后由用户应用或丢弃；同时修复 Coolify 部署的登录来源错误。限制：仍只支持单副本运行，未应用的修改保存在内存中，重启会丢失。",
+      "analysis": "适合希望让智能体协助整理架构图、同时保留人工审核和撤销能力的团队。单副本要求限制了高可用部署方式。",
+      "evidence_quote": "AI agents can now change your drawings, and nothing changes until you click Apply.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/maciekzygmunt/excaliself/releases/tag/v0.9.0",
+        "canonical_url": "https://github.com/maciekzygmunt/excaliself/releases/tag/v0.9.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0816b524694071eb43ff2ec878e7715e663142f9a50fdd5e5e29556e8d18794b",
+      "category": "developer_tools",
+      "importance": 3,
+      "fact_summary": "ECA 新版修复发布包缺失并调整苹果构建环境。官方于北京时间 11 月 8 日 01:28 发布 0.170.5。ECA 为不同编辑器提供 AI 结对编程能力；维护者称，0.170.2 起的版本未附带二进制文件，本次将 macOS arm64 构建迁至 macos-15，恢复发布产物。限制：两个 macOS 架构的二进制均要求 macOS 14 及以上。",
+      "analysis": "依赖预编译包安装或升级的用户可恢复正常下载；使用较旧 macOS 的开发者需先核对系统兼容性。",
+      "evidence_quote": "Fix releases since 0.170.2 shipping no binaries:",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/editor-code-assistant/eca/releases/tag/0.170.5",
+        "canonical_url": "https://github.com/editor-code-assistant/eca/releases/tag/0.170.5",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b7952736eade336a0255b7e416c80c406c451964941ae4219d745732f6322d76",
+      "category": "security",
+      "importance": 3,
+      "fact_summary": "n8n-MCP 新版为发布产物附加签名来源证明。官方于北京时间 11 月 8 日 02:39 发布 v2.101.4。项目让支持 MCP 的编程助手协助构建 n8n 自动化工作流，可通过 npm 或 Docker 运行；本次发布流程加入签名 SLSA provenance、验证说明和 CODEOWNERS。更新范围集中在构建来源与维护流程，发布说明未列出工作流功能增强。",
+      "analysis": "对需要核查自动化工具供应链的团队更有价值；来源证明提供追溯依据，但不能据此推断软件已无安全漏洞。",
+      "evidence_quote": "Attach signed SLSA provenance to releases and add CODEOWNERS",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/czlonkowski/n8n-mcp/releases/tag/v2.101.4",
+        "canonical_url": "https://github.com/czlonkowski/n8n-mcp/releases/tag/v2.101.4",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d83610f44e3e1afdaa4199bb52e4f79aa9a07fb2112cfd5efe6345771454eb1f",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "MetaCubeXD 新版修复远程配置编辑刷新丢失。官方于北京时间 11 月 7 日 16:56 发布 v1.274.5。项目是 Mihomo 的管理面板，适合维护相关网络环境的开发者和运维人员；本次保留远程配置中已编辑的配置段，并让界面仅提供 Mihomo 接受的 TUN 协议栈选项。适用范围是面板及配置交互，发布说明未涉及网络内核更新。",
+      "analysis": "对经常编辑远程配置的用户有直接价值，可减少刷新后的重复操作；TUN 选项约束也有助于减少无效配置。",
+      "evidence_quote": "agent: keep config section edits on remote profiles across refresh",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/MetaCubeX/metacubexd/releases/tag/v1.274.5",
+        "canonical_url": "https://github.com/MetaCubeX/metacubexd/releases/tag/v1.274.5",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
