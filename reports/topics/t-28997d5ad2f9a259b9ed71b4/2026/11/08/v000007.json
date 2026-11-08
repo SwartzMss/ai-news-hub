@@ -1,0 +1,120 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "b5d4d526-dec1-44ad-bab6-2da86a8abf18",
+  "report_date": "2026-11-08",
+  "channel": "opensource",
+  "version": 7,
+  "title": "今日全球热点简报｜北京时间统计开始：2026年11月7日20:07:17；统计结束及生成时间：2026年11月8日20:07:17",
+  "collected_at": "2026-11-08T12:08:08.162Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-08T12:08:08.170Z",
+  "reviewed_content_sha256": "7d2926542622372c1784b5ea68790067bcf84ee2f0eb00ad87b7617b93de0462",
+  "items": [
+    {
+      "id": "c41b42b1e456e54a9055efb982b084fb631944b8cdd57ac88bb4e034648d4004",
+      "category": "other",
+      "importance": 5,
+      "fact_summary": "扎波罗热核电站再次失去外部供电并启用备用发电机。\n[科学/能源]\n发生了什么：路透社11月8日报道，电站管理方及国际原子能机构称，Ferosplavna线路断开，电站依靠应急柴油发电机维持冷却。乌克兰核电公司经RBC-Ukraine转述，断电发生于北京时间11月8日08:36。路透社所引页面标注报道时间为北京时间16:51。\n各方说法：IAEA称，燃料可支持有限数量应急发电机运行约两周；俄方任命的管理方称现场辐射水平正常。\n仍有哪些不确定性：IAEA表示断线原因及位置尚不明确，供电恢复时间未确定。\n来源与原文：[路透社报道](https://www.arnnewscentre.ae/news/international/zaporizhzhia-nuclear-plant-loses-external-power-supply-relies-on-generators/)、[乌方声明的署名报道](https://newsukraine.rbc.ua/news/zaporizhzhia-nuclear-plant-suffers-16th-blackout-1794128692.html)。",
+      "analysis": "为什么值得关注：备用供电持续时间越长，冷却保障越依赖柴油机运行和燃料补给。今日值得持续关注：外部线路修复进度、可用发电机数量及燃料保障。",
+      "evidence_quote": "Zaporizhzhia nuclear plant loses external power supply, relies on generators",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.arnnewscentre.ae",
+        "original_url": "https://www.arnnewscentre.ae/news/international/zaporizhzhia-nuclear-plant-loses-external-power-supply-relies-on-generators/",
+        "canonical_url": "https://www.arnnewscentre.ae/news/international/zaporizhzhia-nuclear-plant-loses-external-power-supply-relies-on-generators/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "618e7026cfaaec39e3b0eaae0b1f81719d87b8400b0e3fd194e18b8d173e996a",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "伯克希尔披露三季度回购九十六亿美元且营业利润下降。\n[金融市场]\n发生了什么：公司于北京时间11月7日21:00发布业绩公告。第三季度营业利润为127.05亿美元，上年同期134.85亿美元；净利润221.12亿美元，上年同期307.96亿美元。当季回购约96亿美元，前九个月累计约144亿美元。\n新增信息：本时段新增的是季度财务披露，回购实际发生于第三季度。\n仍有哪些不确定性：净利润包含证券投资损益，不能全部解释为经营业务变化。\n来源与原文：[公司原始公告](https://berkshirehathaway.com/news/nov0726.pdf)、[公告分发时间](https://new.streetinsider.com/Business%2BWire/Berkshire%2BHathaway%2BInc.%2BNews%2BRelease/27309290.html)。",
+      "analysis": "为什么值得关注：保险、铁路、能源和制造等分部的经营数据，为观察企业需求与盈利情况提供了多个切面；大额回购则体现公司的资本配置选择。",
+      "evidence_quote": "Berkshire acquired approximately $9.6 billion in treasury shares during the third quarter of 2026",
+      "verification": "codex_reported",
+      "source": {
+        "name": "berkshirehathaway.com",
+        "original_url": "https://berkshirehathaway.com/news/nov0726.pdf",
+        "canonical_url": "https://berkshirehathaway.com/news/nov0726.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7723ccbf8c3a4f1abae0737e0f266b17a58d2c5c891b736d3109a8e0a2aa0ec6",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "NASA宣布百亿美元月球运输框架并授出月球车交付合同。\n[科学/能源]\n发生了什么：NASA在美国当地11月7日的MAX POWER活动宣布，8家企业进入CLPS 2供应商池，可竞争未来月面运输任务；十年框架合计最高价值100亿美元。NASA另向Blue Origin授出9400万美元基础合同，用于交付PROMISE核动力月球车。\n事件与报道时间：官方日程将月球基地发布会安排在北京时间11月8日06:00；成果公告标注美国日期11月7日，未披露精确发布时间。\n仍有哪些不确定性：100亿美元是框架上限，并非已承诺支出。PROMISE目标为2028年末发射，任务尚未执行。\n来源与原文：[NASA成果公告](https://www.nasa.gov/news-release/nasa-awards-moon-base-transportation-technology-science-projects/)、[官方发布会日程](https://www.nasa.gov/news-release/nasa-releases-max-power-key-events-for-media-participants/)。",
+      "analysis": "为什么值得关注：供应商准入和具体交付合同扩大了商业月球运输、机器人及月面基础设施的采购机会，实际产业收入仍取决于后续任务订单和履约。",
+      "evidence_quote": "NASA Awards Moon Base Transportation, Technology, Science Projects",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.nasa.gov",
+        "original_url": "https://www.nasa.gov/news-release/nasa-awards-moon-base-transportation-technology-science-projects/",
+        "canonical_url": "https://www.nasa.gov/news-release/nasa-awards-moon-base-transportation-technology-science-projects/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8182e01a9548a69de4edb66f4592c4fc1776bfb5f46067275b61e9235cf244fb",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "沙特阿美利雅得行政楼受袭击碎片损坏且无人伤亡。\n[企业/产业]\n发生了什么：法新社11月8日报道，沙特能源部称，利雅得一栋沙特阿美行政楼遭企图袭击，坠落碎片造成轻微损坏，无人员伤亡。法新社采访的多名目击者确认建筑受损。事件发生于当地11月8日；法新社页面标注11月8日11:31，但未显示时区。\n各方说法：沙特主导的联军称拦截了胡塞武装发射的导弹；目击者描述多个楼层出现损坏，但完整损失评估尚未公布。\n仍有哪些不确定性：具体损坏程度、袭击过程仍待确认，现有证据未显示本次行政楼受损造成油气生产中断。\n来源与原文：[法新社原始报道](https://www.afp.com/en/riyadh-financial-district-targeted-aramco-skyscraper-damaged)。",
+      "analysis": "为什么值得关注：大型能源企业及金融区设施受损，可能增加企业运营和地区安全保障压力。今日值得持续关注：正式损失评估、是否影响企业运营，以及后续袭击与防空通报。",
+      "evidence_quote": "Riyadh financial district targeted, Aramco skyscraper damaged",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.afp.com",
+        "original_url": "https://www.afp.com/en/riyadh-financial-district-targeted-aramco-skyscraper-damaged",
+        "canonical_url": "https://www.afp.com/en/riyadh-financial-district-targeted-aramco-skyscraper-damaged",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a7c6e7b8e657d716af43732332801563944477303e03db982bc55d6a6ba46c0d",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "以色列总统宣布由艾森科特优先尝试组建新政府。\n[国际局势]\n发生了什么：路透社报道，总统赫尔佐格于当地11月7日宣布，选择反对派领导人加迪·艾森科特优先尝试组阁。路透社转载页更新于北京时间11月8日03:52。其阵营目前拥有120席议会中的48席，距离61席多数仍有差距。\n新增信息：本轮新增的是总统作出人选决定，而非此前选举结果。\n仍有哪些不确定性：正式授权仪式原定北京时间11月8日23:00，晚于本简报截止时间；不能写成新政府已经成立。组阁能否成功仍未确定。\n来源与原文：[路透社原稿转载](https://www.aol.com/articles/israeli-president-picks-gadi-eisenkot-193153000.html)。",
+      "analysis": "为什么值得关注：组阁结果可能改变以色列政府领导权与政策组合。今日值得持续关注：正式授权是否按计划进行、哪些党派承诺支持，以及能否形成议会多数。",
+      "evidence_quote": "Israeli president picks Gadi Eisenkot, Netanyahu rival, to try to form government",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.aol.com",
+        "original_url": "https://www.aol.com/articles/israeli-president-picks-gadi-eisenkot-193153000.html",
+        "canonical_url": "https://www.aol.com/articles/israeli-president-picks-gadi-eisenkot-193153000.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "90a7da06289acedf67bda482350ab960420c180841bbbf8334478972482a668b",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "币安宣布首席财务官离任并由前Airwallex高管接替。\n[BTC/加密货币]\n发生了什么：路透社援引币安声明称，Kaiser Ng将离开公司，由此前任Airwallex财务副总裁的Justin Yek接任CFO。公司于11月7日宣布；报道初发为北京时间11月8日01:30，更新于02:26。\n各方说法：联席CEO何一称，Ng将寻求新事业，交接计划此前已实施半年；该时间线属于公司声明。\n仍有哪些不确定性：具体离任和到任日期未披露，没有证据证明此次变动与此前安全事件存在因果关系。\n来源与原文：[路透社，MarketScreener转载](https://www.marketscreener.com/news/binance-cfo-kaiser-ng-steps-down-justin-yek-named-new-finance-chief-ce785fd2d180f62d)。",
+      "analysis": "为什么值得关注：大型加密交易所财务负责人变动涉及管理连续性，但目前不足以据此判断其偿付能力或未来资产价格。",
+      "evidence_quote": "Binance CFO Kaiser Ng steps down, Justin Yek named new finance chief",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.marketscreener.com",
+        "original_url": "https://www.marketscreener.com/news/binance-cfo-kaiser-ng-steps-down-justin-yek-named-new-finance-chief-ce785fd2d180f62d",
+        "canonical_url": "https://www.marketscreener.com/news/binance-cfo-kaiser-ng-steps-down-justin-yek-named-new-finance-chief-ce785fd2d180f62d",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
