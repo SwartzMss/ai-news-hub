@@ -15,7 +15,6 @@ export function Shell({
   page?: string;
   children: ReactNode;
 }) {
-  const rss = topic ? `/rss/topics/${topic.id}.xml` : "/rss/all.xml";
   return (
     <div className="site-shell" data-page={page} data-topic-id={topic?.id}>
       <a className="skip-link" href="#content">
@@ -78,21 +77,7 @@ export function Shell({
         )}
         {children}
       </div>
-      <footer>
-        {data.newsletterEnabled && <Newsletter />}
-        <a href="/">AI News Hub</a>
-        <nav aria-label="页脚导航">
-          <a
-            href={topic ? topicArchivePath(topic.id) : "/archive/"}
-            data-topic-archive
-          >
-            往期归档
-          </a>
-          <a href={rss} data-topic-feed>
-            RSS
-          </a>
-        </nav>
-      </footer>
+      {data.newsletterEnabled && <Newsletter />}
     </div>
   );
 }

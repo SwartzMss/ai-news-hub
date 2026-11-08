@@ -600,26 +600,14 @@ main {
   font-size: 18px;
   font-weight: 500;
 }
-footer {
-  flex-shrink: 0;
-  border-top: 1px solid var(--line);
-  padding: 22px 0 28px;
-  display: flex;
-  justify-content: space-between;
-  gap: 20px;
-  font-size: 11px;
-  color: var(--muted);
-  flex-wrap: wrap;
-}
 .newsletter {
-  flex-basis: 100%;
+  flex-shrink: 0;
   display: flex;
   justify-content: space-between;
   align-items: center;
   gap: 16px 24px;
-  padding: 4px 0 22px;
-  margin-bottom: 2px;
-  border-bottom: 1px solid var(--line);
+  padding: 22px 0 28px;
+  border-top: 1px solid var(--line);
   scroll-margin-top: 24px;
 }
 .newsletter h2 {
@@ -658,13 +646,6 @@ footer {
   .newsletter { flex-direction: column; align-items: stretch; }
   .newsletter-email { flex: 1; min-width: 0; }
   .newsletter input { width: 100%; }
-}
-footer > a {
-  color: var(--muted);
-}
-footer nav {
-  display: flex;
-  gap: 22px;
 }
 .demo-banner {
   border: 1px solid #dbc47d;
