@@ -415,6 +415,7 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.equal(doc.querySelector(".project-detail .project-subtitle").textContent, "Mesh LLM 发布分布式推理系统");
     assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
     assert.equal(doc.querySelector(".reading-aside"), null);
+    assert.ok(doc.querySelector(".reading-layout.project-layout > main > .project-detail"));
     for (const heading of ["核心用途", "技术要点", "近期关注原因", "适用场景", "许可证", "推荐理由", "限制"])
       assert.ok([...doc.querySelectorAll(".project-detail h2")].some((h) => h.textContent === heading), heading);
     assert.equal(doc.querySelectorAll(".project-detail .project-technical li").length, 2);
