@@ -30,9 +30,24 @@ export function Runs({
   const [deleting, setDeleting] = useState(false);
   const [deleteError, setDeleteError] = useState<unknown>();
   const pending = useRef(false);
-  const confirmButton = useRef<HTMLButtonElement>(null);
+  const cancelButton = useRef<HTMLButtonElement>(null);
+  const dialogRef = useRef<HTMLDialogElement>(null);
   const opener = useRef<HTMLButtonElement | null>(null);
-  useEffect(() => { confirmButton.current?.focus(); }, [selected]);
+  useEffect(() => {
+    if (!selected) return;
+    const dialog = dialogRef.current!;
+    const previousOverflow = document.documentElement.style.overflow;
+    const trigger = opener.current;
+    document.documentElement.style.overflow = "hidden";
+    if (dialog.showModal) dialog.showModal();
+    else dialog.setAttribute("open", "");
+    cancelButton.current?.focus();
+    return () => {
+      if (dialog.close) dialog.close();
+      document.documentElement.style.overflow = previousOverflow;
+      if (trigger?.isConnected) trigger.focus();
+    };
+  }, [selected]);
   const load = useCallback(
     async (signal: AbortSignal) => {
       const query = new URLSearchParams({
@@ -119,15 +134,47 @@ export function Runs({
         </p>
       ) : null}
       {selected && (
-        <section className="panel" role="alertdialog" aria-label="删除执行记录">
-          <p>删除「{selected.task_name}」在 {time(selected.run.created_at)} 的执行记录？</p>
-          <p>将删除本次执行、对话和日志。有日报时会同步删除日报与 GitHub 归档，公开站和 RSS 随后续构建更新。</p>
-          {deleteError ? <p role="alert" className="error">{errorText(deleteError)}</p> : null}
-          <div className="run-row-actions">
-            <button ref={confirmButton} disabled={deleting} onClick={() => void remove()}>{deleting ? '正在删除…' : '确认删除'}</button>
-            <button className="quiet" disabled={deleting} onClick={() => { setSelected(undefined); opener.current?.focus(); }}>取消</button>
+        <dialog
+          ref={dialogRef}
+          className="run-delete-dialog"
+          role="alertdialog"
+          aria-modal="true"
+          aria-labelledby="run-delete-title"
+          aria-describedby="run-delete-description"
+          aria-busy={deleting}
+          onKeyDown={event => {
+            if (event.key !== "Tab") return;
+            const buttons = event.currentTarget.querySelectorAll<HTMLButtonElement>("button:not(:disabled)");
+            const first = buttons[0], last = buttons[buttons.length - 1];
+            if (!first) event.preventDefault();
+            else if (event.shiftKey && document.activeElement === first) {
+              event.preventDefault(); last.focus();
+            } else if (!event.shiftKey && document.activeElement === last) {
+              event.preventDefault(); first.focus();
+            }
+          }}
+          onCancel={event => {
+            event.preventDefault();
+            if (!pending.current) setSelected(undefined);
+          }}
+        >
+          <header className="run-delete-header">
+            <h2 id="run-delete-title">删除执行记录</h2>
+            <p>此操作无法撤销，请确认要删除的记录。</p>
+          </header>
+          <div className="run-delete-body">
+            <dl className="run-delete-target">
+              <div><dt>所属任务</dt><dd>{selected.task_name}</dd></div>
+              <div><dt>触发时间</dt><dd>{time(selected.run.created_at)}</dd></div>
+            </dl>
+            <p id="run-delete-description">将删除本次执行、对话和日志。有日报时会同步删除日报与 GitHub 归档，公开站和 RSS 随后续构建更新。</p>
+            {deleteError ? <p role="alert" className="error">{errorText(deleteError)}</p> : null}
           </div>
-        </section>
+          <div className="run-delete-actions">
+            <button ref={cancelButton} className="quiet" disabled={deleting} onClick={() => setSelected(undefined)}>取消</button>
+            <button className="run-delete-confirm" disabled={deleting} onClick={() => void remove()}>{deleting ? '正在删除…' : '确认删除'}</button>
+          </div>
+        </dialog>
       )}
       {!data ? (
         <p>正在读取执行记录…</p>
