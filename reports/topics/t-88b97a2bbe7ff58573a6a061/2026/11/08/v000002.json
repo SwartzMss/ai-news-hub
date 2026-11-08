@@ -1,0 +1,69 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技资讯"
+  },
+  "report_id": "7298ec3a-d5b3-42cd-9374-a5d0932d399e",
+  "report_date": "2026-11-08",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日科技资讯｜北京时间2026年11月7日13:09:48—11月8日13:09:48｜本期收录3条",
+  "collected_at": "2026-11-08T05:11:47.232Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-08T05:11:47.233Z",
+  "reviewed_content_sha256": "3c26635c12adec61aabda323ab0a8ba8321833084275298c3db26df4d667b29c",
+  "items": [
+    {
+      "id": "3ac42683668c32437b2ea5aa1394dfd123b0b28a96c45c9ef59eef50d970e040",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "比亚迪仰望鼎曜全球首发，限量版同步开启预定。快科技报道，11月7日晚，新车在阿布扎比发布，推出行政版与山河鼎韵限量版，面向高端行政出行市场。发布资料称其首搭自研璇玑A3辅助驾驶芯片，采用四电机独立驱动及新一代全主动车身控制系统；CLTC工况续航宣称超过1000公里，属于厂商公布参数。此次为发布及预定阶段，不能视为已交付。",
+      "analysis": null,
+      "evidence_quote": "大器鼎成 仰望鼎曜超豪华行政旗舰轿车全球首发",
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.mydrivers.com",
+        "original_url": "https://news.mydrivers.com/1/1164/1164024.htm",
+        "canonical_url": "https://news.mydrivers.com/1/1164/1164024.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0d4ce41a318726cc614f1bb6b505960d75735102cfd7550441c170714dcb7c65",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "眸深智能等四十二家机构启动通用具身大脑产业联合体。财联社11月7日15:30发布的现场报道确认，联合体在进博会配套活动中启动，成员包括复旦大学未来信息创新学院、国家地方共建人形机器人创新中心、宇树科技及优必选等。合作覆盖科研、机器人本体、灵巧操作、数据算力和产业应用；此次确认的是组织成立，报道未披露共同产品的交付时间或性能结果。",
+      "analysis": "联合体为机器人研发和应用企业增加了协作渠道；能否降低跨厂商适配成本，仍取决于后续接口、数据和项目安排。",
+      "evidence_quote": "通用具身大脑产业创新联合体正式启动",
+      "verification": "codex_reported",
+      "source": {
+        "name": "api3.cls.cn",
+        "original_url": "https://api3.cls.cn/share/article/2528056?app=&os=android&sv=835",
+        "canonical_url": "https://api3.cls.cn/share/article/2528056?app=&os=android&sv=835",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d6bc9d32e76e8fa4664c7be48753460db6d25879d5e70c8059343d3944789f8b",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "酷派阔直板手机正式开售，起售价为九百九十九元。快科技11月8日报道，COOL X Wide提供999—1399元三个配置，配备6.38英寸16:10比例LCD屏幕及Helio G99处理器，仅支持4G网络。此次新增变化是正式开售；此前公告已将原定11月8日发货的订单调整为11月15日起陆续发货，购买者需区分开售与实际交付。",
+      "analysis": "这款产品将宽屏直板形态带入千元价位，适合关注横向阅读空间的用户；720×1158分辨率和不支持5G是选购时的明确限制。",
+      "evidence_quote": "安卓首款阔直板手机！酷派COOL X Wide今日开售：999元起、联发科G99",
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.mydrivers.com",
+        "original_url": "https://news.mydrivers.com/1/1164/1164034.htm",
+        "canonical_url": "https://news.mydrivers.com/1/1164/1164034.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
