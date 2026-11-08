@@ -148,3 +148,5 @@ Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 
 公共站订阅入口集中在页脚，邮件订阅使用页底表单，RSS 使用页脚链接；页头操作区仅显示明暗主题切换。页面容器最小高度覆盖视口，正文区域填充剩余空间，短归档和空页面的订阅/页脚贴住视口底部，长页面的页脚排在正文末尾。
 
 README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 systemd、任务调度、GitHub 归档、Cloudflare Pages/Web/RSS，以及 GitHub Actions → Pages Functions ↔ 私有 D1、Pages Functions → Resend → 订阅者的邮件链路。架构图作为文档资源生成，邮件投递仍以生产配置和实际验收为准。
+
+公共站话题归档列表使用侧栏旁的完整可用宽度，取消居中的 900px 限制；邮件订阅保持在页脚，正文阅读页宽度规则不变。

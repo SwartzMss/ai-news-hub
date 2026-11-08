@@ -1169,7 +1169,8 @@ footer nav {
     padding-left: 16px;
   }
 }
-.reading-layout.latest-layout {
+.reading-layout.latest-layout,
+.reading-layout.archive-layout {
   max-width: none;
 }
 .brief-layout .news-summary,
