@@ -9,7 +9,7 @@ import {
   Empty,
   EditionLinks,
 } from "./ReadingParts";
-import { issuePath, topicArchivePath } from "./paths";
+import { issuePath, topicArchivePath, topicPath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
 import { ProjectDetail, projectDetail } from "./ProjectDetail";
@@ -108,6 +108,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       topic={topic}
       active={nav === "latest" ? "topics" : "archive"}
       page="reader"
+      hideTopicPicker={page.kind === "article" && Boolean(project)}
     >
       <div
         className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && project ? " project-layout" : ""}`}
@@ -272,6 +273,12 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {page.kind === "article" && story && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
+                {project && (
+                  <>
+                    <a href={topicPath(story.topic.id)}>{story.topic.name}</a>
+                    <span>/</span>
+                  </>
+                )}
                 <a href={topicArchivePath(page.topicId ?? "legacy")}>
                   往期归档
                 </a>

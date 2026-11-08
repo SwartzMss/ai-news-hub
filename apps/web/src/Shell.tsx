@@ -7,14 +7,17 @@ export function Shell({
   topic,
   active = "topics",
   page = "reader",
+  hideTopicPicker = false,
   children,
 }: {
   data: PublicData;
   topic?: TopicSummary;
   active?: "topics" | "archive";
   page?: string;
+  hideTopicPicker?: boolean;
   children: ReactNode;
 }) {
+  const showTopicPicker = data.topics.length > 0 && !hideTopicPicker;
   return (
     <div className="site-shell" data-page={page} data-topic-id={topic?.id}>
       <a className="skip-link" href="#content">
@@ -51,8 +54,8 @@ export function Shell({
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
-      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>
-        {data.topics.length > 0 && (
+      <div className={`reader-body${showTopicPicker ? " has-topics" : ""}`}>
+        {showTopicPicker && (
           <nav className="topic-picker" aria-label="话题选择">
             {data.topics.map((t) => (
               <a
