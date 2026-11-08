@@ -151,4 +151,6 @@ Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 
 
 README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 systemd、任务调度、GitHub 归档、Cloudflare Pages/Web/RSS，以及 GitHub Actions → Pages Functions ↔ 私有 D1、Pages Functions → Resend → 订阅者的邮件链路。架构图作为文档资源生成，邮件投递仍以生产配置和实际验收为准。
 
+公共站话题归档列表使用侧栏旁的完整可用宽度，取消居中的 900px 限制；邮件订阅保持在页脚，正文阅读页宽度规则不变。
+
 源码目录服务控制现支持 `service.sh start/restart` 检测缺失 unit 后安装并启用，再启动服务；`uninstall` 停止、禁用并删除固定系统 unit，保留业务数据与私有配置。权限通过按需 sudo 获取，安装仍复用现有校验；相关系统级运行验收由 #2 跟踪。

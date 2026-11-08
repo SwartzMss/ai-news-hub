@@ -108,7 +108,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       page="reader"
     >
       <div
-        className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}`}
+        className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}`}
       >
         <main id="content">
           {page.kind === "topic" &&

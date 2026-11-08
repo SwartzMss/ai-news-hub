@@ -503,3 +503,5 @@ GitHub 上传路径校验兼容 v1 日期归档和 v2 话题归档。升级后�
 README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 systemd、任务调度、GitHub 归档、Cloudflare Pages/Web/RSS，以及 GitHub Actions → Pages Functions ↔ 私有 D1、Pages Functions → Resend → 订阅者的邮件链路。架构图作为文档资源生成，邮件投递仍以生产配置和实际验收为准。
 
 升级执行删除功能后运行 `npm run build` 并重启 Backend，刷新管理页面即可在“运行与结果”操作“删除记录”。复用现有日报删除表与发布配置，远端移除需要历史归档目标的 GitHub 写入权限。现有数据库自动沿用当前迁移版本，删除由用户确认触发。
+
+公共站话题归档列表使用侧栏旁的完整可用宽度，取消居中的 900px 限制；邮件订阅保持在页脚，正文阅读页宽度规则不变。
