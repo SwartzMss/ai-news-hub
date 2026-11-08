@@ -6,6 +6,7 @@ import {buildServer} from '../dist/apps/server/src/app.js';
 import {loadConfig} from '../dist/apps/server/src/config.js';
 import {ControlledAdapter} from './fixtures/controlled-adapter.mjs';
 import {nextOccurrence} from '../dist/apps/server/src/tasks/configuration.js';
+import {promptTemplates} from '../dist/apps/server/src/tasks/prompt-templates.js';
 const headers={authorization:'Bearer test_only_0123456789_abcdefghijklmnop'};
 const configuration={name:'AI 日报',topic:'AI',prompts:['搜索原始公告','筛选并核实'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
 const proposal={title:'AI 日报',items:[{url:'https://example.com/model',category:'ai',importance:2,factSummary:'来源宣布模型更新。',analysis:null,evidenceQuote:'Official AI model release announcement'}]};
@@ -33,6 +34,35 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,204);
   assert.ok(!(await s.request('GET','/tasks')).json().tasks.some(t=>t.id===task.id));
   assert.equal((await s.request('GET',`/runs/${id}`)).statusCode,200);
+ }finally{await s.close();}
+});
+test('fixed-eight technology template rejects underfilled reports before persistence',async()=>{
+ const s=setup();try{
+  const template=promptTemplates().find(t=>t.id==='daily-technology');
+  const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:template.prompts})).json().task;
+  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'underfilled'})).json().run;
+  const call=await s.wait(()=>s.adapter.calls[0]);
+  assert.equal(call.input.outputSchema.properties.items.minItems,1);
+  assert.equal(call.input.outputSchema.properties.items.maxItems,8);
+  s.adapter.succeed(0,JSON.stringify(proposal));
+  const failed=await s.wait(async()=>{const r=(await s.request('GET',`/runs/${run.id}`)).json().run;return r.status==='failed'&&r;});
+  assert.equal(failed.error_code,'report_item_count_invalid');
+  assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);
+ }finally{await s.close();}
+});
+test('later runs receive recent same-task report summaries for seven-day deduplication',async()=>{
+ const s=setup();try{
+  const template=promptTemplates().find(t=>t.id==='daily-technology');
+  const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:template.prompts})).json().task;
+  const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first'})).json().run.id;
+  await s.wait(()=>s.adapter.calls[0]);
+  const eight={...proposal,items:Array.from({length:8},(_,i)=>({...proposal.items[0],url:`https://example.com/model-${i}`}))};
+  s.adapter.succeed(0,JSON.stringify(eight));
+  await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
+  await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second'});
+  const second=await s.wait(()=>s.adapter.calls[1]);
+  assert.match(second.input.developerInstructions,/近期同任务日报/);
+  assert.match(second.input.developerInstructions,/https:\/\/example\.com\/model-0/);
  }finally{await s.close();}
 });
 test('stop prevents subsequent rounds; invalid plans are rejected',async()=>{
