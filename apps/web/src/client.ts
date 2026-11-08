@@ -103,9 +103,6 @@ function selectTopic(
       choice.setAttribute("aria-current", "page");
     else choice.removeAttribute("aria-current");
   document
-    .querySelectorAll<HTMLAnchorElement>("a[data-topic-feed]")
-    .forEach((a) => (a.href = `/rss/topics/${id}.xml`));
-  document
     .querySelectorAll<HTMLAnchorElement>("a[data-topic-archive]")
     .forEach((a) => (a.href = `/topics/${id}/archive/`));
   if (shell) shell.dataset.topicId = id;

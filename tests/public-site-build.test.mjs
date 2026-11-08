@@ -36,12 +36,16 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
   );
   assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
+  assert.equal(historyDoc.querySelector("footer"), null);
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
+  assert.equal(homeDoc.querySelector("footer"), null);
+  assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
   assert.ok(homeDoc.querySelector(".reader-body > main"));
   assert.equal(homeDoc.querySelectorAll(".brief-toc").length,data.topics.length);
   for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
+    assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
     const links=panel.querySelectorAll(".brief-toc a[data-brief-target]");
     assert.equal(links.length,panel.querySelectorAll(".news-row").length);
     for(const link of links) assert.ok(panel.querySelector(`[id="${link.dataset.briefTarget}"]`));
@@ -71,6 +75,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   const articleDoc = new JSDOM(
     readFileSync(join(root, `news/${data.current[0].key}/index.html`), "utf8"),
   ).window.document;
+  assert.equal(articleDoc.querySelector("footer"), null);
   assert.equal(
     articleDoc
       .querySelector('.site-nav a[href="/"]')
@@ -267,7 +272,8 @@ test("date and revision readers preserve exact archived text and separate curren
       "/topics/legacy/archive/2026-11-02/v000001/",
     );
     const current = main("topics/legacy/index.html");
-    assert.equal(current.querySelector(".brief-topic").textContent, "历史简报");
+    assert.equal(current.querySelector(".brief-topic"), null);
+    assert.ok(current.querySelector(".brief-heading > .brief-date:first-child"));
     assert.equal(current.querySelector(".brief-date time").getAttribute("datetime"), base.report_date);
     assert.ok(!current.textContent.includes("最新一期日报"));
     assert.ok(current.textContent.includes("最新一期独有摘要"));
@@ -309,7 +315,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     for (const topic of [a, b]) {
       assert.ok(home.querySelector(`a[data-topic-choice="${topic.id}"][href="/topics/${topic.id}/"]`));
       assert.ok(documentAt("archive/index.html").querySelector(`main a[href="/topics/${topic.id}/archive/"]`));
-      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("[data-topic-feed]").getAttribute("href"), `/rss/topics/${topic.id}.xml`);
+      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("footer"), null);
       assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
     }
     const aMain = mainAt(`topics/${a.id}/archive/2026-11-03/index.html`);
@@ -359,7 +365,8 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(visible()[0].querySelector(".brief-toc time"), null);
     assert.equal(visible()[0].querySelector(".brief-toc .brief-topic"), null);
 
-    assert.equal(browser.window.document.querySelector("[data-topic-feed]").getAttribute("href"), `/rss/topics/${a.id}.xml`);
+    assert.equal(browser.window.document.querySelector("footer"), null);
+    assert.equal(browser.window.document.querySelector("[data-topic-archive]").getAttribute("href"), `/topics/${a.id}/archive/`);
     browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
     browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
     assert.equal(visible()[0].dataset.topicPanel, b.id);
@@ -410,7 +417,8 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.ok(form.querySelector('[name="email"]').required);
     assert.equal(form.querySelector('[name="website"]').tabIndex, -1);
     assert.equal(window.document.querySelector(".header-actions a"), null);
-    assert.ok(window.document.querySelector('footer a[data-topic-feed]'));
+    assert.equal(window.document.querySelector("footer"), null);
+    assert.ok(window.document.querySelector(".site-shell > #newsletter-signup"));
     assert.equal(window.document.querySelector(".topic-picker #newsletter-signup, .brief-toc #newsletter-signup"), null);
     assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /connect-src 'self'/);
     assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /Referrer-Policy: strict-origin/);
