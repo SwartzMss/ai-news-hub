@@ -71,20 +71,22 @@ npm start
 
 ## 开机启动（可选）
 
-在已完成构建、配置 `.env` 并登录 Codex 的项目目录，运行：
+在已完成构建、配置 `.env` 并登录 Codex 的项目目录，以普通用户运行（先停止已有手动实例）：
 
 ```bash
-sudo "$(command -v node)" scripts/install-service.mjs \
-  --user "$(id -un)" --codex "$(command -v codex)"
+bash scripts/service.sh start
 ```
 
-脚本会安装系统级 systemd 服务并启用开机启动，使用当前项目目录、指定的普通用户及已有数据。安装不会立即启动或重启后台；若要现在启动，先停止手动运行的后台，再执行：
+脚本先检查 systemd 服务，未安装时使用当前用户的 Node / Codex 路径安装并启用开机启动，再启动后台；需要权限时自动调用 sudo。已有服务直接启动，不覆盖安装配置。
 
 ```bash
-sudo systemctl start ai-news-hub.service
+bash scripts/service.sh status     # 查看状态
+bash scripts/service.sh stop       # 停止，保留开机自启
+bash scripts/service.sh restart    # 重启，未安装时先安装
+bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 ```
 
-可用 `sudo systemctl status ai-news-hub.service` 查看状态。更多选项见 [Linux 部署指南](docs/DEPLOY_LINUX.md#源码目录安装开机启动服务)。
+卸载保留项目、`.env`、`network.env`、SQLite、认证和日志；之后再次 `start` 会重新安装。也可使用 `npm run service:start` 等同名命令。自定义账号/路径及更新已有 unit 继续使用安装器，见 [Linux 部署指南](docs/DEPLOY_LINUX.md#源码目录安装开机启动服务)。
 
 ## 创建任务
 

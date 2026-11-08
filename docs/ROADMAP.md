@@ -161,3 +161,5 @@ GitHub 上传路径校验兼容 v1 日期归档和 v2 话题归档。升级后�
 公共站订阅入口集中在页脚，邮件订阅使用页底表单，RSS 使用页脚链接；页头操作区仅显示明暗主题切换。页面容器最小高度覆盖视口，正文区域填充剩余空间，短归档和空页面的订阅/页脚贴住视口底部，长页面的页脚排在正文末尾。
 
 README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 systemd、任务调度、GitHub 归档、Cloudflare Pages/Web/RSS，以及 GitHub Actions → Pages Functions ↔ 私有 D1、Pages Functions → Resend → 订阅者的邮件链路。架构图作为文档资源生成，邮件投递仍以生产配置和实际验收为准。
+
+源码目录服务控制现支持 `service.sh start/restart` 检测缺失 unit 后安装并启用，再启动服务；`uninstall` 停止、禁用并删除固定系统 unit，保留业务数据与私有配置。权限通过按需 sudo 获取，安装仍复用现有校验；相关系统级运行验收由 #2 跟踪。
