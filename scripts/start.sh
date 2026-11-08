@@ -5,6 +5,7 @@ umask 0077
 startup_repo=$(cd -- "$(dirname -- "${BASH_SOURCE[0]}")/.." && pwd)
 startup_log_dir="$startup_repo/logs"
 startup_env_args=(--env-file-if-exists=.env)
+startup_network_env_file=
 while (($#)); do
   case "$1" in
     --log-dir)
@@ -15,9 +16,17 @@ while (($#)); do
       startup_log_dir="$2"
       shift 2
       ;;
+    --network-env-file)
+      if (($# < 2)) || [[ -z "$2" ]]; then
+        echo '--network-env-file requires a file path' >&2
+        exit 2
+      fi
+      startup_network_env_file="$2"
+      shift 2
+      ;;
     --no-env-file) startup_env_args=(); shift ;;
     --help)
-      echo 'Usage: bash scripts/start.sh [--log-dir DIRECTORY] [--no-env-file]'
+      echo 'Usage: bash scripts/start.sh [--log-dir DIRECTORY] [--no-env-file] [--network-env-file FILE]'
       exit 0
       ;;
     *) echo "Unknown startup argument: $1" >&2; exit 2 ;;
@@ -28,6 +37,13 @@ cd -- "$startup_repo"
 if [[ ! -f dist/apps/server/src/main.js ]]; then
   echo 'Backend build missing. Run npm run build first.' >&2
   exit 1
+fi
+if [[ -n "$startup_network_env_file" ]]; then
+  if [[ ! -f "$startup_network_env_file" || ! -r "$startup_network_env_file" ]]; then
+    echo 'Network environment file is missing or unreadable.' >&2
+    exit 1
+  fi
+  startup_env_args+=("--env-file=$startup_network_env_file")
 fi
 mkdir -p -- "$startup_log_dir"
 startup_log_file="$startup_log_dir/backend.log"

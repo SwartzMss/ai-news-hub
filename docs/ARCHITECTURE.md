@@ -32,6 +32,10 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 | Publisher | 哈希批准、严格 archive v1/v2、GitHub 追加文件、显式重试 |
 | Public Web | 读取 approved 归档构建实际 HTML 路由/RSS，不读取 Backend 或 SQLite |
 
+## 主机网络环境
+
+主机网络环境通过数据目录中的私有 `network.env` 管理。`npm run network:configure` 从当前服务用户环境复制 HTTP(S) 代理，systemd 经 `--extra-env-file` 加载，手动启动经 `--network-env-file` 加载。GitHub 的 EnvHttpProxyAgent 和 Codex 白名单共用代理变量，管理员界面继续管理模型及业务配置。
+
 ## Task / Run / Thread / Turn
 
 每个 Run 新建 Thread，每轮启动新的 stdio App Server 子进程。握手、读取账户后，新闻轮读取有效配置并禁用继承的 MCP，再创建/恢复 Thread 和启动 Turn。一个 Run 最多 20 轮，日志/会话/结果都属于任务，没有独立 Agent 工作台。

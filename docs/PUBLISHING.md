@@ -15,6 +15,8 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 
 归档不包含 Run/Thread/Turn 标识、候选完整快照、Agent 输入/日志、SQLite、Token、代理配置或审批私密笔记。目标仓库已有的源代码/历史不由归档器复制或删除；应选择干净的专用归档仓库/分支。不要把管理后台和数据库目录作为公开产物。
 
+主机需要代理时，使用 `npm run network:configure` 生成私有 `network.env` 并通过 systemd 或启动脚本加载。GitHub HTTPS 归档和删除客户端沿用 EnvHttpProxyAgent 读取 HTTP_PROXY/HTTPS_PROXY/NO_PROXY 及其小写别名，配置说明见 [Linux 部署](DEPLOY_LINUX.md#代理网络配置)。
+
 ## 管理 API
 
 接口都在回环 Backend 的 Bearer Token 保护范围内：

@@ -98,3 +98,12 @@ test('systemd command failures explain that the installed unit remains on disk',
   }finally{f.close();}
  }
 });
+test('system unit references the private network file separately without embedding its values',()=>{
+ const f=fixture();try{
+  const path=join(f.dir,'network.env');writeFileSync(path,"HTTPS_PROXY='http://user:PRIVATE_PROXY_CREDENTIAL@proxy.example:8080'\n",{mode:0o600});
+  const unit=renderService({...f.plan,extraEnvFile:path});
+  assert.ok(unit.includes('EnvironmentFile='+f.plan.envFile+'\nEnvironmentFile='+path));
+  assert.ok(!unit.includes('PRIVATE_PROXY_CREDENTIAL'));
+  assert.ok(!unit.includes('proxy.example'));
+ }finally{f.close();}
+});
