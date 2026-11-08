@@ -923,17 +923,6 @@ footer nav {
   padding-bottom: 24px;
   border-bottom: 1px solid var(--line);
 }
-.brief-edition-top {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  gap: 16px;
-  margin-bottom: 12px;
-}
-.brief-topic {
-  font-size: 14px;
-  font-weight: 600;
-}
 .brief-date {
   display: flex;
   align-items: baseline;

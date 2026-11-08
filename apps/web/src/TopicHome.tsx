@@ -45,10 +45,6 @@ export function LatestBrief({
     <div className="brief-layout">
       <div className="brief-main">
         <header className="brief-heading">
-          <div className="brief-edition-top">
-            <span className="brief-topic">{topic.name}</span>
-            <span className="issue-label">最新一期</span>
-          </div>
           <div className="brief-date">
             <h1>
               <time dateTime={report.report_date}>
