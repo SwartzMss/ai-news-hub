@@ -77,6 +77,10 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
       .getAttribute("aria-current"),
     "page",
   );
+  assert.equal(articleDoc.querySelector(".article-header time"), null);
+  assert.ok(articleDoc.querySelector(".article-header .category-label"));
+  assert.equal(articleDoc.querySelectorAll(".breadcrumb a").length, 2);
+  assert.ok(articleDoc.querySelector(".breadcrumb a:last-child").getAttribute("href").includes(data.current[0].report_date));
   const feed = readFileSync(join(root, "rss/all.xml"), "utf8");
   assert.equal(feed, rss(data, "https://demo.invalid"));
   const ids = [];
