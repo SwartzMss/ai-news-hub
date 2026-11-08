@@ -14,9 +14,14 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(prompt,/24.{0,5}小时/);
   assert.match(prompt,/72.{0,5}小时/);
   assert.match(prompt,/AI.{0,3}大模型/);
-  assert.match(prompt,/开源项目/);
-  assert.match(prompt,/股票市场|投资判断/);
+  assert.match(prompt,/开源.{0,5}项目/);
+  assert.doesNotMatch(prompt,/股票市场重大事件|投资判断线索/);
   assert.match(prompt,/候选/);
   assert.match(prompt,/JSON Schema/);
+  assert.match(prompt,/【固定 8 条】/);
+  assert.match(prompt,/7 天/);
+  assert.match(prompt,/半导体/);
+  assert.match(prompt,/不收录.{0,60}新能源/);
+  assert.match(prompt,/不收录.{0,100}消费电子/);
   assert.doesNotMatch(prompt,/单纯 AI 模型发布、普通开源项目更新不作为本话题重点/);
 });
