@@ -1,0 +1,86 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技资讯"
+  },
+  "report_id": "2f8dfce4-91c3-4844-ac24-1c1163e65e4e",
+  "report_date": "2026-11-08",
+  "channel": "opensource",
+  "version": 6,
+  "title": "每日科技资讯｜2026-11-08｜统计窗口：2026-11-07 19:37:16—2026-11-08 19:37:16（北京时间）",
+  "collected_at": "2026-11-08T11:39:45.436Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-08T11:39:45.444Z",
+  "reviewed_content_sha256": "0a77cebcf6efc86e16d451e310f72abd34a013719da12d7c984569779ea30cac",
+  "items": [
+    {
+      "id": "3a04fd85135ed3b98ce135f3513f6684825604a924af15a73fa1fc73d77e4616",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "特斯拉计划增加Cybertruck班次以赶在产线改造前清单。马斯克于11月7日表示，将增加一个生产班次，争取完成积压订单，并把为Cybercab扩产而拆除现有产线的计划具体指向2027年6月至7月。路透社于北京时间11月8日凌晨报道这一新增安排。增班及产线转换均为计划，来源未证实新增班次已经运行，也未保证所有订单都能按期交付。",
+      "analysis": "新增信息把此前的产能转向计划推进到订单与排产安排层面。若实施，相关工厂资源将进一步向无人驾驶专用车型倾斜；实际转换速度仍取决于设备改造、供应链和Cybercab的生产需求，不能由此认定其无人驾驶服务已经具备规模化运营条件。",
+      "evidence_quote": "Tesla planning extra shift as Cybertruck demand exceeds remaining production capacity",
+      "verification": "codex_reported",
+      "source": {
+        "name": "driveteslacanada.ca",
+        "original_url": "https://driveteslacanada.ca/news/tesla-planning-extra-shift-as-cybertruck-demand-exceeds-remaining-production-capacity/",
+        "canonical_url": "https://driveteslacanada.ca/news/tesla-planning-extra-shift-as-cybertruck-demand-exceeds-remaining-production-capacity/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "522c099018eb39a90b87ec5d8e9a5ca834afdee678ebd03a359da9866db25b27",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "比亚迪仰望鼎曜在阿布扎比首秀并公布核心技术配置。北京时间11月7日晚，仰望发布行政旗舰轿车鼎曜，同时推出行政版与山河鼎韵限量版，后者开启预订。官方经现场报道披露，行政版采用易四方四电机系统、云辇悬架、第二代刀片电池、千伏平台及闪充技术，并搭载自研4nm璇玑A3辅助驾驶芯片；超过1000公里续航为企业公布的CLTC工况口径。当前属于产品发布与预订阶段，所查来源未给出确定交付日期。",
+      "analysis": "其技术价值在于将驱动、主动底盘、充电与辅助驾驶平台集成到新的旗舰车型。对消费者而言，实际价值仍需通过量产车辆的能耗、补能条件、辅助驾驶开放范围和长期可靠性检验；CLTC续航不能直接视为实际道路续航。",
+      "evidence_quote": "比亚迪超豪华行政旗舰轿车登场！仰望鼎曜行政版车长 5.6 米、续航破千公里",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ithome.com",
+        "original_url": "https://www.ithome.com/1/023/827.htm",
+        "canonical_url": "https://www.ithome.com/1/023/827.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "93555192f1a9c9e0ff8914cfbc809b7284631c25e444d735641d3581cc58721c",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "上纬新材旗下启元个人机器人累计下线达到一万台。11月8日，企业宣布第10000台个人机器人正式下线。公司介绍，整机工厂于今年10月正式量产，从5000台增至10000台用了14天。IT之家现场报道还提到，编号NO.10000的启元Q1交付给代表用户。累计下线数量不等于全部完成销售或用户交付；用户活跃度等运营指标属于企业自行披露。",
+      "analysis": "这一节点表明其生产已超出样机和小批量展示阶段。若后续能够保持质量一致性与售后服务能力，消费级机器人将获得更多真实家庭环境的使用反馈；持续需求仍需通过实际交付、留存和服务成本验证。",
+      "evidence_quote": "上纬新材启元机器人第 10,000 台个人机器人正式下线。",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ithome.com",
+        "original_url": "https://www.ithome.com/1/023/917.htm",
+        "canonical_url": "https://www.ithome.com/1/023/917.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e84be55c49101d767ba57a155675feda11ee5ad0417a0aa7f01a68a2608bd49e",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "华硕灵耀16 Air骁龙版笔记本上架中国电商平台。IT之家11月8日18:35报道，24GB内存、1TB存储版本定价12499元，搭载骁龙X2 Elite Extreme处理器，配备16英寸2880×1800、120Hz OLED屏幕及70Wh电池。报道列出的18核CPU、80 TOPS NPU等属于产品规格口径。此次可确认的进展为电商上架，来源未证实已开始大规模交付。",
+      "analysis": "这为采用新一代骁龙平台的Windows笔记本增加了具体配置与国内价格参照。其竞争力仍取决于常用应用、驱动和外设的兼容性，以及实际负载下的性能与续航；NPU峰值算力本身不足以说明整机体验。",
+      "evidence_quote": "24G+1T 版 12499 元，华硕灵耀 16 Air 骁龙版笔记本上架",
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ithome.com",
+        "original_url": "https://www.ithome.com/1/023/982.htm",
+        "canonical_url": "https://www.ithome.com/1/023/982.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
