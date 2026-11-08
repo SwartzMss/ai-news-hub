@@ -1,6 +1,7 @@
 import type { Story } from "./types";
 import { InlineText } from "./InlineText";
 import { Source, lead } from "./ReadingParts";
+import { storyPath } from "./paths";
 
 const factHeadings: Record<string, string> = {
   用途: "核心用途",
@@ -73,8 +74,8 @@ export function ProjectDetail({ story, number }: { story: Story; number?: number
         {(project.status || project.attribution) && <p className="project-status">{[project.attribution, project.status].filter(Boolean).join(" · ")}</p>}
       </header>
       <div className="project-sections">
-        {project.facts.map((field) => (
-          <section className={field.key === "技术要点" ? "project-technical" : undefined} key={field.key}>
+        {project.facts.map((field, index) => (
+          <section id={`project-fact-${index}`} className={field.key === "技术要点" ? "project-technical" : undefined} key={field.key}>
             <h2>{field.heading}</h2>
             {field.key === "架构流程" ? <pre className="project-flow">{field.value}</pre> : field.key === "技术要点" && field.value.includes("；") ? (
               <ul>{field.value.split("；").filter(Boolean).map((point, i) => <li key={i}><InlineText text={point} /></li>)}</ul>
@@ -83,12 +84,36 @@ export function ProjectDetail({ story, number }: { story: Story; number?: number
         ))}
         {project.analysis && (project.analysis.prefix || project.analysis.fields.length > 0) && (
           <section className="project-judgement">
-            {project.analysis.prefix && <><h2>编辑判断</h2><p><InlineText text={project.analysis.prefix} /></p></>}
-            {project.analysis.fields.map((field) => <div key={field.key}><h2>{field.heading}</h2><p><InlineText text={field.value} /></p></div>)}
+            {project.analysis.prefix && <div id="project-analysis-intro"><h2>编辑判断</h2><p><InlineText text={project.analysis.prefix} /></p></div>}
+            {project.analysis.fields.map((field, index) => <div id={`project-analysis-${index}`} key={field.key}><h2>{field.heading}</h2><p><InlineText text={field.value} /></p></div>)}
           </section>
         )}
-        <Source story={story} />
+        <div id="project-source"><Source story={story} /></div>
       </div>
     </article>
+  );
+}
+
+export function ProjectAside({ project, related }: { project: NonNullable<ReturnType<typeof projectDetail>>; related: Story[] }) {
+  return (
+    <aside className="project-aside">
+      <nav aria-label="本文目录" className="project-toc">
+        <h2>本文目录</h2>
+        <ol>
+          {project.facts.map((field, index) => <li key={field.key}><a href={`#project-fact-${index}`}>{field.heading}</a></li>)}
+          {project.analysis?.prefix && <li><a href="#project-analysis-intro">编辑判断</a></li>}
+          {project.analysis?.fields.map((field, index) => <li key={field.key}><a href={`#project-analysis-${index}`}>{field.heading}</a></li>)}
+          <li><a href="#project-source">来源与引文</a></li>
+        </ol>
+      </nav>
+      {related.length > 0 && (
+        <nav aria-label="本期其他项目" className="project-related">
+          <h2>本期其他项目</h2>
+          <ol>
+            {related.map((item) => <li key={item.id}><a href={storyPath(item)}>{lead(item).title}</a></li>)}
+          </ol>
+        </nav>
+      )}
+    </aside>
   );
 }

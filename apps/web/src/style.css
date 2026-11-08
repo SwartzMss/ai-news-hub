@@ -156,6 +156,60 @@ h3 {
   max-width: 760px;
   margin-inline: auto;
 }
+.project-aside {
+  display: none;
+}
+@media (min-width: 1401px) {
+  .reading-layout.project-layout {
+    max-width: none;
+    margin-inline: 0;
+    display: grid;
+    grid-template-columns: minmax(0, 760px) minmax(260px, 400px);
+    gap: clamp(32px, 4vw, 64px);
+    align-items: start;
+  }
+  .project-aside {
+    display: block;
+    position: sticky;
+    top: 26px;
+    max-height: calc(100dvh - 52px);
+    overflow-y: auto;
+    min-width: 0;
+    padding: 6px 0 20px 24px;
+    border-left: 1px solid var(--line);
+  }
+}
+.project-aside h2 {
+  margin-bottom: 12px;
+  color: var(--ink);
+  font-size: 13px;
+  font-weight: 700;
+}
+.project-aside ol {
+  list-style: none;
+  margin: 0;
+  padding: 0;
+}
+.project-aside li {
+  border-top: 1px solid var(--line);
+}
+.project-aside li a {
+  display: block;
+  padding: 9px 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.65;
+}
+.project-aside li a:hover,
+.project-aside li a:focus-visible {
+  color: var(--accent);
+}
+.project-related {
+  margin-top: 28px;
+}
+.project-related li a {
+  color: var(--ink);
+}
 .reading-layout.has-aside {
   max-width: none;
   display: grid;
