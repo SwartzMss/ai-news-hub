@@ -34,3 +34,14 @@ test('startup rejects incomplete or unknown options and reports missing builds b
   rmSync(join(f.root,'dist'),{recursive:true});const result=f.run();assert.equal(result.status,1);assert.match(result.stderr,/build missing/);
  }finally{f.close();}
 });
+test('startup can pass a private network environment file separately from bootstrap settings',()=>{
+ const f=fixture();try{
+  const network=join(f.root,'private network.env');writeFileSync(network,'HTTP_PROXY=http://proxy.example:8080\n',{mode:0o600});
+  const result=f.run(['--network-env-file',network]);assert.equal(result.status,7);
+  const text=readFileSync(join(f.root,'logs/backend.log'),'utf8');
+  assert.ok(text.includes('arg:--env-file='+network));
+  assert.ok(text.indexOf('arg:--env-file-if-exists=.env')<text.indexOf('arg:--env-file='+network));
+  assert.ok(!text.includes('proxy.example'));
+  assert.equal(f.run(['--network-env-file']).status,2);
+ }finally{f.close();}
+});

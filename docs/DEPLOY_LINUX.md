@@ -256,6 +256,40 @@ sudo systemctl is-enabled ai-news-hub.service
 
 已有 unit 会拒绝覆盖，检查旧配置后使用 `--replace`。若 `daemon-reload` 或 `enable` 失败，错误会说明服务文件已写入并保留，修正原因后可用 `--replace` 重试。仓库测试覆盖生成、权限/覆盖保护和安装命令顺序；本机验证过系统服务文件语法，以及临时用户服务下带空格/百分号路径的实际解析。系统级安装及真实重启仍须在目标机完成，不能以 dry-run 代替验收。
 
+### 代理网络配置
+
+代理使用项目根目录中的独立 `network.env`，由 systemd 的 `EnvironmentFile` 注入 Backend，再通过已有环境白名单传给 Codex。GitHub 归档与删除请求使用 `EnvHttpProxyAgent` 读取同一组 HTTP(S) 代理变量。主机网络配置通过文件管理，管理员界面管理模型与业务设置。
+
+先在已配置代理的普通服务用户终端复制，保留该终端的代理环境：
+
+```bash
+npm run network:configure
+```
+
+命令默认输出脚本所在项目根目录的 `network.env`，与 `.env` 并列，从其他工作目录调用也定位到同一项目。支持 `--output /absolute/path/network.env` 指定位置。重复执行会原子更新文件，权限为 `0600`，输出仅包含文件路径和变量名。脚本复制 HTTP(S) 代理、统一大小写别名并将 localhost、127.0.0.1、::1 加入绕过列表，其他应用或发布凭据由原有配置管理。当前读取小写变量优先，HTTP 代理可作为 HTTPS 的回退，HTTP(S) 类型的 ALL_PROXY 可作为回退来源；SOCKS 代理需先提供 HTTP(S) 代理端口。
+
+在项目根目录执行以下命令：
+
+```bash
+sudo "$(command -v node)" scripts/install-service.mjs \
+  --user "$(id -un)" --codex "$(command -v codex)" \
+  --extra-env-file "$PWD/network.env" --replace
+sudo systemctl restart ai-news-hub.service
+npm run health
+```
+
+首次安装时可省略 `--replace`。安装器只在 unit 中保存配置文件路径，systemd 在启动时读取内容。现有额外环境文件若还包含 CA 配置，合并维护这些变量到同一个私有文件后再安装。
+
+手动启动使用相同文件：
+
+```bash
+npm start -- --network-env-file network.env
+```
+
+启动脚本将文件交给 Node 的 `--env-file` 解析，路径含空格时使用引号。手动启动时，终端已经导出的同名变量按 Node 的环境优先规则生效。文件内容使用环境变量赋值格式，修改后重启服务。
+
+代理本身须在开机后可用。健康检查只反映 Backend/SQLite 状态，Codex 账户读取与 GitHub 网络访问需要独立验证。`network.env` 与 `.env` 均由 Git 忽略，备份时单独保存这些本机配置。
+
 ## 9. Issue #3 Backend 基础服务部署
 
 以下命令面向原生 Ubuntu Server 24.04 LTS，假设系统级 Node.js 22 与 npm 位于 `/usr/bin`。实际路径不同时先修改 unit 与命令；若采用源码目录安装器，可显式选择现有 Node/Codex 的绝对路径，但应确保这些路径在开机后仍然存在。目标主机的安装和 systemd 生命周期必须实测后才能验收。
