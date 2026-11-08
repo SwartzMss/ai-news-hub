@@ -34,7 +34,7 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 
 ## 主机网络环境
 
-主机网络环境通过数据目录中的私有 `network.env` 管理。`npm run network:configure` 从当前服务用户环境复制 HTTP(S) 代理，systemd 经 `--extra-env-file` 加载，手动启动经 `--network-env-file` 加载。GitHub 的 EnvHttpProxyAgent 和 Codex 白名单共用代理变量，管理员界面继续管理模型及业务配置。
+主机网络环境通过项目根目录中的私有 `network.env` 管理。`npm run network:configure` 从当前服务用户环境复制 HTTP(S) 代理，systemd 经 `--extra-env-file` 加载，手动启动经 `--network-env-file` 加载。GitHub 的 EnvHttpProxyAgent 和 Codex 白名单共用代理变量，管理员界面继续管理模型及业务配置。
 
 ## Task / Run / Thread / Turn
 

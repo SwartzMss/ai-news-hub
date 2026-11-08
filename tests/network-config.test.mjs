@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,readFileSync,statSync,rmSync,writeFileSync,symlinkSync} from 'node:fs';
+import {mkdtempSync,readFileSync,statSync,rmSync,writeFileSync,symlinkSync,mkdirSync,copyFileSync} from 'node:fs';
 import {tmpdir} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -56,11 +56,26 @@ test('CLI copies the caller environment without echoing proxy credentials',()=>{
  const dir=mkdtempSync(join(tmpdir(),'hub-network-cli-'));
  try {
   const env={PATH:process.env.PATH,AI_NEWS_HUB_DATA_DIR:dir,HTTPS_PROXY:'http://user:PRIVATE_PROXY_CREDENTIAL@proxy.example:8080'};
-  const result=spawnSync(process.execPath,['scripts/configure-network.mjs'],{env,encoding:'utf8'});
+  const result=spawnSync(process.execPath,['scripts/configure-network.mjs','--output',join(dir,'network.env')],{env,encoding:'utf8'});
   assert.equal(result.status,0,result.stderr);
   assert.ok(!result.stdout.includes('PRIVATE_PROXY_CREDENTIAL'));
   assert.ok(!result.stderr.includes('PRIVATE_PROXY_CREDENTIAL'));
   assert.equal(statSync(join(dir,'network.env')).mode&0o777,0o600);
   assert.ok(readFileSync(join(dir,'network.env'),'utf8').includes('PRIVATE_PROXY_CREDENTIAL'));
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
+
+test('default network file is beside project .env regardless of caller directory or DATA_DIR',()=>{
+ const dir=mkdtempSync(join(tmpdir(),'hub-network-default-'));
+ try {
+  const repo=join(dir,'project'),scripts=join(repo,'scripts'),data=join(dir,'data');
+  mkdirSync(scripts,{recursive:true});mkdirSync(data);
+  copyFileSync('scripts/configure-network.mjs',join(scripts,'configure-network.mjs'));
+  const result=spawnSync(process.execPath,[join(scripts,'configure-network.mjs')],{
+   cwd:'/',env:{PATH:process.env.PATH,AI_NEWS_HUB_DATA_DIR:data,HTTPS_PROXY:'http://proxy.example:8080'},encoding:'utf8',
+  });
+  assert.equal(result.status,0,result.stderr);
+  assert.equal(statSync(join(repo,'network.env')).mode&0o777,0o600);
+  assert.ok(result.stdout.includes(join(repo,'network.env')));
  }finally{rmSync(dir,{recursive:true,force:true});}
 });

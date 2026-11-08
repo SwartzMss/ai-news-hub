@@ -58,14 +58,13 @@ function main() {
   const {values} = parseArgs({options: {output: {type: 'string'}, help: {type: 'boolean'}}});
   if (values.help) {
     console.log('Usage: npm run network:configure -- [--output /absolute/path/network.env]');
-    console.log('Copies current user proxy settings into DATA_DIR/network.env with mode 0600. Re-running replaces that file.');
+    console.log('Copies current user proxy settings into project-root network.env with mode 0600. Re-running replaces that file.');
     return;
   }
   if (process.platform !== 'linux' || process.getuid() === 0)
     throw Error('Run network configuration as the non-root Linux service user');
-  const dataDir = process.env.AI_NEWS_HUB_DATA_DIR || '/var/lib/ai-news-hub';
-  if (!isAbsolute(dataDir)) throw Error('AI_NEWS_HUB_DATA_DIR must be an absolute path');
-  const output = values.output || join(dataDir, 'network.env');
+  const repo = resolve(dirname(fileURLToPath(import.meta.url)), '..');
+  const output = values.output || join(repo, 'network.env');
   const keys = writeNetworkEnvironment(output);
   console.log('Saved private network environment at ' + output + ' (0600).');
   console.log('Configured variables: ' + keys.join(', ') + '.');

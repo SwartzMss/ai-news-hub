@@ -12,7 +12,7 @@
     "lint": "eslint .",
     "test": "npm run build && node --test tests/*.test.mjs && npm run test:admin",
     "start": "bash scripts/start.sh",
-    "network:configure": "node --env-file-if-exists=.env scripts/configure-network.mjs",
+    "network:configure": "node scripts/configure-network.mjs",
     "db:migrate": "node --env-file-if-exists=.env dist/apps/server/src/migrate.js",
     "health": "node --env-file-if-exists=.env dist/scripts/health.js",
     "service:start": "bash scripts/service.sh start",

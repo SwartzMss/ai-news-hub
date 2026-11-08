@@ -50,15 +50,15 @@ chmod 700 "$HOME/.local/share/ai-news-hub"
 npm run network:configure
 ```
 
-命令将 HTTP(S) 代理和本机绕过规则保存到数据目录的 `network.env`，权限为 `0600`，重复执行会更新该文件。代理通过私有文件管理，模型、任务及 GitHub 业务设置仍在后台维护。
+命令将 HTTP(S) 代理和本机绕过规则保存到项目根目录的 `network.env`，与 `.env` 并列，权限为 `0600`，重复执行会更新该文件。代理通过私有文件管理，模型、任务及 GitHub 业务设置仍在后台维护。
 
-手动启动时指定文件的实际绝对路径：
+在项目根目录手动启动时指定配置文件：
 
 ```bash
-npm start -- --network-env-file /absolute/data/directory/network.env
+npm start -- --network-env-file network.env
 ```
 
-systemd 安装命令追加 `--extra-env-file /absolute/data/directory/network.env`，更新已有服务时同时使用 `--replace`，然后重启服务。GitHub HTTPS 归档客户端和 Codex 子进程均使用代理环境变量。代理服务须在开机后可用，配置步骤见 [Linux 部署指南](docs/DEPLOY_LINUX.md#代理网络配置)。
+systemd 安装命令追加 `--extra-env-file "$PWD/network.env"`，更新已有服务时同时使用 `--replace`，然后重启服务。GitHub HTTPS 归档客户端和 Codex 子进程均使用代理环境变量。代理服务须在开机后可用，配置步骤见 [Linux 部署指南](docs/DEPLOY_LINUX.md#代理网络配置)。
 
 ### 3. 启动
 

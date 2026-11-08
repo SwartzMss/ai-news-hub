@@ -10,7 +10,7 @@ AI_NEWS_HUB_DATA_DIR=/var/lib/ai-news-hub
 
 HOST 仅允许 127.0.0.1 / ::1；端口 1–65535；数据目录须为当前非 root 服务用户拥有的绝对路径，权限 0700。改变这三项需要重启。默认值如上；本地开发应使用自己有权限的仓库外目录。
 
-代理变量在仓库外的 `DATA_DIR/network.env` 维护，可通过 `npm run network:configure` 从当前用户环境复制。systemd 安装使用 `--extra-env-file`，手动启动使用 `--network-env-file`，修改后重启。Web/API 设置仍只接收现有模型、执行及业务字段。
+代理变量在项目根目录的 `network.env` 维护，与 `.env` 并列，受 Git 忽略规则保护，可通过 `npm run network:configure` 从当前用户环境复制。systemd 安装使用 `--extra-env-file`，手动启动使用 `--network-env-file`，修改后重启。Web/API 设置仍只接收现有模型、执行及业务字段。
 
 ## 首次使用
 
