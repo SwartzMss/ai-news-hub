@@ -51,6 +51,8 @@ unset task_admin_token
 
 重复同一幂等键只返回原 Run，不再次调用模型。后续新 Run 需使用新键。操作需要人工授权的账户登录，不以 `sudo codex` 或个人凭据复制替代服务账户认证。
 
+`DELETE /api/runs/:runId` 要求管理员认证及 `{ "confirm": true }`。仅允许删除已结束的执行，排队、运行和发布/进程收尾阶段返回 409 `run_busy`。有关联日报时先复用日报删除流程同步清理 GitHub，成功后事务删除 Run、轮次、Thread 关联、事件和研究快照；任务和共享来源原文保留。远端失败保留记录供显式重试，已不存在的 Run 返回 `{deleted:true}`，并发重复删除共享结果。删除期间继续同一 Run 返回 409 `run_deleting`，配置保存按忙碌状态处理。
+
 ## 生命周期与结果边界
 
 - 新 Run 创建独立 Thread；同一 Run 继续时，以保存的 Thread ID 调用 `thread/resume`。每个 Turn 使用新的 stdio App Server 进程，仍属于该 Run。

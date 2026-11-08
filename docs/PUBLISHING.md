@@ -17,6 +17,8 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 
 主机需要代理时，使用 `npm run network:configure` 生成项目根目录的私有 `network.env` 并通过 systemd 或启动脚本加载。GitHub HTTPS 归档和删除客户端沿用 EnvHttpProxyAgent 读取 HTTP_PROXY/HTTPS_PROXY/NO_PROXY 及其小写别名，配置说明见 [Linux 部署](DEPLOY_LINUX.md#代理网络配置)。
 
+`DELETE /api/runs/:runId` 携带 `{ "confirm": true }` 可删除完整执行记录。有关联日报时逐份复用既有日报删除流程，清理所有历史 GitHub 归档目标与旧话题映射，再事务删除本地 Run、Turn、Thread、事件和研究快照。失败可重复请求，同一 Run 的并发删除共享结果，已有日报删除记录保留版本占用。共享来源原文保留。
+
 ## 管理 API
 
 接口都在回环 Backend 的 Bearer Token 保护范围内：

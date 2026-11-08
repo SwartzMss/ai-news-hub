@@ -32,6 +32,7 @@ function inputText(value: string): void {
 export class TaskEngine {
   private queue: Work[] = [];
   private active = new Map<string, Slot>();
+  private deletions = new Map<string, Promise<void>>();
   private stopping = false;
   private fatal = false;
   private closing?: Promise<void>;
@@ -55,7 +56,7 @@ export class TaskEngine {
 
   setAutomaticPublisher(callback:NonNullable<EngineOptions['onAutomaticPublish']>):void {this.options.onAutomaticPublish=callback;}
   healthy(): boolean { return !this.fatal; }
-  busy():boolean{return this.active.size>0||this.queue.length>0;}
+  busy():boolean{return this.active.size>0||this.queue.length>0||this.deletions.size>0;}
   configure(value:{concurrency:number;maxQueue:number;timeoutMs:number;model?:string}):void {
     if(this.busy())throw new HttpError(409,'settings_busy');
     Object.assign(this.options,value);
@@ -85,6 +86,34 @@ export class TaskEngine {
   deleteTask(id:string):void {
     const prior=this.task(id);if(!prior.configuration)throw new HttpError(409,'task_not_editable');this.capacityForMutation(id);
     this.db.prepare("UPDATE tasks SET deleted_at=?,status='paused',next_run_at=NULL,updated_at=? WHERE id=?").run(now(),now(),id);
+  }
+  deleteRun(id: string, removeReport?: (reportId: string) => Promise<unknown>): Promise<void> {
+    this.available();
+    const pending = this.deletions.get(id);
+    if (pending) return pending;
+    const operation = this.performRunDeletion(id, removeReport);
+    this.deletions.set(id, operation);
+    void operation.finally(() => {
+      if (this.deletions.get(id) === operation) this.deletions.delete(id);
+    }).catch(() => {});
+    return operation;
+  }
+  private async performRunDeletion(id: string, removeReport?: (reportId: string) => Promise<unknown>): Promise<void> {
+    const run = this.db.prepare('SELECT status FROM task_runs WHERE id=?').get(id);
+    if (!run) return;
+    if (['queued', 'running', 'waiting_approval'].includes(String(run.status)) || this.active.has(id))
+      throw new HttpError(409, 'run_busy');
+    const reports = this.db.prepare('SELECT id FROM reports WHERE run_id=? ORDER BY id').all(id);
+    if (reports.length && !removeReport) throw new HttpError(503, 'publication_disabled');
+    for (const report of reports) await removeReport!(String(report.id));
+    this.transaction(() => {
+      this.db.prepare('DELETE FROM run_events WHERE run_id=?').run(id);
+      this.db.prepare('DELETE FROM news_runs WHERE run_id=?').run(id);
+      this.db.prepare('DELETE FROM codex_news_runs WHERE run_id=?').run(id);
+      this.db.prepare('DELETE FROM run_turns WHERE run_id=?').run(id);
+      this.db.prepare('DELETE FROM run_threads WHERE run_id=?').run(id);
+      this.db.prepare('DELETE FROM task_runs WHERE id=?').run(id);
+    });
   }
   stopTask(id:string):void {
     this.task(id);for(const runId of this.active.keys())if(this.run(runId).task_id===id)this.cancel(runId);for(const row of this.db.prepare(`SELECT id FROM task_runs WHERE task_id=? AND status IN ${ACTIVE}`).all(id))this.cancel(String(row.id));
@@ -156,6 +185,7 @@ export class TaskEngine {
 
   continueRun(runId: string, idempotencyKey: string, input: string, finalize = false): { run: RunRecord; turn: TurnRecord; reused: boolean } {
     this.available(); key(idempotencyKey); inputText(input);
+    if (this.deletions.has(runId)) throw new HttpError(409, 'run_deleting');
     const run = this.run(runId);
     if(this.runConfiguration(runId))throw new HttpError(409,'managed_run_automatic');
     const research = run.task_id === NEWS_TASK_ID;
@@ -205,7 +235,10 @@ export class TaskEngine {
     for (const work of this.queue) this.finish(work, 'interrupted', 'backend_stopped');
     this.queue = [];
     for (const slot of this.active.values()) { slot.reason ??= 'backend_stopped'; slot.controller.abort(); }
-    this.closing = Promise.all([...this.active.values()].map((slot) => slot.done)).then(() => {});
+    this.closing = Promise.all([
+      ...[...this.active.values()].map((slot) => slot.done),
+      ...[...this.deletions.values()].map(operation => operation.catch(() => {})),
+    ]).then(() => {});
     return this.closing;
   }
 

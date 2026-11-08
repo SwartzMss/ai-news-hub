@@ -46,6 +46,8 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 
 独立探针 `tools/codex-probe/` 用于最小认证/协议诊断，不替代业务链路。接口和配额见 [任务引擎](TASK_ENGINE.md)。
 
+执行删除由 TaskEngine 按 Run 串行处理并保护继续 Turn 的入口，已结束 Run 可复用 PublicationService 先移除日报和历史 GitHub 归档，再以 SQLite 事务清理 Run、Thread、Turn、事件和研究快照。远端失败保留本地记录供重试，同一 Run 的并发请求共享操作；关闭服务先中断发布器，再等待执行及删除工作收尾。已有 report_deletions 继续占用日报版本号。
+
 ## 搜索与验证边界
 
 新闻 Thread 使用 hosted live web search、只读沙箱和 untrusted 审批；禁用 Shell、应用、委派及逐个继承的 MCP。工具事件仅放行 webSearch，审批一律拒绝。服务账户 HOME/Codex 认证仍需保护；Backend 凭据不得位于 Agent 可读取的工作目录或认证目录。
