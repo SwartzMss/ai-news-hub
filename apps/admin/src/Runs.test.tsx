@@ -309,7 +309,7 @@ test('run deletion failure retains the row and permits retry of GitHub cleanup',
  expect(screen.getByRole('alertdialog').textContent).toMatch(/GitHub/);
  fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
  await screen.findByRole('alert');
- expect(screen.getByText('每日研究')).toBeTruthy();
+ expect(within(screen.getByRole('table')).getByText('每日研究')).toBeTruthy();
  fail=false;fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
  await screen.findByText('没有符合条件的执行记录。');
 });
@@ -336,4 +336,42 @@ test('deleting the last result on a later page returns to the preceding page',as
  await screen.findByText('末页执行');fireEvent.click(screen.getByRole('button',{name:'删除记录'}));
  fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
  await screen.findByText('首页执行');expect(screen.getByText('共 20 条，第 1 页')).toBeTruthy();
+});
+
+test('deletion confirmation is a modal with safe initial focus and Escape restores its opener',async()=>{
+ const api=vi.fn().mockImplementation(async(path:string)=>path==='/tasks'?{tasks:[]}:{runs:[{run,task_name:'每日研究',task_deleted:false,state:'failed',latest_turn:null,report:null,publication:null}],total:1});
+ render(<Runs api={api}/>);
+ const opener=await screen.findByRole('button',{name:'删除记录'});
+ opener.focus();fireEvent.click(opener);
+ const dialog=screen.getByRole('alertdialog',{name:'删除执行记录'});
+ expect(dialog.tagName).toBe('DIALOG');
+ expect(dialog.hasAttribute('open')).toBe(true);
+ const cancel=within(dialog).getByRole('button',{name:'取消'}),confirm=within(dialog).getByRole('button',{name:'确认删除'});
+ expect(document.activeElement).toBe(cancel);
+ fireEvent.keyDown(cancel,{key:'Tab',shiftKey:true});expect(document.activeElement).toBe(confirm);
+ fireEvent.keyDown(confirm,{key:'Tab'});expect(document.activeElement).toBe(cancel);
+ fireEvent(dialog,new Event('cancel',{cancelable:true}));
+ expect(screen.queryByRole('alertdialog')).toBeNull();
+ expect(document.activeElement).toBe(opener);
+ expect(api.mock.calls.some(c=>c[3]==='DELETE')).toBe(false);
+});
+
+test('Escape and repeated confirmation cannot dismiss or duplicate a pending deletion',async()=>{
+ let finish!: (value:unknown)=>void;
+ const api=vi.fn().mockImplementation(async(path:string,_signal:unknown,_body:unknown,method:string)=>{
+  if(method==='DELETE')return new Promise(resolve=>{finish=resolve;});
+  if(path==='/tasks')return {tasks:[]};
+  return {runs:[{run,task_name:'每日研究',task_deleted:false,state:'failed',latest_turn:null,report:null,publication:null}],total:1};
+ });
+ render(<Runs api={api}/>);
+ fireEvent.click(await screen.findByRole('button',{name:'删除记录'}));
+ fireEvent.click(screen.getByRole('button',{name:'确认删除'}));
+ const dialog=screen.getByRole('alertdialog');
+ fireEvent(dialog,new Event('cancel',{cancelable:true}));
+ expect(screen.getByRole('alertdialog')).toBe(dialog);
+ expect((screen.getByRole('button',{name:'取消'}) as HTMLButtonElement).disabled).toBe(true);
+ fireEvent.click(screen.getByRole('button',{name:'正在删除…'}));
+ expect(api.mock.calls.filter(c=>c[3]==='DELETE')).toHaveLength(1);
+ finish({deleted:true});
+ await waitFor(()=>expect(screen.queryByRole('alertdialog')).toBeNull());
 });

@@ -3029,3 +3029,38 @@ summary {
 .overview-chart-panel .overview-chart-data { margin-top: 12px; }
 
 .run-row-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
+
+/* Run deletion uses the native top layer to keep confirmation centered. */
+.run-delete-dialog {
+  width: min(520px, calc(100% - 32px));
+  max-width: none;
+  max-height: calc(100dvh - 32px);
+  margin: auto;
+  padding: 0;
+  border: 1px solid var(--line);
+  border-radius: 12px;
+  background: var(--menu-surface);
+  color: var(--ink);
+  box-shadow: 0 20px 64px #17212f26;
+  overflow-y: auto;
+}
+.run-delete-dialog::backdrop { background: var(--dialog-backdrop); }
+.run-delete-header { padding: 24px 24px 0; }
+.run-delete-header h2 { margin: 0; font-size: 20px; }
+.run-delete-header p { margin: 8px 0 0; color: var(--muted); font-size: 13px; }
+.run-delete-body { padding: 20px 24px 24px; font-size: 13px; }
+.run-delete-target { display: block; margin: 0 0 18px; padding: 14px 16px; background: var(--bg); border: 1px solid var(--line); border-radius: 8px; }
+.run-delete-target > div { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 12px; }
+.run-delete-target > div + div { margin-top: 8px; }
+.run-delete-target dt { color: var(--muted); }
+.run-delete-target dd { margin: 0; overflow-wrap: anywhere; }
+.run-delete-body > p { margin: 0; }
+.run-delete-body > .error { margin-top: 16px; }
+.run-delete-actions { display: flex; justify-content: flex-end; flex-wrap: wrap; gap: 12px; padding: 16px 24px; border-top: 1px solid var(--line); }
+.run-delete-actions button { min-height: 40px; }
+.run-delete-actions .run-delete-confirm { background: var(--danger); border-color: var(--danger); color: #fff; }
+@media (max-width: 480px) {
+  .run-delete-header { padding: 20px 20px 0; }
+  .run-delete-body { padding: 20px; }
+  .run-delete-actions { padding: 16px 20px; }
+}
