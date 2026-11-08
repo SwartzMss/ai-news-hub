@@ -44,6 +44,15 @@ chmod 700 "$HOME/.local/share/ai-news-hub"
 
 ### 按需配置代理
 
+代理示例见 [`network.env.example`](network.env.example)。在项目根目录首次手动创建：
+
+```bash
+cp -n network.env.example network.env
+chmod 600 network.env
+```
+
+用编辑器填写代理地址，大小写成对变量保持一致。已有 `network.env` 可直接编辑。服务安装器自动识别根目录中已存在的该文件，日常修改后执行 `sudo bash scripts/service.sh restart` 即可重新加载。
+
 在已经配置 `.env` 的普通服务用户终端执行，读取当前用户的代理环境变量：
 
 ```bash
@@ -58,7 +67,7 @@ npm run network:configure
 npm start -- --network-env-file network.env
 ```
 
-systemd 安装命令追加 `--extra-env-file "$PWD/network.env"`，更新已有服务时同时使用 `--replace`，然后重启服务。GitHub HTTPS 归档客户端和 Codex 子进程均使用代理环境变量。代理服务须在开机后可用，配置步骤见 [Linux 部署指南](docs/DEPLOY_LINUX.md#代理网络配置)。
+systemd 安装器默认识别项目根目录已有的 `network.env`。已有服务首次接入该文件时使用 `--replace` 重新安装一次，后续编辑后重启服务。自定义文件路径可用 `--extra-env-file /absolute/path/network.env`。GitHub HTTPS 归档客户端和 Codex 子进程均使用代理环境变量。代理服务须在开机后可用，配置步骤见 [Linux 部署指南](docs/DEPLOY_LINUX.md#代理网络配置)。
 
 ### 3. 启动
 

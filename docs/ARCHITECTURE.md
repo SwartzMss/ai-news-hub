@@ -36,6 +36,8 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 
 主机网络环境通过项目根目录中的私有 `network.env` 管理。`npm run network:configure` 从当前服务用户环境复制 HTTP(S) 代理，systemd 经 `--extra-env-file` 加载，手动启动经 `--network-env-file` 加载。GitHub 的 EnvHttpProxyAgent 和 Codex 白名单共用代理变量，管理员界面继续管理模型及业务配置。
 
+主机代理提供根目录 `network.env.example`，安装器默认识别已有的 `network.env` 并把文件路径写入 systemd unit；服务每次启动读取内容，日常编辑后统一通过 `service.sh restart` 生效，显式额外环境文件保留覆盖优先级。
+
 ## Task / Run / Thread / Turn
 
 每个 Run 新建 Thread，每轮启动新的 stdio App Server 子进程。握手、读取账户后，新闻轮读取有效配置并禁用继承的 MCP，再创建/恢复 Thread 和启动 Turn。一个 Run 最多 20 轮，日志/会话/结果都属于任务，没有独立 Agent 工作台。

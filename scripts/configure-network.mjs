@@ -69,7 +69,8 @@ function main() {
   console.log('Saved private network environment at ' + output + ' (0600).');
   console.log('Configured variables: ' + keys.join(', ') + '.');
   console.log('Use npm start -- --network-env-file ' + output + ' for manual startup.');
-  console.log('For systemd, install with --extra-env-file ' + output + ', then restart the service.');
+  console.log('The systemd installer detects project-root network.env. Custom paths use --extra-env-file; update the unit after initial setup.');
+  console.log('After editing an installed network file, use sudo bash scripts/service.sh restart.');
 }
 
 if (process.argv[1] && resolve(process.argv[1]) === fileURLToPath(import.meta.url)) {
