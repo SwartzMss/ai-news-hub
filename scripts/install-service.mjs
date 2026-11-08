@@ -18,7 +18,7 @@ Options:
   --node PATH             Node.js 22 executable named node (default: this Node executable)
   --codex PATH            Codex executable named codex (default: search current PATH)
   --env-file PATH         systemd environment file (default: project .env)
-  --extra-env-file PATH   Optional additional private environment file
+  --extra-env-file PATH   Additional private environment file (default: project network.env when present)
   --codex-home PATH       Codex login/config directory (default: account HOME/.codex)
   --log-dir PATH          Backend logs directory (default: project logs/)
   --dry-run               Print the unit without installing or enabling anything
@@ -62,8 +62,8 @@ ${env('NODE_ENV','production')}
 ${env('HOME',plan.home)}
 ${env('CODEX_HOME',plan.codexHome)}
 ${env('PATH',bins.join(':'))}
-EnvironmentFile=${plan.envFile.replaceAll('%','%%')}
-${plan.extraEnvFile?'EnvironmentFile='+plan.extraEnvFile.replaceAll('%','%%')+'\n':''}ExecStart=/usr/bin/bash ${quote(join(plan.repo,'scripts/start.sh'),true)} --no-env-file --log-dir ${quote(plan.logDir,true)}
+EnvironmentFile=${quote(plan.envFile)}
+${plan.extraEnvFile?'EnvironmentFile='+quote(plan.extraEnvFile)+'\n':''}ExecStart=/usr/bin/bash ${quote(join(plan.repo,'scripts/start.sh'),true)} --no-env-file --log-dir ${quote(plan.logDir,true)}
 Restart=on-failure
 RestartSec=5
 KillMode=control-group
@@ -128,7 +128,9 @@ function main(){
  if(fields.length!==7||fields[0]!==user)throw Error('Service account does not exist');
  const group=execFileSync('/usr/bin/id',['-gn',user],{encoding:'utf8'}).trim();
  const repo=resolve(dirname(scriptPath),'..'),home=fields[5];
- const plan={user,group,uid:Number(fields[2]),gid:Number(fields[3]),home,repo,node:values.node??process.execPath,codex:values.codex??findCodex(),codexHome:values['codex-home']??join(home,'.codex'),envFile:values['env-file']??join(repo,'.env'),extraEnvFile:values['extra-env-file'],logDir:values['log-dir']??join(repo,'logs')};
+ const networkEnvFile=join(repo,'network.env');
+ const extraEnvFile=values['extra-env-file']??(pathExists(networkEnvFile)?networkEnvFile:undefined);
+ const plan={user,group,uid:Number(fields[2]),gid:Number(fields[3]),home,repo,node:values.node??process.execPath,codex:values.codex??findCodex(),codexHome:values['codex-home']??join(home,'.codex'),envFile:values['env-file']??join(repo,'.env'),extraEnvFile,logDir:values['log-dir']??join(repo,'logs')};
  const unit=renderService(plan);
  validateExecutables(plan);
  for(const path of [plan.node,plan.codex]){accessSync(path,constants.X_OK);if(!statSync(path).isFile())throw Error('Node and Codex must be executable files');}

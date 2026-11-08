@@ -1,6 +1,6 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
-import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,symlinkSync} from 'node:fs';
+import {mkdtempSync,mkdirSync,writeFileSync,readFileSync,existsSync,rmSync,symlinkSync,copyFileSync} from 'node:fs';
 import {tmpdir,userInfo} from 'node:os';
 import {join} from 'node:path';
 import {spawnSync} from 'node:child_process';
@@ -22,7 +22,7 @@ test('system unit renders portable paths, private environment references and non
  const f=fixture();try{
   const unit=renderService(f.plan);
   assert.ok(unit.includes('WorkingDirectory='+f.plan.repo.replaceAll('%','%%')));
-  assert.ok(unit.includes('EnvironmentFile='+f.plan.envFile));
+  assert.ok(unit.includes('EnvironmentFile="'+f.plan.envFile+'"'));
   assert.match(unit,/WantedBy=multi-user.target/);assert.match(unit,/Restart=on-failure/);
   assert.ok(unit.includes('User='+f.plan.user));assert.ok(unit.includes('CODEX_HOME='+f.plan.codexHome));
   assert.ok(unit.includes('--no-env-file'));assert.ok(unit.includes('--log-dir'));
@@ -102,8 +102,25 @@ test('system unit references the private network file separately without embeddi
  const f=fixture();try{
   const path=join(f.dir,'network.env');writeFileSync(path,"HTTPS_PROXY='http://user:PRIVATE_PROXY_CREDENTIAL@proxy.example:8080'\n",{mode:0o600});
   const unit=renderService({...f.plan,extraEnvFile:path});
-  assert.ok(unit.includes('EnvironmentFile='+f.plan.envFile+'\nEnvironmentFile='+path));
+  assert.ok(unit.includes('EnvironmentFile="'+f.plan.envFile+'"\nEnvironmentFile="'+path+'"'));
   assert.ok(!unit.includes('PRIVATE_PROXY_CREDENTIAL'));
   assert.ok(!unit.includes('proxy.example'));
+ }finally{f.close();}
+});
+
+test('CLI detects a project network.env by default and permits an explicit override',()=>{
+ const f=fixture();try{
+  for(const path of ['scripts','dist/apps/server/src','dist/admin'])mkdirSync(join(f.plan.repo,path),{recursive:true});
+  copyFileSync('scripts/install-service.mjs',join(f.plan.repo,'scripts/install-service.mjs'));
+  writeFileSync(join(f.plan.repo,'dist/apps/server/src/main.js'),'fixture');
+  writeFileSync(join(f.plan.repo,'dist/admin/index.html'),'fixture');
+  writeFileSync(join(f.plan.repo,'.env'),'AI_NEWS_HUB_PORT=3000\n',{mode:0o600});
+  const network=join(f.plan.repo,'network.env');
+  const args=[join(f.plan.repo,'scripts/install-service.mjs'),'--dry-run','--user',userInfo().username,'--node',f.plan.node,'--codex',f.plan.codex];
+  const before=spawnSync(process.execPath,args,{encoding:'utf8'});assert.equal(before.status,0,before.stderr);assert.ok(!before.stdout.includes(network.replaceAll('%','%%')));
+  writeFileSync(network,'HTTPS_PROXY=http://example.invalid:8080\n',{mode:0o600});
+  const after=spawnSync(process.execPath,args,{encoding:'utf8'});assert.equal(after.status,0,after.stderr);assert.ok(after.stdout.includes('EnvironmentFile="'+network.replaceAll('%','%%')+'"'));assert.ok(!after.stdout.includes('example.invalid'));
+  const other=join(f.dir,'other.env');writeFileSync(other,'NO_PROXY=localhost\n',{mode:0o600});
+  const overridden=spawnSync(process.execPath,[...args,'--extra-env-file',other],{encoding:'utf8'});assert.equal(overridden.status,0,overridden.stderr);assert.ok(overridden.stdout.includes('EnvironmentFile="'+other+'"'));assert.ok(!overridden.stdout.includes(network.replaceAll('%','%%')));
  }finally{f.close();}
 });

@@ -246,7 +246,7 @@ sudo systemctl is-enabled ai-news-hub.service
 | `--node` | 名为 `node` 的 Node 可执行文件绝对路径，默认运行安装器的 Node |
 | `--codex` | 名为 `codex` 的可执行文件绝对路径，默认在当前 PATH 中查找 |
 | `--env-file` | systemd 环境文件，默认项目 `.env` |
-| `--extra-env-file` | 可选的额外私有环境文件，如代理和 CA 配置 |
+| `--extra-env-file` | 显式指定额外私有环境文件，默认识别项目根目录已有的 `network.env` |
 | `--codex-home` | Codex 配置/认证目录，默认服务账号 HOME 下的 `.codex` |
 | `--log-dir` | 日志目录，默认项目 `logs/`；已有目录须为服务账号所有、0700 且不是符号链接 |
 | `--dry-run` | 仅显示服务文件，不安装或启用 |
@@ -259,6 +259,17 @@ sudo systemctl is-enabled ai-news-hub.service
 ### 代理网络配置
 
 代理使用项目根目录中的独立 `network.env`，由 systemd 的 `EnvironmentFile` 注入 Backend，再通过已有环境白名单传给 Codex。GitHub 归档与删除请求使用 `EnvHttpProxyAgent` 读取同一组 HTTP(S) 代理变量。主机网络配置通过文件管理，管理员界面管理模型与业务设置。
+
+手动配置可从仓库根目录的 [`network.env.example`](../network.env.example) 创建：
+
+```bash
+cp -n network.env.example network.env
+chmod 600 network.env
+```
+
+在编辑器中取消所需代理项的注释并填写实际地址。成对的大小写变量须一致，NO_PROXY 中保留本机地址。已有配置可直接编辑。`service.sh` 通过 systemd 启动服务，systemd 在每次启动时读取已安装 unit 引用的环境文件。
+
+安装器默认识别根目录中已有的 `network.env`，仅将路径写入 unit。首次创建文件后，若旧 unit 尚未引用它，使用 `--replace` 更新一次安装。后续修改文件执行 `sudo bash scripts/service.sh restart` 即可。显式的 `--extra-env-file` 优先于默认文件，自定义 CA/代理配置应一并维护在该指定文件中。
 
 先在已配置代理的普通服务用户终端复制，保留该终端的代理环境：
 
@@ -273,8 +284,8 @@ npm run network:configure
 ```bash
 sudo "$(command -v node)" scripts/install-service.mjs \
   --user "$(id -un)" --codex "$(command -v codex)" \
-  --extra-env-file "$PWD/network.env" --replace
-sudo systemctl restart ai-news-hub.service
+  --replace
+sudo bash scripts/service.sh restart
 npm run health
 ```
 
