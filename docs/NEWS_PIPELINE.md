@@ -22,6 +22,8 @@ Backend 不再再次访问原文、解析网页或比对引文，也不再因为
 
 旧 news-research 的初始请求仍可携带 topic/input，后续 `/runs/:runId/turns` 携带 input/finalize；配置任务由 Backend 顺序运行。任务 API 见 [TASK_ENGINE.md](TASK_ENGINE.md)，发布规则见 [PUBLISHING.md](PUBLISHING.md)。
 
+每日科技资讯 v1 模板保持单轮，目标 8～10 条；先搜索最近 24 小时，候选不足时回溯至 72 小时并逐条注明实际时间。重要 AI、开源项目及科技行业市场事件均可入选；每条仍需直接来源和准确引文。现有报告 Schema 允许 1～10 条，目标数量属于编辑规则而非 Backend 强制下限。模板修改不更新已保存的任务配置或历史 Run。
+
 新闻 Thread 只允许 hosted web search：逐个禁用继承的 MCP，禁用 Shell、应用和委派，审批仍一律拒绝。Backend 管理/发布凭据不传给 Codex；没有外部 RSS 采集入口，公共站输出 RSS 保留。
 
 当前用户配置任务严格执行 N 条 Prompt = N 次 Codex Turn。最后一条原始 Prompt 直接返回日报结构，Backend 只在开发者格式指令中提供主题/时间/Schema，不改写持久化的用户 Prompt，也不再追加“依据前面所有轮次的研究结果，生成完整日报。”。旧执行记录的额外系统轮仅作为历史保留。
