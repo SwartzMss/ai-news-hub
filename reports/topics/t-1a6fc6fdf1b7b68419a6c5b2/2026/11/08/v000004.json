@@ -1,0 +1,103 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "e3caa231-28df-4423-adfe-4e3ec525892e",
+  "report_date": "2026-11-08",
+  "channel": "opensource",
+  "version": 4,
+  "title": "每日开源项目｜北京时间 2026-11-05 18:10:41—2026-11-08 18:10:41｜精选 5 项",
+  "collected_at": "2026-11-08T10:13:16.294Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-08T10:13:16.298Z",
+  "reviewed_content_sha256": "2807600272749109228f2be89649da39eb792576b96b17a62490429dabbd298a",
+  "items": [
+    {
+      "id": "8603405411221939f9bad2897839dff4bdfd4a1d4f3033ebf7f2c977d0fc298c",
+      "category": "opensource",
+      "importance": 5,
+      "fact_summary": "Apache Iggy 发布 server-0.10.0，引入 Kafka 协议网关。官方【显著更新】；用途：提供持久化消息流，并连接 Kafka 客户端生态；技术要点：Rust 服务采用每核线程、无共享架构，以 compio/io_uring 处理底层 I/O；新网关将 Kafka records 映射为 Iggy 消息，实现 Produce、Fetch、消费者组协调及 SASL/PLAIN 认证，降低接入改造量；近期证据：北京时间11月7日17:32发布的 Release 收录网关第一阶段及 Docker Compose 端到端示例；适用场景：消息基础设施评估、现有 Kafka 客户端兼容性验证；许可证：Apache-2.0。[项目仓库](https://github.com/apache/iggy)",
+      "analysis": "上手优先级 2/3：协议网关让已有 Kafka 应用有了可直接验证的新后端，工程价值明确。可先用现有生产者、消费者和重启恢复用例测试；官方明确支持幂等生产者但拒绝事务，因此不能据此推断完整 Kafka 兼容性。性能收益需要在自己的消息大小、持久化配置和硬件上测量。",
+      "evidence_quote": "server-0.10.0",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/apache/iggy/releases/tag/server-0.10.0",
+        "canonical_url": "https://github.com/apache/iggy/releases/tag/server-0.10.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0262eee5404f8e9c38473f3e4a7c7323dc03917f2509f17388c0da582bd29a13",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "text-to-cad 发布 v0.11.0，统一文档类型接口并加入原生 KiCad 支持。官方【显著更新】；用途：让编程 Agent 生成和操作机械零件、装配及电路板；技术要点：通过 build123d/OpenCASCADE 执行 Python 建模脚本；新增 cad.registry，把文件类型统一映射到 Python 对象和 CLI 操作，减少不同格式的接口差异；KiCad 使用随包提供的运行环境完成检查和导出；近期证据：Release 于北京时间11月8日01:34发布，明确收录该架构变化；适用场景：Agent 辅助硬件原型、机械与 PCB 联合设计；许可证：MIT，依赖另计。[项目仓库](https://github.com/earthtojake/text-to-cad)",
+      "analysis": "上手优先级 1/3：能用一个小零件或电路板快速检验完整工作流，试用结果直观。建议重点检查生成文件能否在既有 CAD/KiCad 工具中继续编辑，以及检查报告是否对应真实设计约束。工程尺寸、电气规则和制造可行性仍需人工复核。",
+      "evidence_quote": "Document types and integrations: one registry, a per-type API and CLI, native KiCad boards, and cad run over uv run",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/earthtojake/text-to-cad/releases/tag/v0.11.0",
+        "canonical_url": "https://github.com/earthtojake/text-to-cad/releases/tag/v0.11.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2981ad57d7aae8872fd41ea66517eeb12a6bb37724f979d1a9879b66382cd412",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Unsloth 发布 v0.1.916-beta，加入双 GPU 图像与视频生成路径。官方【显著更新】；用途：在本地运行和训练语言模型及扩散模型；技术要点：两张匹配且空闲的 NVIDIA GPU 可在模型能装入单卡时分担 SDXL、Qwen-Image、Wan2.2 5B 每一步计算；FLUX、Lumina 2 则可按偶数图像批次分卡执行；近期证据：北京时间11月6日22:43发布，官方另称统一内存卸载恢复正常、SDXL 加载最高加快40%；适用场景：已有双卡设备的本地图像与视频工作流；许可证：核心 Apache-2.0，Studio UI 等可选组件 AGPL-3.0，模型权重分别授权。[项目仓库](https://github.com/unslothai/unsloth)",
+      "analysis": "值得关注的是实际计算拆分方式，而非界面性能修复。拥有两张同型号显卡的用户可用固定提示词、种子及批量设置比较耗时和输出。官方给出的约1.5—1.8倍提速属于项目方主张，尚无本次独立实测；这一分担路径要求模型先能装入单卡，不能直接视作显存容量翻倍。该版本仍带 beta 标记。",
+      "evidence_quote": "Large Performance Fixes",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/unslothai/unsloth/releases/tag/v0.1.916-beta",
+        "canonical_url": "https://github.com/unslothai/unsloth/releases/tag/v0.1.916-beta",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5a90caffb2c87d2e6e8eb5c3f6e99436fe1d4b1da4789f4c2ad70b79f5a9dd5d",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "ToyBlocks 公开发布桌面机械臂仿真与自动示范生成框架。Ai2【新发布】；用途：研究机器人推、翻转和堆叠积木时的学习与泛化；技术要点：基于 IsaacSim/IsaacLab 自动生成示范，按 LeRobot 格式输出训练数据；使用 PDDL 表达任务目标，在 GPU 并行闭环评估中自动计算成功和部分进展，便于定位策略失败；近期证据：官方公告标注2026年11月6日，并链接代码、数据和模型；适用场景：VLA 训练、分层机器人策略、可重复评测；许可证：代码 Apache-2.0，数据与模型权重授权未核实。[项目仓库](https://github.com/allenai/ToyBlocks)",
+      "analysis": "上手优先级 3/3：新项目同时提供数据生成与评估闭环，比单独展示机器人动作更适合开展可重复实验。建议先固定场景比较两种策略，再尝试把失败状态送回示范生成流程。主要限制是仿真环境和 GPU 部署成本，以及桌面积木任务对真实复杂环境的代表性。",
+      "evidence_quote": "ToyBlocks: A controlled world for robot learning and evaluation",
+      "verification": "codex_reported",
+      "source": {
+        "name": "huggingface.co",
+        "original_url": "https://huggingface.co/blog/allenai/toyblocks",
+        "canonical_url": "https://huggingface.co/blog/allenai/toyblocks",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6b0d833ee47a80b8e5464140a3129199068f8efa350eede77715cb2bb6c6c4d5",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "OrcaSlicer 正式发布 2.5.0，开放 Python 插件并扩展打印与参数化设计能力。官方【显著更新】；用途：将三维模型切片为打印机 G-code；技术要点：Python 插件可介入切片、修改层或 G-code，并添加界面；新增权限页按文件、网络、执行及审计事件管理授权；Texture Displacement 可生成真实表面几何纹理，另含实验性参数化 Design 页；近期证据：北京时间11月7日15:13发布正式版，说明其汇集此前测试版功能；适用场景：切片流程定制、特殊打印机和打印表面实验；许可证：主体 AGPL-3.0，可选 Bambu 网络插件依赖非自由库。[项目仓库](https://github.com/OrcaSlicer/OrcaSlicer)",
+      "analysis": "插件接口让打印流程定制有机会摆脱长期维护分叉，适合拥有重复后处理步骤的团队。可先把一段现有 G-code 处理脚本迁成插件验证收益。参数化设计仍为实验功能；从2.4升级还需检查默认填充图案和各特征耗材设置，避免旧预设产生不同输出。",
+      "evidence_quote": "OrcaSlicer V2.5.0 Official Release",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/OrcaSlicer/OrcaSlicer/releases/tag/v2.5.0",
+        "canonical_url": "https://github.com/OrcaSlicer/OrcaSlicer/releases/tag/v2.5.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
