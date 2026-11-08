@@ -10,6 +10,8 @@ function fixture(state='loaded'){
  copyFileSync('scripts/service.sh',join(repo,'scripts/service.sh'));
  const log=join(dir,'calls'),stateFile=join(dir,'state');writeFileSync(stateFile,state);
  const mocks={
+ npm:'#!/bin/bash\nprintf "npm <%s> <%s> cwd=%s\\n" "$1" "$2" "$PWD" >> "$CONTROL_LOG"\nif [[ "${CONTROL_FAIL:-}" == build ]]; then exit 23; fi\n',
+
  systemctl:`#!/bin/bash
 printf 'systemctl' >> "$CONTROL_LOG"; printf ' <%s>' "$@" >> "$CONTROL_LOG"; echo >> "$CONTROL_LOG"
 if [[ "$1" == show ]]; then
@@ -50,4 +52,29 @@ test('restart installs missing services and systemd query errors abort mutations
 test('uninstall refuses external unit paths and preserves units when disabling fails',()=>{
  const f=fixture();try{assert.equal(f.run('uninstall',{CONTROL_FRAGMENT:'/usr/lib/systemd/system/ai-news-hub.service'}).status,1);assert.doesNotMatch(f.calls(),/remove|systemctl <stop>/);}finally{f.close();}
  const failed=fixture();try{assert.equal(failed.run('uninstall',{CONTROL_FAIL:'disable'}).status,1);assert.doesNotMatch(failed.calls(),/remove|daemon-reload/);}finally{failed.close();}
+});
+
+test('start and restart build in the repository before installing or starting services',()=>{
+ for(const action of ['start','restart'])for(const state of ['loaded','not-found']){
+  const f=fixture(state);try{
+   const r=f.run(action);assert.equal(r.status,0,r.stderr);
+   const calls=f.calls(),build=calls.indexOf('npm <run> <build> cwd='+f.repo);
+   assert.ok(build>=0,'build runs from repository even when called elsewhere');
+   assert.ok(build<calls.indexOf('systemctl <'+action+'>'),'build precedes service mutation');
+   if(state==='not-found')assert.ok(build<calls.indexOf('install-service.mjs'),'build precedes installation checks');
+  }finally{f.close();}
+ }
+});
+test('build failure leaves installed and absent services untouched',()=>{
+ for(const action of ['start','restart'])for(const state of ['loaded','not-found']){
+  const f=fixture(state);try{
+   const r=f.run(action,{CONTROL_FAIL:'build'});assert.equal(r.status,23);
+   assert.doesNotMatch(f.calls(),/systemctl|sudo|install-service/);
+  }finally{f.close();}
+ }
+});
+test('status stop and uninstall do not build',()=>{
+ for(const action of ['status','stop','uninstall']){
+  const f=fixture();try{assert.equal(f.run(action).status,0);assert.doesNotMatch(f.calls(),/npm/);}finally{f.close();}
+ }
 });
