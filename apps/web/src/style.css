@@ -505,6 +505,17 @@ main {
   font-size: 15px;
   line-height: 2;
 }
+.trial-picks {
+  margin: 36px 0 48px;
+  padding: 24px;
+  background: var(--paper);
+  border-left: 2px solid var(--accent);
+}
+.trial-picks h2 { font-size: 18px; margin: 0 0 16px; }
+.trial-picks ol { margin: 0; padding-left: 22px; }
+.trial-picks li { margin: 10px 0; line-height: 1.7; }
+.trial-picks li span { display: block; color: var(--muted); font-size: 12px; }
+.trial-picks a { color: var(--accent); }
 .source-details {
   margin-top: 20px;
   font-size: 12px;

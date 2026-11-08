@@ -2,6 +2,7 @@ import type { PublicData } from "./types";
 import { Shell } from "./Shell";
 import { Row, Empty, dateLabel, lead } from "./ReadingParts";
 import { topicPath, topicArchivePath } from "./paths";
+import { TrialPicks } from "./TrialPicks";
 function BriefLinks({ topic }: { topic: PublicData["topics"][number] }) {
   return (
     <nav aria-label="本期目录">
@@ -78,6 +79,7 @@ export function LatestBrief({
             />
           ))}
         </div>
+        <TrialPicks items={report.items} href={story => `#brief-${topic.id}-${story.key}`} />
       </div>
       <aside className="brief-toc">
         <h2>本期目录</h2>

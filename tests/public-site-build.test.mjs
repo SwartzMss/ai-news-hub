@@ -7,6 +7,29 @@ import { JSDOM } from "jsdom";
 import { buildPublic } from "../apps/web/generator/build.mjs";
 import { readArchives, articleKey } from "../apps/web/generator/data.mjs";
 import { rss } from "../apps/web/generator/rss.mjs";
+test("latest open source brief ends with three ranked trial picks", async () => {
+  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
+  const dir = mkdtempSync("/tmp/public-trial-picks-");
+  const topic = { id: "t-" + "c".repeat(24), name: "每日开源项目" };
+  const base = JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json", "utf8"));
+  const items = [1, 2, 3].map(rank => ({ ...base.items[0], id: `project-${rank}`,
+    fact_summary: `项目${rank}发布。用于测试。`, analysis: `上手优先级 ${rank}/3：适合试用。`,
+    source: { ...base.items[0].source, original_url: `https://github.com/example/project-${rank}`, canonical_url: `https://github.com/example/project-${rank}` } }));
+  const folder = join(dir, "topics", topic.id, "2026", "11", "03");
+  mkdirSync(folder, { recursive: true });
+  writeFileSync(join(folder, "v000001.json"), JSON.stringify({ ...base, schema_version: 2, topic, items }));
+  try {
+    const built = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", reportsDir: dir });
+    for (const path of ["index.html", `topics/${topic.id}/archive/2026-11-03/index.html`]) {
+      const doc = new JSDOM(readFileSync(join(built.output, path), "utf8")).window.document;
+      const picks = doc.querySelector(".trial-picks");
+      assert.ok(picks);
+      assert.equal(picks.querySelectorAll("li").length, 3);
+      assert.match(picks.textContent, /上手优先级/);
+      assert.ok(doc.querySelector(picks.querySelector("li a").getAttribute("href")));
+    }
+  } finally { rmSync(dir, { recursive: true, force: true }); }
+});
 test("isolated static site contains all real routes, deterministic RSS and no admin/runtime artifacts", async () => {
   const result = await buildPublic({
     demo: true,

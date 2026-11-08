@@ -19,6 +19,8 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 
 ## 数据与历史
 
+每日开源项目 v2 生成的摘要包含可点击的规范仓库链接；如一期开源简报恰有三个有效的“上手优先级 1/3～3/3”分析标记，首页话题面板和归档阅读页会在条目末尾汇总这三个项目。旧日报没有这些标记时仍按原样展示。
+
 输入支持历史 [archive v1 Schema](schema/report-archive-v1.schema.json) 的 `YYYY/MM/DD/opensource/vNNNNNN.json`，以及带 `topic: {id,name}` 的 [archive v2 Schema](schema/report-archive-v2.schema.json) 的 `topics/<id>/YYYY/MM/DD/vNNNNNN.json`，路径须与内部话题/日期/版本一致。只接受 approved 数据及约定的 source_only/codex_reported 来源模式；拒绝未知字段、非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
 
 同话题/日期/频道展示最高版本；所有版本仍生成独立页面。当前列表与 RSS 只使用各日最新版本，修订移除的条目不会从旧版本混回来；历史版本正文完整保留，详情链接则指向该来源目前保留的最新内容。同话题跨日相同条目 ID 合并为一个来源详情，新来源键为 SHA-256(topic-id + ":" + item-id) 前 32 位。历史 v1 来源保留原有 ID 哈希键及 GUID，映射后同话题的新归档继续复用；其他话题的相同来源 ID 使用不同键。详情/归档明确区分事实摘要、分析推断、精确引文和三类来源时间，人工允许发布不代表独立事实核验。

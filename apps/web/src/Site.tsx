@@ -12,6 +12,7 @@ import {
 import { issuePath, topicArchivePath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
+import { TrialPicks } from "./TrialPicks";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "channel" || page.kind === "archive")
@@ -265,6 +266,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   </article>
                 ))}
               </div>
+              {selectedStories && <TrialPicks items={selectedStories} href={item => `#story-${item.key}`} />}
             </>
           )}
           {page.kind === "article" && story && (

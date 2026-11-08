@@ -35,6 +35,18 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   assert.equal((await s.request('GET',`/runs/${id}`)).statusCode,200);
  }finally{await s.close();}
 });
+test('next managed run receives recent same-task project history for deduplication',async()=>{
+ const s=setup();try{
+  const task=(await s.request('POST','/tasks',{...configuration,prompts:['生成简报']})).json().task;
+  const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first'})).json().run.id;
+  await s.wait(()=>s.adapter.calls[0]);s.adapter.succeed(0,JSON.stringify(proposal));
+  await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
+  await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second'});
+  const second=await s.wait(()=>s.adapter.calls[1]);
+  assert.match(second.input.developerInstructions,/近期同任务日报/);
+  assert.match(second.input.developerInstructions,/https:\/\/example\.com\/model/);
+ }finally{await s.close();}
+});
 test('stop prevents subsequent rounds; invalid plans are rejected',async()=>{
  const s=setup();try{
   for(const bad of [{schedule:{kind:'toString'}},{schedule:{kind:'__proto__'}},{schedule:{kind:42}},{prompts:[]},{timezone:'bad/timezone'},{schedule:{kind:'interval',minutes:0}},{schedule:{kind:'weekly',time:'25:00',weekday:8}}])assert.equal((await s.request('POST','/tasks',{...configuration,...bad})).statusCode,400);
