@@ -40,6 +40,9 @@ fi
 
 case "$1" in
   start|restart)
+    cd -- "$repo_dir"
+    echo 'Building backend and admin before service startup.'
+    npm run build
     ensure_installed
     as_root systemctl "$1" "$service_name"
     ;;
