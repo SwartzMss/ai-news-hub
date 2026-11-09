@@ -1,0 +1,188 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "ab9ccbaf-d7b2-400e-80b0-d9fa95c7918c",
+  "report_date": "2026-11-09",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日开源项目简报｜北京时间 2026-11-06 08:02:47—2026-11-09 08:02:47",
+  "collected_at": "2026-11-09T00:05:55.230Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-09T00:05:55.237Z",
+  "reviewed_content_sha256": "a865e130843eacf54046c1e538350e80e51cb01978e73f401186a2830e498974",
+  "items": [
+    {
+      "id": "11bc87decd601d4696186d82735e24dadf64f4f14a585466f65484e3669bf609",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "Kensaku 在窗口内出现热度跃升，将截图文字与文档检索接入本地 Agent。【近期热门】；用途：统一查找文件名、正文、图片文字及语义内容；主要技术栈：Rust、Tauri、OCR、MCP；技术要点：官方称，中文、日文与韩文采用 unigram、bigram 及混合文字边界处理；增量索引只处理变化文件，OCR 将截图内容纳入搜索，同一本地索引可通过默认只读 MCP 提供给 Agent；近期证据：[榜单](https://dailylaunch.org/p/kensaku)记录北京时间 11 月 7 日 15:25 排名从第 81 升至第 36，所记录日增 Star 从 92 升至 304；适用场景：个人技术资料库、错误截图检索、本地 Agent 上下文发现；许可证：MIT，OCR 与模型包授权需分别核对。[项目仓库](https://github.com/yjid/kensaku)",
+      "analysis": "上手优先级 1/3：推荐理由：可以直接拿现有文档、日志与截图验证是否节省查找时间，无需先构建应用；试用建议：只索引一个测试目录，放入中文 PDF、代码和报错截图，分别测试关键词、模糊查询与 MCP；限制：OCR 和语义功能可能需要下载模型包，质量与资源占用应按文件类型测量。官方性能数据包含暖缓存条件，不能直接外推到首次全盘扫描。",
+      "evidence_quote": "Search inside documents, code, and even screenshots - instantly and locally.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/yjid/kensaku",
+        "canonical_url": "https://github.com/yjid/kensaku",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "43b226d3f8c0e87c3fdf7fa8316496f119acaaf775fc37647e450f03a34c5e8d",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "Sand3d 在窗口内进入新项目发现榜，面向 LLM 的程序化建模接口值得关注。【近期热门】；用途：用简短 Python 程序描述零件、关节和装配体；主要技术栈：Python、Blender bpy；技术要点：官方称，零件、边和面可以按名字访问，减少手工计算坐标；extrude、sweep、fillet 等统一接口配合 joint、assembly 描述几何与运动，API 文档约 3,600 token，可放入模型提示；架构流程：Python 建模程序 → bpy 几何与装配 → 导出 GLB 等资产；近期证据：[榜单](https://dailylaunch.org/p/sand3d)于北京时间 11 月 7 日 15:25 首次记录其进入第 32 名，仓库创建日期早于本窗口；适用场景：LLM 建模实验、参数化资产、关节动画原型；许可证：代码 Apache-2.0，官方列出的程序数据集为 CC BY 4.0。[项目仓库](https://github.com/Sandflow-ai/sand3d)",
+      "analysis": "上手优先级 2/3：推荐理由：生成结果保留为人可读程序，便于修改参数、定位几何问题，也适合比较模型生成代码的稳定性；试用建议：先生成带孔支架，再做一个带铰链的装配体，检查尺寸、命名选择和导出结果；限制：依赖指定 Python 与 bpy 组合；更短 token 和确定性是官方主张，仍应对自己的对象与环境验证，不能据此假定具备完整 CAD 工程能力。",
+      "evidence_quote": "3D modeling in Python, built for LLMs.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/Sandflow-ai/sand3d",
+        "canonical_url": "https://github.com/Sandflow-ai/sand3d",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4c7ab6f72ad21c31c3636f9930866b5900e1cb1adde8c7d8ed978963359146fc",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "CloneGuard 在窗口内公开演示仓库恶意行为预扫描工具。【近期热门】；用途：在安装依赖或打开陌生项目之前寻找凭据窃取迹象；主要技术栈：Go 1.24+，无第三方依赖；技术要点：作者称，工具只读取被扫描项目文件，不运行、安装或导入其代码；正则和启发式规则检查敏感路径访问、可疑外联、安装钩子与 VS Code 自动任务，同文件同时读秘密并连接可疑服务时提高严重等级；架构流程：本地目录或克隆 → 静态规则扫描 → 分级结果、JSON 与退出码；近期证据：作者于北京时间 11 月 7 日 03:49 发布 [Show HN 演示](https://news.ycombinator.com/item?id=50397435)，时间由[发现记录](https://dailylaunch.org/p/cloneguard)交叉定位；适用场景：面试代码初筛、陌生仓库审阅；许可证：MIT。[项目仓库](https://github.com/tharun208/cloneguard)",
+      "analysis": "推荐理由：单文件命中位置、解释和机器可读结果使它容易成为审阅入口，尤其针对安装和编辑器自动执行路径；试用建议：先扫描仓库附带的恶意 demo，再加入合法凭据读取代码观察误报；限制：规则能被动态拼接、跨行路径等方式绕过，扫描通过不能证明安全。这里推荐的是快速初筛价值，不能替代隔离执行或完整安全审计。",
+      "evidence_quote": "It’s a single Go binary with no dependencies, and it is read-only.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ycombinator.com",
+        "original_url": "https://news.ycombinator.com/item?id=50397435",
+        "canonical_url": "https://news.ycombinator.com/item?id=50397435",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "55aa1dc18cbb251b0d3e749dd750b11709f166798b73cd6277e0ca2f63f172a5",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Coldframe 在窗口内公开演示冷藏控制器蜜罐并引发讨论。【近期热门】；用途：观察面向工业制冷设备的登录、扫描和漏洞利用尝试；主要技术栈：Python 标准库、HTTP(S)、可选 Modbus TCP；技术要点：官方称，Danfoss 与 Dixell 两种 persona 模拟不同页面、响应头和登录路径；弱口令成功后进入虚假控制面板，后续除霜操作写入日志，利用载荷记录后丢弃；架构流程：连接请求 → 设备界面与协议模拟 → JSONL 事件日志；近期证据：作者于北京时间 11 月 8 日 01:27 在 [Show HN](https://news.ycombinator.com/item?id=50406292) 展示，[次日榜单](https://dailylaunch.org/p/coldframe)记录 219 分讨论信号；适用场景：工控安全研究、蜜罐教学；许可证：MIT，厂商图标不包含在仓库授权中。[项目仓库](https://github.com/hedgerow-dev/coldframe)",
+      "analysis": "推荐理由：允许攻击者进入假控制面板，可能比仅记录端口扫描更有助于观察后续行为；试用建议：先在隔离测试环境模拟登录与 XML 请求，检查日志是否足以回答研究问题；限制：这是低交互模拟器，官方承认部分真实设备细节未确认，公开响应也可被识别。作者展示时尚未报告真实定向入侵成果。",
+      "evidence_quote": "A honeypot for supermarket refrigeration controllers.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/hedgerow-dev/coldframe",
+        "canonical_url": "https://github.com/hedgerow-dev/coldframe",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b81ea0f95984f901c2eb308482799f6e8f6c959c31f57ca8733bac6e7baac858",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "Rune 在统计窗口内登上新项目榜首，原生 UI 与无头验证能力受到关注。【近期热门】；用途：构建跨桌面平台及 Web 的 GPU 界面；主要技术栈：Rust、Metal、wgpu、Taffy；技术要点：官方文档称，带 key 的节点保留 Taffy 约束缓存，仅相关变化使缓存失效；应用支持无头输出 PNG、元素树和脚本输入，便于自动检查交互；近期证据：[Daily Launch](https://dailylaunch.org/p/rune) 记录北京时间 11 月 7 日 15:25 排名第 1、当日新增约 1.8k Star，这是热度事件而非首次发布；适用场景：Rust 桌面工具、Agent 辅助界面开发；许可证：MIT。[项目仓库](https://github.com/anomalyco/rune)",
+      "analysis": "推荐理由：布局缓存和可脚本驱动的界面检查值得一起评估，有望减少原生 GUI 开发中的人工回看；试用建议：从 hello 示例做一个带状态切换的小窗口，对比截图与元素树；限制：官方仍标为预发布，需固定 dev 提交；项目不接受外部 PR，采用 issue 反馈流程，选型时应考虑这种协作方式。",
+      "evidence_quote": "Rune: Native UI framework",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/anomalyco/rune",
+        "canonical_url": "https://github.com/anomalyco/rune",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b9dfa8aa677d7b76059255b24db82e61c6e0c2502ed054867ecd751e447a81b2",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Idol 在窗口内升至发现榜第 2，单图生成 3D 高斯的 SDK 可供试验。【近期热门】；用途：将物体图片转为可查看的 3D Gaussian splat；主要技术栈：Python、PyTorch、CUDA、DiT；技术要点：官方称，DINOv3 与 FLUX.2 VAE 提供图像条件，370M 参数 DiT 去噪后经八叉树及高斯解码器输出 3DGS；支持 32,768～1,048,576 个高斯，输出标准 .ply；架构流程：图片 → 去背景与裁剪 → 条件生成及解码 → .ply 与相机文件；近期证据：[榜单](https://dailylaunch.org/p/idol)记录北京时间 11 月 8 日 15:26 排名第 2，采用 Hugging Face 热度信号；适用场景：3D 展示、生成式资产原型；许可证：SDK 与 Idol 权重标为 Apache-2.0，外部编码器须另行接受其条款。[项目仓库](https://github.com/speridlabs/idol-sdk)",
+      "analysis": "推荐理由：标准高斯格式和完整推理入口便于接入现有查看器，适合评估单图资产生成；试用建议：固定种子，用同一物体的照片和渲染图比较背面结构、轮廓与透明区域；限制：输出是高斯表示，不能直接等同于可编辑网格。官方给出约 7.2 GB 峰值显存；“两秒内”宣传与默认 50 步硬件表并非统一条件，4090 表中为 19.1 秒，均不是独立实测。",
+      "evidence_quote": "A single image to a 3DGS object model",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/speridlabs/idol-sdk",
+        "canonical_url": "https://github.com/speridlabs/idol-sdk",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d426b27b394735b6f4534a8598e11e78a81eb46335fb2e9575e09a0e18e5d1b5",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "Kiri 在窗口内首次进入发现榜，展示直接管理容器的 Rust 运行时。【近期热门】；用途：以兼容 Docker 的接口运行本地开发容器；主要技术栈：Rust、Linux、vsock、Docker Engine API；技术要点：官方称，宿主守护进程经 vsock 连接虚拟机 PID 1 Agent，后者用 clone3 创建 namespaces 与 cgroup，省去 runc、shim 和 dockerd；macOS、Windows 使用 Linux 虚拟机，Linux 可直接使用内核；架构流程：Docker 客户端 → Kiri daemon → guest Agent → 容器；近期证据：[榜单](https://dailylaunch.org/p/kiri)于北京时间 11 月 8 日 15:26 首次收录、排名第 42；适用场景：本地 Compose 工作流、容器运行时研究；许可证：主体 Apache-2.0，客体 Linux 内核 GPL-2.0。[项目仓库](https://github.com/libracoder/kiri)",
+      "analysis": "上手优先级 3/3：推荐理由：Docker API 兼容层提供了直接用现有项目验证的入口，架构也具有研究价值；试用建议：先在独立 Docker context 运行无状态 Compose 项目，检查网络、挂载与镜像构建；限制：内置 builder 仍列为后续计划，不能把兼容 buildx 理解为完整实现全部构建端点。官方速度数据需要在自己的负载上复测。",
+      "evidence_quote": "A small, fast container runtime for macOS, Windows and Linux",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/libracoder/kiri",
+        "canonical_url": "https://github.com/libracoder/kiri",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5f1df4a5fc5b005e83b07149a66781e96402836c35a1de44576a604c6789f3ae",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "LivLiv Player 在窗口内首次进入发现榜，浏览器角色播放覆盖口型与人脸跟踪。【近期热门】；用途：在网页、应用或直播覆盖层播放虚拟角色；主要技术栈：TypeScript、WebGL2、MediaPipe；技术要点：官方称，核心播放器无依赖，口型与摄像头跟踪模块按需导入；LivLiv、VRM、PNGTuber 共用 API，MediaPipe 跟踪在浏览器执行，摄像头图像留在设备；架构流程：角色包与音频或摄像头输入 → 播放及跟踪模块 → WebGL2 角色画面；近期证据：[榜单](https://dailylaunch.org/p/player)于北京时间 11 月 7 日 15:25 首次记录排名第 24，仓库创建于窗口之前；适用场景：网页数字角色、OBS 覆盖层、交互原型；许可证：代码 Apache-2.0；示例角色另有授权，多数仅允许署名的个人非商业使用。[项目仓库](https://github.com/livliv-dev/player)",
+      "analysis": "推荐理由：按需模块和多角色格式 API 便于把播放器嵌入现有网页，而不用先接入角色生成服务；试用建议：用自有 PNGTuber 图片测试麦克风口型，再比较 VRM 加载与摄像头跟踪；限制：播放器本身不生成角色，也不读取 Live2D 的 moc3/cmo3 文件；官方说明尚未在手机上测试，示例角色不能默认用于商业产品。",
+      "evidence_quote": "A lightweight 2.5D character player for the web, with lip sync and webcam face tracking.",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/livliv-dev/player",
+        "canonical_url": "https://github.com/livliv-dev/player",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b50c89b4a0e7ebef010d57abdd8064c06c403ad6686a0d5265016737dc2e1178",
+      "category": "security",
+      "importance": 3,
+      "fact_summary": "BLA 在窗口内热度回升，尝试增加自动化逆向分析的资源成本。【近期热门】；用途：对自有软件发布产物进行反分析加固实验；主要技术栈：TypeScript、Node.js、MCP、构建器插件；技术要点：官方称，格式内合法诱饵与容量结构针对特定分析器预算限制，例如 ASAR 头大小和 WASM 表示上限；另以 SHA-256 摘要绑定关联产物，增加单独剥除保护结构的难度，MCP 工具组织审计、加固与验证；架构流程：发布目录 → audit → protect → verify；近期证据：[榜单](https://dailylaunch.org/p/bla)记录北京时间 11 月 8 日 15:26 排名从第 52 升至第 32，日增 Star 信号从 145 升至 434；适用场景：软件保护研究、自动逆向工具鲁棒性测试；许可证：MIT。[项目仓库](https://github.com/qybaihe/bla)",
+      "analysis": "推荐理由：它把分析器资源上限当作明确实验对象，适合研究工具对复杂输入的退化行为；试用建议：仅对自己的小型样本加固，比较包体大小、运行结果及分析器输出；限制：针对特定 REA 的预算触发不能证明能阻止通用逆向。官方“运行时完全等价”和 token 倍数属于自身样本结果，应为每个实际产物另做回归验证。",
+      "evidence_quote": "BLA: Blind LLM Agents",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/qybaihe/bla",
+        "canonical_url": "https://github.com/qybaihe/bla",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cde5b00c0dbc5c780d769e91df9509a822e2cb53047ea4f2794635ce999b3329",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "MyGo Music 在窗口内首次进入发现榜，以原生播放器和脚本插件扩展音源。【近期热门】；用途：播放本地音乐，并用插件接入目录、播客或电台；主要技术栈：Go、MyGo、JavaScript/TypeScript、sherpa-onnx；技术要点：官方称，桌面界面不使用 WebView；插件由 plugin.json 与 JS/TS 文件组成，导出的 search、stream 等函数返回统一数据结构；播客字幕使用按需下载的 sherpa-onnx 与 Qwen3-ASR 在设备端处理；近期证据：[榜单](https://dailylaunch.org/p/mygo-music)于北京时间 11 月 8 日 15:26 首次收录、排名第 35，并记录三天累积 856 Star，不能视作单日增量；适用场景：本地音乐管理、个人音源适配、Go 桌面开发研究；许可证：主项目 AGPL-3.0，外部语音模型及依赖授权需另核对。[项目仓库](https://github.com/egoist/mygo-music)",
+      "analysis": "推荐理由：插件接口覆盖搜索和播放，适合用一个小型合法音源验证跨平台桌面扩展体验；试用建议：从 demo-plugin 改出只提供本地测试目录的插件，再试一段播客字幕；限制：第三方服务能否接入取决于其接口与授权，播放器开源不意味着获得内容使用权；设备端字幕的速度和精度需要按语言、硬件实测。",
+      "evidence_quote": "A native music player you extend with plugins",
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/egoist/mygo-music",
+        "canonical_url": "https://github.com/egoist/mygo-music",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
