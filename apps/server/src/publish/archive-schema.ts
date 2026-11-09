@@ -8,6 +8,7 @@ const properties = {
   fact_summary: original.factSummary,
   analysis: original.analysis,
   evidence_quote: original.evidenceQuote,
+  details: original.details,
   verification: original.verification,
   source: {
     type: "object",
@@ -48,7 +49,7 @@ const root = {
     items: {
       type: "object",
       additionalProperties: false,
-      required: Object.keys(properties),
+      required: Object.keys(properties).filter(key=>key!=='details'),
       allOf:[{if:{properties:{verification:{const:"codex_reported"}}},then:{properties:{source:{type:"object",properties:{fetched_at:{type:"null"}}}}},else:{properties:{source:{type:"object",properties:{fetched_at:{type:"string",format:"date-time"}}}}}}],
       properties,
     },

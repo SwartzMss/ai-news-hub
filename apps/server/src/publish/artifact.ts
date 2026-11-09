@@ -80,6 +80,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
           factSummary,
           analysis,
           evidenceQuote,
+          details,
         }) => ({
           articleId,
           category,
@@ -87,6 +88,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
           factSummary,
           analysis,
           evidenceQuote,
+          ...(details?{details}:{}),
         }),
       ),
     };
@@ -147,6 +149,7 @@ export function archiveArtifact(
       fact_summary: x.factSummary,
       analysis: x.analysis,
       evidence_quote: x.evidenceQuote,
+      ...(x.details?{details:x.details}:{}),
       verification: x.verification,
       source: {
         name: x.source.name,

@@ -123,6 +123,7 @@ export class NewsWorkflow implements TaskWorkflow {
                 factSummary: item.factSummary,
                 analysis: item.analysis,
                 evidenceQuote: item.evidenceQuote,
+                ...(item.details?{details:item.details}:{}),
               });
               const selected = {
                 title: proposal.title,

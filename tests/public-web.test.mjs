@@ -50,6 +50,27 @@ test("public loader preserves history and chooses latest revision deterministica
     s.close();
   }
 });
+test("investment details survive publication artifact and public archive loading",()=>{
+ const f=publicationFixture();
+ const details={kind:'investment',background:'季度业绩较先前指引改善。',metrics:[{name:'收入',value:'12.4',unit:'亿美元',period:'2026 Q3',basis:'actual',evidenceRefs:['filing']}],evidence:[{id:'filing',name:'公司公告',url:'https://example.com/filing',supports:'收入实际值'}]};
+ const doc={...f.doc,items:[{...f.doc.items[0],details}]};
+ const dir=mkdtempSync('/tmp/web-investment-');
+ try{
+  f.db.prepare('UPDATE reports SET content_json=? WHERE id=?').run(JSON.stringify(doc),'r');
+  const artifact=JSON.parse(archiveArtifact(reviewedReport(f.db,'r'),'2026-11-03T01:00:00Z').content);
+  assert.deepEqual(artifact.items[0].details,details);
+  const folder=`${dir}/2026/11/03/opensource`;mkdirSync(folder,{recursive:true});
+  writeFileSync(`${folder}/v000001.json`,JSON.stringify(artifact));
+  assert.deepEqual(readArchives(dir,{allowDemo:true}).articles[0].details,details);
+ }finally{f.close();rmSync(dir,{recursive:true,force:true});}
+});
+test('public archive rejects unsafe supplemental investment evidence',()=>{
+ const s=setup();try{
+  s.doc.items[0].details={kind:'investment',background:'业绩变化。',evidence:[{id:'filing',name:'公告',url:'http://example.com/filing',supports:'收入'}]};
+  s.save(s.doc);
+  assert.throws(()=>readArchives(s.dir,{allowDemo:true}),/unsafe/);
+ }finally{s.close();}
+});
 test("public build refuses malformed contracts, unsafe source URLs and path mismatch", () => {
   for (const change of [
     { review_status: "pending" },

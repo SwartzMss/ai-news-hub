@@ -13,6 +13,7 @@ import { issuePath, topicArchivePath, topicPath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
 import { ProjectAside, ProjectDetail, projectDetail } from "./ProjectDetail";
+import { InvestmentAside, InvestmentDetail } from "./InvestmentDetail";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "channel" || page.kind === "archive")
@@ -50,7 +51,8 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           r.version === story.report_version,
       )
     : undefined;
-  const project = story ? projectDetail(story) : null;
+  const investment = story?.details?.kind === "investment" ? story.details : null;
+  const project = story && !investment ? projectDetail(story) : null;
   const nav =
     page.kind === "topic" ||
     ((page.kind === "article" || page.kind === "date") &&
@@ -79,6 +81,8 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         </ol>
       </nav>
     </aside>
+  ) : page.kind === "article" && investment ? (
+    <InvestmentAside details={investment} />
   ) : page.kind === "article" && owner && !project ? (
     <aside className="reading-aside">
       <h2>所属简报</h2>
@@ -110,7 +114,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       page="reader"
     >
       <div
-        className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && project ? " project-layout" : ""}`}
+        className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && project ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}`}
       >
         <main id="content">
           {page.kind === "topic" &&
@@ -272,7 +276,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {page.kind === "article" && story && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
-                {project && (
+                {(project || investment) && (
                   <>
                     <a href={topicPath(story.topic.id)}>{story.topic.name}</a>
                     <span>/</span>
@@ -292,7 +296,9 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                   {dateLabel(story.report_date)}
                 </a>
               </nav>
-              {project ? (
+              {investment ? (
+                <InvestmentDetail story={story} />
+              ) : project ? (
                 <ProjectDetail
                   story={story}
                   number={owner ? owner.items.findIndex((item) => item.key === story.key) + 1 : undefined}

@@ -429,6 +429,23 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".project-detail .source-details"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+test('investment detail renders evidence-linked metrics and a section directory',async()=>{
+ const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
+ const dir=mkdtempSync('/tmp/public-investment-detail-');
+ try{
+  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  report.items=report.items.slice(0,1);
+  report.items[0].details={kind:'investment',background:'公司发布季度业绩。',metrics:[{name:'季度收入',value:'12.4',unit:'亿美元',period:'2026 Q3',comparison:'同比增长 8%',basis:'actual',evidenceRefs:['filing']}],supplyChain:[{segment:'服务器内存',direction:'需求可能增加',reason:'单机配置提高',relationship:'potential'}],investmentLogic:'订单兑现后可能影响收入。',watchpoints:['订单交付'],risks:['客户认证推迟'],evidence:[{id:'filing',name:'季度财报',url:'https://example.com/filing',supports:'季度收入实际值'}]};
+  const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
+  const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
+  const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
+  assert.ok(doc.querySelector('.investment-detail'));
+  assert.match(doc.querySelector('.investment-detail table').textContent,/季度收入.*12.4.*实际值/s);
+  assert.match(doc.querySelector('.investment-detail').textContent,/潜在影响|潜在关系/);
+  assert.ok(doc.querySelector('.investment-detail a[href="https://example.com/filing"]'));
+  assert.ok(doc.querySelector('.investment-aside a[href="#investment-metrics"]'));
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
 
 test("newsletter is opt-in, works as a native POST form and keeps email out of storage and URLs", async () => {
   const { mkdtempSync, rmSync } = await import("node:fs");

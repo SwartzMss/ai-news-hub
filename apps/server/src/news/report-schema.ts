@@ -1,8 +1,9 @@
+import { INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
 const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', 'other'];
 export interface ProposalItem {
-  articleId: string; category: string; importance: number; factSummary: string; analysis: string | null; evidenceQuote: string;
+  articleId: string; category: string; importance: number; factSummary: string; analysis: string | null; evidenceQuote: string; details?: InvestmentDetails;
 }
 export interface Proposal { title: string; items: ProposalItem[] }
 const proposalItem = {
@@ -11,7 +12,7 @@ const proposalItem = {
   properties: {
     articleId: text(256), category: { type: 'string', enum: categories }, importance: { type: 'integer', minimum: 1, maximum: 5 },
     factSummary: text(600), analysis: { anyOf: [text(600), { type: 'null' }] },
-    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 },
+    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 }, details: INVESTMENT_DETAILS_SCHEMA,
   },
 };
 export function proposalSchema(articleIds?: string[]) {
