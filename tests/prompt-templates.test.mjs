@@ -15,9 +15,12 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.doesNotMatch(opensource.prompts.join('\n'),/【固定 (8|10) 条】/);
   for(const t of templates){assert.equal(t.version,1);assert.ok(t.prompts.every(p=>p.length>100));}
   const technology=templates.find(t=>t.id==='daily-technology');
-  assert.equal(technology.prompts.length,1);
-  const prompt=technology.prompts[0];
-  assert.ok(prompt.length<2500,'technology prompt stays focused enough for one research turn');
+  assert.equal(technology.prompts.length,2);
+  const [discovery,analysis]=technology.prompts;
+  const prompt=technology.prompts.join('\n');
+  assert.match(discovery,/候选/);
+  assert.match(discovery,/不生成最终日报/);
+  assert.match(analysis,/JSON Schema/);
   assert.match(prompt,/24.{0,5}小时/);
   assert.match(prompt,/72.{0,5}小时/);
   assert.match(prompt,/AI.{0,3}大模型/);
@@ -29,7 +32,9 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(prompt,/影响逻辑/);
   assert.match(prompt,/候选/);
   assert.match(prompt,/JSON Schema/);
-  assert.match(prompt,/【固定 10 条】/);
+  assert.doesNotMatch(prompt,/【固定 (8|10) 条】/);
+  assert.match(analysis,/最多 10 条/);
+  assert.match(analysis,/少于 10 条|实际合格/);
   assert.match(prompt,/7 天/);
   assert.match(prompt,/半导体/);
   assert.match(prompt,/风险|反证/);

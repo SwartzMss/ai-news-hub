@@ -36,10 +36,9 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   assert.equal((await s.request('GET',`/runs/${id}`)).statusCode,200);
  }finally{await s.close();}
 });
-for(const count of [8,10])test(`fixed-${count} technology prompt rejects underfilled reports before persistence`,async()=>{
+for(const count of [8,10])test(`explicit fixed-${count} marker rejects underfilled reports before persistence`,async()=>{
  const s=setup();try{
-  const template=promptTemplates().find(t=>t.id==='daily-technology');
-  const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:[template.prompts[0].replace(/【固定 \d+ 条】/,`【固定 ${count} 条】`)]})).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,prompts:[`筛选重要新闻。【固定 ${count} 条】`]})).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'underfilled'})).json().run;
   const call=await s.wait(()=>s.adapter.calls[0]);
   assert.equal(call.input.outputSchema.properties.items.minItems,1);
@@ -50,19 +49,23 @@ for(const count of [8,10])test(`fixed-${count} technology prompt rejects underfi
   assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);
  }finally{await s.close();}
 });
-test('later runs receive recent same-task report summaries for seven-day deduplication',async()=>{
+test('two-round flexible technology task accepts a short report and reuses it for deduplication',async()=>{
  const s=setup();try{
   const template=promptTemplates().find(t=>t.id==='daily-technology');
   const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:template.prompts})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[0]);
-  const ten={...proposal,items:Array.from({length:10},(_,i)=>({...proposal.items[0],url:`https://example.com/model-${i}`}))};
-  s.adapter.succeed(0,JSON.stringify(ten));
+  const discovery=await s.wait(()=>s.adapter.calls[0]);
+  assert.equal(discovery.input.outputSchema,undefined);
+  s.adapter.succeed(0,'候选事件及来源');
+  const final=await s.wait(()=>s.adapter.calls[1]);
+  assert.equal(final.input.outputSchema.properties.items.maxItems,10);
+  assert.equal(final.input.threadId,'thread-0');
+  s.adapter.succeed(1,JSON.stringify(proposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
   await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second'});
-  const second=await s.wait(()=>s.adapter.calls[1]);
+  const second=await s.wait(()=>s.adapter.calls[2]);
   assert.match(second.input.developerInstructions,/近期同任务日报/);
-  assert.match(second.input.developerInstructions,/https:\/\/example\.com\/model-0/);
+  assert.match(second.input.developerInstructions,/https:\/\/example\.com\/model/);
  }finally{await s.close();}
 });
 test('flexible-count tasks receive full same-task history without leaking it to another task',async()=>{
