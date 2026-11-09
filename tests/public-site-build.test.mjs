@@ -446,6 +446,24 @@ test('investment detail renders evidence-linked metrics and a section directory'
   assert.ok(doc.querySelector('.investment-aside a[href="#investment-metrics"]'));
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
+test('news detail renders structured evidence, timeline and a section directory',async()=>{
+ const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
+ const dir=mkdtempSync('/tmp/public-news-detail-');
+ try{
+  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  report.items=report.items.slice(0,1);
+  report.items[0].details={kind:'news',background:'政策此前处于征求意见阶段。',keyFacts:[{name:'生效范围',value:'全国',nature:'confirmed',evidenceRefs:['notice']}],timeline:[{time:'2026-11-03',precision:'date',event:'正式发布',evidenceRefs:['notice']}],positions:[{actor:'主管部门',statement:'分阶段实施',form:'paraphrase',evidenceRefs:['notice']}],impacts:[{description:'实施效果待观察',status:'analysis'}],uncertainties:['实施细则未公布'],watchpoints:['跟进细则'],evidence:[{id:'notice',name:'正式通知',url:'https://example.com/notice',supports:'发布时间与范围'}]};
+  const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
+  const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
+  const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
+  assert.ok(doc.querySelector('.news-detail'));
+  assert.match(doc.querySelector('.news-detail table').textContent,/生效范围.*全国.*已证实/s);
+  assert.match(doc.querySelector('#news-timeline').textContent,/2026-11-03.*正式发布/s);
+  assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
+  assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
+  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('发布时间与范围'),true);
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
 
 test("newsletter is opt-in, works as a native POST form and keeps email out of storage and URLs", async () => {
   const { mkdtempSync, rmSync } = await import("node:fs");

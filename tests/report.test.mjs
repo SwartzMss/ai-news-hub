@@ -6,6 +6,21 @@ const candidates = [{ id: 'article-a', title: 'A genuine fixture release announc
 const metadata = { reportId: 'report-a', runId: 'run-a', reportDate: '2026-11-03', collectedAt: '2026-11-03T00:00:00.000Z' };
 const proposal = () => ({ title: 'Fixture daily report', items: [{ articleId: 'article-a', category: 'opensource', importance: 4, factSummary: '来源宣布发布更新。', analysis: '这可能有助于开发者。', evidenceQuote: 'A genuine fixture release announcement' }] });
 const investmentDetails = () => ({kind:'investment',background:'公司披露新一季财报，较此前指引有所变化。',metrics:[{name:'季度收入',value:'12.4',unit:'亿美元',period:'2026 Q3',basis:'actual',evidenceRefs:['filing']}],supplyChain:[{segment:'服务器内存',direction:'需求增加',reason:'新产品配置提高单机用量',relationship:'potential'}],investmentLogic:'若订单兑现，收入和毛利率可能改善。',watchpoints:['下季订单量'],risks:['客户认证延迟'],evidence:[{id:'filing',name:'公司财报',url:'https://example.com/filing',supports:'季度收入实际值'}]});
+const newsDetails = () => ({kind:'news',background:'该政策此前处于征求意见阶段，本次正式发布。',keyFacts:[{name:'生效范围',value:'全国',nature:'confirmed',evidenceRefs:['notice']}],timeline:[{time:'2026-11-03',precision:'date',event:'主管部门发布正式通知',evidenceRefs:['notice']}],positions:[{actor:'主管部门',statement:'将分阶段实施',form:'paraphrase',evidenceRefs:['notice']}],impacts:[{description:'企业需更新申报流程',status:'analysis'}],uncertainties:['实施细则尚未公布'],watchpoints:['查看后续实施细则'],evidence:[{id:'notice',name:'正式通知',url:'https://example.com/notice',supports:'政策发布时间与范围'}]});
+test('news details survive report construction and Markdown without changing investment details',()=>{
+ const p=proposal();p.items[0].details=newsDetails();
+ const report=buildReport(JSON.stringify(p),candidates,metadata);
+ assert.deepEqual(report.items[0].details,p.items[0].details);
+ assert.match(reportMarkdown(report),/主管部门发布正式通知/);
+ const investment=proposal();investment.items[0].details=investmentDetails();
+ assert.equal(buildReport(JSON.stringify(investment),candidates,metadata).items[0].details.kind,'investment');
+});
+test('news details reject missing evidence references, duplicate IDs and unsafe URLs',()=>{
+ for(const mutate of [d=>{d.keyFacts[0].evidenceRefs=['missing'];},d=>{d.evidence.push({...d.evidence[0]});},d=>{d.evidence[0].url='http://localhost/notice';}]){
+  const p=proposal();p.items[0].details=newsDetails();mutate(p.items[0].details);
+  assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
+ }
+});
 test('investment details survive report construction and appear in Markdown',()=>{
  const p=proposal();p.items[0].details=investmentDetails();
  const report=buildReport(JSON.stringify(p),candidates,metadata);
