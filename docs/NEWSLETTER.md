@@ -51,7 +51,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 工作流优先读取以上规范名称；为兼容早期将地址保存为 Variable `NEWSLETTER_SEND_SECRET`、将发送密钥保存为 Secret `NEWSLETTER_SITE_URL` 的配置，也暂时接受这组旧名称。规范名称配置完成后应移除旧项。工作流显示成功并不代表发出了邮件；日志中的 `Newsletter dispatch disabled` 表示配置不完整，`waiting=true` 表示目标话题当天日报尚未全部发布。
 
-`Daily public newsletter` 工作流在北京时间 **09:30** 开始检查，每隔 15 分钟重试，至 **10:30**。GitHub 定时任务可能延迟，不保证精确到分钟；也可以从 Actions 手动运行。
+`Daily public newsletter` 工作流在北京时间 **09:00** 开始检查，每隔 15 分钟重试，至 **10:00**。GitHub 定时任务可能延迟，不保证精确到分钟；也可以从 Actions 手动运行。
 
 发送前会等待所有目标话题都有当天的已发布日报。任何话题尚未更新时先等待，不把昨天的日报当今天发送。暂停某个话题后，如仍需发送其他话题，请相应调整 `NEWSLETTER_TOPIC_IDS`。当前三个话题 ID 可以从网站话题链接读取。
 
