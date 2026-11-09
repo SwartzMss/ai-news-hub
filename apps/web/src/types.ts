@@ -6,6 +6,17 @@ export interface TopicSummary extends Topic {
   latest: Report;
   reportCount: number;
 }
+export interface InvestmentDetails {
+  kind: "investment";
+  background: string;
+  metrics?: {name:string;value:string;unit:string;period:string;comparison?:string;basis:"actual"|"guidance"|"consensus"|"estimate"|"inference";evidenceRefs:string[]}[];
+  supplyChain?: {segment:string;direction:string;reason:string;relationship:"confirmed"|"potential";evidenceRefs?:string[]}[];
+  investmentLogic?: string;
+  watchpoints?: string[];
+  risks?: string[];
+  valuation?: string;
+  evidence?: {id:string;name:string;url:string;supports:string}[];
+}
 export interface Story {
   topic: Topic;
   id: string;
@@ -14,6 +25,7 @@ export interface Story {
   importance: number;
   fact_summary: string;
   analysis: string | null;
+  details?: InvestmentDetails;
   evidence_quote: string;
   verification: "source_only" | "codex_reported";
   source: {

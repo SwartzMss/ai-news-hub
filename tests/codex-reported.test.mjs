@@ -36,6 +36,16 @@ test('Codex proposal saves directly without HTTP fetch, evidence matching, inven
 test('auto-publish accepts directly reported sources and preserves archive provenance',async()=>{
  const s=setup();try{const id=await s.execute(true);assert.equal(s.fetched,0);assert.equal(s.artifacts.length,1);assert.equal(s.artifacts[0].items[0].verification,'codex_reported');assert.equal((await s.request('GET',`/runs/${id}`)).json().turns.length,1);}finally{await s.close();}
 });
+test('managed research preserves optional investment details through automatic publication',async()=>{
+ const s=setup();try{
+  const details={kind:'investment',background:'公司公布季度业绩。',metrics:[{name:'收入',value:'12.4',unit:'亿美元',period:'2026 Q3',basis:'actual',evidenceRefs:['filing']}],evidence:[{id:'filing',name:'公司公告',url:'https://example.com/filing',supports:'季度收入实际值'}]};
+  const output=structuredClone(proposal);output.items[0].details=details;
+  const id=await s.execute(true,output);
+  assert.equal((await s.request('GET',`/runs/${id}`)).json().run.status,'succeeded');
+  assert.deepEqual(s.artifacts[0].items[0].details,details);
+  assert.deepEqual(JSON.parse(s.db.prepare('SELECT content_json FROM reports WHERE run_id=?').get(id).content_json).items[0].details,details);
+ }finally{await s.close();}
+});
 test('durable source mode prevents changing Codex report flags into verified provenance',async()=>{
  const s=setup();try{
   const id=await s.execute();const row=s.db.prepare('SELECT id,content_json FROM reports WHERE run_id=?').get(id),document=JSON.parse(row.content_json);document.items[0].verification='source_only';document.items[0].source.fetchedAt=document.collectedAt;s.db.prepare('UPDATE reports SET content_json=? WHERE id=?').run(JSON.stringify(document),row.id);

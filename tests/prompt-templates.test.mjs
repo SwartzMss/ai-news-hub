@@ -33,5 +33,8 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(prompt,/7 天/);
   assert.match(prompt,/半导体/);
   assert.match(prompt,/风险|反证/);
+  assert.match(prompt,/details/);
+  assert.match(prompt,/evidenceRefs/);
+  assert.match(prompt,/actual|实际值/);
   assert.doesNotMatch(prompt,/单纯 AI 模型发布、普通开源项目更新不作为本话题重点/);
 });

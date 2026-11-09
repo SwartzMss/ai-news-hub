@@ -137,6 +137,17 @@ export function readArchives(
         seen.add(item.id);
         safeUrl(item.source.canonical_url);
         safeUrl(item.source.original_url);
+        if(item.details){
+          const ids=new Set();
+          for(const evidence of item.details.evidence??[]){
+            if(ids.has(evidence.id)||new URL(evidence.url).protocol!=='https:')throw Error('unsafe investment evidence');
+            ids.add(evidence.id);safeUrl(evidence.url);
+          }
+          for(const metric of item.details.metrics??[])
+            if(metric.evidenceRefs.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
+          for(const relation of item.details.supplyChain??[])
+            if((relation.relationship==='confirmed'&&!relation.evidenceRefs?.length)||relation.evidenceRefs?.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
+        }
       }
       rawReports.push(report);
     }

@@ -3,6 +3,7 @@ import addFormats from 'ajv-formats';
 import type { FormatsPlugin } from 'ajv-formats';
 import { AppError } from '../errors.js';
 import { proposalSchema, REPORT_SCHEMA, type Proposal, type ProposalItem } from './report-schema.js';
+import { validateInvestmentDetails, type InvestmentDetails } from './investment-details.js';
 import type { ArticleCandidate } from './types.js';
 
 const ajv = new Ajv({ allErrors: true, strict: true, coerceTypes: false, removeAdditional: false });
@@ -29,6 +30,7 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
   const byId = new Map(candidates.map((article) => [article.id, article]));
   const seen = new Set<string>();
   const items = typed.items.map((item): ReportItem => {
+    if(item.details)validateInvestmentDetails(item.details);
     const article = byId.get(item.articleId);
     if (!article) throw new AppError('report_unknown_article');
     if (seen.has(item.articleId)) throw new AppError('report_duplicate_article');
@@ -50,9 +52,20 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
 function markdownText(value: string): string {
   return value.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;').replace(/[\\`*_[\]{}|#+!]/g, '\\$&');
 }
+function detailsMarkdown(details:InvestmentDetails):string {
+  const lines=[`### 研究详情\n\n事件背景：${markdownText(details.background)}`];
+  if(details.metrics?.length)lines.push(`核心数据：\n${details.metrics.map(metric=>`- ${markdownText(metric.name)}：${markdownText(metric.value)} ${markdownText(metric.unit)}（${markdownText(metric.period)}；${markdownText(metric.basis)}${metric.comparison?`；${markdownText(metric.comparison)}`:''}；证据 ${metric.evidenceRefs.map(markdownText).join('、')}）`).join('\n')}`);
+  if(details.supplyChain?.length)lines.push(`产业链影响：\n${details.supplyChain.map(item=>`- ${markdownText(item.segment)}：${markdownText(item.direction)}；${markdownText(item.reason)}（${item.relationship==='confirmed'?'已确认关系':'潜在影响'}）`).join('\n')}`);
+  if(details.investmentLogic)lines.push(`投资逻辑：${markdownText(details.investmentLogic)}`);
+  if(details.watchpoints?.length)lines.push(`后续观察：${details.watchpoints.map(markdownText).join('；')}`);
+  if(details.risks?.length)lines.push(`风险与反证：${details.risks.map(markdownText).join('；')}`);
+  if(details.valuation)lines.push(`估值与市场预期：${markdownText(details.valuation)}`);
+  if(details.evidence?.length)lines.push(`补充证据：\n${details.evidence.map(source=>`- ${markdownText(source.id)} ${markdownText(source.name)}：[查看原文](${source.url.replace(/\(/g,'%28').replace(/\)/g,'%29')})；支持 ${markdownText(source.supports)}`).join('\n')}`);
+  return lines.join('\n\n');
+}
 export function reportMarkdown(report: DailyReport): string {
   return `# ${markdownText(report.title)}\n\n日期：${report.reportDate}；待人工审核。来源关联和格式校验不等于独立事实核验。\n\n` + report.items.map((item) => {
     const url = item.source.canonicalUrl.replace(/\(/g, '%28').replace(/\)/g, '%29');
-    return `## ${markdownText(item.factSummary)}\n\n来源：[${markdownText(item.source.name)}](${url})\n\n原始发布时间：${item.source.publishedAt ?? '未知'}；事件时间：${item.source.eventAt ?? '未知'}；首次抓取：${item.source.fetchedAt ?? '未抓取（Codex 提供）'}\n\n${item.verification==='codex_reported'?'Codex 提供的引文':'依据原文'}：${markdownText(item.evidenceQuote)}\n\n分析（推断）：${item.analysis ? markdownText(item.analysis) : '无'}\n`;
+    return `## ${markdownText(item.factSummary)}\n\n来源：[${markdownText(item.source.name)}](${url})\n\n原始发布时间：${item.source.publishedAt ?? '未知'}；事件时间：${item.source.eventAt ?? '未知'}；首次抓取：${item.source.fetchedAt ?? '未抓取（Codex 提供）'}\n\n${item.verification==='codex_reported'?'Codex 提供的引文':'依据原文'}：${markdownText(item.evidenceQuote)}\n\n分析（推断）：${item.analysis ? markdownText(item.analysis) : '无'}\n${item.details?`\n${detailsMarkdown(item.details)}\n`:''}`;
   }).join('\n');
 }
