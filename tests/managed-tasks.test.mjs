@@ -65,6 +65,29 @@ test('later runs receive recent same-task report summaries for seven-day dedupli
   assert.match(second.input.developerInstructions,/https:\/\/example\.com\/model-0/);
  }finally{await s.close();}
 });
+test('flexible-count tasks receive full same-task history without leaking it to another task',async()=>{
+ const s=setup();try{
+  const prompts=['研究并生成日报'];
+  const task=(await s.request('POST','/tasks',{...configuration,name:'每日开源项目',topic:'每日开源项目',prompts})).json().task;
+  const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first-flexible'})).json().run.id;
+  await s.wait(()=>s.adapter.calls[0]);
+  const summary='项目发布了重要更新。用途：本地开发工具；近期证据：v2 发布；[项目仓库](https://github.com/example/project)';
+  s.adapter.succeed(0,JSON.stringify({...proposal,items:[{...proposal.items[0],factSummary:summary,url:'https://example.com/releases/v2'}]}));
+  await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
+  const secondRun=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second-flexible'})).json().run.id;
+  const second=await s.wait(()=>s.adapter.calls[1]);
+  assert.equal(second.input.outputSchema.properties.items.maxItems,10);
+  assert.match(second.input.developerInstructions,/近期同任务日报/);
+  assert.ok(second.input.developerInstructions.includes(summary));
+  assert.ok(second.input.developerInstructions.includes('https://example.com/releases/v2'));
+  s.adapter.succeed(1,JSON.stringify(proposal));
+  await s.wait(async()=>(await s.request('GET',`/runs/${secondRun}`)).json().run.status==='succeeded');
+  const other=(await s.request('POST','/tasks',{...configuration,name:'另一个开源任务',topic:'每日开源项目',prompts})).json().task;
+  await s.request('POST',`/tasks/${other.id}/runs`,{idempotencyKey:'other-flexible'});
+  const third=await s.wait(()=>s.adapter.calls[2]);
+  assert.doesNotMatch(third.input.developerInstructions,/近期同任务日报/);
+ }finally{await s.close();}
+});
 test('stop prevents subsequent rounds; invalid plans are rejected',async()=>{
  const s=setup();try{
   for(const bad of [{schedule:{kind:'toString'}},{schedule:{kind:'__proto__'}},{schedule:{kind:42}},{prompts:[]},{timezone:'bad/timezone'},{schedule:{kind:'interval',minutes:0}},{schedule:{kind:'weekly',time:'25:00',weekday:8}}])assert.equal((await s.request('POST','/tasks',{...configuration,...bad})).statusCode,400);

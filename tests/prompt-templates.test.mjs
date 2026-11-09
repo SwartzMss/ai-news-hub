@@ -6,6 +6,13 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.equal(templates.length,3);
   assert.equal(new Set(templates.map(t=>t.id+'@'+t.version)).size,3);
   assert.equal(templates.find(t=>t.name==='每日热点观察').prompts.length,2);
+  const opensource=templates.find(t=>t.id==='daily-opensource');
+  assert.equal(opensource.version,1);
+  assert.equal(opensource.prompts.length,2);
+  assert.match(opensource.prompts[0],/候选|发现/);
+  assert.match(opensource.prompts[1],/JSON Schema/);
+  assert.match(opensource.prompts[1],/社区关注|社区热度/);
+  assert.doesNotMatch(opensource.prompts.join('\n'),/【固定 (8|10) 条】/);
   for(const t of templates){assert.equal(t.version,1);assert.ok(t.prompts.every(p=>p.length>100));}
   const technology=templates.find(t=>t.id==='daily-technology');
   assert.equal(technology.prompts.length,1);
