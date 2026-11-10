@@ -12,14 +12,20 @@ export interface NewsletterDispatch {
   dispatched_at:string|null;workflow_run_id:number|null;run_url:string|null;html_url:string|null;
   last_checked_at:string|null;error_code:string|null;finished_at:string|null;created_at:string;updated_at:string;
 }
-const daily={topic:'newsletter',prompts:['newsletter'],autoPublish:false,schedule:{kind:'daily' as const,time:'09:00'},timezone:'Asia/Shanghai'};
-const nextDay=(after:Date)=>nextOccurrence(daily,after)!;
+const daily={topic:'newsletter',prompts:['newsletter'],autoPublish:false,timezone:'Asia/Shanghai'};
+const nextDay=(time:string,after:Date)=>nextOccurrence({...daily,schedule:{kind:'daily',time}},after)!;
 const local=(at:Date)=>new Date(at.getTime()+8*3600000).toISOString();
 const dispatchId=(slot:Date)=>`newsletter-${local(slot).slice(0,10).replaceAll('-','')}-${local(slot).slice(11,16).replace(':','')}`;
-function afterSlot(slot:Date):string {
-  return local(slot).slice(11,16)==='10:00'?nextDay(slot):new Date(slot.getTime()+15*60000).toISOString();
+function attempt(slot:Date,time:string):number {
+  const localTime=local(slot).slice(11,16),slotMinutes=Number(localTime.slice(0,2))*60+Number(localTime.slice(3,5));
+  const startMinutes=Number(time.slice(0,2))*60+Number(time.slice(3,5));
+  const offset=(slotMinutes-startMinutes+1440)%1440;
+  if(offset>60||offset%15!==0)throw new HttpError(500,'newsletter_schedule_invalid');
+  return offset/15;
 }
-function attempt(slot:Date):number{return Number(local(slot).slice(11,13))===10?4:Number(local(slot).slice(14,16))/15;}
+function afterSlot(slot:Date,time:string):string {
+  return attempt(slot,time)===4?nextDay(time,slot):new Date(slot.getTime()+15*60000).toISOString();
+}
 const code=(error:unknown)=>error instanceof NewsletterGatewayError?error.code:'github_unavailable';
 const definite=(error:unknown)=>error instanceof NewsletterGatewayError&&error.definitive;
 
@@ -32,14 +38,24 @@ export class NewsletterScheduler {
     db.prepare("UPDATE newsletter_dispatches SET status='dispatch_unknown',error_code='backend_restarted',updated_at=? WHERE status='dispatching'").run(now().toISOString());
   }
   state(){
-    const row=this.db.prepare('SELECT enabled,next_run_at,updated_at FROM newsletter_schedule WHERE id=1').get()!;
-    return {schedule:{enabled:row.enabled===1,timezone:'Asia/Shanghai',time:'09:00',next_run_at:row.next_run_at as string|null,updated_at:String(row.updated_at)},
+    const row=this.db.prepare('SELECT enabled,local_time,next_run_at,updated_at FROM newsletter_schedule WHERE id=1').get()!;
+    return {schedule:{enabled:row.enabled===1,timezone:'Asia/Shanghai',time:String(row.local_time),next_run_at:row.next_run_at as string|null,updated_at:String(row.updated_at)},
       dispatches:this.db.prepare('SELECT * FROM newsletter_dispatches ORDER BY created_at DESC,dispatch_id DESC LIMIT 50').all() as unknown as NewsletterDispatch[]};
   }
-  configure(enabled:boolean,at=this.now()){
+  configure(enabled:boolean,timeOrAt?:string|Date,at=this.now()){
+    if(timeOrAt instanceof Date)at=timeOrAt;
     const before=this.state().schedule;
-    const next=enabled?(before.enabled?before.next_run_at:nextDay(at)):null;
-    this.db.prepare('UPDATE newsletter_schedule SET enabled=?,next_run_at=?,updated_at=? WHERE id=1').run(enabled?1:0,next,at.toISOString());
+    const time=typeof timeOrAt==='string'?timeOrAt:before.time;
+    if(!/^([01]\d|2[0-3]):[0-5]\d$/.test(time))throw new HttpError(400,'invalid_schedule');
+    const changed=time!==before.time;
+    const next=enabled?(before.enabled&&!changed?before.next_run_at:nextDay(time,at)):null;
+    this.db.exec('BEGIN IMMEDIATE');
+    try{
+      this.db.prepare('UPDATE newsletter_schedule SET enabled=?,local_time=?,next_run_at=?,updated_at=? WHERE id=1').run(enabled?1:0,time,next,at.toISOString());
+      if(changed||!enabled)this.db.prepare("UPDATE newsletter_dispatches SET status='failed',error_code=?,finished_at=?,updated_at=? WHERE status='pending'")
+        .run(changed?'schedule_changed':'schedule_paused',at.toISOString(),at.toISOString());
+      this.db.exec('COMMIT');
+    }catch(error){this.db.exec('ROLLBACK');throw error;}
     return this.state().schedule;
   }
   async manual(at=this.now()):Promise<NewsletterDispatch>{
@@ -91,13 +107,13 @@ export class NewsletterScheduler {
     let next=schedule.next_run_at;
     let loops=0;
     while(next&&Date.parse(next)<=at.getTime()&&loops++<50){
-      const slot=new Date(next),count=attempt(slot),missed=at.getTime()-slot.getTime()>10*60000;
+      const slot=new Date(next),count=attempt(slot,schedule.time),missed=at.getTime()-slot.getTime()>10*60000;
       this.insert(dispatchId(slot),count?'retry':'scheduled',next,count,missed?'failed':'pending',missed?'schedule_missed':null,at);
-      next=afterSlot(slot);
+      next=afterSlot(slot,schedule.time);
     }
     if(next&&Date.parse(next)<=at.getTime()){
       this.insert(`newsletter-backlog-${dispatchId(new Date(next))}`,'retry',next,4,'failed','misfire_backlog_truncated',at);
-      next=nextDay(at);
+      next=nextDay(schedule.time,at);
     }
     if(next!==schedule.next_run_at)this.db.prepare('UPDATE newsletter_schedule SET next_run_at=?,updated_at=? WHERE id=1 AND enabled=1').run(next,at.toISOString());
   }

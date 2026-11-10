@@ -174,4 +174,4 @@ README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 syst
 
 Issue #77：热点新闻可选结构化详情已接入研究输出、报告校验、发布归档和公共静态详情页；旧归档与投资详情兼容。Issue #78 已更新每日热点观察 v1 模板，现有任务配置不自动改写。
 
-Issue #80：Newsletter 调度入口从 GitHub `schedule` 移至 Linux Backend，独立 SQLite 计划/dispatch 记录、GitHub Run 回查、管理后台手动触发与状态查看已实现；默认暂停，真实发送和时间准确性仍需部署后验收。邮件业务继续由 Cloudflare Functions、D1 和 Resend 执行。
+Issue #80：Newsletter 调度入口从 GitHub `schedule` 移至 Linux Backend，独立 SQLite 计划/dispatch 记录、可配置的北京时间每日开始时间、GitHub Run 回查、管理后台手动触发与状态查看已实现；默认暂停，真实发送和时间准确性仍需部署后验收。邮件业务继续由 Cloudflare Functions、D1 和 Resend 执行。

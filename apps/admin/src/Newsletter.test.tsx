@@ -12,7 +12,18 @@ test('newsletter page shows schedule, safe run link and manual controls',async()
   await screen.findByText('每日计划');
   expect(screen.getByRole('link',{name:'#42 ↗'}).getAttribute('rel')).toContain('noopener');
   fireEvent.click(screen.getByRole('button',{name:'启用计划'}));
-  await waitFor(()=>expect(api).toHaveBeenCalledWith('/newsletter/schedule',expect.any(AbortSignal),{enabled:true},'PUT'));
+  await waitFor(()=>expect(api).toHaveBeenCalledWith('/newsletter/schedule',expect.any(AbortSignal),{enabled:true,time:'09:00'},'PUT'));
   fireEvent.click(screen.getByRole('button',{name:'立即触发'}));
   await waitFor(()=>expect(api).toHaveBeenCalledWith('/newsletter/dispatch',expect.any(AbortSignal),{}));
+});
+test('newsletter page lets the administrator save a Beijing start time',async()=>{
+  const state={schedule:{enabled:false,timezone:'Asia/Shanghai',time:'09:00',next_run_at:null},dispatches:[]};
+  const api=vi.fn(async(path:string,_signal?:AbortSignal,body?:unknown)=>{if(path==='/newsletter')return state;if(path==='/newsletter/schedule'){state.schedule.time=(body as {time:string}).time;return {schedule:state.schedule};}throw Error(path);}) as unknown as Client;
+  render(<Newsletter api={api}/>);
+  const input=await screen.findByLabelText('开始时间（北京时间）');
+  await waitFor(()=>expect(input).not.toHaveProperty('disabled',true));
+  fireEvent.change(input,{target:{value:'10:30'}});
+  await waitFor(()=>expect(input).toHaveProperty('value','10:30'));
+  fireEvent.click(screen.getByRole('button',{name:'保存时间'}));
+  await waitFor(()=>expect(api).toHaveBeenCalledWith('/newsletter/schedule',expect.any(AbortSignal),{enabled:false,time:'10:30'},'PUT'));
 });
