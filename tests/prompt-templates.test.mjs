@@ -45,6 +45,8 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(prompt,/风险|反证/);
   assert.match(prompt,/details/);
   assert.match(prompt,/evidenceRefs/);
+  assert.match(analysis,/每条入选的投资相关事件/);
+  assert.match(analysis,/不得省略整个 details|不应成为省略整个 details/);
   assert.match(prompt,/actual|实际值/);
   assert.doesNotMatch(prompt,/单纯 AI 模型发布、普通开源项目更新不作为本话题重点/);
 });
@@ -67,6 +69,8 @@ test('headlines v1 keeps two rounds and asks for source-backed news JSON',()=>{
   assert.match(final,/observed.*analysis/s);
   assert.match(final,/date.*datetime.*approximate/s);
   assert.match(final,/2500/);
+  assert.match(final,/每条入选事件都应填写 items\[\]\.details/);
+  assert.match(final,/剔除候选/);
   assert.match(final,/不独立抓取|不独立核验/);
   assert.doesNotMatch(final,/【固定 (8|10) 条】/);
 });
