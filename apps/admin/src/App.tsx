@@ -6,6 +6,7 @@ import { Login } from "./Login";
 import { Settings } from "./Settings";
 import { Dashboard, TaskDetail, RunDetail } from "./TaskViews";
 import { Brand, Icon, pathFor } from "./ui";
+import {Newsletter} from './Newsletter';
 
 export function App() {
   const [token, setToken] = useState(""),
@@ -47,11 +48,12 @@ export function App() {
   );
   const settings = !!settingsPage;
   const resultsPage = hash === "#/runs" || hash.startsWith("#/runs?");
+  const newsletterPage = hash === '#/newsletter';
   const resultsTaskId =
     new URLSearchParams(hash.split("?")[1] ?? "").get("taskId") ?? "";
   const inResults = resultsPage || !!runId;
   const tasksPage = hash === "#/tasks" || (!!taskId && !runId);
-  const overviewPage = !settings && !inResults && !tasksPage;
+  const overviewPage = !settings && !inResults && !tasksPage && !newsletterPage;
   const resultsState =
     new URLSearchParams(hash.split("?")[1] ?? "").get("state") ?? "all";
   function logout() {
@@ -93,6 +95,10 @@ export function App() {
             <Icon name="file" />
             <span>运行与结果</span>
           </a>
+          <a href="#/newsletter" aria-current={newsletterPage ? "page" : undefined}>
+            <Icon name="inbox" />
+            <span>邮件发送</span>
+          </a>
           {settingsPages.map((page) => (
             <a
               key={page.id}
@@ -115,7 +121,7 @@ export function App() {
         className={`workspace-content${settings ? " settings-page" : ""}`}
         id="main-content"
         tabIndex={-1}
-        key={`${token}:${overviewPage}:${resultsPage}:${resultsTaskId}:${resultsState}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
+        key={`${token}:${overviewPage}:${resultsPage}:${newsletterPage}:${resultsTaskId}:${resultsState}:${settingsPage?.id ?? ""}:${taskId ?? ""}:${runId ?? ""}`}
       >
         {taskId && runId && (
           <div className="run-back-links">
@@ -132,6 +138,8 @@ export function App() {
             initialSection={`settings-${settingsPage!.id}`}
             hideNavigation
           />
+        ) : newsletterPage ? (
+          <Newsletter api={api}/>
         ) : resultsPage ? (
           <Runs
             api={api}

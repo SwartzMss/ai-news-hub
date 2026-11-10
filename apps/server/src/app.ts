@@ -20,8 +20,10 @@ import { NEWS_TASK_ID } from './news/source.js';
 import {SettingsStore} from './settings/store.js';
 import {AuthStore} from './auth/store.js';
 import {registerAuthRoutes} from './auth/routes.js';
+import {NewsletterScheduler} from './newsletter/scheduler.js';
+import {GitHubNewsletterGateway,type NewsletterGateway} from './newsletter/github.js';
 
-export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: SourceFetch; now?: () => Date; githubAdapter?: GitHubAdapter } = {}) {
+export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: SourceFetch; now?: () => Date; githubAdapter?: GitHubAdapter; newsletterGateway?:NewsletterGateway; onNewsletterScheduler?:(scheduler:NewsletterScheduler)=>void } = {}) {
   const db = openDatabase(config.dataDir);
   let release: () => void;
   try { release = acquireBackendLock(db); }
@@ -72,6 +74,8 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     const client=new GitHubArchive(target,target.token);try{return await client.publish(artifact,signal);}finally{await client.close();}
   }};
   const publications=new PublicationService(db,settings.publication(),settings.publication()?github:undefined);
+  const newsletter=new NewsletterScheduler(db,options.newsletterGateway??new GitHubNewsletterGateway(()=>settings.publication()?.token),options.now);
+  options.onNewsletterScheduler?.(newsletter);
   engine.setAutomaticPublisher(async(reportId,signal)=>{
     if(signal.aborted)throw new AppError('publication_interrupted');
     if(publications.busy())throw new AppError('publication_busy');
@@ -84,7 +88,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     finally {signal.removeEventListener('abort',interrupt);}
   });
   engine.resetSchedules();
-  const scheduleTimer=setInterval(()=>{try{if(authentication.status().initialized)engine.tick();}catch{app.log.error({code:'scheduler_failed'},'scheduler_failed');}},1000);
+  const scheduleTimer=setInterval(()=>{try{if(authentication.status().initialized){engine.tick();void newsletter.tick(options.now?.()??new Date()).catch(()=>app.log.error({code:'newsletter_scheduler_failed'},'newsletter_scheduler_failed'));}}catch{app.log.error({code:'scheduler_failed'},'scheduler_failed');}},1000);
   scheduleTimer.unref();
   const applySettings=()=>{
     const runtime=settings.runtime(),target=settings.publication();
@@ -93,10 +97,10 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     app.log.level="info";
   };
   registerAdmin(app);
-  app.addHook('preClose', async () => { clearInterval(scheduleTimer); publications.interrupt(); await engine.close(); await publications.close(); await http.close(); });
+  app.addHook('preClose', async () => { clearInterval(scheduleTimer); publications.interrupt(); await newsletter.close(); await engine.close(); await publications.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
   app.register(async scope=>{registerAuthRoutes(scope,authentication);},{prefix:'/api'});
-  app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings,options.now); }, { prefix: '/api' });
+  app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings,options.now,newsletter); }, { prefix: '/api' });
   if(!authentication.status().initialized)app.log.info({event:'admin_setup_required'},'admin_setup_required');
   app.addHook('onResponse', async (request, reply) => {
     request.log.info({ statusCode: reply.statusCode, method: request.method, route: request.routeOptions.url }, 'request_completed');

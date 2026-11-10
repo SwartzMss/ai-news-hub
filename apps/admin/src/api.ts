@@ -78,6 +78,9 @@ export function errorText(error: unknown): string {
     invalid_publication_config: "GitHub 归档配置不完整或格式不正确。",
     workflow_run_finalized: "本 Run 已生成日报，请新建研究以调整内容。",
     turn_limit: "已达到每个 Run 20 轮的上限，请开始新的研究。",
+    newsletter_busy: "已有邮件工作流正在运行或等待核对，请先查看执行记录。",
+    newsletter_rate_limited: "手动触发过于频繁，请五分钟后重试。",
+    newsletter_not_unknown: "此记录已不处于待核对状态，请刷新页面。",
   };
   return messages[error.code] ?? `请求失败（${error.code}）。请刷新或重试。`;
 }
