@@ -143,10 +143,18 @@ export function readArchives(
             if(ids.has(evidence.id)||new URL(evidence.url).protocol!=='https:')throw Error('unsafe investment evidence');
             ids.add(evidence.id);safeUrl(evidence.url);
           }
-          for(const metric of item.details.metrics??[])
-            if(metric.evidenceRefs.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
-          for(const relation of item.details.supplyChain??[])
-            if((relation.relationship==='confirmed'&&!relation.evidenceRefs?.length)||relation.evidenceRefs?.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
+          if(item.details.kind==='investment'){
+            for(const metric of item.details.metrics??[])
+              if(metric.evidenceRefs.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
+            for(const relation of item.details.supplyChain??[])
+              if((relation.relationship==='confirmed'&&!relation.evidenceRefs?.length)||relation.evidenceRefs?.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
+          }else if(item.details.kind==='news'){
+            const valid=refs=>!refs?.some(id=>!ids.has(id));
+            for(const entry of [...(item.details.keyFacts??[]),...(item.details.timeline??[]),...(item.details.positions??[])])
+              if(!valid(entry.evidenceRefs))throw Error('invalid news evidence reference');
+            for(const impact of item.details.impacts??[])
+              if((impact.status==='observed'&&!impact.evidenceRefs?.length)||!valid(impact.evidenceRefs))throw Error('invalid news evidence reference');
+          }
         }
       }
       rawReports.push(report);

@@ -17,6 +17,17 @@ export interface InvestmentDetails {
   valuation?: string;
   evidence?: {id:string;name:string;url:string;supports:string}[];
 }
+export interface NewsDetails {
+  kind: "news";
+  background: string;
+  keyFacts?: {name:string;value:string;unit?:string;period?:string;nature:"confirmed"|"statement"|"reported"|"estimate"|"inference";evidenceRefs:string[]}[];
+  timeline?: {time:string;precision:"date"|"datetime"|"approximate";event:string;evidenceRefs:string[]}[];
+  positions?: {actor:string;statement:string;form:"quote"|"paraphrase";evidenceRefs:string[]}[];
+  impacts?: {description:string;status:"observed"|"analysis";evidenceRefs?:string[]}[];
+  uncertainties?: string[];
+  watchpoints?: string[];
+  evidence?: {id:string;name:string;url:string;supports:string}[];
+}
 export interface Story {
   topic: Topic;
   id: string;
@@ -25,7 +36,7 @@ export interface Story {
   importance: number;
   fact_summary: string;
   analysis: string | null;
-  details?: InvestmentDetails;
+  details?: InvestmentDetails | NewsDetails;
   evidence_quote: string;
   verification: "source_only" | "codex_reported";
   source: {

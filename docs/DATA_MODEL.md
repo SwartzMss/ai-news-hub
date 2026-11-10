@@ -104,3 +104,7 @@ Migration 11 追加 `report_deletions`，保存日报 ID、频道、日期、版
 ## 投资研究详情
 
 日报条目可选 `details`，其 `kind` 固定为 `investment`；该对象随报告 JSON 存于 SQLite、随批准后的归档 JSON 发布，并进入 Markdown 日报。指标引用本条 `details.evidence` 的 ID；补充证据有名称、HTTPS URL 和支持的事实说明。`analysis` 仍是简短判断摘要。旧条目不含 details，Schema 仍接受，不做数据迁移或回填。
+
+## 热点新闻详情
+
+日报条目的 `details` 也可为 `kind=news`。`background` 必填；`keyFacts`、`timeline`、`positions`、`impacts`、`uncertainties`、`watchpoints`、`evidence` 可选。事实、时间线、表态和已观察影响的 `evidenceRefs` 指向同条补充证据 ID。报告 JSON 存于原 SQLite 字段并原样进入批准后的归档，无新增迁移；旧报告不回填。

@@ -64,6 +64,25 @@ test("investment details survive publication artifact and public archive loading
   assert.deepEqual(readArchives(dir,{allowDemo:true}).articles[0].details,details);
  }finally{f.close();rmSync(dir,{recursive:true,force:true});}
 });
+test('news details survive publication artifact and public archive loading',()=>{
+ const f=publicationFixture();
+ const details={kind:'news',background:'政策此前处于征求意见阶段。',keyFacts:[{name:'生效范围',value:'全国',nature:'confirmed',evidenceRefs:['notice']}],timeline:[{time:'2026-11-03',precision:'date',event:'正式发布',evidenceRefs:['notice']}],positions:[{actor:'主管部门',statement:'分阶段实施',form:'paraphrase',evidenceRefs:['notice']}],impacts:[{description:'已发布通知',status:'observed',evidenceRefs:['notice']}],evidence:[{id:'notice',name:'正式通知',url:'https://example.com/notice',supports:'发布时间与范围'}]};
+ const doc={...f.doc,items:[{...f.doc.items[0],details}]};
+ const dir=mkdtempSync('/tmp/web-news-');
+ try{
+  f.db.prepare('UPDATE reports SET content_json=? WHERE id=?').run(JSON.stringify(doc),'r');
+  const artifact=JSON.parse(archiveArtifact(reviewedReport(f.db,'r'),'2026-11-03T01:00:00Z').content);
+  assert.deepEqual(artifact.items[0].details,details);
+  const folder=`${dir}/2026/11/03/opensource`;mkdirSync(folder,{recursive:true});writeFileSync(`${folder}/v000001.json`,JSON.stringify(artifact));
+  assert.deepEqual(readArchives(dir,{allowDemo:true}).articles[0].details,details);
+ }finally{f.close();rmSync(dir,{recursive:true,force:true});}
+});
+test('public archive rejects unsafe or unresolved news evidence',()=>{
+ for(const change of [
+  {evidence:[{id:'notice',name:'通知',url:'http://example.com/notice',supports:'发布'}]},
+  {keyFacts:[{name:'范围',value:'全国',nature:'confirmed',evidenceRefs:['missing']}]},
+ ]){const s=setup();try{s.doc.items[0].details={kind:'news',background:'政策发布。',...change};s.save(s.doc);assert.throws(()=>readArchives(s.dir,{allowDemo:true}));}finally{s.close();}}
+});
 test('public archive rejects unsafe supplemental investment evidence',()=>{
  const s=setup();try{
   s.doc.items[0].details={kind:'investment',background:'业绩变化。',evidence:[{id:'filing',name:'公告',url:'http://example.com/filing',supports:'收入'}]};
