@@ -14,6 +14,9 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(opensource.prompts[0],/候选|发现/);
   assert.match(opensource.prompts[1],/JSON Schema/);
   assert.match(opensource.prompts[1],/社区关注|社区热度/);
+  for(const field of ['用途：','主要技术栈：','技术要点：','近期证据：'])
+    assert.ok(opensource.prompts[1].includes(field),field);
+  assert.match(opensource.prompts[1],/有依据|核实|证据/);
   assert.doesNotMatch(opensource.prompts.join('\n'),/【固定 (8|10) 条】/);
   for(const t of templates){assert.equal(t.version,1);assert.ok(t.prompts.every(p=>p.length>100));}
   const technology=templates.find(t=>t.id==='daily-technology');
