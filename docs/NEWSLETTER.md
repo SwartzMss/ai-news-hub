@@ -51,7 +51,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 工作流优先读取以上规范名称；为兼容早期将地址保存为 Variable `NEWSLETTER_SEND_SECRET`、将发送密钥保存为 Secret `NEWSLETTER_SITE_URL` 的配置，也暂时接受这组旧名称。规范名称配置完成后应移除旧项。工作流显示成功并不代表发出了邮件；日志中的 `Newsletter dispatch disabled` 表示配置不完整，`waiting=true` 表示目标话题当天日报尚未全部发布。
 
-`Daily public newsletter` 工作流在北京时间 **09:00** 开始检查，每隔 15 分钟重试，至 **10:00**。GitHub 定时任务可能延迟，不保证精确到分钟；也可以从 Actions 手动运行。
+`Daily public newsletter` 仅接受 `workflow_dispatch`，不再配置 GitHub `schedule`。Linux Backend 的「邮件发送」页面可启用北京时间 **09:00** 计划，并在 09:15、09:30、09:45、10:00 创建后续窗口检查。GitHub Runner 启动时间仍可能有延迟；也可以从后台手动触发，GitHub 网页保留应急手动入口。
 
 发送前会等待所有目标话题都有当天的已发布日报。任何话题尚未更新时先等待，不把昨天的日报当今天发送。暂停某个话题后，如仍需发送其他话题，请相应调整 `NEWSLETTER_TOPIC_IDS`。当前三个话题 ID 可以从网站话题链接读取。
 
@@ -61,7 +61,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 1. 用你自己的邮箱在网站申请订阅。
 2. 打开确认链接，点击“确认订阅”；仅打开链接不会激活，避免邮件扫描器误操作。确认成功后可点击「开始阅读」；失效链接页面提供「重新订阅」入口。
-3. 当目标话题当天日报均已发布时，从 GitHub Actions 手动运行发送任务。
+3. 当目标话题当天日报均已发布时，从本机管理后台「邮件发送」手动触发一次，或从 GitHub Actions 应急手动运行。
 4. 检查邮件内容、完整日报链接和退订操作，再测试重复执行不会重复发当日汇总。
 
 邮件服务返回接受不等于已进入收件箱；可在 Resend 查看实际投递情况。请先用自己的测试邮箱验收，不导入未经确认的地址。
@@ -74,7 +74,7 @@ D1 保存订阅邮箱、确认状态、确认令牌哈希、每日快照和发�
 
 网络结果不确定时，保留原邮件内容和服务商幂等键重试。超过保守的 23 小时重试窗口后标为 `uncertain`，不会盲目再发；在 D1 的 `newsletter_deliveries` 和 Resend 中人工核对。定时任务只输出无个人信息的发送计数。API/域名配置出错时，也可检查 Pages Functions 日志中的脱敏错误码。
 
-D1 备份/导出含个人信息，应按私有数据处理。Linux 私有 Backend、Codex 和系统任务不需要读取订阅数据库或邮件密钥。
+D1 备份/导出含个人信息，应按私有数据处理。Linux 私有 Backend 不读取订阅数据库或邮件密钥；只持有用于 GitHub Workflow Dispatch 的加密 GitHub Token。Codex 与系统研究任务不接收该 Token。
 
 参考：[Pages Functions](https://developers.cloudflare.com/pages/functions/)、[D1 绑定](https://developers.cloudflare.com/pages/functions/bindings/)、[Resend 发信接口](https://resend.com/docs/api-reference/emails/send-email)。
 
@@ -83,3 +83,13 @@ D1 备份/导出含个人信息，应按私有数据处理。Linux 私有 Backen
 先检查 Resend 的 Emails/Logs，再到 Pages 最新生产部署的 Functions 查看实时日志。数据库为 `pending` 只说明申请已保存，不代表邮件发送成功。日志中的 `newsletter_confirmation_failed` 包含脱敏错误码，不需要复制 API Key 或完整请求头。
 
 Cloudflare Workers 的 `fetch` 不支持 `redirect: error`，此前会在请求 Resend 前抛错并记录 `mail_unavailable`。发信与公共日报索引请求现使用 `manual` 并拒绝非 2xx 响应，保持禁止跟随重定向。重新部署修复后，等待同一邮箱的一小时冷却结束再重试；需要立即测试时，仅针对自己的未确认订阅清空 `confirmation_sent_at`，不要将状态手工改为 `active`。
+
+## Linux Backend 调度与切换
+
+Backend 使用 SQLite migration 12 建立独立的 Newsletter 计划及 dispatch 记录，默认**暂停**，不会在升级时自动发送。进入受保护的管理后台「邮件发送」，确认 GitHub 设置中保存的 Token 对 `SwartzMss/ai-news-hub` 有 **Actions: write** 权限（归档仓库仍需 Contents read/write），再启用每日计划。当前复用加密保存的 GitHub Token；目标仓库、`newsletter.yml` 和 `main` 分支固定在服务端，后台不接受任意仓库或 ref。升级前备份包含 `news.db` 与 `settings.key` 的完整私有数据目录。
+
+切换顺序：先部署支持新调度的 Backend，配置 Token 权限，在后台用自己的测试订阅验证手动触发、Run 链接、状态同步、失败与重启恢复；再合入或部署移除旧 GitHub `schedule` 的工作流，并启用 Backend 计划。切勿让两个定时入口同时运行。后台只有 Workflow 状态；`sent`、`failed`、`pending`、`waiting` 的业务计数仍在 GitHub Run 日志及 D1 / Resend 查看。Workflow 成功不等于邮件已投递。
+
+计划在北京时间 09:00、09:15、09:30、09:45 和 10:00 各有唯一 dispatch ID。每次窗口都调用现有幂等发送脚本，以便已发布日报较晚到达或收件人分批发送；同一时间槽重复 tick 不会重复触发。若服务在计划时间后 10 分钟内恢复，会补做该时间槽；超过 10 分钟标记 `schedule_missed` 并跳到后续时间槽。暂停会取消未来计划；恢复从下一个未来 09:00 开始，不补发暂停期间窗口。手动触发每 5 分钟最多一次，并与定时触发共享单次运行限制。
+
+POST 超时、连接中断或响应缺少 Run ID 时标记 `dispatch_unknown`，后续用工作流名称中的 dispatch ID 查询 GitHub Run；未确认时阻止新的 Backend dispatch，绝不盲目重发。若确实没有运行，管理员核对 GitHub Actions 后可在后台明确解除；这会记录人工确认，后续时间槽才可继续。服务重启会把未完成的 `dispatching` 标记为待核对；已取得 Run ID 的记录继续查询 GitHub 状态。GitHub API 错误只记录脱敏错误码，不保存响应正文或 Token。

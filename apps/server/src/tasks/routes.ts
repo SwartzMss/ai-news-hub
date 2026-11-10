@@ -11,6 +11,8 @@ import type {AuthStore} from '../auth/store.js';
 import {registerCredentialRoutes} from '../auth/routes.js';
 import type {SettingsStore} from '../settings/store.js';
 import {SETTINGS_SCHEMA} from '../settings/schema.js';
+import {registerNewsletterRoutes} from '../newsletter/routes.js';
+import type {NewsletterScheduler} from '../newsletter/scheduler.js';
 
 const id = { type: 'string', minLength: 1, maxLength: 256 };
 const idempotencyKey = { type: 'string', pattern: '^[A-Za-z0-9._:-]{1,128}$' };
@@ -19,7 +21,7 @@ const params = (name: string) => ({ type: 'object', required: [name], properties
 type TaskParams = { taskId: string };
 type RunParams = { runId: string };
 
-export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, auth: AuthStore, newsDb?: DatabaseSync, publications?: PublicationService, settings?: SettingsStore, applySettings?:()=>void, now:()=>Date=()=>new Date()): Promise<void> {
+export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngine, auth: AuthStore, newsDb?: DatabaseSync, publications?: PublicationService, settings?: SettingsStore, applySettings?:()=>void, now:()=>Date=()=>new Date(), newsletter?:NewsletterScheduler): Promise<void> {
   app.addHook('onRequest', async (request, reply) => {
     reply.header('cache-control', 'no-store');
     if (!auth.status().initialized) throw new HttpError(503, 'management_disabled');
@@ -39,6 +41,7 @@ export async function registerTaskRoutes(app: FastifyInstance, engine: TaskEngin
   }
   if (newsDb) registerNewsRoutes(app, newsDb);
   if (publications) registerPublicationRoutes(app,publications);
+  if (newsletter) registerNewsletterRoutes(app,newsletter);
   app.get('/overview', async()=>engine.overview(now()));
   app.get('/prompt-templates', async () => ({ templates: promptTemplates() }));
   app.get('/tasks', async () => ({ tasks: engine.listTasks() }));

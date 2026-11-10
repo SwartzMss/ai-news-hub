@@ -1,12 +1,20 @@
 name: Daily public newsletter
+run-name: Newsletter ${{ inputs.dispatch_id || 'manual' }}
 on:
-  schedule:
-    # 09:00 Asia/Shanghai, then bounded retries until 10:00.
-    - cron: '0,15,30,45 9 * * *'
-      timezone: 'Asia/Shanghai'
-    - cron: '0 10 * * *'
-      timezone: 'Asia/Shanghai'
   workflow_dispatch:
+    inputs:
+      dispatch_id:
+        description: Backend dispatch ID
+        required: false
+        type: string
+      scheduled_at:
+        description: Planned Asia/Shanghai time
+        required: false
+        type: string
+      trigger_reason:
+        description: scheduled, retry, or manual
+        required: false
+        type: string
 permissions:
   contents: read
 concurrency:
@@ -25,13 +33,17 @@ jobs:
       - uses: actions/setup-node@v4
         with:
           node-version: 22.19.0
-      - name: Log schedule timing
+      - name: Log dispatch timing
         env:
           EVENT_NAME: ${{ github.event_name }}
-          SCHEDULE_CRON: ${{ github.event.schedule || 'manual' }}
+          DISPATCH_ID: ${{ inputs.dispatch_id || 'manual' }}
+          SCHEDULED_AT: ${{ inputs.scheduled_at || 'manual' }}
+          TRIGGER_REASON: ${{ inputs.trigger_reason || 'manual' }}
         run: |
           echo "Event: ${EVENT_NAME}"
-          echo "Schedule cron: ${SCHEDULE_CRON}"
+          echo "Dispatch ID: ${DISPATCH_ID}"
+          echo "Scheduled at: ${SCHEDULED_AT}"
+          echo "Trigger reason: ${TRIGGER_REASON}"
           echo "Started at UTC: $(date -u --iso-8601=seconds)"
           echo "Started at Asia/Shanghai: $(TZ=Asia/Shanghai date --iso-8601=seconds)"
       - name: Send approved production daily aggregate
