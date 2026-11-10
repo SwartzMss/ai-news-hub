@@ -14,6 +14,9 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(opensource.prompts[0],/候选|发现/);
   assert.match(opensource.prompts[1],/JSON Schema/);
   assert.match(opensource.prompts[1],/社区关注|社区热度/);
+  for(const field of ['用途：','主要技术栈：','技术要点：','近期证据：'])
+    assert.ok(opensource.prompts[1].includes(field),field);
+  assert.match(opensource.prompts[1],/有依据|核实|证据/);
   assert.doesNotMatch(opensource.prompts.join('\n'),/【固定 (8|10) 条】/);
   for(const t of templates){assert.equal(t.version,1);assert.ok(t.prompts.every(p=>p.length>100));}
   const technology=templates.find(t=>t.id==='daily-technology');
@@ -42,6 +45,8 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(prompt,/风险|反证/);
   assert.match(prompt,/details/);
   assert.match(prompt,/evidenceRefs/);
+  assert.match(analysis,/每条入选的投资相关事件/);
+  assert.match(analysis,/不得省略整个 details|不应成为省略整个 details/);
   assert.match(prompt,/actual|实际值/);
   assert.doesNotMatch(prompt,/单纯 AI 模型发布、普通开源项目更新不作为本话题重点/);
 });
@@ -64,6 +69,8 @@ test('headlines v1 keeps two rounds and asks for source-backed news JSON',()=>{
   assert.match(final,/observed.*analysis/s);
   assert.match(final,/date.*datetime.*approximate/s);
   assert.match(final,/2500/);
+  assert.match(final,/每条入选事件都应填写 items\[\]\.details/);
+  assert.match(final,/剔除候选/);
   assert.match(final,/不独立抓取|不独立核验/);
   assert.doesNotMatch(final,/【固定 (8|10) 条】/);
 });
