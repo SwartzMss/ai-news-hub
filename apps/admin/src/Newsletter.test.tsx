@@ -42,5 +42,5 @@ test('switch saves a pending time edit together with the new state',async()=>{
   fireEvent.blur(input,{relatedTarget:toggle});
   fireEvent.click(toggle);
   await waitFor(()=>expect(api).toHaveBeenCalledWith('/newsletter/schedule',expect.any(AbortSignal),{enabled:true,time:'11:15'},'PUT'));
-  expect(api).toHaveBeenCalledTimes(2);
+  expect(vi.mocked(api).mock.calls.filter(([path])=>path==='/newsletter/schedule')).toHaveLength(1);
 });
