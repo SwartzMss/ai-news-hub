@@ -186,4 +186,4 @@ bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 
 日报条目可选 `details.kind=news`，提供事件背景、关键事实、时间线、各方表态、已观察或分析中的影响、未确定事项、后续观察及补充证据。公共站对这类条目生成独立分节详情；无详情或投资详情仍使用原有布局。补充证据只验证公网 HTTPS URL 与条目内证据 ID 引用，不代表独立事实核验。仓库模板已按 Issue #78 更新；已保存任务不会自动改写，需重新选择模板并保存。
 
-Newsletter 定时发送改由 Linux Backend 的独立 SQLite 调度器触发 GitHub `newsletter.yml`；管理后台「邮件发送」可设置每日北京时间开始时间、启停计划、手动触发并查看 GitHub Run 状态。计划默认暂停，启用前需给加密保存的 GitHub Token 增加目标仓库 Actions: write 权限。见 [Newsletter 部署说明](docs/NEWSLETTER.md)。
+Newsletter 定时发送改由 Linux Backend 的独立 SQLite 调度器触发 GitHub `newsletter.yml`；管理后台「邮件发送」只提供每日北京时间设置和启停开关，时间输入失焦后自动保存。计划默认暂停，启用前需给加密保存的 GitHub Token 增加目标仓库 Actions: write 权限。手动运行与执行状态可在 GitHub Actions 查看。见 [Newsletter 部署说明](docs/NEWSLETTER.md)。

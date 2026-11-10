@@ -2342,28 +2342,17 @@ summary {
 
 /* Settings: aligned navigation and a single focused form. */
 .workspace-content { width: 100%; }
-.newsletter-page { max-width: 1080px; }
-.newsletter-card, .newsletter-history { background: var(--surface, #fff); border: 1px solid var(--border, #e2e7ec); border-radius: 14px; padding: 24px; margin: 20px 0; }
-.newsletter-card h2, .newsletter-history h2 { font-size: 19px; margin: 0 0 10px; }
-.newsletter-card p, .newsletter-history p { line-height: 1.65; }
-.newsletter-card dl { display: grid; grid-template-columns: repeat(3,minmax(0,1fr)); gap: 16px; margin: 20px 0; }
-.newsletter-card dt { color: var(--muted, #64748b); font-size: 13px; }
-.newsletter-card dd { margin: 6px 0 0; font-weight: 700; }
-.newsletter-actions { display: flex; flex-wrap: wrap; gap: 10px; }
-.newsletter-time { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; margin: 20px 0; }
-.newsletter-time label { font-weight: 650; }
-.newsletter-time input { min-height: 38px; border: 1px solid var(--border, #d1d9e0); border-radius: 8px; padding: 6px 10px; font: inherit; }
-.newsletter-time button, .newsletter-actions button, .newsletter-history button { border: 1px solid var(--border, #d1d9e0); border-radius: 8px; background: var(--surface, #fff); color: var(--ink); padding: 9px 14px; cursor: pointer; }
-.newsletter-time button:hover, .newsletter-actions button:hover, .newsletter-history button:hover { border-color: #b9c5d2; background: #f3f6f9; color: var(--ink); }
-.newsletter-time button:disabled, .newsletter-actions button:disabled, .newsletter-history button:disabled { cursor: not-allowed; opacity: .5; }
-.newsletter-note { color: var(--muted, #64748b); font-size: 13px; margin-top: 20px; }
-.newsletter-table-scroll { max-width: 100%; overflow-x: auto; }
-.newsletter-history table { min-width: 760px; width: 100%; border-collapse: collapse; text-align: left; }
-.newsletter-history th, .newsletter-history td { padding: 12px 10px; border-bottom: 1px solid var(--border, #e2e7ec); vertical-align: top; }
-.newsletter-history th { font-size: 13px; color: var(--muted, #64748b); }
-.newsletter-history td small { display: block; color: var(--muted, #64748b); overflow-wrap: anywhere; }
-.newsletter-history td button { display: block; margin-top: 6px; font-size: 12px; }
-@media (max-width: 700px) { .newsletter-card, .newsletter-history { padding: 18px; } .newsletter-card dl { grid-template-columns: 1fr; gap: 12px; } }
+.newsletter-page { max-width: 640px; }
+.newsletter-card { background: #fff; border: 1px solid var(--line); border-radius: var(--radius); padding: 24px; margin-top: 20px; }
+.newsletter-field { display: grid; gap: 8px; }
+.newsletter-field label, .newsletter-toggle-row { font-weight: 650; }
+.newsletter-field input { width: 180px; }
+.newsletter-toggle-row { display: flex; align-items: center; justify-content: space-between; gap: 20px; border-top: 1px solid var(--line); margin-top: 24px; padding-top: 20px; }
+.newsletter-switch, .newsletter-switch:hover { flex: none; width: 56px; height: 32px; min-height: 32px; padding: 3px; border: 0; border-radius: 999px; background: #cbd4df; }
+.newsletter-switch[aria-checked="true"], .newsletter-switch[aria-checked="true"]:hover { background: var(--green); }
+.newsletter-switch span { width: 26px; height: 26px; border-radius: 50%; background: #fff; box-shadow: 0 1px 3px #17212f33; transition: transform .15s ease; transform: translateX(-12px); }
+.newsletter-switch[aria-checked="true"] span { transform: translateX(12px); }
+@media (max-width: 700px) { .newsletter-card { padding: 18px; } }
 .primary-nav { margin-top: 28px; }
 .settings-layout { grid-template-columns: 180px minmax(0, 1fr); gap: 32px; }
 .settings-nav button { font-size: 14px; min-height: 44px; }

@@ -161,4 +161,4 @@ README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 syst
 
 热点新闻条目可携带 `details.kind=news`；研究输出、SQLite 日报、发布完整性重建、v1/v2 归档与静态站保持这一可选结构。关键事实、时间线和表态引用同条补充证据 ID，已观察影响也须引用证据。桌面详情采用分节正文和目录，窄屏可横向阅读事实表。无该字段的历史归档保持原样；本次不迁移数据库，也不改变 Prompt 模板。
 
-Newsletter 使用独立于 Codex Task/Run 的 Backend Scheduler：SQLite 保存可配置的北京时间每日开始时间、其后一小时的五个计划槽与 dispatch 状态，GitHub Workflow Dispatch 只启动既有发送脚本，Cloudflare D1 / Resend 继续负责订阅与投递。Workflow API 超时进入待核对状态，按 dispatch ID 查找 Run 后再同步结果；管理 API 和后台展示计划、手动触发及历史状态。migration 12 增加计划表和执行表，migration 13 增加开始时间字段；新计划默认暂停。
+Newsletter 使用独立于 Codex Task/Run 的 Backend Scheduler：SQLite 保存可配置的北京时间每日开始时间、其后一小时的五个计划槽与 dispatch 状态，GitHub Workflow Dispatch 只启动既有发送脚本，Cloudflare D1 / Resend 继续负责订阅与投递。Workflow API 超时进入待核对状态，按 dispatch ID 查找 Run 后再同步结果；管理 API 保留计划、手动触发及历史状态接口，后台页面只展示时间和启停开关。migration 12 增加计划表和执行表，migration 13 增加开始时间字段；新计划默认暂停。
