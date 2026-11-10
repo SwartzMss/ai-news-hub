@@ -6,6 +6,8 @@ import {loadConfig} from '../dist/apps/server/src/config.js';
 import {openDatabase} from '../dist/apps/server/src/db/database.js';
 import {NewsletterScheduler} from '../dist/apps/server/src/newsletter/scheduler.js';
 import {NewsletterGatewayError} from '../dist/apps/server/src/newsletter/github.js';
+import {DatabaseSync} from 'node:sqlite';
+import {migrate,migrations} from '../dist/apps/server/src/db/migrations.js';
 
 const token='test_only_0123456789_abcdefghijklmnop';
 const headers={authorization:`Bearer ${token}`};
@@ -98,4 +100,52 @@ test('manual dispatch shares concurrency guard and rate limit with scheduled wor
     const second=await scheduler.manual(new Date('2026-11-10T00:06:00Z'));
     assert.equal(second.status,'queued');
   }finally{await scheduler.close();db.close();rmSync(dir,{recursive:true,force:true});}
+});
+test('schedule time can be changed through the authenticated API without changing its enabled state',async()=>{
+  const dir=mkdtempSync('/tmp/newsletter-time-api-');
+  const now=new Date('2026-11-10T00:59:00Z');
+  const gateway={async dispatch(){throw Error('must not dispatch');},async getRun(){throw Error('must not poll');},async findRun(){return null;}};
+  const app=buildServer(loadConfig({AI_NEWS_HUB_DATA_DIR:dir,AI_NEWS_HUB_ADMIN_TOKEN:token}),{now:()=>now,newsletterGateway:gateway});
+  const request=(method,payload)=>app.inject({method,url:'/api/newsletter/schedule',headers,payload});
+  try{
+    const saved=await request('PUT',{enabled:true,time:'10:30'});
+    assert.equal(saved.statusCode,200);
+    assert.equal(saved.json().schedule.time,'10:30');
+    assert.equal(saved.json().schedule.next_run_at,'2026-11-10T02:30:00.000Z');
+    assert.equal((await request('PUT',{enabled:true,time:'25:00'})).statusCode,400);
+    assert.equal((await request('PUT',{enabled:true,time:'10:30'})).json().schedule.next_run_at,'2026-11-10T02:30:00.000Z');
+    assert.equal((await app.inject({url:'/api/newsletter',headers})).json().schedule.time,'10:30');
+  }finally{await app.close();rmSync(dir,{recursive:true,force:true});}
+});
+test('custom late start keeps five slots across midnight and survives restart',async()=>{
+  const dir=mkdtempSync('/tmp/newsletter-midnight-'),db=openDatabase(dir),calls=[];
+  const gateway={async dispatch(input){calls.push(input);return {workflowRunId:calls.length,runUrl:`https://api.github.com/runs/${calls.length}`,htmlUrl:`https://github.com/runs/${calls.length}`};},async getRun(){return {status:'completed',conclusion:'success'};},async findRun(){return null;}};
+  let scheduler=new NewsletterScheduler(db,gateway,()=>new Date('2026-11-10T15:29:00Z'));
+  try{
+    assert.equal(scheduler.configure(true,'23:30',new Date('2026-11-10T15:29:00Z')).next_run_at,'2026-11-10T15:30:00.000Z');
+    await scheduler.tick(new Date('2026-11-10T15:30:00Z'));
+    await scheduler.tick(new Date('2026-11-10T15:30:00Z'));
+    assert.equal(calls[0].dispatchId,'newsletter-20261110-2330');
+    await scheduler.close();
+    scheduler=new NewsletterScheduler(db,gateway,()=>new Date('2026-11-10T15:45:00Z'));
+    assert.equal(scheduler.state().schedule.time,'23:30');
+    await scheduler.tick(new Date('2026-11-10T15:45:00Z'));
+    assert.equal(calls[1].dispatchId,'newsletter-20261110-2345');
+    await scheduler.tick(new Date('2026-11-10T15:45:00Z'));
+    await scheduler.tick(new Date('2026-11-10T16:00:00Z'));
+    assert.equal(calls[2].dispatchId,'newsletter-20261111-0000');
+    assert.equal(scheduler.record(calls[2].dispatchId).attempt,2);
+    assert.equal(scheduler.state().schedule.next_run_at,'2026-11-10T16:15:00.000Z');
+  }finally{await scheduler.close();db.close();rmSync(dir,{recursive:true,force:true});}
+});
+test('migration 13 keeps an existing newsletter schedule and defaults to 09:00',()=>{
+  const dir=mkdtempSync('/tmp/newsletter-time-migration-');
+  const db=new DatabaseSync(`${dir}/news.db`);
+  try{
+    migrate(db,migrations.slice(0,12));
+    db.prepare('UPDATE newsletter_schedule SET enabled=1,next_run_at=? WHERE id=1').run('2026-11-11T01:00:00.000Z');
+    migrate(db);
+    const row=db.prepare('SELECT enabled,local_time,next_run_at FROM newsletter_schedule WHERE id=1').get();
+    assert.deepEqual({enabled:row.enabled,time:row.local_time,next:row.next_run_at},{enabled:1,time:'09:00',next:'2026-11-11T01:00:00.000Z'});
+  }finally{db.close();rmSync(dir,{recursive:true,force:true});}
 });

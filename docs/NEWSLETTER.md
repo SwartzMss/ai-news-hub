@@ -51,7 +51,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 工作流优先读取以上规范名称；为兼容早期将地址保存为 Variable `NEWSLETTER_SEND_SECRET`、将发送密钥保存为 Secret `NEWSLETTER_SITE_URL` 的配置，也暂时接受这组旧名称。规范名称配置完成后应移除旧项。工作流显示成功并不代表发出了邮件；日志中的 `Newsletter dispatch disabled` 表示配置不完整，`waiting=true` 表示目标话题当天日报尚未全部发布。
 
-`Daily public newsletter` 仅接受 `workflow_dispatch`，不再配置 GitHub `schedule`。Linux Backend 的「邮件发送」页面可启用北京时间 **09:00** 计划，并在 09:15、09:30、09:45、10:00 创建后续窗口检查。GitHub Runner 启动时间仍可能有延迟；也可以从后台手动触发，GitHub 网页保留应急手动入口。
+`Daily public newsletter` 仅接受 `workflow_dispatch`，不再配置 GitHub `schedule`。Linux Backend 的「邮件发送」页面可设置北京时间每日开始时间，默认 **09:00**；保存后在该时间及其后 15、30、45、60 分钟创建五个窗口检查。GitHub Runner 启动时间仍可能有延迟；也可以从后台手动触发，GitHub 网页保留应急手动入口。
 
 发送前会等待所有目标话题都有当天的已发布日报。任何话题尚未更新时先等待，不把昨天的日报当今天发送。暂停某个话题后，如仍需发送其他话题，请相应调整 `NEWSLETTER_TOPIC_IDS`。当前三个话题 ID 可以从网站话题链接读取。
 
@@ -86,10 +86,10 @@ Cloudflare Workers 的 `fetch` 不支持 `redirect: error`，此前会在请求 
 
 ## Linux Backend 调度与切换
 
-Backend 使用 SQLite migration 12 建立独立的 Newsletter 计划及 dispatch 记录，默认**暂停**，不会在升级时自动发送。进入受保护的管理后台「邮件发送」，确认 GitHub 设置中保存的 Token 对 `SwartzMss/ai-news-hub` 有 **Actions: write** 权限（归档仓库仍需 Contents read/write），再启用每日计划。当前复用加密保存的 GitHub Token；目标仓库、`newsletter.yml` 和 `main` 分支固定在服务端，后台不接受任意仓库或 ref。升级前备份包含 `news.db` 与 `settings.key` 的完整私有数据目录。
+Backend 使用 SQLite migration 12 建立独立的 Newsletter 计划及 dispatch 记录，migration 13 增加可配置的北京时间开始时间；旧计划保留原下一次触发并默认 09:00。新计划默认**暂停**，不会在升级时自动发送。进入受保护的管理后台「邮件发送」，确认 GitHub 设置中保存的 Token 对 `SwartzMss/ai-news-hub` 有 **Actions: write** 权限（归档仓库仍需 Contents read/write），再启用每日计划。当前复用加密保存的 GitHub Token；目标仓库、`newsletter.yml` 和 `main` 分支固定在服务端，后台不接受任意仓库或 ref。升级前备份包含 `news.db` 与 `settings.key` 的完整私有数据目录。
 
 切换顺序：先部署支持新调度的 Backend，配置 Token 权限，在后台用自己的测试订阅验证手动触发、Run 链接、状态同步、失败与重启恢复；再合入或部署移除旧 GitHub `schedule` 的工作流，并启用 Backend 计划。切勿让两个定时入口同时运行。后台只有 Workflow 状态；`sent`、`failed`、`pending`、`waiting` 的业务计数仍在 GitHub Run 日志及 D1 / Resend 查看。Workflow 成功不等于邮件已投递。
 
-计划在北京时间 09:00、09:15、09:30、09:45 和 10:00 各有唯一 dispatch ID。每次窗口都调用现有幂等发送脚本，以便已发布日报较晚到达或收件人分批发送；同一时间槽重复 tick 不会重复触发。若服务在计划时间后 10 分钟内恢复，会补做该时间槽；超过 10 分钟标记 `schedule_missed` 并跳到后续时间槽。暂停会取消未来计划；恢复从下一个未来 09:00 开始，不补发暂停期间窗口。手动触发每 5 分钟最多一次，并与定时触发共享单次运行限制。
+计划在所设北京时间及其后 15、30、45、60 分钟各有唯一 dispatch ID；开始时间可跨午夜，保存新时间会从下一个未来窗口重新计算，已排队但尚未提交的旧时间槽会标记取消。每次窗口都调用现有幂等发送脚本，以便已发布日报较晚到达或收件人分批发送；同一时间槽重复 tick 不会重复触发。若服务在计划时间后 10 分钟内恢复，会补做该时间槽；超过 10 分钟标记 `schedule_missed` 并跳到后续时间槽。暂停会取消未来计划；恢复从所设时间的下一个未来日期开始，不补发暂停期间窗口。手动触发每 5 分钟最多一次，并与定时触发共享单次运行限制。
 
 POST 超时、连接中断或响应缺少 Run ID 时标记 `dispatch_unknown`，后续用工作流名称中的 dispatch ID 查询 GitHub Run；未确认时阻止新的 Backend dispatch，绝不盲目重发。若确实没有运行，管理员核对 GitHub Actions 后可在后台明确解除；这会记录人工确认，后续时间槽才可继续。服务重启会把未完成的 `dispatching` 标记为待核对；已取得 Run ID 的记录继续查询 GitHub 状态。GitHub API 错误只记录脱敏错误码，不保存响应正文或 Token。
