@@ -28,6 +28,15 @@ export interface NewsDetails {
   watchpoints?: string[];
   evidence?: {id:string;name:string;url:string;supports:string}[];
 }
+export interface ProjectDetails {
+  kind:'project'; overview:string;
+  change?:{summary:string;version?:string;type?:'release'|'feature'|'technical'|'community';publishedAt?:string;evidenceRefs:string[]};
+  technical?:{description:string;evidenceRefs:string[]}[];
+  useCases?:{description:string;evidenceRefs:string[]}[];
+  license?:{code:string;scope?:string;evidenceRefs:string[]};
+  evaluation?:{description:string;nature:'fact'|'analysis';evidenceRefs?:string[]}[];
+  evidence:{id:string;name:string;url:string;supports:string}[];
+}
 export interface Story {
   topic: Topic;
   id: string;
@@ -36,7 +45,7 @@ export interface Story {
   importance: number;
   fact_summary: string;
   analysis: string | null;
-  details?: InvestmentDetails | NewsDetails;
+  details?: InvestmentDetails | NewsDetails | ProjectDetails;
   evidence_quote: string;
   verification: "source_only" | "codex_reported";
   source: {

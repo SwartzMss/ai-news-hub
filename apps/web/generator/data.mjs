@@ -148,6 +148,11 @@ export function readArchives(
               if(metric.evidenceRefs.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
             for(const relation of item.details.supplyChain??[])
               if((relation.relationship==='confirmed'&&!relation.evidenceRefs?.length)||relation.evidenceRefs?.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
+          }else if(item.details.kind==='project'){
+            const valid=refs=>!refs?.some(id=>!ids.has(id));
+            if(!item.details.evidence?.length)throw Error('missing project evidence');
+            for(const entry of [item.details.change,...(item.details.technical??[]),...(item.details.useCases??[]),item.details.license,...(item.details.evaluation??[])])
+              if(entry&&((entry.nature==='fact'&&!entry.evidenceRefs?.length)||!valid(entry.evidenceRefs)))throw Error('invalid project evidence reference');
           }else if(item.details.kind==='news'){
             const valid=refs=>!refs?.some(id=>!ids.has(id));
             for(const entry of [...(item.details.keyFacts??[]),...(item.details.timeline??[]),...(item.details.positions??[])])

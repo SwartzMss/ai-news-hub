@@ -5,6 +5,7 @@ import { AppError } from '../errors.js';
 import { proposalSchema, REPORT_SCHEMA, type Proposal, type ProposalItem } from './report-schema.js';
 import { validateInvestmentDetails, type InvestmentDetails } from './investment-details.js';
 import { validateNewsDetails, type NewsDetails } from './news-details.js';
+import { validateProjectDetails, type ProjectDetails } from './project-details.js';
 import type { ArticleCandidate } from './types.js';
 
 const ajv = new Ajv({ allErrors: true, strict: true, coerceTypes: false, removeAdditional: false });
@@ -31,7 +32,7 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
   const byId = new Map(candidates.map((article) => [article.id, article]));
   const seen = new Set<string>();
   const items = typed.items.map((item): ReportItem => {
-    if(item.details){if(item.details.kind==='news')validateNewsDetails(item.details);else validateInvestmentDetails(item.details);}
+    if(item.details){if(item.details.kind==='news')validateNewsDetails(item.details);else if(item.details.kind==='project')validateProjectDetails(item.details);else validateInvestmentDetails(item.details);}
     const article = byId.get(item.articleId);
     if (!article) throw new AppError('report_unknown_article');
     if (seen.has(item.articleId)) throw new AppError('report_duplicate_article');
@@ -76,9 +77,20 @@ function newsDetailsMarkdown(details:NewsDetails):string {
   if(details.evidence?.length)lines.push(`补充证据：\n${details.evidence.map(s=>`- ${markdownText(s.id)} ${markdownText(s.name)}：[查看原文](${s.url.replace(/\(/g,'%28').replace(/\)/g,'%29')})；支持 ${markdownText(s.supports)}`).join('\n')}`);
   return lines.join('\n\n');
 }
+function projectDetailsMarkdown(details:ProjectDetails):string {
+  const lines=[`### 项目详情\n\n项目概览：${markdownText(details.overview)}`];
+  const refs=(ids?:string[])=>ids?.length?`（证据 ${ids.map(markdownText).join('、')}）`:'';
+  if(details.change)lines.push(`本次更新：${markdownText(details.change.summary)}${details.change.version?`；版本 ${markdownText(details.change.version)}`:''}${details.change.publishedAt?`；发布日期 ${details.change.publishedAt}`:''}${refs(details.change.evidenceRefs)}`);
+  if(details.technical?.length)lines.push(`技术与架构：\n${details.technical.map(p=>`- ${markdownText(p.description)}${refs(p.evidenceRefs)}`).join('\n')}`);
+  if(details.useCases?.length)lines.push(`适用场景：\n${details.useCases.map(p=>`- ${markdownText(p.description)}${refs(p.evidenceRefs)}`).join('\n')}`);
+  if(details.license)lines.push(`代码许可证：${markdownText(details.license.code)}${details.license.scope?`；授权范围：${markdownText(details.license.scope)}`:''}${refs(details.license.evidenceRefs)}`);
+  if(details.evaluation?.length)lines.push(`试用建议与限制：\n${details.evaluation.map(p=>`- ${p.nature==='analysis'?'编辑判断':'来源事实'}：${markdownText(p.description)}${refs(p.evidenceRefs)}`).join('\n')}`);
+  lines.push(`来源与证据：\n${details.evidence.map(s=>`- ${markdownText(s.id)} ${markdownText(s.name)}：[查看原文](${s.url.replace(/\(/g,'%28').replace(/\)/g,'%29')})；支持 ${markdownText(s.supports)}`).join('\n')}`);
+  return lines.join('\n\n');
+}
 export function reportMarkdown(report: DailyReport): string {
   return `# ${markdownText(report.title)}\n\n日期：${report.reportDate}；待人工审核。来源关联和格式校验不等于独立事实核验。\n\n` + report.items.map((item) => {
     const url = item.source.canonicalUrl.replace(/\(/g, '%28').replace(/\)/g, '%29');
-    return `## ${markdownText(item.factSummary)}\n\n来源：[${markdownText(item.source.name)}](${url})\n\n原始发布时间：${item.source.publishedAt ?? '未知'}；事件时间：${item.source.eventAt ?? '未知'}；首次抓取：${item.source.fetchedAt ?? '未抓取（Codex 提供）'}\n\n${item.verification==='codex_reported'?'Codex 提供的引文':'依据原文'}：${markdownText(item.evidenceQuote)}\n\n分析（推断）：${item.analysis ? markdownText(item.analysis) : '无'}\n${item.details?`\n${item.details.kind==='news'?newsDetailsMarkdown(item.details):detailsMarkdown(item.details)}\n`:''}`;
+    return `## ${markdownText(item.factSummary)}\n\n来源：[${markdownText(item.source.name)}](${url})\n\n原始发布时间：${item.source.publishedAt ?? '未知'}；事件时间：${item.source.eventAt ?? '未知'}；首次抓取：${item.source.fetchedAt ?? '未抓取（Codex 提供）'}\n\n${item.verification==='codex_reported'?'Codex 提供的引文':'依据原文'}：${markdownText(item.evidenceQuote)}\n\n分析（推断）：${item.analysis ? markdownText(item.analysis) : '无'}\n${item.details?`\n${item.details.kind==='news'?newsDetailsMarkdown(item.details):item.details.kind==='project'?projectDetailsMarkdown(item.details):detailsMarkdown(item.details)}\n`:''}`;
   }).join('\n');
 }

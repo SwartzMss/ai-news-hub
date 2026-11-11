@@ -287,3 +287,9 @@ test("legacy topic assignments reject unknown, duplicate and malformed entries o
     assert.throws(() => readArchives(dir, { allowDemo: true }), /only supports legacy/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+test('project details survive publication artifact and public archive loading',()=>{
+ const f=publicationFixture();
+ const details={kind:'project',overview:'本地代码检索工具。',change:{summary:'新增增量索引。',evidenceRefs:['release']},technical:[{description:'索引只处理变更文件。',evidenceRefs:['release']}],evidence:[{id:'release',name:'发布说明',url:'https://example.com/release',supports:'索引功能'}]};
+ const doc={...f.doc,items:[{...f.doc.items[0],details}]};const dir=mkdtempSync('/tmp/web-project-');
+ try{f.db.prepare('UPDATE reports SET content_json=? WHERE id=?').run(JSON.stringify(doc),'r');const artifact=JSON.parse(archiveArtifact(reviewedReport(f.db,'r'),'2026-11-03T01:00:00Z').content);assert.deepEqual(artifact.items[0].details,details);const folder=`${dir}/2026/11/03/opensource`;mkdirSync(folder,{recursive:true});writeFileSync(`${folder}/v000001.json`,JSON.stringify(artifact));assert.deepEqual(readArchives(dir,{allowDemo:true}).articles[0].details,details);}finally{f.close();rmSync(dir,{recursive:true,force:true});}
+});

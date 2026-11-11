@@ -517,3 +517,5 @@ README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 syst
 Issue #77 升级后重新构建 Backend 与公共站即可读取和展示新归档中的 `details.kind=news`；无需数据库迁移。现有任务 Prompt 不会自动变化；部署 Issue #78 的模板后，在后台重新选择“每日热点观察 · v1”并保存对应任务。既有归档无需重写。科技投资和热点模板的详情要求更新后，也需重新选择对应模板并保存任务；历史日报不会自动出现新详情。
 
 Newsletter Scheduler 升级自动应用 migration 12 和新增的 migration 13；每日开始时间在管理后台「邮件发送」设置，默认北京时间 09:00，升级已有计划时保留其下一次触发。新计划默认暂停，不会自动触发邮件。升级前备份完整私有数据目录（包括 SQLite 与 `settings.key`）；确认 GitHub Token 对 `SwartzMss/ai-news-hub` 具备 Actions: write，并在 GitHub Actions 验证手动 Run 后启用计划。后台页面仅保留时间设置和启停开关。工作流已移除 GitHub `schedule`，避免新旧入口并行；详细切换、误触发恢复与故障排查见 [Newsletter](NEWSLETTER.md)。
+
+开源项目结构化详情升级：部署 Backend 与公开站构建代码后，在后台编辑已有「每日开源项目」任务，重新选择 `daily-opensource` v1 模板并保存，再手动运行和审核新日报。旧任务 Prompt、历史 Run 及 GitHub 归档不会自动改写；新版 `kind=project` 详情由公开站按证据显示。
