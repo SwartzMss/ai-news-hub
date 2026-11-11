@@ -1,0 +1,430 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "b8544303-630b-47ab-8747-e457a5d17c34",
+  "report_date": "2026-11-11",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日开源项目｜2026-11-11｜北京时间统计：2026-11-10 09:10:50—2026-11-11 09:10:50；重要进展补充回溯至2026-11-08 09:10:50",
+  "collected_at": "2026-11-11T01:25:12.619Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-11T01:25:12.622Z",
+  "reviewed_content_sha256": "2443a219ff657f6f03659b0e0d0f6887166e7cb3f68088293649b9039689df39",
+  "items": [
+    {
+      "id": "5c437da0f67e8dde956efb56901e7a5d8c7a1ad874532b61b331df3abc6b8698",
+      "category": "ai",
+      "importance": 5,
+      "fact_summary": "Browser Use 宣布正式发布重写浏览器执行引擎的 1.0 版。用途：让 AI Agent 操作浏览器完成任务；主要技术栈：Python、Chrome DevTools Protocol；技术要点：Agent 在持久 REPL 中编写 Python，直接操作 CDP；近期证据：官方 Release 于北京时间 11 月 10 日 10:04 发布 1.0.0，同日 17:27 发布 1.0.1，修复云浏览器绕过 allowed_domains 等问题；许可证：代码为 MIT，云服务与所用模型的授权另行适用；[项目仓库](https://github.com/browser-use/browser-use)",
+      "analysis": "推荐理由：执行架构重写与同日边界修复值得合并关注，可能影响现有自动化集成；试用建议：从小型浏览器任务验证迁移，优先评估 1.0.1；限制：默认浏览器改为云浏览器，本地浏览器需显式选择。维护者的性能声明未作独立复现。",
+      "evidence_quote": "browser-use 1.0: CDP is all you need",
+      "details": {
+        "kind": "news",
+        "background": "本条属于重大版本发布，合并记录后续修复。本任务未提供最近七天历史日报，仅完成本期项目与版本去重；未实际运行项目。",
+        "timeline": [
+          {
+            "time": "2026-11-10T10:04:00+08:00",
+            "precision": "datetime",
+            "event": "GitHub Release 发布 1.0.0，时间按页面 UTC 显示换算至北京时间，精度到分钟。",
+            "evidenceRefs": [
+              "browser-release"
+            ]
+          },
+          {
+            "time": "2026-11-10T17:27:00+08:00",
+            "precision": "datetime",
+            "event": "发布 1.0.1，包含域名限制绕过修复及服务器 Chromium 使用改进。",
+            "evidenceRefs": [
+              "browser-fix"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "未独立复现维护者宣称的成功率、成本或速度变化。"
+        ],
+        "watchpoints": [
+          "0.x 接口迁移、依赖精确锁定及云浏览器默认值对现有项目的影响。"
+        ],
+        "evidence": [
+          {
+            "id": "browser-release",
+            "name": "Browser Use 1.0.0 官方 Release",
+            "url": "https://github.com/browser-use/browser-use/releases/tag/1.0.0",
+            "supports": "正式版本、发布时间、持久 Python REPL 与 CDP 架构、默认行为变化。"
+          },
+          {
+            "id": "browser-fix",
+            "name": "Browser Use 1.0.1 官方 Release",
+            "url": "https://github.com/browser-use/browser-use/releases/tag/1.0.1",
+            "supports": "修复发布时间、allowed_domains 绕过修复和 Chromium 使用改进。"
+          },
+          {
+            "id": "browser-license",
+            "name": "1.0.1 代码许可证",
+            "url": "https://github.com/browser-use/browser-use/blob/1.0.1/LICENSE",
+            "supports": "项目代码采用 MIT 许可证。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/browser-use/browser-use/releases/tag/1.0.0",
+        "canonical_url": "https://github.com/browser-use/browser-use/releases/tag/1.0.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0932468713e5f900acd78bcfcdf051c104d29646ff7b74096dbfb30660c4b966",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Kubesplaining 宣布新版支持变更前比较权限升级路径。用途：分析 Kubernetes 集群或快照中的 RBAC 与权限升级链；主要技术栈：Go、Kubernetes；技术要点：v1.4.0 在内存快照上叠加或删除资源，再用 paths --diff 比较攻击路径，新增路径时可返回退出码 2；近期证据：官方 Release 于北京时间 11 月 10 日 09:43 发布，另增加两个升级目标和十一条规则；许可证：Apache-2.0；[项目仓库](https://github.com/0hardik1/kubesplaining)",
+      "analysis": "推荐理由：可将安全检查提前到清单评审阶段，帮助判断修复是否关闭路径；试用建议：先用已捕获快照比较 RoleBinding 变更；限制：静态可达路径不等于实际成功利用，叠加功能只处理列明的资源类型，升级 CI 时还需检查退出码和输出数量变化。",
+      "evidence_quote": "This release puts the attack paths in front of you and lets you ask about them.",
+      "details": {
+        "kind": "news",
+        "background": "本条属于已发布的重要功能更新，证据来自 v1.4.0 Release，而非仓库最近提交或社区热度。",
+        "timeline": [
+          {
+            "time": "2026-11-10T09:43:00+08:00",
+            "precision": "datetime",
+            "event": "发布 v1.4.0，时间按 GitHub 页面 UTC 显示换算，精度到分钟。",
+            "evidenceRefs": [
+              "kube-release"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "资源叠加范围、聚合 ClusterRole 重算及 CI 门禁退出码变化。"
+        ],
+        "evidence": [
+          {
+            "id": "kube-release",
+            "name": "Kubesplaining v1.4.0 官方 Release",
+            "url": "https://github.com/0hardik1/kubesplaining/releases/tag/v1.4.0",
+            "supports": "发布时间、快照叠加、路径差异、新增规则及兼容性变化。"
+          },
+          {
+            "id": "kube-repo",
+            "name": "Kubesplaining 官方仓库",
+            "url": "https://github.com/0hardik1/kubesplaining",
+            "supports": "项目用途、Go 工具链及集群和离线快照分析方式。"
+          },
+          {
+            "id": "kube-license",
+            "name": "v1.4.0 代码许可证",
+            "url": "https://github.com/0hardik1/kubesplaining/blob/v1.4.0/LICENSE",
+            "supports": "Apache-2.0 许可证。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/0hardik1/kubesplaining/releases/tag/v1.4.0",
+        "canonical_url": "https://github.com/0hardik1/kubesplaining/releases/tag/v1.4.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "943668735624f4fa0072bcc384b9853f936184f45c257b16a1e3447eab3083f8",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "NetBox 宣布新版集中优化搜索与接口的关联查询。用途：管理网络设备、线缆、IP 地址等基础设施数据；主要技术栈：Python、Django、REST、GraphQL；技术要点：v4.7.5 批量加载导出模板、全局搜索和接口需要的关联对象，避免逐对象查询，并修复图片附件权限过滤；近期证据：官方 Release 于北京时间 11 月 11 日 00:34 发布，页面版本日期为 UTC 11 月 10 日；许可证：Apache-2.0；[项目仓库](https://github.com/netbox-community/netbox)",
+      "analysis": "推荐理由：集中减少关联查询可能改善大型网络资产库的检索和导出开销；试用建议：用现有数据对比查询次数、响应时间及权限受限用户视图；限制：发布说明未给出统一性能倍数，不能将实现优化直接写成实测加速。",
+      "evidence_quote": "v4.7.5 - 2026-11-10",
+      "details": {
+        "kind": "news",
+        "background": "本条属于已发布的性能与正确性更新，按本次具体查询优化选入。",
+        "timeline": [
+          {
+            "time": "2026-11-11T00:34:00+08:00",
+            "precision": "datetime",
+            "event": "发布 v4.7.5，时间按 GitHub 页面 UTC 显示换算，精度到分钟。",
+            "evidenceRefs": [
+              "netbox-release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "实际收益依赖数据量、查询和部署配置，未进行性能测试。"
+        ],
+        "watchpoints": [
+          "REST 与 GraphQL 关联字段、导出模板和图片附件权限的回归检查。"
+        ],
+        "evidence": [
+          {
+            "id": "netbox-release",
+            "name": "NetBox v4.7.5 官方 Release",
+            "url": "https://github.com/netbox-community/netbox/releases/tag/v4.7.5",
+            "supports": "版本发布时间、批量关联加载及图片附件权限修复。"
+          },
+          {
+            "id": "netbox-repo",
+            "name": "NetBox 官方仓库",
+            "url": "https://github.com/netbox-community/netbox",
+            "supports": "网络基础设施数据用途与 Python、Django 技术栈。"
+          },
+          {
+            "id": "netbox-license",
+            "name": "v4.7.5 代码许可证",
+            "url": "https://github.com/netbox-community/netbox/blob/v4.7.5/LICENSE.txt",
+            "supports": "Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/netbox-community/netbox/releases/tag/v4.7.5",
+        "canonical_url": "https://github.com/netbox-community/netbox/releases/tag/v4.7.5",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "af528e1610576778b204813c9806d06af2d76eabf890ba3b550ab8c9f2b824b0",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "DeepMind 宣布开放 Signal 机器码安全验证产物。用途：研究密码协议实现的形式化安全保证；主要技术栈：Lean、AArch64 机器码语义；技术要点：对 libsignal 的 PQXDH 握手与 Triple Ratchet 构建规范和证明，由 Lean 内核检查；近期证据：官方技术原文标注 2026 年 11 月 10 日，具体时区与时分未提供，属于重要技术进展；许可证：仓库说明自有代码采用 Apache-2.0，第三方 libsignal 代码保留 AGPL-3.0-only 等原授权；[项目仓库](https://github.com/google-deepmind/code-verification)",
+      "analysis": "推荐理由：将协议安全性质连接到编译后机器码，具有较强研究价值；试用建议：先阅读规范、可信计算基础和证明范围，再评估复用；限制：结论依赖环境模型、密码学假设和验证边界，不能推及 Signal 全部应用，也不能据此认定完整 Agent 产品已开放。",
+      "evidence_quote": "AlphaProof Code: Verifying Signal’s Security at the Machine-Code Level",
+      "details": {
+        "kind": "news",
+        "background": "本条记录验证产物公开与技术报告，不将其描述为 Signal 新版本或完整应用安全认证。",
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "技术原文标注的日期；原文未提供时区和具体发布时间。",
+            "evidenceRefs": [
+              "proof-paper"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "公告的精确时间及开放产物首次可访问时间未确认。",
+          "未运行 Lean 构建或独立检查证明。"
+        ],
+        "watchpoints": [
+          "密码学原语、机器语义与实际执行环境之间的信任边界。"
+        ],
+        "evidence": [
+          {
+            "id": "proof-paper",
+            "name": "AlphaProof Code 官方技术原文",
+            "url": "https://google-deepmind.github.io/code-verification/",
+            "supports": "日期、验证对象、Lean 检查机制与证明边界。"
+          },
+          {
+            "id": "proof-announcement",
+            "name": "DeepMind 官方公告",
+            "url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+            "supports": "宣布开放形式化验证产物。"
+          },
+          {
+            "id": "proof-repo",
+            "name": "验证代码官方仓库与授权说明",
+            "url": "https://github.com/google-deepmind/code-verification",
+            "supports": "可访问的规范和证明，以及自有代码与第三方代码的授权区别。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "google-deepmind.github.io",
+        "original_url": "https://google-deepmind.github.io/code-verification/",
+        "canonical_url": "https://google-deepmind.github.io/code-verification/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "fb85982c4055083937354de7ac418e259d88c19d7a26a5626a5f183dedf82a0d",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Valen 宣布发布面向本地 CPU 的 GGUF 运行时。用途：在本地执行输出结构化决策概率的模型；主要技术栈：GGUF、定制 llama-server；技术要点：0.2.0 提供 Linux x86-64 CPU 预编译包，包含原生库、补丁源码及版本追溯信息，模型权重单独下载；近期证据：官方 Release 于北京时间 11 月 10 日 21:22 发布；许可证：项目代码 Apache-2.0，运行时包附 MIT/Apache-2.0 通知；已查看的 0.8B GGUF 权重标注 Apache-2.0，不外推至全部权重及数据；[项目仓库](https://github.com/Valen-Team/Valen)",
+      "analysis": "推荐理由：预编译包降低了特定 CPU 环境下构建定制运行时的门槛；试用建议：先以 0.8B 权重验证文本决策，再检查图像和边界框接口；限制：该发行包要求 Ubuntu 22.04+/glibc 2.35+ 及列明的 CPU 指令集，不能据此推断支持所有桌面平台或 GPU。",
+      "evidence_quote": "Valen custom GGUF CPU runtime 0.2.0",
+      "details": {
+        "kind": "news",
+        "background": "本条聚焦运行时实际发布，不将此前模型更新与本次预编译包混为首次公开。",
+        "timeline": [
+          {
+            "time": "2026-11-10T21:22:00+08:00",
+            "precision": "datetime",
+            "event": "发布 GGUF CPU runtime 0.2.0，时间按 GitHub 页面 UTC 显示换算，精度到分钟。",
+            "evidenceRefs": [
+              "valen-release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "未逐一核对全部尺寸权重与源数据集授权。",
+          "未独立复现模型卡中的原生模型与 GGUF 输出比较。"
+        ],
+        "watchpoints": [
+          "CPU 指令集要求、独立权重下载与运行时接口兼容性。"
+        ],
+        "evidence": [
+          {
+            "id": "valen-release",
+            "name": "Valen GGUF CPU runtime 0.2.0 官方 Release",
+            "url": "https://github.com/Valen-Team/Valen/releases/tag/gguf-runtime-v0.2.0",
+            "supports": "发布时间、预编译包内容、平台要求及权重单独下载。"
+          },
+          {
+            "id": "valen-model",
+            "name": "官方 0.8B GGUF 模型卡",
+            "url": "https://huggingface.co/Valen-Team/Valen-Decision-1.5-0.8B-GGUF",
+            "supports": "决策概率接口、图像与边界框说明，以及该权重的 Apache-2.0 标注。"
+          },
+          {
+            "id": "valen-license",
+            "name": "Valen 项目代码许可证",
+            "url": "https://github.com/Valen-Team/Valen/blob/main/LICENSE",
+            "supports": "项目代码 Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/Valen-Team/Valen/releases/tag/gguf-runtime-v0.2.0",
+        "canonical_url": "https://github.com/Valen-Team/Valen/releases/tag/gguf-runtime-v0.2.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7ddac4c0bf5551f1c3946150c78271f81ef6b20fe6523bde7c0f40a6b6c3cb2b",
+      "category": "developer_tools",
+      "importance": 3,
+      "fact_summary": "datarig 宣布修复 MySQL 导出和计数意外锁行。用途：在终端浏览、查询和编辑 PostgreSQL、MySQL 数据；主要技术栈：Rust、SQL；技术要点：v0.40.4 在 SERIALIZABLE 会话下为相关读取使用自身的 REPEATABLE READ 快照事务，并避免消耗下一事务专用设置；近期证据：官方 Release 于北京时间 11 月 10 日 22:48 发布；许可证：项目代码可选 MIT 或 Apache-2.0，第三方组件保留各自授权；[项目仓库](https://github.com/DokaDev/datarig)",
+      "analysis": "推荐理由：修复直接关系数据库并发和事务语义，对已有 MySQL 用户比界面更新更实用；试用建议：在测试库复核自动提交关闭和下一事务设置两类情形；限制：项目仍处于 1.0 前阶段，维护者明确说明 Windows 运行尚未实际验证。",
+      "evidence_quote": "MySQL exports and row counts no longer lock rows when the session's isolation level is SERIALIZABLE.",
+      "details": {
+        "kind": "news",
+        "background": "本条按已发布的事务正确性修复选入，不因补丁版本号较小而忽略实际用途。",
+        "timeline": [
+          {
+            "time": "2026-11-10T22:48:00+08:00",
+            "precision": "datetime",
+            "event": "发布 v0.40.4，时间按 GitHub 页面 UTC 显示换算，精度到分钟。",
+            "evidenceRefs": [
+              "datarig-release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "未独立复现锁行为与事务隔离级别处理。"
+        ],
+        "watchpoints": [
+          "MySQL 功能覆盖、1.0 前兼容性及 Windows 运行验证状态。"
+        ],
+        "evidence": [
+          {
+            "id": "datarig-release",
+            "name": "datarig v0.40.4 官方 Release",
+            "url": "https://github.com/DokaDev/datarig/releases/tag/v0.40.4",
+            "supports": "发布时间、MySQL 锁行与事务设置修复、发行平台及 Windows 验证限制。"
+          },
+          {
+            "id": "datarig-repo",
+            "name": "datarig 官方仓库",
+            "url": "https://github.com/DokaDev/datarig",
+            "supports": "数据库客户端用途、Rust 技术栈、项目成熟度和双许可证说明。"
+          },
+          {
+            "id": "datarig-mit",
+            "name": "v0.40.4 MIT 许可证",
+            "url": "https://github.com/DokaDev/datarig/blob/v0.40.4/LICENSE-MIT",
+            "supports": "MIT 授权文本。"
+          },
+          {
+            "id": "datarig-apache",
+            "name": "v0.40.4 Apache 许可证",
+            "url": "https://github.com/DokaDev/datarig/blob/v0.40.4/LICENSE-APACHE",
+            "supports": "Apache-2.0 授权文本。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/DokaDev/datarig/releases/tag/v0.40.4",
+        "canonical_url": "https://github.com/DokaDev/datarig/releases/tag/v0.40.4",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d40cc93fbf403cb3d79920fdec7862b89e0e307612e6bbaba36e72ea82426142",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Coral 宣布新版增加执行预算与无会话 MCP 支持。用途：为 Agent 跨系统操作提供可配置的执行控制；主要技术栈：MCP、TypeScript；技术要点：v1.6.0 执行 Run CPU Budget，增加超预算失败码和拉取流执行器，并允许任意 Coral 实例处理无会话 MCP 请求；近期证据：官方 Release 于北京时间 11 月 10 日 21:15 发布；许可证：开源部分 Apache-2.0，ee 目录的企业代码另有许可证；[项目仓库](https://github.com/withcoral/coral)",
+      "analysis": "推荐理由：资源预算和无会话请求可能分别改善 Agent 执行治理与多实例服务部署；试用建议：先检查超预算失败处理和 MCP 调用兼容性；限制：CPU 预算本身不能证明完整安全隔离，企业功能授权也不能从开源许可证推定。",
+      "evidence_quote": "run: enforce the Run CPU Budget",
+      "details": {
+        "kind": "news",
+        "background": "本条属于已发布功能更新。开源执行层与另行授权的企业目录需分别理解。",
+        "timeline": [
+          {
+            "time": "2026-11-10T21:15:00+08:00",
+            "precision": "datetime",
+            "event": "发布 v1.6.0，时间按 GitHub 页面 UTC 显示换算，精度到分钟。",
+            "evidenceRefs": [
+              "coral-release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "未运行执行器或验证 CPU 预算的具体计量与终止行为。"
+        ],
+        "watchpoints": [
+          "预算失败码、MCP 无会话部署及企业功能边界。"
+        ],
+        "evidence": [
+          {
+            "id": "coral-release",
+            "name": "Coral v1.6.0 官方 Release",
+            "url": "https://github.com/withcoral/coral/releases/tag/v1.6.0",
+            "supports": "发布时间、CPU 预算、执行器与无会话 MCP 更新。"
+          },
+          {
+            "id": "coral-repo",
+            "name": "Coral 官方仓库与授权边界",
+            "url": "https://github.com/withcoral/coral",
+            "supports": "用途、TypeScript 程序接口，以及开源代码与 ee 目录的授权区别。"
+          },
+          {
+            "id": "coral-license",
+            "name": "Coral 开源部分许可证",
+            "url": "https://github.com/withcoral/coral/blob/main/LICENSE",
+            "supports": "Apache-2.0 许可证文本。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/withcoral/coral/releases/tag/v1.6.0",
+        "canonical_url": "https://github.com/withcoral/coral/releases/tag/v1.6.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
