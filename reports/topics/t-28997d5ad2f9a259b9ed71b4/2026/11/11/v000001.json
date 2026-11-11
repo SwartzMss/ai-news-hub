@@ -1,0 +1,602 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "eadff315-64d6-4742-8777-2b2c3ba32203",
+  "report_date": "2026-11-11",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜北京时间2026年11月10日09:04:06.890—11月11日09:04:06.890",
+  "collected_at": "2026-11-11T01:16:55.498Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-11T01:16:55.536Z",
+  "reviewed_content_sha256": "742718400fd2dcde9e6ef9316a7027f176cccb758d2a8dab6ac50975bdbd7cac",
+  "items": [
+    {
+      "id": "0c4c1d901b6b86b3e92f8a163014ca4eeb600e872afc64ac04d79d32b0d5d724",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "CoreWeave公布第三季度收入36.61亿美元、GAAP净亏损7.09亿美元，并将全年收入指引提高至130亿—133亿美元。公司同时把全年资本开支指引下限从350亿美元提高至370亿美元，上限仍为390亿美元。",
+      "analysis": "推断：新财报同时显示收入扩张与较高融资成本；收入增长本身不足以证明其资本开支可以持续产生足够回报。",
+      "evidence_quote": "CoreWeave Reports Strong Third Quarter 2026 Results",
+      "details": {
+        "kind": "news",
+        "background": "公司11月10日披露截至9月30日季度业绩，并更新全年指引。实绩与指引分列。",
+        "keyFacts": [
+          {
+            "name": "季度实绩",
+            "value": "收入36.61；GAAP净亏损7.09；净利息费用8.46",
+            "unit": "亿美元",
+            "period": "截至2026年9月30日的三个月",
+            "nature": "statement",
+            "evidenceRefs": [
+              "results"
+            ]
+          },
+          {
+            "name": "全年收入指引",
+            "value": "130—133",
+            "unit": "亿美元",
+            "period": "2026全年",
+            "nature": "statement",
+            "evidenceRefs": [
+              "results"
+            ]
+          },
+          {
+            "name": "全年资本开支指引",
+            "value": "370—390；此前350—390",
+            "unit": "亿美元",
+            "period": "2026全年",
+            "nature": "statement",
+            "evidenceRefs": [
+              "results"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "发布季度业绩，官网未列新闻稿具体时刻。",
+            "evidenceRefs": [
+              "results"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "公司业绩表未经审计；全年指引属于前瞻声明，不能视为已经实现。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "results",
+            "name": "CoreWeave第三季度业绩公告",
+            "url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx",
+            "supports": "季度财务表、全年收入及资本开支指引调整。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.coreweave.com",
+        "original_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx",
+        "canonical_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2d0d1c9116ea88e23864ab8109c7e1a8b0a7eb98fef849f9cae7923bbbaae629",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "澳大利亚政府宣布，将通过AI Standards立法对在澳运营的前沿AI企业提出强制安全要求，并提议设立专门监管机构。方案包括独立评估、快速事故通报和公开安全框架，尚不代表法律已经通过。",
+      "analysis": "推断：若按方案落地，前沿模型企业进入澳大利亚市场将面临更明确的评估和事故报告义务。",
+      "evidence_quote": "New Australian AI safety and security protections",
+      "details": {
+        "kind": "news",
+        "background": "此次进展是政府公布立法与监管方案；此前AI相关事故仅作为政策背景。",
+        "keyFacts": [
+          {
+            "name": "适用对象",
+            "value": "希望在澳大利亚运营的所有前沿AI企业",
+            "period": "拟议立法",
+            "nature": "statement",
+            "evidenceRefs": [
+              "pm"
+            ]
+          },
+          {
+            "name": "拟议义务",
+            "value": "安全控制、重大风险管理、独立评估、快速事故通报和公开安全框架",
+            "period": "拟议立法",
+            "nature": "statement",
+            "evidenceRefs": [
+              "pm"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "政府发布方案，公告未列具体发布时间。",
+            "evidenceRefs": [
+              "pm"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "法律尚待详细工作与咨询；罚则、适用门槛和生效日期尚未明确。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "pm",
+            "name": "澳大利亚总理办公室公告",
+            "url": "https://www.pm.gov.au/media/new-australian-ai-safety-and-security-protections",
+            "supports": "公告日期、立法计划、监管机构提议及拟议义务。"
+          },
+          {
+            "id": "ap",
+            "name": "AP：澳大利亚AI监管方案",
+            "url": "https://apnews.com/article/australia-artificial-intelligence-regulator-openai-agent-breach-a5dfe5379c0f7458e44b72a9073833c6",
+            "supports": "交叉核对当日政策宣布，说明具体罚则尚未披露。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.pm.gov.au",
+        "original_url": "https://www.pm.gov.au/media/new-australian-ai-safety-and-security-protections",
+        "canonical_url": "https://www.pm.gov.au/media/new-australian-ai-safety-and-security-protections",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "89da6c00f149582a7e362c36608ed4697057934fab6cba1a29b4754a25a927f3",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "美国劳工统计局公布10月CPI：季调环比上涨0.4%，剔除食品和能源后的核心指数上涨0.3%。部分2025年10月基期数据缺失，相关指数无法发布同比变化。",
+      "analysis": "推断：本次数据为评估美国通胀与利率路径提供新依据，但不能据此认定美联储已经决定调整利率。",
+      "evidence_quote": "CONSUMER PRICE INDEX - OCTOBER 2026",
+      "details": {
+        "kind": "news",
+        "background": "本次进展是10月官方通胀统计发布，统计月份与新闻发生日期不同。",
+        "keyFacts": [
+          {
+            "name": "CPI-U季调环比",
+            "value": "0.4；9月为0.6",
+            "unit": "%",
+            "period": "2026年10月",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "bls"
+            ]
+          },
+          {
+            "name": "核心CPI季调环比",
+            "value": "0.3",
+            "unit": "%",
+            "period": "2026年10月",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "bls"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10T21:30:00+08:00",
+            "precision": "datetime",
+            "event": "BLS发布数据；原文时间为11月10日08:30美国东部时间。",
+            "evidenceRefs": [
+              "bls"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "缺失2025年10月基期数据的指数无法计算官方同比，不应自行补算。"
+        ],
+        "watchpoints": [
+          "下一次CPI定于北京时间12月10日21:30发布，覆盖2026年11月。"
+        ],
+        "evidence": [
+          {
+            "id": "bls",
+            "name": "美国劳工统计局：10月CPI",
+            "url": "https://www.bls.gov/news.release/cpi.nr0.htm",
+            "supports": "发布时间、季调月度数据、同比缺口及下一次发布安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.bls.gov",
+        "original_url": "https://www.bls.gov/news.release/cpi.nr0.htm",
+        "canonical_url": "https://www.bls.gov/news.release/cpi.nr0.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d118abb725c00bb8f25b0c07082cdee63d8fa01d890c427c4ce1a01778de005e",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "乌克兰总统办公室确认，俄乌美三方谈判11月10日在阿布扎比开始，并已举行与欧洲代表的会议。AP报道首日会谈约四小时，安排次日继续；美乌官员的积极评价不代表已经达成协议。",
+      "analysis": "推断：恢复实际谈判构成外交进展，但会谈评价不足以证明停火或安全安排已经取得突破。",
+      "evidence_quote": "According to the Head of State, negotiations in the trilateral format have already begun in Abu Dhabi, and a meeting with European representatives has also taken place.",
+      "details": {
+        "kind": "news",
+        "background": "本次新增事实是三方会谈实际举行，而非此前预告。AP称这是自2月以来首次此类会谈。",
+        "keyFacts": [
+          {
+            "name": "会谈启动",
+            "value": "三方谈判在阿布扎比开始，并举行与欧洲代表的会议",
+            "period": "2026年11月10日",
+            "nature": "statement",
+            "evidenceRefs": [
+              "ukraine"
+            ]
+          },
+          {
+            "name": "首日安排",
+            "value": "约四小时；计划11月11日继续",
+            "period": "本轮谈判",
+            "nature": "reported",
+            "evidenceRefs": [
+              "ap"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "乌总统办公室确认会谈启动；页面标注12:28，未注明时区。",
+            "evidenceRefs": [
+              "ukraine"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "美国国务卿鲁比奥",
+            "statement": "认为会谈富有成效，同时强调仍有大量工作，不会在24小时内解决。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "ap"
+            ]
+          }
+        ],
+        "impacts": [],
+        "uncertainties": [
+          "所列来源未确认达成停火或签署协议。"
+        ],
+        "watchpoints": [
+          "关注11月11日第二日会谈及正式会后文件，核对是否形成具体安排。"
+        ],
+        "evidence": [
+          {
+            "id": "ukraine",
+            "name": "乌克兰总统办公室：与芬兰总统通话",
+            "url": "https://www.president.gov.ua/en/news/prezident-ukrayini-proviv-telefonnu-rozmovu-z-prezidentom-fi-107229",
+            "supports": "乌方确认三方谈判启动及与欧洲代表会面。"
+          },
+          {
+            "id": "ap",
+            "name": "AP原稿／WUSF刊载",
+            "url": "https://www.wusf.org/2026-11-10/russia-and-ukraine-hold-nearly-4-hours-of-u-s-mediated-talks-in-abu-dhabi",
+            "supports": "会谈时长、次日安排和鲁比奥表态；页面更新于11月10日15:14 EST。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.president.gov.ua",
+        "original_url": "https://www.president.gov.ua/en/news/prezident-ukrayini-proviv-telefonnu-rozmovu-z-prezidentom-fi-107229",
+        "canonical_url": "https://www.president.gov.ua/en/news/prezident-ukrayini-proviv-telefonnu-rozmovu-z-prezidentom-fi-107229",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d4112c677502dfcb73d706f3a138048ba83b888d35bf1a2681842143854b61a3",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Anthropic提交第二次修订招股文件，披露IPO拟议价格为每股70—78美元，拟发行及出售合计8.25亿股，其中约8.0135亿股由公司出售。文件申请以ANT为纳斯达克交易代码，发行尚未完成。",
+      "analysis": "推断：新价格区间使投资者能够更具体地评估这家前沿模型企业的融资方案；拟议条款仍可能调整。",
+      "evidence_quote": "between $70.00 and $78.00.",
+      "details": {
+        "kind": "news",
+        "background": "此次新增变化是IPO修订文件中的价格区间和发行结构，不是首次宣布上市计划。",
+        "keyFacts": [
+          {
+            "name": "拟议发行价格",
+            "value": "70—78",
+            "unit": "美元/股",
+            "period": "2026年11月10日修订方案",
+            "nature": "statement",
+            "evidenceRefs": [
+              "prospectus"
+            ]
+          },
+          {
+            "name": "拟出售股份",
+            "value": "合计825,000,000；公司801,351,354；出售股东23,648,646",
+            "unit": "股",
+            "period": "本次拟议IPO",
+            "nature": "statement",
+            "evidenceRefs": [
+              "prospectus"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "提交S-1第二次修订文件；EDGAR列示接收时刻06:29:24，页面未注明时区。",
+            "evidenceRefs": [
+              "filing"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "最终定价、发行完成及上市交易尚未确认；公司不会取得出售股东售股所得。"
+        ],
+        "watchpoints": [
+          "关注注册声明生效及最终招股书，核对最终价格、实际发行股数与上市安排。"
+        ],
+        "evidence": [
+          {
+            "id": "prospectus",
+            "name": "SEC：Anthropic S-1/A第二次修订",
+            "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm",
+            "supports": "拟议价格、股份结构和ANT代码申请。"
+          },
+          {
+            "id": "filing",
+            "name": "SEC EDGAR提交记录",
+            "url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/0001628280-26-072484-index.htm",
+            "supports": "提交日期与页面列示的接收时间。"
+          },
+          {
+            "id": "ap",
+            "name": "AP：Anthropic IPO报道",
+            "url": "https://apnews.com/article/anthropic-ipo-claude-ai-spacex-openai-amodei-8cf2319c870322019712ab658f71ec55",
+            "supports": "交叉核对当日披露的价格区间与合计股数。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm",
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/2130357/000162828026072484/anthropicpbc-sx1ax2.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9214cb24daf29da44d657f7d37c92f456173cbdace5076a9996dbc0a050473e1",
+      "category": "other",
+      "importance": 3,
+      "fact_summary": "美国SEC发布命令，加速批准Nasdaq ISE关于持有一种或多种数字商品的商品信托份额期权上市标准修订。此次变化是规则获批，不代表特定新基金或期权已开始交易。",
+      "analysis": "推断：上市标准调整可能扩展符合条件的数字资产衍生品范围，实际产品覆盖仍取决于资格与交易所实施安排。",
+      "evidence_quote": "the proposed rule change (SR-ISE-2026-42), as modified by Amendment No. 2, is approved on an accelerated basis.",
+      "details": {
+        "kind": "news",
+        "background": "规则提案此前已提交并修订；11月10日命令的新增变化是监管批准。",
+        "keyFacts": [
+          {
+            "name": "批准决定",
+            "value": "加速批准SR-ISE-2026-42第二次修订方案",
+            "period": "2026年11月10日",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "order"
+            ]
+          },
+          {
+            "name": "适用范围",
+            "value": "持有一种或多种数字商品的商品信托份额之期权上市标准",
+            "period": "本次规则修订",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "order"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "SEC批准命令署期；文件未列具体时刻。",
+            "evidenceRefs": [
+              "order"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "未确认具体新增产品及首次交易日期。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "order",
+            "name": "SEC批准命令34-106863",
+            "url": "https://www.sec.gov/files/rules/sro/ise/2026/34-106863.pdf",
+            "supports": "批准日期、规则编号、适用范围与加速批准结论。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/files/rules/sro/ise/2026/34-106863.pdf",
+        "canonical_url": "https://www.sec.gov/files/rules/sro/ise/2026/34-106863.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d6603b7252cb86af4ebfde780b81ca491715c21d8b2dc50bb34f483da9265ee8",
+      "category": "other",
+      "importance": 3,
+      "fact_summary": "加拿大外交部宣布重新制裁11家伊朗实体，称其涉及核活动、弹道导弹计划或相关融资。这些实体曾于2016年被移出制裁名单；有关行为指控归属于加拿大政府。",
+      "analysis": null,
+      "evidence_quote": "Minister Anand announces reimposition of sanctions against Iranian entities",
+      "details": {
+        "kind": "news",
+        "background": "加拿大曾因伊朗落实2015年核协议的进展于2016年取消对这些实体的制裁，本次重新实施限制。",
+        "keyFacts": [
+          {
+            "name": "重新制裁对象",
+            "value": "11",
+            "unit": "家实体",
+            "period": "2026年11月10日宣布",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "canada"
+            ]
+          },
+          {
+            "name": "政府提出的依据",
+            "value": "涉及伊朗核活动、弹道导弹计划或相关融资，依据《特别经济措施（伊朗）条例》",
+            "period": "本次制裁",
+            "nature": "statement",
+            "evidenceRefs": [
+              "canada"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "加拿大外交部在巴黎G7外长会议期间宣布措施，公告未列具体时刻。",
+            "evidenceRefs": [
+              "canada"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "本轮未取得伊朗方面针对本次措施的回应；公告未列精确生效时刻。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "canada",
+            "name": "加拿大外交部制裁公告",
+            "url": "https://www.canada.ca/en/global-affairs/news/2026/11/minister-anand-announces-reimposition-of-sanctions-against-iranian-entities.html",
+            "supports": "宣布日期、实体数量、法律依据与加拿大政府提出的理由。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.canada.ca",
+        "original_url": "https://www.canada.ca/en/global-affairs/news/2026/11/minister-anand-announces-reimposition-of-sanctions-against-iranian-entities.html",
+        "canonical_url": "https://www.canada.ca/en/global-affairs/news/2026/11/minister-anand-announces-reimposition-of-sanctions-against-iranian-entities.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "f321c904268bcef29356d2d155bbcafcddbf602b9c293f4ee1395ec1aeca5a94",
+      "category": "security",
+      "importance": 3,
+      "fact_summary": "Google DeepMind发布AlphaProof Code研究，称通过人类指导与AI代理协作，在机器码层面对libsignal的指定安全属性完成形式化证明。技术材料报告约650万行经Lean检查的证明代码，覆盖PQXDH握手与Triple Ratchet。",
+      "analysis": "推断：该结果展示了AI辅助验证实际密码软件的潜力；保证范围取决于规范、机器码语义和其他可信假设，不能推广为整个应用没有漏洞。",
+      "evidence_quote": "Introducing AlphaProof Code: a breakthrough in verifying complex software at depth",
+      "details": {
+        "kind": "news",
+        "background": "本次进展是11月10日发布研究与技术材料；验证对象为libsignal指定代码和安全属性。",
+        "keyFacts": [
+          {
+            "name": "验证对象与范围",
+            "value": "libsignal的AArch64机器码；覆盖PQXDH握手与Triple Ratchet的指定安全属性",
+            "period": "本次研究",
+            "nature": "statement",
+            "evidenceRefs": [
+              "paper"
+            ]
+          },
+          {
+            "name": "证明规模",
+            "value": "约650万行证明代码，依赖约2.6万行可信规范与机器码语义",
+            "unit": "行",
+            "period": "本次研究",
+            "nature": "statement",
+            "evidenceRefs": [
+              "paper"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-10",
+            "precision": "date",
+            "event": "研究公告及技术材料发布，页面未列具体时刻。",
+            "evidenceRefs": [
+              "blog",
+              "paper"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "研究结论来自团队材料，本轮未独立复现；形式化证明不涵盖所有应用组件和现实攻击条件。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "blog",
+            "name": "Google DeepMind研究公告",
+            "url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+            "supports": "研究发布、框架与团队主张。"
+          },
+          {
+            "id": "paper",
+            "name": "AlphaProof Code技术材料",
+            "url": "https://google-deepmind.github.io/code-verification/",
+            "supports": "验证范围、证明规模及可信基础；与公告同属研究团队来源。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "deepmind.google",
+        "original_url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+        "canonical_url": "https://deepmind.google/blog/introducing-alphaproof-code/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
