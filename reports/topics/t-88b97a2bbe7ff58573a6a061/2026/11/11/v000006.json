@@ -1,0 +1,644 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "6178a5b1-3a26-4db1-8dea-3f475a72a02e",
+  "report_date": "2026-11-11",
+  "channel": "opensource",
+  "version": 6,
+  "title": "2026-11-12 每日科技投资简报｜北京时间11月11日07:05:16—11月12日07:05:16；最长实际回溯至11月10日披露，属72小时内补充",
+  "collected_at": "2026-11-11T23:17:24.606Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-11T23:17:24.611Z",
+  "reviewed_content_sha256": "bdba5c5b0309a8ba21371b2eb3381a59dae88d5a35da830459ad2adad92fd696",
+  "items": [
+    {
+      "id": "b1cee1747a0dbdf16dc8977996889538eacdbb5840adb60144d8d0c0bfbaeae3",
+      "category": "industry",
+      "importance": 5,
+      "fact_summary": "Technoprobe宣布新增1.5亿—2亿欧元扩产计划，并更新全年收入目标。11月11日公告显示，前九个月未经审计收入7.874亿欧元，同比增长68.8%；EBITDA利润率47.8%。公司预计第四季度收入2.70亿欧元、上下浮动3%，系统切换已显著影响运营，效率预计年底恢复。原文未列发布时间，按72小时回溯收录，24小时边界未精确确认。",
+      "analysis": "推断：先进芯片测试需求正转化为收入和现金，但短期交付受内部系统切换制约。扩产能否增厚盈利，取决于效率恢复、客户需求和新增产能利用率，不能把产能金额当作订单。",
+      "evidence_quote": "The Board of Directors approves the consolidated results as of September 30, 2026",
+      "details": {
+        "kind": "investment",
+        "background": "公司生产芯片测试探针卡；本次同时披露经营增长、系统切换扰动及追加投资。",
+        "metrics": [
+          {
+            "name": "经营活动产生现金",
+            "value": "241",
+            "unit": "百万欧元",
+            "period": "2026年前九个月",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "产能扩张投入",
+            "value": "150",
+            "unit": "百万欧元",
+            "period": "2026年前九个月",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "追加投资计划",
+            "value": "150—200",
+            "unit": "百万欧元",
+            "period": "2027年第一季度后至年底",
+            "comparison": "另确认截至2027年第一季度的350百万欧元既有计划",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "先进芯片探针卡及晶圆测试",
+            "direction": "需求增长",
+            "reason": "公司将增长主要归因于AI和数据中心应用。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：测试量和复杂度提高可支持收入与经营杠杆；扩产先消耗现金，后续回报须由交付和利用率验证。",
+        "watchpoints": [
+          "年底系统效率是否恢复；第四季度收入及毛利率兑现",
+          "新增产能投产后现金产生能力"
+        ],
+        "risks": [
+          "恢复延期、客户需求放缓或产能闲置",
+          "EBITDA为替代绩效指标，不能替代净利润"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Technoprobe九个月业绩公告，2026-11-11",
+            "url": "https://www.technoprobe.com/wp-content/uploads/2026/11/PR-9M-2026.pdf",
+            "supports": "财务实际值、第四季度指引、系统切换影响及扩产计划"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.technoprobe.com",
+        "original_url": "https://www.technoprobe.com/wp-content/uploads/2026/11/PR-9M-2026.pdf",
+        "canonical_url": "https://www.technoprobe.com/wp-content/uploads/2026/11/PR-9M-2026.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "1abd38ca8e7b4036f454b5abf07232c637be1d4727489bc9406f80c3e74d35e3",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "Amprius宣布将全年收入指引从至少1.40亿美元提高至1.45亿美元。公告于北京时间11月11日05:05发布，属24—72小时补充。第三季度收入3,910万美元，同比增长83%，毛利率27%，净亏损350万美元；前九个月经营现金净流出4,796.4万美元。公告还列示7,500万美元美国电芯生产合同，其中2,230万美元已落实拨款义务，不能全部视为收入。",
+      "analysis": "推断：销售和毛利改善尚未转为经营现金流改善，营运资金及租赁付款仍消耗现金。美国生产合同可能支持未来产能，但必须满足拨款、改造和交付条件。",
+      "evidence_quote": "Amprius Technologies Reports Third Quarter 2026 Financial Results and Recent Business Highlights",
+      "details": {
+        "kind": "investment",
+        "background": "硅负极电池公司更新业绩与指引；合同此前首次披露时间未核实，不单独列为新订单事件。",
+        "metrics": [
+          {
+            "name": "全年收入",
+            "value": "145",
+            "unit": "百万美元",
+            "period": "2026年",
+            "comparison": "此前至少140百万美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "经营现金净流出",
+            "value": "47.964",
+            "unit": "百万美元",
+            "period": "2026年前九个月",
+            "comparison": "上年同期27.637百万美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：航空及无人系统需求→电芯销售与毛利；应收款、库存和预付款增加会延迟现金兑现，合同总额不等于收入。",
+        "watchpoints": [
+          "全年收入和至少28%毛利率目标",
+          "应收账款回收、库存及现金余额",
+          "合同拨款和2028年产线建设进度"
+        ],
+        "risks": [
+          "代工交付、政府合同条件及营运资金压力",
+          "高能量密度性能为公司声明"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Amprius第三季度业绩及更新指引",
+            "url": "https://ir.amprius.com/news-events/press-releases/detail/177/amprius-technologies-reports-third-quarter-2026-financial-results-and-recent-business-highlights",
+            "supports": "收入指引、利润率、现金流及合同条件"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.amprius.com",
+        "original_url": "https://ir.amprius.com/news-events/press-releases/detail/177/amprius-technologies-reports-third-quarter-2026-financial-results-and-recent-business-highlights",
+        "canonical_url": "https://ir.amprius.com/news-events/press-releases/detail/177/amprius-technologies-reports-third-quarter-2026-financial-results-and-recent-business-highlights",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "317f88bdde941161b2aed784b2cfe20c2e573fa9330766b1fae17f151fd5ffe3",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "阿里云宣布Qwen4-Max-Preview于北京时间11月11日10:00开放限时预览，位于最近24小时。官方文档称，模型支持文本、图像和视频输入，提供100万token上下文；仅限Token Plan，不支持按量付费。预览于11月25日24:00结束，随后退役。文档未明确首次发布时间，本条时间依据明确的预览开始时间。",
+      "analysis": "推断：新模型可用性可能促进开发者试用和套餐转化，但短期预览及退役安排限制生产部署。上下文规格不代表任务质量或盈利改善，尚缺独立效果与实际任务成本证据。",
+      "evidence_quote": "qwen4-max-preview",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量是旗舰多模态模型进入可访问预览，官方未披露开源权重。",
+        "metrics": [
+          {
+            "name": "上下文长度",
+            "value": "1000000",
+            "unit": "token",
+            "period": "本次预览版本",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "最大输出预算",
+            "value": "393216",
+            "unit": "token",
+            "period": "本次预览版本",
+            "comparison": "思考与最终答案共享",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：试用转为持续付费调用，且服务成本受控，才可能支持云业务收入和毛利；当前仅能确认产品入口变化。",
+        "watchpoints": [
+          "套餐付费转化、调用稳定性及实际任务费用",
+          "预览结束后的正式产品和迁移安排"
+        ],
+        "risks": [
+          "11月25日后退役导致部署迁移成本",
+          "缺少独立性能测试与收入贡献披露"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "阿里云Qwen4-Max-Preview官方文档",
+            "url": "https://help.aliyun.com/en/model-studio/qwen4-max-preview",
+            "supports": "预览时间、访问限制、规格及退役安排"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "help.aliyun.com",
+        "original_url": "https://help.aliyun.com/en/model-studio/qwen4-max-preview",
+        "canonical_url": "https://help.aliyun.com/en/model-studio/qwen4-max-preview",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5d3f1a46c035f064c1e8ec454b1c5e21e2fa5e61a0ba8c6d957902ebb9ac07ed",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Google宣布扩大Gemini 4 Carbon的付费API访问，并向AI Ultra用户逐步开放。11月10日原文列示每百万输入／输出token优惠价2／10美元；11月30日优惠期结束后适用4／20美元。原文未列时分，按72小时回溯收录，24小时边界未确认。公开版本与安全项目访问须区分，基准优势仍为厂商披露。",
+      "analysis": "推断：访问扩大可能增加云推理消费，但优惠结束后的实际任务成本将影响留存与调用规模。模型可能使用更多token，不能仅用单价或厂商基准推断客户节省和供应商利润。",
+      "evidence_quote": "Gemini 4 Carbon is now available",
+      "details": {
+        "kind": "investment",
+        "background": "本次从限定用户扩展至付费开发者和企业；价格脚注明确优惠结束后的费率。",
+        "metrics": [
+          {
+            "name": "输入／输出优惠单价",
+            "value": "2／10",
+            "unit": "美元/百万token",
+            "period": "截至2026年11月30日优惠期",
+            "comparison": "公开访问版本",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "优惠结束后输入／输出单价",
+            "value": "4／20",
+            "unit": "美元/百万token",
+            "period": "2026年11月30日优惠期结束后",
+            "comparison": "公告预定费率",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：更广访问→调用和订阅转化→收入；最终毛利仍依赖每任务token、推理成本和用户留存。",
+        "watchpoints": [
+          "优惠结束后调用量与客户留存",
+          "独立真实任务成功率及总成本"
+        ],
+        "risks": [
+          "优惠价格易被误当作长期定价",
+          "高推理强度可能增加token消耗；尚无单独利润披露"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Google Carbon开放公告，2026-11-10",
+            "url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+            "supports": "访问范围、优惠价格及价格脚注"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "blog.google",
+        "original_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+        "canonical_url": "https://blog.google/innovation-and-ai/models-and-research/gemini-models/gemini-4-carbon-now-available/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a19d22cfab82d8f5c94069e51b2a5b2b417f798f1cb77d411421810d75c742f9",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "RWE宣布与KKR完成英国Vanguard两座海上风电项目的股权及融资交割。11月11日原文称，KKR取得各项目50%股权；合计规划容量2.8GW，总投资约120亿英镑，包括输电设施。项目计划2027年初开始海上施工、2030年全面投运。公告未列时分，按72小时回溯收录，24小时边界未精确确认。",
+      "analysis": "推断：融资交割提高项目进入建设阶段的确定性，有助于设备和工程需求兑现；收益仍取决于施工成本、并网和运营表现。没有证据将其认定为AI数据中心专属供电。",
+      "evidence_quote": "Financial close has been reached for both projects.",
+      "details": {
+        "kind": "investment",
+        "background": "本次完成此前宣布的合资交易及项目融资，风场尚未投运。",
+        "metrics": [
+          {
+            "name": "合计规划容量",
+            "value": "2.8",
+            "unit": "GW",
+            "period": "2030年全面投运目标",
+            "comparison": "两个项目各1.4GW",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "总投资规模",
+            "value": "约12",
+            "unit": "十亿英镑",
+            "period": "项目建设期",
+            "comparison": "含相关输电基础设施",
+            "basis": "estimate",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "风电设备、海缆及变电施工",
+            "direction": "潜在新增交付需求",
+            "reason": "融资完成后计划推进海上施工；未据此指定设备供应商。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：融资落地→施工支出→设备工程收入；发电现金流需等待投运，建设期间仍占用资本。",
+        "watchpoints": [
+          "2027年施工启动、基础安装和并网节点",
+          "实际建设支出及投运时间"
+        ],
+        "risks": [
+          "施工超支、供应链延期、并网受限",
+          "融资额度不能与项目总投资简单相加"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "RWE融资及股权交割公告，2026-11-11",
+            "url": "https://www.rwe.com/en/press/rwe-ag/2026-11-11-rwe-and-kkr-join-forces-to-deliver-2-8-gw-of-new-offshore-wind-capacity-in-the-uk/",
+            "supports": "交割、投资规模、项目容量和建设时间表"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.rwe.com",
+        "original_url": "https://www.rwe.com/en/press/rwe-ag/2026-11-11-rwe-and-kkr-join-forces-to-deliver-2-8-gw-of-new-offshore-wind-capacity-in-the-uk/",
+        "canonical_url": "https://www.rwe.com/en/press/rwe-ag/2026-11-11-rwe-and-kkr-join-forces-to-deliver-2-8-gw-of-new-offshore-wind-capacity-in-the-uk/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b0acbb8e294f47ec0d78d6d26b4c97f32ae1d43acdd3b6ac915d2ffbee55c717",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "Digi International宣布第四财季收入增长25%，并给出下一财年收入增长10%—15%的指引。公告分发记录为北京时间11月12日05:07，位于最近24小时。截至9月30日季度，毛利率63.7%，同比下降20个基点；营业利润率16.5%，提高400个基点；经营现金流约4,200万美元。全年指引包含尚待批准的Disruptive Technologies收购。",
+      "analysis": "推断：收入增长带来的费用摊薄支持营业利润率，但并购贡献和税务因素影响增长质量。ARR增加不能全部解释为有机订阅扩张，现金流改善也不宜直接年化。",
+      "evidence_quote": "Digi International Reports Fourth Fiscal Quarter and Full Year Fiscal 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "工业物联网公司披露截至2026年9月的季度业绩及2027财年展望。",
+        "metrics": [
+          {
+            "name": "季度收入",
+            "value": "143.3",
+            "unit": "百万美元",
+            "period": "2026财年第四季度",
+            "comparison": "同比增长25%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "期末ARR",
+            "value": "197",
+            "unit": "百万美元",
+            "period": "2026财年末",
+            "comparison": "同比增长30%；属运营指标",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "全年收入",
+            "value": "588.7—615.5",
+            "unit": "百万美元",
+            "period": "2027财年",
+            "comparison": "包含待完成收购",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：设备与订阅扩张可改善经营杠杆；须剔除并购和税务时点后观察持续盈利及现金回收。",
+        "watchpoints": [
+          "收购批准与交割；有机收入及ARR增长",
+          "经营现金流中税务收益的可持续性"
+        ],
+        "risks": [
+          "产品服务部门ARR增长主要由Particle收购驱动",
+          "季度现金流增长主要受递延税项变化推动"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Digi第四财季及全年业绩演示材料",
+            "url": "https://digi.gcs-web.com/static-files/34d85a42-fa32-4835-989e-689cf3132c0a",
+            "supports": "收入、ARR、利润率、现金流和全年指引"
+          },
+          {
+            "id": "e2",
+            "name": "Digi公司业绩新闻稿",
+            "url": "https://www.businesswire.com/news/home/20261111846753/en/Digi-International-Reports-Fourth-Fiscal-Quarter-and-Full-Year-Fiscal-2026-Results",
+            "supports": "并购贡献及现金流税务因素"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.businesswire.com",
+        "original_url": "https://www.businesswire.com/news/home/20261111846753/en/Digi-International-Reports-Fourth-Fiscal-Quarter-and-Full-Year-Fiscal-2026-Results",
+        "canonical_url": "https://www.businesswire.com/news/home/20261111846753/en/Digi-International-Reports-Fourth-Fiscal-Quarter-and-Full-Year-Fiscal-2026-Results",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "dcd639f27b480cec2e8171b6d507d2ee616bbe1c7f0859b2ce849334f1963258",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Databricks宣布未来三年在欧洲和中东投资约30亿美元，扩大研发和客户支持。11月11日公告同时称，EMEA现有员工超过2,000人，预计三年内团队增长约50%。这属于计划支出，不能全部计作数据中心资本开支或已完成投资。原文未列时分，按72小时回溯收录，24小时边界未精确确认。",
+      "analysis": "推断：本地工程与实施能力扩大，可能提高企业AI部署和平台消费，但前期人员费用也会增加。只有客户扩张和使用收入超过增量成本，才形成盈利及现金流改善。",
+      "evidence_quote": "Databricks to Invest ~$3 Billion Across Europe and the Middle East to Accelerate Enterprise AI Adoption",
+      "details": {
+        "kind": "investment",
+        "background": "公司将区域投入用于研发、工程和客户团队，推动数据与AI平台采用。",
+        "metrics": [
+          {
+            "name": "区域投资计划",
+            "value": "约3",
+            "unit": "十亿美元",
+            "period": "公告后未来三年",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "EMEA团队规模增长",
+            "value": "约50",
+            "unit": "%",
+            "period": "未来三年",
+            "comparison": "现有员工超过2000人",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：本地交付能力→客户部署和平台消费→收入增长；人力及研发支出先行，利润贡献需要后续验证。",
+        "watchpoints": [
+          "区域客户消费和续约增长",
+          "实际招聘、支出进度及与已有国家投资计划的重叠"
+        ],
+        "risks": [
+          "支出计划不等于订单或收入",
+          "缺少区域收入、利润及资本开支拆分"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Databricks区域投资公告，2026-11-11",
+            "url": "https://www.databricks.com/company/newsroom/press-releases/databricks-invest-3-billion-across-europe-and-middle-east",
+            "supports": "投资计划、用途和团队扩张目标"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.databricks.com",
+        "original_url": "https://www.databricks.com/company/newsroom/press-releases/databricks-invest-3-billion-across-europe-and-middle-east",
+        "canonical_url": "https://www.databricks.com/company/newsroom/press-releases/databricks-invest-3-billion-across-europe-and-middle-east",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "429c7e7de3179d9d22db4ab1296307da0d839c32a72a32e67bc60e578dd3fc93",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "Xanadu宣布第三季度研发费用增长67%，净亏损扩大至3,220万美元。11月11日公告披露，季度收入130万美元，同比增长32%；研发费用2,560万美元，资本开支840万美元，9月底现金及现金等价物2.865亿美元。原文仅列日期，按72小时回溯收录；精确北京时间和24小时边界未确认。",
+      "analysis": "推断：量子计算研发投入明显快于商业收入扩张，短期投资观察应侧重现金消耗、资助兑现及工程里程碑。不能把器件进步或合作数量等同于可持续盈利。",
+      "evidence_quote": "Xanadu Announces Third Quarter 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "光量子计算公司的本次财报提供研发扩张及商业收入规模的对照。",
+        "metrics": [
+          {
+            "name": "研发费用",
+            "value": "25.6",
+            "unit": "百万美元",
+            "period": "2026年第三季度",
+            "comparison": "同比增长67%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "净亏损",
+            "value": "32.2",
+            "unit": "百万美元",
+            "period": "2026年第三季度",
+            "comparison": "上年同期亏损20.3百万美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "现金及现金等价物",
+            "value": "286.5",
+            "unit": "百万美元",
+            "period": "2026年9月30日",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：研发和设备投入提高工程验证能力，但回报依赖实际技术达标和付费合同；净亏损不能直接替代现金消耗率。",
+        "watchpoints": [
+          "后续经营现金流及融资工具使用",
+          "合同收入增长与系统损耗目标兑现"
+        ],
+        "risks": [
+          "研发延期、收入基数低及潜在股权稀释",
+          "政府支持存在条件及分期兑现安排"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Xanadu第三季度业绩公告，2026-11-11",
+            "url": "https://investors.xanadu.ai/node/7711/pdf",
+            "supports": "财务实际值、研发投入及融资安排"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.xanadu.ai",
+        "original_url": "https://investors.xanadu.ai/node/7711/pdf",
+        "canonical_url": "https://investors.xanadu.ai/node/7711/pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e07a7a06022c2490d390e16a2100c41b560ff4ea388381fe64028cd39fb50595",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "CGI宣布第四财季收入增长3.3%，整体订单收入比109.2%。11月11日财报显示，季度收入41.5亿加元，净利润4.607亿加元，同比增长20.8%；调整后净利润仅增长0.8%。托管服务订单收入比122%，与整体口径不同，不能视为AI订单增速。原文未列时分，按72小时回溯收录，24小时边界未精确确认。",
+      "analysis": "推断：订单超过收入支持后续业务量，但调整后利润增速和利润率弱于GAAP利润表现。需要观察订单转收入与交付成本，不能用AI相关表述解释全部增长。",
+      "evidence_quote": "CGI reports fourth quarter and Fiscal 2026 results",
+      "details": {
+        "kind": "investment",
+        "background": "企业IT服务公司披露截至2026年9月的财年业绩；本次重点是订单覆盖及盈利质量。",
+        "metrics": [
+          {
+            "name": "调整后EBIT利润率",
+            "value": "16.4",
+            "unit": "%",
+            "period": "2026财年第四季度",
+            "comparison": "同比下降20个基点",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "经营活动现金流",
+            "value": "551.9",
+            "unit": "百万加元",
+            "period": "2026财年第四季度",
+            "comparison": "收入的13.3%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "积压订单",
+            "value": "32.07",
+            "unit": "十亿加元",
+            "period": "2026年9月30日",
+            "comparison": "约为全年收入的1.9倍",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：订单覆盖为未来收入提供基础，但只有顺利交付并控制成本，才能改善利润及回款。",
+        "watchpoints": [
+          "整体与托管服务订单转化",
+          "调整后利润率、固定汇率增长及现金回收"
+        ],
+        "risks": [
+          "调整后指标并非标准IFRS指标",
+          "AI订单金额未单列；GAAP同比受调整项目变化影响"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "CGI第四季度及全年财报，2026-11-11",
+            "url": "https://www.cgi.com/sites/default/files/2026-11/cgi-q4-f2026-pr-2461356-en.pdf",
+            "supports": "财务实际值、订单指标及调整项"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.cgi.com",
+        "original_url": "https://www.cgi.com/sites/default/files/2026-11/cgi-q4-f2026-pr-2461356-en.pdf",
+        "canonical_url": "https://www.cgi.com/sites/default/files/2026-11/cgi-q4-f2026-pr-2461356-en.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
