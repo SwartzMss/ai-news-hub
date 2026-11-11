@@ -1,0 +1,530 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "0ebf397d-c70c-46fb-9085-45941ffbc494",
+  "report_date": "2026-11-11",
+  "channel": "opensource",
+  "version": 4,
+  "title": "每日热点观察｜北京时间2026年11月11日07:00—11月12日07:00",
+  "collected_at": "2026-11-11T23:10:56.995Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-11T23:10:57.006Z",
+  "reviewed_content_sha256": "0a24bf2d7a3c72049cf01b10e019aa1c5d24499df7409cfa50092ceb3f01b62b",
+  "items": [
+    {
+      "id": "097c973afb4a7e4b2e245b96aba7b1d46807158a222a581907ac01d0b22bcfa1",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "西门子能源11月11日宣布2026财年业绩：收入442亿欧元，可比增长15.5%；特殊项目前利润率升至12.4%，期末订单积压达1,640亿欧元。公司同时提出2030年利润率20%—22%的目标。",
+      "analysis": null,
+      "evidence_quote": "Siemens Energy reports record year and sets ambitious targets for 2030",
+      "details": {
+        "kind": "news",
+        "background": "本次披露覆盖截至2026年9月30日的财年，并更新中期经营目标。",
+        "keyFacts": [
+          {
+            "name": "全年收入",
+            "value": "442亿欧元，可比增长15.5%；可比口径剔除汇率及业务组合影响。",
+            "unit": "欧元",
+            "period": "2026财年，截至2026-09-30",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "积压订单",
+            "value": "1,640亿欧元；订单收入比1.54。",
+            "unit": "欧元",
+            "period": "2026财年末",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "利润率及目标",
+            "value": "2026财年特殊项目前利润率12.4%；2030年目标20%—22%。",
+            "unit": "%",
+            "period": "2026财年实际披露、2030年目标",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11",
+            "precision": "date",
+            "event": "公司发布全年业绩与2030年目标；具体发布时刻未知。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "2030年利润率是公司目标，尚未实现。"
+        ],
+        "evidence": [
+          {
+            "id": "release",
+            "name": "西门子能源官方公告",
+            "url": "https://www.siemens-energy.com/global/en/home/press-releases/siemens-energy-reports-record-year-and-sets-ambitious-targets-fo.html",
+            "supports": "业绩数据、统计口径、公告日期及2030年目标。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.siemens-energy.com",
+        "original_url": "https://www.siemens-energy.com/global/en/home/press-releases/siemens-energy-reports-record-year-and-sets-ambitious-targets-fo.html",
+        "canonical_url": "https://www.siemens-energy.com/global/en/home/press-releases/siemens-energy-reports-record-year-and-sets-ambitious-targets-fo.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2e7a9a48f669439a4f30d67627f78cd60f30042f49d7cbcffd08cee96fce93a7",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "据美联社报道，俄乌双方代表11月11日在阿布扎比会谈结束后确认，同意进行大规模换俘。具体人数及实施细节仍待商定，不能视为释放已经完成。",
+      "analysis": null,
+      "evidence_quote": "Russia and Ukraine agree to large exchange of prisoners of war, officials at Abu Dhabi talks say",
+      "details": {
+        "kind": "news",
+        "background": "此前日报覆盖会谈启动；本次新增是第二日会谈结束后宣布换俘安排。",
+        "keyFacts": [
+          {
+            "name": "换俘安排",
+            "value": "俄方梅金斯基和乌方乌梅罗夫均确认同意大规模换俘，尚待实施。",
+            "period": "2026-11-11",
+            "nature": "statement",
+            "evidenceRefs": [
+              "ap",
+              "ki"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11T21:19:00+08:00",
+            "precision": "datetime",
+            "event": "美联社报道刊出；来源标注08:19 ET，换算为北京时间。",
+            "evidenceRefs": [
+              "ap"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "美国调解人库什纳",
+            "statement": "称计划次日敲定换俘人数，并与威特科夫前往莫斯科会见普京，随后赴都柏林会见泽连斯基。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "ap"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "换俘准确人数、名单和执行日期尚未公布。"
+        ],
+        "watchpoints": [
+          "关注11月12日是否公布人数，以及美方宣布的后续会晤是否举行。"
+        ],
+        "evidence": [
+          {
+            "id": "ap",
+            "name": "美联社现场报道／Spectrum News",
+            "url": "https://spectrumnews1.com/ca/la/international/2026/11/11/russia-ukraine-prisoner-exchange",
+            "supports": "双方确认换俘、报道时间及美方后续会晤计划。"
+          },
+          {
+            "id": "ki",
+            "name": "The Kyiv Independent",
+            "url": "https://kyivindependent.com/ukraine-war-latest-large-scale-prisoner-exchange-agreed-as-2nd-day-of-abu-dhabi-talks-concludes-umerov-says/",
+            "supports": "乌俄双方声明及人数、实施日期仍未确定。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "spectrumnews1.com",
+        "original_url": "https://spectrumnews1.com/ca/la/international/2026/11/11/russia-ukraine-prisoner-exchange",
+        "canonical_url": "https://spectrumnews1.com/ca/la/international/2026/11/11/russia-ukraine-prisoner-exchange",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b535b5ab4054cb29751d299a0700c04a8816c9a147a52e621855e2e87e36c008",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "德国经济专家委员会11月11日发布年度报告，预计2026年实际GDP增长1.3%、2027年增长1.0%；报告称2026年预测较春季上调0.8个百分点，同时警示中长期联邦财政缺口。相关数字为预测，改革建议尚非政府政策。",
+      "analysis": null,
+      "evidence_quote": "Konjunktur erholt sich, Finanzpolitik vor harten Entscheidungen",
+      "details": {
+        "kind": "news",
+        "background": "本次是2026/27年度报告的新预测和财政评估；部分社会保险章节此前已于春季发布。",
+        "keyFacts": [
+          {
+            "name": "实际GDP增长预测",
+            "value": "2026年1.3%，2027年1.0%；2026年较春季上调0.8个百分点。",
+            "unit": "%",
+            "period": "2026年、2027年",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "report"
+            ]
+          },
+          {
+            "name": "消费者价格通胀预测",
+            "value": "2026年2.8%，2027年3.3%。",
+            "unit": "%",
+            "period": "2026年、2027年",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11",
+            "precision": "date",
+            "event": "官方新闻稿署柏林当日日期；具体发布时刻未提供。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "德国经济专家委员会",
+            "statement": "建议自2031年起逐步减少国防支出的信贷融资，并在本届议会任期内确定财政整顿路径。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "增长及财政缺口均为预测或情景计算，受能源价格、战争和财政路径影响。"
+        ],
+        "evidence": [
+          {
+            "id": "release",
+            "name": "德国经济专家委员会官方新闻稿",
+            "url": "https://www.sachverstaendigenrat-wirtschaft.de/fileadmin/dateiablage/gutachten/jg202627/JG202627_Pressemitteilung.pdf",
+            "supports": "发布日期、增长与通胀预测及财政建议。"
+          },
+          {
+            "id": "report",
+            "name": "德国经济专家委员会年度报告",
+            "url": "https://www.sachverstaendigenrat-wirtschaft.de/jahresgutachten-2026.html",
+            "supports": "预测上调幅度、情景条件及已在春季发布章节的标识。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sachverstaendigenrat-wirtschaft.de",
+        "original_url": "https://www.sachverstaendigenrat-wirtschaft.de/fileadmin/dateiablage/gutachten/jg202627/JG202627_Pressemitteilung.pdf",
+        "canonical_url": "https://www.sachverstaendigenrat-wirtschaft.de/fileadmin/dateiablage/gutachten/jg202627/JG202627_Pressemitteilung.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "246c0d879330d62298b00bd2f3e9563777b180c1f2f5e2727a3f85bac73a6aa9",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "RWE于11月11日宣布，2026年前九个月调整后EBITDA同比增长35%至46亿欧元，净投资107亿欧元；公司维持全年指引，并预计业绩接近指引区间上端。",
+      "analysis": null,
+      "evidence_quote": "RWE confirms earnings guidance and expects results towards the upper end of the forecast ranges",
+      "details": {
+        "kind": "news",
+        "background": "本次新增为前三季度业绩及对全年区间内落点的判断；不是上调全年指引区间。",
+        "keyFacts": [
+          {
+            "name": "调整后EBITDA",
+            "value": "46亿欧元，同比增长35%。",
+            "unit": "欧元",
+            "period": "2026年1—9月",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "净投资",
+            "value": "107亿欧元。",
+            "unit": "欧元",
+            "period": "2026年1—9月",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "全年调整后EBITDA指引",
+            "value": "维持57.5亿—63.5亿欧元，预计接近区间上端。",
+            "unit": "欧元",
+            "period": "2026全年",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11",
+            "precision": "date",
+            "event": "官方公告署埃森当日日期；具体发布时刻未知。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "全年业绩尚未完成，接近指引上端属于管理层预期。"
+        ],
+        "evidence": [
+          {
+            "id": "release",
+            "name": "RWE官方业绩公告",
+            "url": "https://www.rwe.com/en/press/rwe-ag/2026-11-11-rwe-delivers-an-excellent-earnings-performance-in-the-first-three-quarters/",
+            "supports": "九个月业绩、投资、全年指引及公告日期。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.rwe.com",
+        "original_url": "https://www.rwe.com/en/press/rwe-ag/2026-11-11-rwe-delivers-an-excellent-earnings-performance-in-the-first-three-quarters/",
+        "canonical_url": "https://www.rwe.com/en/press/rwe-ag/2026-11-11-rwe-delivers-an-excellent-earnings-performance-in-the-first-three-quarters/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6b43a575af9742a097c65510b318753705c0e9bf8bae633149c6353168398570",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "QuantumScape于11月11日宣布Osprey全固态电池平台，称早期电芯测试在一个大气压下完成1,000次完整充电循环，容量保持率约80%。公司技术材料同时说明，距离大规模生产仍有工程和开发挑战。",
+      "analysis": null,
+      "evidence_quote": "QuantumScape Expands Commercial Roadmap with Osprey, the Open All-Solid-State Platform for Battery Development",
+      "details": {
+        "kind": "news",
+        "background": "Osprey在公司QSE技术基础上结合固态正极、陶瓷隔膜与无负极锂金属设计；本次新增为平台和早期测试披露。",
+        "keyFacts": [
+          {
+            "name": "循环测试",
+            "value": "公司称完成1,000次完整充电循环，容量保持率约80%，工作压力为一个大气压。",
+            "period": "11月11日披露的早期测试；实际试验日期未知",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "生产成熟度",
+            "value": "公司称距离大规模生产仍有工程和开发挑战。",
+            "period": "2026-11-11技术材料",
+            "nature": "statement",
+            "evidenceRefs": [
+              "technical"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11",
+            "precision": "date",
+            "event": "公司宣布Osprey平台并发布测试材料；具体发布时刻未知。",
+            "evidenceRefs": [
+              "release",
+              "technical"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "测试为公司披露，未取得独立复现结果；不能据此认定已具备量产能力。"
+        ],
+        "evidence": [
+          {
+            "id": "release",
+            "name": "QuantumScape官方公告",
+            "url": "https://ir.quantumscape.com/news-releases/news-release-details/quantumscape-expands-commercial-roadmap-osprey-open-all-solid",
+            "supports": "平台发布、日期及早期循环测试指标。"
+          },
+          {
+            "id": "technical",
+            "name": "QuantumScape Osprey技术材料",
+            "url": "https://www.quantumscape.com/osprey-the-open-solid-state-platform/",
+            "supports": "技术结构及大规模生产前尚存挑战。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.quantumscape.com",
+        "original_url": "https://ir.quantumscape.com/news-releases/news-release-details/quantumscape-expands-commercial-roadmap-osprey-open-all-solid",
+        "canonical_url": "https://ir.quantumscape.com/news-releases/news-release-details/quantumscape-expands-commercial-roadmap-osprey-open-all-solid",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d031e983d6c83397f248f83de6ffdc31d4a31ccdd1df8267f604e77be22a0ee1",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "IBM于11月11日宣布Nighthawk r3量子处理器路线图，计划以520个量子比特执行10,000次量子操作，并于2027年连接两颗r3构成超过1,000个量子比特的系统。这些指标属于计划，尚非已交付成果。",
+      "analysis": null,
+      "evidence_quote": "IBM Quantum Nighthawk Demonstrates New Levels of Speed and Quality, with Plans to Scale Beyond 1,000 Qubits in 2027",
+      "details": {
+        "kind": "news",
+        "background": "IBM此前已推出Nighthawk r2；本次新增为下一代扩展计划及现有平台使用进展。",
+        "keyFacts": [
+          {
+            "name": "r3设计目标",
+            "value": "520个量子比特，准确执行10,000次量子操作。",
+            "period": "11月11日公布的下一代路线图",
+            "nature": "statement",
+            "evidenceRefs": [
+              "ibm"
+            ]
+          },
+          {
+            "name": "系统扩展计划",
+            "value": "连接两颗r3，构成超过1,000个量子比特的系统。",
+            "unit": "量子比特",
+            "period": "2027年计划",
+            "nature": "statement",
+            "evidenceRefs": [
+              "ibm"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11",
+            "precision": "date",
+            "event": "IBM发布公告；具体发布时刻未知。",
+            "evidenceRefs": [
+              "ibm"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "路线图不代表已实现容错量子计算，后续交付及性能仍待验证。"
+        ],
+        "watchpoints": [
+          "关注IBM在2027年是否完成双r3处理器连接及相关性能披露。"
+        ],
+        "evidence": [
+          {
+            "id": "ibm",
+            "name": "IBM官方公告",
+            "url": "https://newsroom.ibm.com/2026-11-11-ibm-quantum-nighthawk-demonstrates-new-levels-of-speed-and-quality,-with-plans-to-scale-beyond-1,000-qubits-in-2027",
+            "supports": "公告日期、r3目标及2027年双处理器计划。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.ibm.com",
+        "original_url": "https://newsroom.ibm.com/2026-11-11-ibm-quantum-nighthawk-demonstrates-new-levels-of-speed-and-quality,-with-plans-to-scale-beyond-1,000-qubits-in-2027",
+        "canonical_url": "https://newsroom.ibm.com/2026-11-11-ibm-quantum-nighthawk-demonstrates-new-levels-of-speed-and-quality,-with-plans-to-scale-beyond-1,000-qubits-in-2027",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "eae08ac88c927cb79be184385e50331bf73f9b4073f507495bcb01749611fd3c",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "维斯塔斯11月11日公布第三季度收入56.77亿欧元、特殊项目前EBIT为4.83亿欧元；风机订单3,377MW，同比下降27%。公司将全年收入指引收窄至205亿—215亿欧元，特殊项目前EBIT利润率指引收窄至7.5%—8.5%。",
+      "analysis": null,
+      "evidence_quote": "Full-year outlook narrowed.",
+      "details": {
+        "kind": "news",
+        "background": "本次为第三季度业绩和全年指引更新；此前项目事故本身不作为新事件重复收录。",
+        "keyFacts": [
+          {
+            "name": "季度经营结果",
+            "value": "收入56.77亿欧元；特殊项目前EBIT为4.83亿欧元，利润率8.5%。",
+            "unit": "欧元",
+            "period": "2026年第三季度",
+            "nature": "statement",
+            "evidenceRefs": [
+              "report"
+            ]
+          },
+          {
+            "name": "风机订单",
+            "value": "确定且无条件订单3,377MW，同比下降27%。",
+            "unit": "MW",
+            "period": "2026年第三季度",
+            "nature": "statement",
+            "evidenceRefs": [
+              "report"
+            ]
+          },
+          {
+            "name": "全年指引调整",
+            "value": "收入由200亿—220亿收窄至205亿—215亿欧元；特殊项目前EBIT利润率由7%—9%收窄至7.5%—8.5%。",
+            "period": "2026全年",
+            "nature": "statement",
+            "evidenceRefs": [
+              "report"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11T14:23:00+08:00",
+            "precision": "datetime",
+            "event": "公司标注07:23 CET发布报告，换算为北京时间。",
+            "evidenceRefs": [
+              "reporting"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "report",
+            "name": "维斯塔斯第三季度官方报告",
+            "url": "https://www.vestas.com/content/dam/vestas-com/global/en/investor/reports-and-presentations/financial/2026/q3-2026/261111_59_Company_Announcement.pdf.coredownload.inline.pdf",
+            "supports": "季度业绩、订单及指引调整。"
+          },
+          {
+            "id": "reporting",
+            "name": "维斯塔斯官方报告发布页",
+            "url": "https://www.vestas.com/en/investor/reports-and-presentations/vestas-reporting",
+            "supports": "公告编号及07:23 CET发布时间。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.vestas.com",
+        "original_url": "https://www.vestas.com/content/dam/vestas-com/global/en/investor/reports-and-presentations/financial/2026/q3-2026/261111_59_Company_Announcement.pdf.coredownload.inline.pdf",
+        "canonical_url": "https://www.vestas.com/content/dam/vestas-com/global/en/investor/reports-and-presentations/financial/2026/q3-2026/261111_59_Company_Announcement.pdf.coredownload.inline.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
