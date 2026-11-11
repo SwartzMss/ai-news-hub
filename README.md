@@ -170,6 +170,7 @@ bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 - 再次启动：运行 `npm start`。
 - 查看服务日志：运行 `tail -f logs/backend.log`。
 - 更新代码后：停止服务，重新运行 `npm run build`，再启动。
+- 生成轮失败后：修复并重启 Backend，再手动启动新 Run；失败的 Run 不会自动重跑。
 - 开机启动与后台常驻：按 [Linux 部署指南](docs/DEPLOY_LINUX.md) 安装 systemd 服务。
 
 更多操作见 [后台使用说明](docs/ADMIN.md)。

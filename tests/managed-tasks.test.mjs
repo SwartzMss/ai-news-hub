@@ -29,7 +29,8 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   assert.equal((await s.request('POST',`/runs/${id}/turns`,{idempotencyKey:'bad',input:'manual followup'})).statusCode,409);
   s.adapter.succeed(0,'first');await s.wait(()=>s.adapter.calls[1]);assert.equal(s.adapter.calls[1].input.threadId,'thread-0');assert.ok(s.adapter.calls[1].input.input.includes(configuration.prompts[1]));
   assert.ok(s.adapter.calls[1].input.outputSchema);assert.equal(s.adapter.calls[1].input.input,configuration.prompts[1]);
-  s.adapter.succeed(1,JSON.stringify(proposal));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
+  assert.ok(s.adapter.calls[1].input.outputSchema.properties.items.items.required.includes('details'));
+  s.adapter.succeed(1,JSON.stringify({...proposal,items:[{...proposal.items[0],details:null}]}));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
   const report=(await s.request('GET','/news/reports')).json().reports[0];assert.equal(report.status,'validated');
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,204);
   assert.ok(!(await s.request('GET','/tasks')).json().tasks.some(t=>t.id===task.id));
