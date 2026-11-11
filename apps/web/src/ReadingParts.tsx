@@ -44,9 +44,9 @@ export function counts(items: Story[]) {
     }, {}),
   ).sort((a, b) => b[1] - a[1]);
 }
-export function Source({ story }: { story: Story }) {
+export function Source({ story, expanded = false }: { story: Story; expanded?: boolean }) {
   return (
-    <details className="source-details">
+    <details className="source-details" open={expanded}>
       <summary>来源与引文</summary>
       <blockquote>{story.evidence_quote}</blockquote>
       <a

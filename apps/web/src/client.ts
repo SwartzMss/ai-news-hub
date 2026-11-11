@@ -223,3 +223,32 @@ if (location.hash) {
     /* Malformed fragments do not prevent reading. */
   }
 }
+
+function markDetailSection(id:string){
+  document.querySelectorAll<HTMLAnchorElement>('a[data-detail-target]').forEach(link=>{
+    if(link.dataset.detailTarget===id)link.setAttribute('aria-current','location');
+    else link.removeAttribute('aria-current');
+  });
+}
+const detailLinks=[...document.querySelectorAll<HTMLAnchorElement>('a[data-detail-target]')];
+if(detailLinks.length){
+  document.addEventListener('click',event=>{
+    const link=event.target instanceof Element?event.target.closest<HTMLAnchorElement>('a[data-detail-target]'):null;
+    if(!link)return;
+    markDetailSection(link.dataset.detailTarget!);
+    const menu=link.closest<HTMLDetailsElement>('details.detail-mobile-nav');
+    if(menu)menu.open=false;
+  });
+  const sections=[...new Set(detailLinks.map(link=>link.dataset.detailTarget!))].map(id=>document.getElementById(id)).filter((element):element is HTMLElement=>!!element);
+  const update=()=>{
+    const current=[...sections].reverse().find(section=>section.getBoundingClientRect().top<=Math.max(120,window.innerHeight*0.25))??sections[0];
+    if(current)markDetailSection(current.id);
+  };
+  if('IntersectionObserver' in window){
+    const observer=new IntersectionObserver(update,{rootMargin:'-15% 0px -65% 0px'});
+    sections.forEach(section=>observer.observe(section));
+  }
+  window.addEventListener('scroll',update,{passive:true});
+  window.addEventListener('hashchange',update);
+  update();
+}

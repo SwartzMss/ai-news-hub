@@ -2,6 +2,7 @@ import type { Story } from "./types";
 import { InlineText } from "./InlineText";
 import { Source, lead } from "./ReadingParts";
 import { storyPath } from "./paths";
+import { DetailLinks, MobileDetailNav, type DetailSection } from "./DetailNavigation";
 
 const factHeadings: Record<string, string> = {
   用途: "核心用途",
@@ -59,6 +60,12 @@ export function projectDetail(story: Story) {
   return { name, subtitle, status, attribution, repository: repoMatch[1], repositoryLabel: `${path[0]}/${path[1]}`, facts: facts.fields, analysis };
 }
 
+function legacySections(project:NonNullable<ReturnType<typeof projectDetail>>):DetailSection[]{
+  return [...project.facts.map((field,index)=>({id:`project-fact-${index}`,label:field.heading})),
+    ...(project.analysis?.prefix?[{id:'project-analysis-intro',label:'编辑判断'}]:[]),
+    ...(project.analysis?.fields.map((field,index)=>({id:`project-analysis-${index}`,label:field.heading}))??[]),
+    {id:'project-source',label:'来源与证据'}];
+}
 export function ProjectDetail({ story, number }: { story: Story; number?: number }) {
   const project = projectDetail(story);
   if (!project) return null;
@@ -73,6 +80,7 @@ export function ProjectDetail({ story, number }: { story: Story; number?: number
         <a className="project-repository" href={project.repository} target="_blank" rel="noopener noreferrer">{project.repositoryLabel} ↗</a>
         {(project.status || project.attribution) && <p className="project-status">{[project.attribution, project.status].filter(Boolean).join(" · ")}</p>}
       </header>
+      <MobileDetailNav sections={legacySections(project)}/>
       <div className="project-sections">
         {project.facts.map((field, index) => (
           <section id={`project-fact-${index}`} className={field.key === "技术要点" ? "project-technical" : undefined} key={field.key}>
@@ -99,12 +107,7 @@ export function ProjectAside({ project, related }: { project: NonNullable<Return
     <aside className="project-aside">
       <nav aria-label="本文目录" className="project-toc">
         <h2>本文目录</h2>
-        <ol>
-          {project.facts.map((field, index) => <li key={field.key}><a href={`#project-fact-${index}`}>{field.heading}</a></li>)}
-          {project.analysis?.prefix && <li><a href="#project-analysis-intro">编辑判断</a></li>}
-          {project.analysis?.fields.map((field, index) => <li key={field.key}><a href={`#project-analysis-${index}`}>{field.heading}</a></li>)}
-          <li><a href="#project-source">来源与引文</a></li>
-        </ol>
+        <DetailLinks sections={legacySections(project)}/>
       </nav>
       {related.length > 0 && (
         <nav aria-label="本期其他项目" className="project-related">

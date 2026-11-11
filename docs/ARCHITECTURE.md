@@ -166,3 +166,5 @@ README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 syst
 Newsletter 使用独立于 Codex Task/Run 的 Backend Scheduler：SQLite 保存可配置的北京时间每日开始时间、其后一小时的五个计划槽与 dispatch 状态，GitHub Workflow Dispatch 只启动既有发送脚本，Cloudflare D1 / Resend 继续负责订阅与投递。Workflow API 超时进入待核对状态，按 dispatch ID 查找 Run 后再同步结果；管理 API 保留计划、手动触发及历史状态接口，后台页面只展示时间和启停开关。migration 12 增加计划表和执行表，migration 13 增加开始时间字段；新计划默认暂停。
 
 开源项目条目可携带 `details.kind=project`，包含项目概览、按证据选填的更新/技术/场景/许可证/试用评价，以及带 ID 的 HTTPS 原始来源。Backend 在研究输出、日报构建和发布归档校验字段与引用；静态站直接读取归档并显示项目专属章节。历史无 details 的项目仍使用文本标签解析，历史 `kind=news` 保留新闻详情原样。
+
+公共详情页的新闻、投资和项目章节目录从与正文共用的章节清单派生；单节点新闻时间线并入事件概览，原 `#news-timeline` 锚点仍保留。主来源与补充证据合并为一个「来源与证据」章节，原证据 ID、主来源锚点及归档数据不变。侧栏隐藏时使用折叠的移动目录，滚动位置通过前端脚本标记当前章节。
