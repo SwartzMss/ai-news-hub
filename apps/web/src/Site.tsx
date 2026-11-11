@@ -86,11 +86,11 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       </nav>
     </aside>
   ) : page.kind === "article" && investment ? (
-    <InvestmentAside details={investment} />
+    <InvestmentAside details={investment} analysis={story?.analysis}/>
   ) : page.kind === "article" && structuredProject ? (
     <StructuredProjectAside details={structuredProject} />
   ) : page.kind === "article" && news ? (
-    <NewsAside details={news} />
+    <NewsAside details={news} analysis={story?.analysis}/>
   ) : page.kind === "article" && owner && !project ? (
     <aside className="reading-aside">
       <h2>所属简报</h2>

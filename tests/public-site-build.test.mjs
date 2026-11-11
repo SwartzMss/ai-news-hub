@@ -445,6 +445,9 @@ test('structured project detail renders sourced sections without an event timeli
   assert.match(doc.querySelector('#project-evaluation').textContent,/编辑判断/);
   assert.equal(doc.querySelector('#news-timeline'),null);
   assert.ok(doc.querySelector('.project-aside a[href="#project-change"]'));
+  assert.deepEqual([...doc.querySelectorAll('.project-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.project-sections > section')].map(section=>section.id));
+  assert.ok(doc.querySelector('.project-detail .detail-mobile-nav'));
+  assert.equal([...doc.querySelectorAll('.project-sections h2')].filter(h=>h.textContent==='来源与证据').length,1);
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
 test('investment detail renders evidence-linked metrics and a section directory',async()=>{
@@ -462,6 +465,10 @@ test('investment detail renders evidence-linked metrics and a section directory'
   assert.match(doc.querySelector('.investment-detail').textContent,/潜在影响|潜在关系/);
   assert.ok(doc.querySelector('.investment-detail a[href="https://example.com/filing"]'));
   assert.ok(doc.querySelector('.investment-aside a[href="#investment-metrics"]'));
+  assert.deepEqual([...doc.querySelectorAll('.investment-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.investment-sections > section')].map(section=>section.id));
+  assert.ok(doc.querySelector('.investment-aside a[href="#investment-analysis"]'));
+  assert.ok(doc.querySelector('.investment-detail .detail-mobile-nav'));
+  assert.equal([...doc.querySelectorAll('.investment-sections h2')].filter(h=>h.textContent==='来源与证据').length,1);
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
 test('news detail renders structured evidence, timeline and a section directory',async()=>{
@@ -476,10 +483,36 @@ test('news detail renders structured evidence, timeline and a section directory'
   const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.news-detail'));
   assert.match(doc.querySelector('.news-detail table').textContent,/生效范围.*全国.*已证实/s);
-  assert.match(doc.querySelector('#news-timeline').textContent,/2026-11-03.*正式发布/s);
+  assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
+  assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
+  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*正式发布/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
   assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('发布时间与范围'),true);
+  assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
+  assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
+  assert.equal(doc.querySelectorAll('.news-detail-sections h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
+  assert.ok(doc.querySelector('.detail-mobile-nav a[href="#news-evidence"]'));
+  assert.equal([...doc.querySelectorAll('.news-detail-sections h2')].filter(h=>h.textContent==='来源与证据').length,1);
+  assert.ok(doc.querySelector('#news-primary-source .source-details')===null);
+  assert.ok(doc.querySelector('#news-evidence .source-details[open]'));
+  const html=readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8');
+  const browser=new JSDOM(html,{url:'https://demo.invalid/article/',runScripts:'outside-only'});
+  browser.window.matchMedia=()=>({matches:false});
+  const script=browser.window.document.querySelector('script[type="module"]').getAttribute('src').slice(1);
+  browser.window.eval(readFileSync(join(built.output,script),'utf8'));
+  const mobile=browser.window.document.querySelector('.detail-mobile-nav');mobile.open=true;
+  const mobileLink=mobile.querySelector('a[href="#news-facts"]');
+  mobileLink.dispatchEvent(new browser.window.MouseEvent('click',{bubbles:true,cancelable:true,button:0}));
+  assert.equal(mobile.open,false);
+  assert.equal(mobileLink.getAttribute('aria-current'),'location');
+  const sections=[...browser.window.document.querySelectorAll('.news-detail-sections > section')];
+  sections.forEach((section,index)=>{section.getBoundingClientRect=()=>({top:index<2?-100:500});});
+  browser.window.dispatchEvent(new browser.window.Event('scroll'));
+  assert.equal(browser.window.document.querySelector('.news-aside a[aria-current="location"]').hash,'#news-facts');
+  browser.window.close();
+
+
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
 
