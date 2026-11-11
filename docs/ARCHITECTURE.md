@@ -44,6 +44,8 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 
 只有匹配 Thread/Turn 的 completed、非空最终输出及确认进程清理才能成功。commentary/partial_answer 仅作过程日志，优先使用 final_answer，缺失时兼容未标记/未知 phase。研究轮保存文本；最终生成还需结构检查和事务保存。生成成功后 Run 固定，修改须新建研究；失败可在原 Thread 修正。
 
+最终生成向 Codex 提交兼容严格结构化输出的独立 Schema：所有属性必填，业务可选值用 `null` 表示，不支持的校验关键字不送入 Codex。收到结果后仅清理业务可选的 `null`，再用完整的 RESEARCH_SCHEMA 与详情校验保存；归档 Schema 和历史数据不变。
+
 报告、文章关联、快照与 Run/Turn 成功一起提交；取消/超时不写迟到成功。关闭中断工作并回收进程组，清理不确定时以 cleanup_failed 停止引擎。重启将未完成状态标 interrupted，不自动重跑。PID/启动时间/boot ID 保证同一数据目录只允许一个 Backend。
 
 独立探针 `tools/codex-probe/` 用于最小认证/协议诊断，不替代业务链路。接口和配额见 [任务引擎](TASK_ENGINE.md)。

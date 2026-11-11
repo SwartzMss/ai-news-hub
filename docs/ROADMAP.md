@@ -48,6 +48,7 @@ Issue #8：公共 React/Vite 静态首页、频道、来源详情、日期/历�
 - [x] 同 Thread 多轮 prompt、显式最终生成及 Backend 原文/引文核对
 - [x] 标准化 URL、来源、抓取时间、来源发布时间并实现最小去重
 - [x] 使用受 Schema 约束的 Codex 分析输出，保留可核验的原始来源
+- [x] 生成轮使用 Codex 严格输出兼容 Schema，归一化可选值后仍按完整业务 Schema 校验；修复三类日报第二轮的 400 拒绝
 - [x] SQLite 存储任务、Run、新闻与报告
 - [x] 将人工批准的日报按日期/频道/版本输出为严格 JSON 并归档 GitHub，幂等重试无重复提交（Markdown 仍保留私有 SQLite 预览）
 

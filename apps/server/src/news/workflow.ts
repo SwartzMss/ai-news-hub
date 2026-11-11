@@ -8,6 +8,7 @@ import type { PreparedTask, TaskWorkflow } from "../tasks/workflow.js";
 import { NEWS_CHANNEL, NEWS_TASK_ID } from "./source.js";
 import {sourceUrl,type SourceFetch} from "./sources.js";
 import { RESEARCH_SCHEMA, type ProposalItem } from "./report-schema.js";
+import { CODEX_RESEARCH_SCHEMA, normalizeResearchOutput } from "./structured-output-schema.js";
 import { buildReport, reportMarkdown } from "./report.js";
 import type { ArticleCandidate } from "./types.js";
 
@@ -60,10 +61,11 @@ export class NewsWorkflow implements TaskWorkflow {
     const managed=!!run.configuration;
     const countMatch=managed ? run.configuration?.prompts.at(-1)?.match(FIXED_COUNT_MARKER) : null;
     const fixedCount=countMatch ? Number(countMatch[1]) : undefined;
+    const codexProperties = CODEX_RESEARCH_SCHEMA.properties as Record<string, unknown>;
     const outputSchema = fixedCount ? {
-      ...RESEARCH_SCHEMA,
-      properties: { ...RESEARCH_SCHEMA.properties, items: { ...RESEARCH_SCHEMA.properties.items, maxItems: fixedCount } },
-    } : RESEARCH_SCHEMA;
+      ...CODEX_RESEARCH_SCHEMA,
+      properties: { ...codexProperties, items: { ...codexProperties.items as Record<string, unknown>, maxItems: fixedCount } },
+    } : CODEX_RESEARCH_SCHEMA;
     const recent = managed ? this.db.prepare(
       `SELECT r.content_json FROM reports r JOIN task_runs tr ON tr.id=r.run_id
        JOIN codex_news_runs n ON n.report_id=r.id
@@ -87,7 +89,7 @@ export class NewsWorkflow implements TaskWorkflow {
       forbidTools: true,
       webSearch: true,
       developerInstructions: managed
-        ? `${instructions}\n研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? '这是用户配置的最后一个 Prompt；本轮回复使用给定日报 JSON Schema。' : '这是用户配置的研究 Prompt；保留研究结果以供后续配置的 Prompt 使用。'}${priorContext}`
+        ? `${instructions}\n研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? '这是用户配置的最后一个 Prompt；本轮回复使用给定日报 JSON Schema。Schema 中无依据或不适用的可选字段填 null，不得编造内容。' : '这是用户配置的研究 Prompt；保留研究结果以供后续配置的 Prompt 使用。'}${priorContext}`
         : instructions,
       metadata: { topic: String(snapshot.topic), mode: context.mode },
       ...(final
@@ -95,7 +97,7 @@ export class NewsWorkflow implements TaskWorkflow {
             complete: async (output: string, signal: AbortSignal) => {
               let proposal: unknown;
               try {
-                proposal = JSON.parse(output);
+                proposal = normalizeResearchOutput(JSON.parse(output));
               } catch {
                 throw new AppError("report_invalid_json");
               }

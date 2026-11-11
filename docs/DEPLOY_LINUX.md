@@ -411,6 +411,8 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 最终生成直接使用 Codex 返回的内容与 HTTPS 来源链接，不再要求 Backend 出站抓取网页。原文访问、引文提取由 Codex 完成；Backend 仅做结构和链接格式检查。GitHub 归档按已有凭据与代理配置工作。
 
+若三类日报的最终轮都在数秒内以 `agent_failed` 结束，需更新并重启包含严格输出兼容 Schema 的 Backend；旧版可能因可选 `details` 被 Codex 拒绝为 HTTP 400。修复后手动重新运行失败任务，旧 Run 不会自动重跑。业务校验仍使用完整 Schema。
+
 来源不可访问、引文不匹配、认证过期或搜索不支持时，检查 Run 错误并修正来源/prompt，不添加假内容。可按研究量调整单 Turn 总超时 后台“模型与执行”的每轮超时（默认 10 分钟），页面按分钟配置。生成的 validated 仍待人工审核，不自动归档。历史 RSS 验证不能替代当前研究验证，见 [当前记录](validation/CODEX_RESEARCH.md)。原生服务账户/systemd/长期认证仍由 #2 验收。
 
 ## 12. Issue #6 本地管理后台
