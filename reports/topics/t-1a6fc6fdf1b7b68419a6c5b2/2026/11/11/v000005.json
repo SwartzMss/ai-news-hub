@@ -1,0 +1,495 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "4b2d3274-c4bf-4f68-b814-e7949e44e938",
+  "report_date": "2026-11-11",
+  "channel": "opensource",
+  "version": 5,
+  "title": "每日开源项目｜2026-11-12｜北京时间主窗口：11-11 07:02:58—11-12 07:02:58；重要进展补充窗口：11-09 07:02:58—11-11 07:02:58",
+  "collected_at": "2026-11-11T23:14:23.770Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-11T23:14:23.775Z",
+  "reviewed_content_sha256": "bf93166661552125902be2546b5918642c73654178cb133b8466dcfee4a6958a",
+  "items": [
+    {
+      "id": "050c32e913023aae805d58511d8e7c56e49eab2dd6b30155a34c7f3893d9d647",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Unsloth 宣布新版支持以 MLX 模型运行编码 Agent。用途：在本地运行和训练语言及扩散模型；技术要点：v0.1.917-beta 支持通过 unsloth start 在 Mac 上为 Claude Code、Codex 提供 MLX 模型，并增加图像生成队列、聊天 HTML/PDF 导出和长对话交互优化；近期证据：官方 Release 于北京时间 2026 年 11 月 12 日 00:00 发布，版本号标为 beta；许可证：核心包 Apache-2.0，Studio UI 等部分组件 AGPL-3.0，模型权重和训练数据须分别核对授权；[项目仓库](https://github.com/unslothai/unsloth)",
+      "analysis": "推荐理由：对希望在 Mac 上探索本地编码模型的开发者，这一集成有望降低配置成本；试用建议：先用小型任务检查工具调用和上下文处理。本期未进行运行或性能测试。",
+      "evidence_quote": "Dynamic v3.1 GGUFs + Performance Fixes",
+      "details": {
+        "kind": "project",
+        "overview": "提供本地模型运行、训练及交互界面的项目。",
+        "change": {
+          "summary": "发布 v0.1.917-beta，增加 MLX 编码 Agent 集成、生成队列及聊天导出功能。",
+          "version": "v0.1.917-beta",
+          "type": "release",
+          "publishedAt": "2026-11-11",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "官方说明可通过 unsloth start 在 Mac 上使用 MLX 模型运行 Claude Code 和 Codex。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0 / AGPL-3.0",
+          "scope": "按组件划分：核心包 Apache-2.0，Studio UI 等可选组件 AGPL-3.0；不外推至模型权重或数据。",
+          "evidenceRefs": [
+            "repository",
+            "apache",
+            "agpl"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "Unsloth v0.1.917-beta 官方 Release",
+            "url": "https://github.com/unslothai/unsloth/releases/tag/v0.1.917-beta",
+            "supports": "发布版本、时间及 MLX、队列、导出等功能。"
+          },
+          {
+            "id": "repository",
+            "name": "Unsloth 官方仓库",
+            "url": "https://github.com/unslothai/unsloth",
+            "supports": "项目用途及不同组件的许可证范围。"
+          },
+          {
+            "id": "apache",
+            "name": "版本标签下的 Apache 许可证",
+            "url": "https://raw.githubusercontent.com/unslothai/unsloth/v0.1.917-beta/LICENSE",
+            "supports": "版本包含 Apache-2.0 许可证。"
+          },
+          {
+            "id": "agpl",
+            "name": "版本标签下的 AGPL 许可证",
+            "url": "https://raw.githubusercontent.com/unslothai/unsloth/v0.1.917-beta/COPYING",
+            "supports": "版本包含 AGPL 第三版许可证。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/unslothai/unsloth/releases/tag/v0.1.917-beta",
+        "canonical_url": "https://github.com/unslothai/unsloth/releases/tag/v0.1.917-beta",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4bf16e78658a3e3cb1c0cd3d91727859a8871a79f9ce1fdccd4b0f4c8e028e3f",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "OpenShell 宣布新版收紧凭证放置与沙箱路径规则。用途：为自主 Agent 提供受策略控制的运行环境；主要技术栈：HTTP、WebSocket；技术要点：0.1.8 要求自定义请求头等凭证位置显式声明，REST 端点拒绝 HTTP 升级请求，并拒绝启动文件策略路径经过可写工作区内符号链接的沙箱；近期证据：官方 Release 于北京时间 2026 年 11 月 11 日 02:14 发布，属于 24～72 小时重要补充；许可证：项目代码 Apache-2.0，第三方组件保留各自授权；[项目仓库](https://github.com/NVIDIA/OpenShell)",
+      "analysis": "推荐理由：凭证和路径规则直接关系到 Agent 运行边界，已有部署者应优先评估；试用建议：在测试环境检查已有策略及凭证配置，按发布说明先升级网关，再升级 supervisor。",
+      "evidence_quote": "OpenShell v0.1.8",
+      "details": {
+        "kind": "project",
+        "overview": "为自主 Agent 提供沙箱、网关和策略控制的运行环境。",
+        "change": {
+          "summary": "发布 0.1.8，收紧凭证、协议升级及符号链接路径处理规则。",
+          "version": "v0.1.8",
+          "type": "release",
+          "publishedAt": "2026-11-10",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "没有放置元数据的静态凭证仅在 Authorization 请求头或显式启用的正文、WebSocket 重写策略中解析；可写工作区内的符号链接路径会导致沙箱启动失败。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "OpenShell 项目代码；第三方依赖另有通知。",
+          "evidenceRefs": [
+            "license",
+            "repository"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "OpenShell 0.1.8 官方 Release",
+            "url": "https://github.com/NVIDIA/OpenShell/releases/tag/v0.1.8",
+            "supports": "发布时间、规则变化和升级顺序。"
+          },
+          {
+            "id": "repository",
+            "name": "OpenShell 官方仓库",
+            "url": "https://github.com/NVIDIA/OpenShell",
+            "supports": "项目用途及第三方授权通知入口。"
+          },
+          {
+            "id": "license",
+            "name": "0.1.8 标签下的 LICENSE",
+            "url": "https://raw.githubusercontent.com/NVIDIA/OpenShell/v0.1.8/LICENSE",
+            "supports": "项目代码采用 Apache-2.0。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/NVIDIA/OpenShell/releases/tag/v0.1.8",
+        "canonical_url": "https://github.com/NVIDIA/OpenShell/releases/tag/v0.1.8",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "59d16967176cc61bb72c55cb05dee851f35ba8fba34100b9861c678dd1894f9c",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Langflow 宣布新版修复流程权限与 MCP 客户端认证。用途：可视化构建和部署 AI Agent、工作流及 MCP 工具；主要技术栈：Python、MCP；技术要点：1.13.2 修复自动登录模式下的 MCP 客户端认证，落实流程事件访问权限及 MCP 流程可见性，并修复 OpenAPI Agent 出站请求策略执行；近期证据：官方 Release 于北京时间 2026 年 11 月 11 日 06:26 发布，属于 24～72 小时重要补充；许可证：项目代码 MIT，接入模型及外部服务另行授权；[项目仓库](https://github.com/langflow-ai/langflow)",
+      "analysis": "推荐理由：这些修复涉及多用户流程及工具暴露边界，已有部署者应优先评估；试用建议：用不同权限账户检查事件访问、MCP 资源可见性和自动登录场景，避免仅以服务能启动判断升级效果。",
+      "evidence_quote": "fix: enforce flow permissions for event access",
+      "details": {
+        "kind": "project",
+        "overview": "提供可视化编排、API 和 MCP 服务的 AI 工作流平台。",
+        "change": {
+          "summary": "发布 1.13.2，修复 MCP 认证、流程访问权限和出站请求策略等问题。",
+          "version": "v1.13.2",
+          "type": "release",
+          "publishedAt": "2026-11-10",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "发布记录分别列出事件访问的流程权限检查、MCP 流程可见性、自动登录模式客户端认证及 OpenAPI Agent 出站请求策略修复。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "Langflow 项目代码；不涵盖外部模型和服务。",
+          "evidenceRefs": [
+            "license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "Langflow 1.13.2 官方 Release",
+            "url": "https://github.com/langflow-ai/langflow/releases/tag/v1.13.2",
+            "supports": "发布版本、时间及各项权限和认证修复；不据此推定漏洞严重等级。"
+          },
+          {
+            "id": "repository",
+            "name": "Langflow 官方仓库",
+            "url": "https://github.com/langflow-ai/langflow",
+            "supports": "可视化 AI 工作流、Python 自定义组件及 MCP 服务用途。"
+          },
+          {
+            "id": "license",
+            "name": "1.13.2 标签下的 LICENSE",
+            "url": "https://raw.githubusercontent.com/langflow-ai/langflow/v1.13.2/LICENSE",
+            "supports": "项目代码采用 MIT。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/langflow-ai/langflow/releases/tag/v1.13.2",
+        "canonical_url": "https://github.com/langflow-ai/langflow/releases/tag/v1.13.2",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7c3205d6b449d0306c6ac294814e5acf5579e87d69963d02738d530fc73740e2",
+      "category": "developer_tools",
+      "importance": 4,
+      "fact_summary": "Cloudflare 宣布测试插件可联动运行容器与持久对象。用途：在 Workers 运行时执行单元测试和集成测试；主要技术栈：Vitest、TypeScript；技术要点：@cloudflare/vitest-plugin 1.8.0 会为 cloudflare.config.ts 中关联 Durable Objects 的 Containers 准备镜像并运行，同时修复 Vitest 5 下部分 CommonJS 模块加载问题；近期证据：官方 Release 于北京时间 2026 年 11 月 11 日 22:55 发布；适用场景：包含容器后端的 Workers 集成测试，此类测试需要 Docker；许可证：该插件包声明 MIT；[项目仓库](https://github.com/cloudflare/workers-sdk)",
+      "analysis": "推荐理由：测试时同时运行对象和关联容器，有望减少开发环境与实际应用结构的差异；试用建议：先验证现有容器测试，并检查实验配置中 Streaming Tail 字段的迁移要求。",
+      "evidence_quote": "@cloudflare/vitest-plugin@1.8.0",
+      "details": {
+        "kind": "project",
+        "overview": "Workers SDK 中用于在 Workers 运行时执行 Vitest 测试的插件。",
+        "change": {
+          "summary": "发布 Vitest 插件 1.8.0，使 cloudflare.config.ts 配置的 Durable Objects 在测试中携带关联 Containers。",
+          "version": "@cloudflare/vitest-plugin@1.8.0",
+          "type": "release",
+          "publishedAt": "2026-11-11",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "插件准备容器镜像并启动容器，Dockerfile 和构建上下文路径相对于 cloudflare.config.ts 所在目录解析。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "@cloudflare/vitest-plugin 包；不概括整个单仓库及云服务授权。",
+          "evidenceRefs": [
+            "package"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "Vitest 插件 1.8.0 官方 Release",
+            "url": "https://github.com/cloudflare/workers-sdk/releases/tag/@cloudflare%2Fvitest-plugin@1.8.0",
+            "supports": "发布版本、时间、容器测试支持及 Docker 要求。"
+          },
+          {
+            "id": "package",
+            "name": "发布提交中的插件 package.json",
+            "url": "https://raw.githubusercontent.com/cloudflare/workers-sdk/cc238b2/packages/vitest-plugin/package.json",
+            "supports": "插件用途、版本及 MIT 许可证声明。"
+          },
+          {
+            "id": "repository",
+            "name": "Workers SDK 官方仓库",
+            "url": "https://github.com/cloudflare/workers-sdk",
+            "supports": "官方项目入口。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/cloudflare/workers-sdk/releases/tag/@cloudflare%2Fvitest-plugin@1.8.0",
+        "canonical_url": "https://github.com/cloudflare/workers-sdk/releases/tag/@cloudflare%2Fvitest-plugin@1.8.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e9f3dec81217fb09fc989b64747186b031e7da13aff2178c6ff4d6a456614f06",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "LangChain 宣布新版加入模型路由与自动模式中间件。用途：构建 Agent 和大模型应用；主要技术栈：Python；技术要点：1.5.0 纳入模型路由和自动模式中间件，ModelRouterMiddleware 标为 beta，同时将最低 Python 版本提高到 3.11、最低 langchain-core 版本提高到 1.8.0；近期证据：官方 Release 于北京时间 2026 年 11 月 11 日 23:47 发布；许可证：本次代码采用 MIT，所接入模型及服务另行授权；[项目仓库](https://github.com/langchain-ai/langchain)",
+      "analysis": "推荐理由：将路由能力纳入框架有望减少多模型 Agent 的自定义接线工作；试用建议：先在独立环境验证中间件行为和依赖升级，再迁移已有应用。",
+      "evidence_quote": "langchain==1.5.0",
+      "details": {
+        "kind": "project",
+        "overview": "用于构建 Agent 和大模型应用的框架。",
+        "change": {
+          "summary": "发布 1.5.0，加入模型路由和自动模式中间件，并提高 Python 与 langchain-core 的最低版本要求。",
+          "version": "1.5.0",
+          "type": "release",
+          "publishedAt": "2026-11-11",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "关联 PR 将原 langchain-typesafe 中间件移入 langchain，要求显式提供 BaseDecisionModel 分类器；Release 将模型路由中间件标为 beta。",
+            "evidenceRefs": [
+              "release",
+              "implementation"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "LangChain 项目代码；不涵盖第三方模型和托管服务。",
+          "evidenceRefs": [
+            "license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "LangChain 1.5.0 官方 Release",
+            "url": "https://github.com/langchain-ai/langchain/releases/tag/langchain==1.5.0",
+            "supports": "版本发布、发布时间、新中间件及最低依赖要求。"
+          },
+          {
+            "id": "implementation",
+            "name": "模型路由与自动模式中间件 PR",
+            "url": "https://github.com/langchain-ai/langchain/pull/41766",
+            "supports": "中间件迁入框架及显式分类器接口。"
+          },
+          {
+            "id": "license",
+            "name": "1.5.0 标签下的 LICENSE",
+            "url": "https://raw.githubusercontent.com/langchain-ai/langchain/langchain==1.5.0/LICENSE",
+            "supports": "代码采用 MIT 许可证。"
+          },
+          {
+            "id": "repository",
+            "name": "LangChain 官方仓库",
+            "url": "https://github.com/langchain-ai/langchain",
+            "supports": "项目用途及 Python 框架入口。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/langchain-ai/langchain/releases/tag/langchain==1.5.0",
+        "canonical_url": "https://github.com/langchain-ai/langchain/releases/tag/langchain==1.5.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "304854ef3ba2b812e381fc7caf3ad197cf05b46bdfe00f7fb4bb5b60ef38cbb0",
+      "category": "developer_tools",
+      "importance": 3,
+      "fact_summary": "Pandera 宣布新版支持派生字段与决策模型接口。用途：验证数据框结构和数据质量；主要技术栈：Python、pandas；技术要点：0.36.0 新增 ParsedFields、ParsedColumns，可从已有字段派生新字段，pandera.decisions 将决策模型用于分类、评分等字段生成；近期证据：官方 Release 于北京时间 2026 年 11 月 10 日 11:39 发布，属于 24～72 小时重要补充；适用场景：在数据模型中表达工单分类、情绪评分等派生逻辑；许可证：项目代码 MIT，调用的模型权重及服务另行授权；[项目仓库](https://github.com/unionai-oss/pandera)",
+      "analysis": "推荐理由：将派生逻辑放入数据模型，有望让语义处理与结构验证更集中；试用建议：先以少量已标注数据检查派生结果，并单独评估模型调用成本和错误处理。",
+      "evidence_quote": "v0.36.0: Add ParsedColumns/Fields and Decisions API",
+      "details": {
+        "kind": "project",
+        "overview": "为数据框提供结构、类型和统计检查的数据验证库。",
+        "change": {
+          "summary": "发布 0.36.0，增加派生字段、派生列及决策模型 API。",
+          "version": "v0.36.0",
+          "type": "release",
+          "publishedAt": "2026-11-10",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "通过 ParsedField、ParsedColumn 从源字段派生输出；发布示例使用 decisions.Choice 和 decisions.Score 表达分类及评分。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "Pandera 项目代码；不外推至决策模型权重、数据或托管服务。",
+          "evidenceRefs": [
+            "license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "Pandera 0.36.0 官方 Release",
+            "url": "https://github.com/unionai-oss/pandera/releases/tag/v0.36.0",
+            "supports": "版本、发布时间、派生字段机制及分类评分示例。"
+          },
+          {
+            "id": "repository",
+            "name": "Pandera 官方仓库",
+            "url": "https://github.com/unionai-oss/pandera",
+            "supports": "数据框验证用途。"
+          },
+          {
+            "id": "license",
+            "name": "0.36.0 标签下的 LICENSE.txt",
+            "url": "https://raw.githubusercontent.com/unionai-oss/pandera/v0.36.0/LICENSE.txt",
+            "supports": "项目代码采用 MIT。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/unionai-oss/pandera/releases/tag/v0.36.0",
+        "canonical_url": "https://github.com/unionai-oss/pandera/releases/tag/v0.36.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cf8b9347f5dc368988f946682dc2319d7fdc7e2a8ef6bad5ce3651f127233370",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "ComfyUI 宣布新版按可用内存调整视频 VAE 切片。用途：以节点工作流运行图像、视频等生成和处理模型；技术要点：0.45.0 纳入 SeedVR2 VAE 自适应切片、RelayVSR 支持及 Qwen 3.x 视频输入；关联 PR 说明每次编码或解码按可用内存规划切片，缓存空间不足时回退到主机内存；近期证据：官方 Release 于北京时间 2026 年 11 月 11 日 05:42 发布，属于 24～72 小时重要补充；许可证：项目代码 GPL-3.0，模型权重、素材及合作方 API 另行授权；[项目仓库](https://github.com/Comfy-Org/ComfyUI)",
+      "analysis": "推荐理由：按剩余内存选择切片和缓存位置，有望减少固定切片策略对不同显存配置的限制；试用建议：以同一视频比较升级前后的峰值显存、输出及耗时，项目方给出的性能结果不能替代本机验证。",
+      "evidence_quote": "Make SeedVR2 VAE slice length adaptive to free memory",
+      "details": {
+        "kind": "project",
+        "overview": "以节点图组织生成式模型及媒体处理工作流的工具。",
+        "change": {
+          "summary": "发布 0.45.0，纳入视频 VAE 自适应切片、RelayVSR 和 Qwen 3.x 视频输入支持。",
+          "version": "v0.45.0",
+          "type": "release",
+          "publishedAt": "2026-11-10",
+          "evidenceRefs": [
+            "release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "SeedVR2 关联 PR 说明编码、解码按可用内存规划时间切片；缓存可容纳时留在设备上，否则回退到主机内存。",
+            "evidenceRefs": [
+              "implementation"
+            ]
+          }
+        ],
+        "license": {
+          "code": "GPL-3.0",
+          "scope": "ComfyUI 项目代码；模型权重、示例素材及合作方服务不据此统一授权。",
+          "evidenceRefs": [
+            "license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "release",
+            "name": "ComfyUI 0.45.0 官方 Release",
+            "url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.45.0",
+            "supports": "本次版本、发布时间及纳入的功能。"
+          },
+          {
+            "id": "implementation",
+            "name": "SeedVR2 VAE 自适应切片 PR",
+            "url": "https://github.com/Comfy-Org/ComfyUI/pull/17508",
+            "supports": "按内存规划切片及缓存回退机制；PR 合并时间与本次 Release 时间不同。"
+          },
+          {
+            "id": "license",
+            "name": "0.45.0 标签下的 LICENSE",
+            "url": "https://raw.githubusercontent.com/Comfy-Org/ComfyUI/v0.45.0/LICENSE",
+            "supports": "项目附 GNU GPL 第三版许可证。"
+          },
+          {
+            "id": "repository",
+            "name": "ComfyUI 官方仓库",
+            "url": "https://github.com/Comfy-Org/ComfyUI",
+            "supports": "节点式图像、视频等模型工作流用途。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.45.0",
+        "canonical_url": "https://github.com/Comfy-Org/ComfyUI/releases/tag/v0.45.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
