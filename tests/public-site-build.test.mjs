@@ -429,6 +429,24 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".project-detail .source-details"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+test('structured project detail renders sourced sections without an event timeline',async()=>{
+ const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
+ const dir=mkdtempSync('/tmp/public-project-detail-');
+ try{
+  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  report.items=report.items.slice(0,1);
+  report.items[0].details={kind:'project',overview:'本地代码检索工具。',change:{summary:'新增增量索引。',publishedAt:'2026-11-03',evidenceRefs:['release']},technical:[{description:'只处理变更文件。',evidenceRefs:['release']}],evaluation:[{description:'可先用于小型仓库。',nature:'analysis'}],evidence:[{id:'release',name:'发布说明',url:'https://example.com/release',supports:'增量索引功能'}]};
+  const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
+  const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
+  const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
+  assert.ok(doc.querySelector('.project-detail #project-overview'));
+  assert.match(doc.querySelector('#project-change').textContent,/新增增量索引.*2026-11-03/s);
+  assert.ok(doc.querySelector('#project-technical a[href="#project-evidence-release"]'));
+  assert.match(doc.querySelector('#project-evaluation').textContent,/编辑判断/);
+  assert.equal(doc.querySelector('#news-timeline'),null);
+  assert.ok(doc.querySelector('.project-aside a[href="#project-change"]'));
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
 test('investment detail renders evidence-linked metrics and a section directory',async()=>{
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
  const dir=mkdtempSync('/tmp/public-investment-detail-');

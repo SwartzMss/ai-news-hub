@@ -65,3 +65,13 @@ test('Markdown is generated safely and invalid JSON fails closed', () => {
   assert.ok(!reportMarkdown(report).includes('<script>'));
   assert.throws(() => buildReport('```json\n{}\n```', candidates, metadata), { code: 'report_invalid_json' });
 });
+const projectDetails=()=>({kind:'project',overview:'帮助开发者在本地检索代码。',change:{summary:'发布新的索引功能。',version:'1.2',publishedAt:'2026-11-03',evidenceRefs:['release']},technical:[{description:'使用增量索引。',evidenceRefs:['release']}],evaluation:[{description:'适合先在小型仓库试用。',nature:'analysis'}],evidence:[{id:'release',name:'发布说明',url:'https://example.com/release',supports:'索引功能及版本'}]});
+test('project details survive report construction and Markdown',()=>{
+ const p=proposal();p.items[0].details=projectDetails();const report=buildReport(JSON.stringify(p),candidates,metadata);
+ assert.deepEqual(report.items[0].details,p.items[0].details);assert.match(reportMarkdown(report),/增量索引/);
+});
+test('project details reject missing references and unsafe evidence',()=>{
+ for(const change of [d=>d.technical[0].evidenceRefs=['missing'],d=>d.evidence[0].url='http://localhost/release',d=>d.evidence.push({...d.evidence[0]})]){
+  const p=proposal();p.items[0].details=projectDetails();change(p.items[0].details);assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
+ }
+});

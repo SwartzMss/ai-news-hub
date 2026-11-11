@@ -39,3 +39,14 @@ test('Codex output schema requires nullable optional fields at every level and n
   const validateArchive=ajv.compile(RESEARCH_SCHEMA);
   assert.equal(validateArchive(normalized),true,JSON.stringify(validateArchive.errors));
 });
+test('strict Codex project output normalizes optional project fields',()=>{
+ const project={kind:'project',overview:'本地代码检索工具。',change:{summary:'新增增量索引。',version:null,type:null,publishedAt:null,evidenceRefs:['release']},technical:[{description:'只处理变更文件。',evidenceRefs:['release']}],useCases:null,license:null,evaluation:null,evidence:[{id:'release',name:'发布说明',url:'https://example.com/release',supports:'增量索引'}]};
+ const output={title:'每日开源项目',items:[{url:'https://example.com/release',category:'opensource',importance:4,factSummary:'项目发布更新。',analysis:null,evidenceQuote:'Released new incremental indexing',details:project}]};
+ const ajv=new Ajv({strict:true});const validateCodex=ajv.compile(CODEX_RESEARCH_SCHEMA);
+ assert.equal(validateCodex(output),true,JSON.stringify(validateCodex.errors));
+ const normalized=normalizeResearchOutput(output);
+ assert.equal(normalized.items[0].details.change.version,undefined);
+ assert.equal(normalized.items[0].details.useCases,undefined);
+ const validateArchive=ajv.compile(RESEARCH_SCHEMA);
+ assert.equal(validateArchive(normalized),true,JSON.stringify(validateArchive.errors));
+});
