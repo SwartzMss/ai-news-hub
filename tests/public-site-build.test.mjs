@@ -605,3 +605,15 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.doesNotMatch(readFileSync(join(demo.output, "index.html"), "utf8"), /newsletter-signup/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+
+test("news and investment detail layouts align to the topic content edge on desktop", () => {
+  const css = readFileSync("apps/web/src/style.css", "utf8");
+  assert.match(
+    css,
+    /@media \(min-width: 1001px\) \{\s+\.reading-layout\.investment-layout,\s+\.reading-layout\.news-layout \{\s+max-width: none;\s+margin-inline: 0;\s+\}\s+\}/,
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 1199px\) \{\s+\.reading-layout\.investment-layout \{ display: block; max-width: 760px; \}\s+\.investment-aside \{ display: none; \}\s+\.reading-layout\.news-layout \{ display: block; max-width: 760px; \}\s+\.news-aside \{ display: none; \}\s+\}/,
+  );
+});
