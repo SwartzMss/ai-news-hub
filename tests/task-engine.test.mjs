@@ -5,6 +5,7 @@ import { setTimeout as delay } from 'node:timers/promises';
 import { migrate } from '../dist/apps/server/src/db/migrations.js';
 import { TaskEngine } from '../dist/apps/server/src/tasks/engine.js';
 import { AgentError } from '../dist/apps/server/src/agent/types.js';
+import { dateInTimezone } from '../dist/apps/server/src/tasks/configuration.js';
 import { ControlledAdapter } from './fixtures/controlled-adapter.mjs';
 
 const tick = () => delay(10);
@@ -134,4 +135,33 @@ test('late Adapter events cannot change an already completed Turn', async () => 
     assert.equal(detail.run.status, 'succeeded');
     assert.equal(detail.turns[0].status, 'succeeded');
   } finally { await s.close(); }
+});
+
+
+test('report calendar date is derived from each task timezone across UTC midnight', () => {
+  const instant = new Date('2026-11-11T23:10:00.000Z');
+  assert.equal(dateInTimezone(instant, 'Asia/Shanghai'), '2026-11-12');
+  assert.equal(dateInTimezone(instant, 'Asia/Tokyo'), '2026-11-12');
+  assert.equal(dateInTimezone(instant, 'UTC'), '2026-11-11');
+  assert.equal(dateInTimezone(instant, 'America/Los_Angeles'), '2026-11-11');
+});
+
+test('managed research Run stores report_date in its configured timezone', async () => {
+  const s = setup({ clock: () => new Date('2026-11-11T23:10:00.000Z') });
+  try {
+    const task = s.engine.createTask({
+      name: 'Daily report',
+      topic: 'Daily report',
+      prompts: ['Search for updates'],
+      autoPublish: false,
+      schedule: { kind: 'manual' },
+      timezone: 'Asia/Shanghai',
+    });
+    const { run } = s.engine.start(task.id, 'cross-utc-midnight');
+    const row = s.db.prepare('SELECT report_date FROM codex_news_runs WHERE run_id=?').get(run.id);
+    assert.equal(row.report_date, '2026-11-12');
+    s.engine.cancel(run.id);
+  } finally {
+    await s.close();
+  }
 });
