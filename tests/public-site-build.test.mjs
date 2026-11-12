@@ -606,11 +606,15 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("news and investment detail layouts align to the topic content edge on desktop", () => {
+test("news and investment details align to the left without widening medium-width articles", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
   assert.match(
     css,
-    /@media \(min-width: 1001px\) \{\s+\.reading-layout\.investment-layout,\s+\.reading-layout\.news-layout \{\s+max-width: none;\s+margin-inline: 0;\s+\}\s+\}/,
+    /@media \(min-width: 1001px\) \{\s+\.reading-layout\.investment-layout,\s+\.reading-layout\.news-layout \{\s+margin-inline: 0;\s+\}\s+\}/,
+  );
+  assert.match(
+    css,
+    /@media \(min-width: 1200px\) \{\s+\.reading-layout\.investment-layout,\s+\.reading-layout\.news-layout \{\s+max-width: none;\s+\}\s+\}/,
   );
   assert.match(
     css,
