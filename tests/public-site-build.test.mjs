@@ -429,6 +429,23 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".project-detail .source-details"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
+test("project detail TOC switches to the desktop sidebar at the shared breakpoint", () => {
+  const css = readFileSync("apps/web/src/style.css", "utf8");
+  assert.match(
+    css,
+    /@media \(min-width: 1200px\) \{\s+\.reading-layout\.project-layout \{/,
+  );
+  assert.match(
+    css,
+    /grid-template-columns: minmax\(0, min\(760px, calc\(100% - 260px\)\)\) 220px/,
+  );
+  assert.match(
+    css,
+    /@media \(min-width: 1200px\) \{ \.project-detail \.detail-mobile-nav \{ display: none; \} \}/,
+  );
+  assert.doesNotMatch(css, /@media \(min-width: 1401px\)/);
+});
+
 test('structured project detail renders sourced sections without an event timeline',async()=>{
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
  const dir=mkdtempSync('/tmp/public-project-detail-');
