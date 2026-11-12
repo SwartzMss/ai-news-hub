@@ -111,6 +111,23 @@ export function taskInput(value: unknown): {
     },
   };
 }
+/** Return the calendar date for an instant in an IANA timezone. */
+export function dateInTimezone(at: Date, timezone: string): string {
+  const parts = new Intl.DateTimeFormat("en-US", {
+    timeZone: timezone,
+    year: "numeric",
+    month: "2-digit",
+    day: "2-digit",
+  }).formatToParts(at);
+  const values = Object.fromEntries(
+    parts.filter((part) => ["year", "month", "day"].includes(part.type))
+      .map((part) => [part.type, part.value]),
+  );
+  if (!values.year || !values.month || !values.day)
+    throw new Error("unable to resolve date in timezone");
+  return `${values.year}-${values.month}-${values.day}`;
+}
+
 /** Strictly future occurrence; missed slots never accumulate. IANA timezone conversion uses Intl. */
 export function nextOccurrence(
   configuration: TaskConfiguration,
