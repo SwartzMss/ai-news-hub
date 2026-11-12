@@ -1,0 +1,548 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "eba5b50a-f48c-40de-931c-c25503d78171",
+  "report_date": "2026-11-12",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜北京时间2026年11月12日07:00:00.550—11月13日07:00:00.550",
+  "collected_at": "2026-11-12T23:11:18.740Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-12T23:11:18.751Z",
+  "reviewed_content_sha256": "a590d06c6b693cc8ab84b2fdfdd3d1c954be6df82bd1b263560be9e5f572b694",
+  "items": [
+    {
+      "id": "b20f26b1182593b3b50c2d376b77087f4857b86879fe56c2b569ca45409a6b97",
+      "category": "ai",
+      "importance": 5,
+      "fact_summary": "英伟达于11月12日宣布黄仁勋辞去总裁、CEO及董事职务，任命CFO Colette Kress兼任临时CEO，并启动永久继任者遴选；Harvey C. Jones出任董事长。",
+      "analysis": "推断：核心AI芯片供应商的领导层更替增加了战略执行的不确定性；目前没有直接证据证明客户交付或产品路线已经受到影响。",
+      "evidence_quote": "NVIDIA Announces CEO Transition",
+      "details": {
+        "kind": "news",
+        "background": "本次新增是公司正式公告领导层更替；辞职原因中的争议指控不纳入已确认事实。",
+        "keyFacts": [
+          {
+            "name": "临时领导安排",
+            "value": "Kress兼任临时CEO与CFO；董事会考虑内部及外部永久继任者。",
+            "period": "2026-11-12公告",
+            "nature": "statement",
+            "evidenceRefs": [
+              "nvidia"
+            ]
+          },
+          {
+            "name": "董事长任命",
+            "value": "Harvey C. Jones出任公司首位董事长。",
+            "period": "2026-11-12公告",
+            "nature": "statement",
+            "evidenceRefs": [
+              "nvidia"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12",
+            "precision": "date",
+            "event": "公司发布CEO变更公告；AP当天报道辞职及临时任命。",
+            "evidenceRefs": [
+              "nvidia",
+              "ap"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "英伟达董事会",
+            "statement": "预计运营、客户承诺及产品路线将持续推进而不受中断。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "nvidia"
+            ]
+          }
+        ],
+        "impacts": [],
+        "uncertainties": [
+          "公司公告未提供发布时间及原时区，全球首次披露时间未知。",
+          "董事会关于业务连续性的表态属于预期。"
+        ],
+        "watchpoints": [
+          "公司计划11月17日13:20 PT公布财报，14:00 PT举行电话会，关注继任安排及经营披露。"
+        ],
+        "evidence": [
+          {
+            "id": "nvidia",
+            "name": "英伟达投资者关系公告",
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+            "supports": "领导层变动、继任者遴选和财报日程。"
+          },
+          {
+            "id": "ap",
+            "name": "AP报道，WTVM刊载",
+            "url": "https://www.wtvm.com/2026/11/12/nvidia-ceo-jensen-huang-resigns-after-his-affair-raises-national-security-concerns/",
+            "supports": "交叉确认人事变动；页面标11月12日09:06 EST，即北京时间22:06。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investor.nvidia.com",
+        "original_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+        "canonical_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "036dab1d34499b00bfaf46a15ac7b39c68adf9cece0161f54eb5f5524fe57686",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "欧盟领导人11月12日宣布，从rescEU储备调动500台发电机支援乌克兰，并支持交付4座挪威浮桥和200辆巴士；声明同时预告，将讨论乌克兰2027年融资需求并提出第22轮对俄制裁方案。",
+      "analysis": null,
+      "evidence_quote": "We are mobilising 500 generators from our rescEU reserves, helping establish emergency support centres and providing essential equipment.",
+      "details": {
+        "kind": "news",
+        "background": "本次为都柏林会晤后的新增援助安排和政策日程，承接此前对乌支持及和平谈判。",
+        "keyFacts": [
+          {
+            "name": "发电设备援助",
+            "value": "从rescEU储备调动500台发电机。",
+            "period": "2026-11-12宣布",
+            "nature": "statement",
+            "evidenceRefs": [
+              "eu"
+            ]
+          },
+          {
+            "name": "其他交付支持",
+            "value": "4座挪威浮桥及200辆巴士。",
+            "period": "2026-11-12宣布",
+            "nature": "statement",
+            "evidenceRefs": [
+              "eu"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12",
+            "precision": "date",
+            "event": "欧盟领导人与泽连斯基会晤后发表联合声明。",
+            "evidenceRefs": [
+              "eu"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "设备抵达日期未公布；制裁方案尚非已通过措施。",
+          "页面标15:40但未明确时区，不将其换算为精确北京时间。"
+        ],
+        "watchpoints": [
+          "11月26—27日欧洲理事会拟讨论乌克兰2027年融资需求；欧委会拟同期提出第22轮对俄制裁方案。"
+        ],
+        "evidence": [
+          {
+            "id": "eu",
+            "name": "欧洲理事会联合声明",
+            "url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/12/joint-statement-by-president-costa-and-president-von-der-leyen-following-their-meeting-with-president-zelenskyy-in-dublin/",
+            "supports": "声明日期、援助数量及融资和制裁日程。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.consilium.europa.eu",
+        "original_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/12/joint-statement-by-president-costa-and-president-von-der-leyen-following-their-meeting-with-president-zelenskyy-in-dublin/",
+        "canonical_url": "https://www.consilium.europa.eu/en/press/press-releases/2026/11/12/joint-statement-by-president-costa-and-president-von-der-leyen-following-their-meeting-with-president-zelenskyy-in-dublin/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "075ee76ac707dbdbd8a0d59589978ff44a889136486af5afd7e129ddc3951a7c",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "英国国家统计局11月12日公布初值，2026年第三季度实际GDP环比增长0.7%、同比增长1.9%；服务业环比增长0.9%，生产部门增长0.1%，建筑业下降0.7%。",
+      "analysis": null,
+      "evidence_quote": "GDP first quarterly estimate, UK: July to September 2026",
+      "details": {
+        "kind": "news",
+        "background": "本次为第三季度GDP首次估计及月度数据修订，统计期早于披露日。",
+        "keyFacts": [
+          {
+            "name": "实际GDP增速",
+            "value": "环比0.7%，同比1.9%；第二季度环比0.5%。",
+            "unit": "%",
+            "period": "2026年第三季度；实际量口径",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "ons"
+            ]
+          },
+          {
+            "name": "部门环比增速",
+            "value": "服务业0.9%，生产部门0.1%，建筑业-0.7%。",
+            "unit": "%",
+            "period": "2026年第三季度",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "ons"
+            ]
+          },
+          {
+            "name": "月度新增及修订",
+            "value": "9月环比增长0.2%；8月由增长0.1%下修为零增长。",
+            "unit": "%",
+            "period": "2026年8—9月",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "ons"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12",
+            "precision": "date",
+            "event": "ONS发布季度GDP初值。",
+            "evidenceRefs": [
+              "ons"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "初值可能修订；公报未提供发布时间及原时区。"
+        ],
+        "watchpoints": [
+          "ONS列明下一次季度GDP发布日为12月22日，关注初值修订。"
+        ],
+        "evidence": [
+          {
+            "id": "ons",
+            "name": "英国国家统计局季度GDP初值公报",
+            "url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/bulletins/gdpfirstquarterlyestimateuk/julytoseptember2026/pdf",
+            "supports": "发布日期、实际GDP和部门增速、月度修订及下次发布日期。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ons.gov.uk",
+        "original_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/bulletins/gdpfirstquarterlyestimateuk/julytoseptember2026/pdf",
+        "canonical_url": "https://www.ons.gov.uk/economy/grossdomesticproductgdp/bulletins/gdpfirstquarterlyestimateuk/julytoseptember2026/pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4f41bbd49dc2e7dd34c2abf75a60f87a413a486e44bfc8c413704a68d1980e1c",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "礼来中国11月12日宣布，奥氟格列隆钙片获国家药监局批准，用于肥胖或超重并伴至少一种体重相关合并症的成人体重管理；公司称其为中国首个获批用于该用途的口服GLP-1受体激动剂，成人2型糖尿病适应症仍在审批。",
+      "analysis": "推断：审批进展扩大了中国体重管理药物的口服选择；实际商业影响仍取决于最终说明书、定价与供应。",
+      "evidence_quote": "中国首个且唯一口服减重GLP-1类药物穆优达®（奥氟格列隆）获批",
+      "details": {
+        "kind": "news",
+        "background": "本次新增为中国上市审批披露，既往临床结果不作为当天新研究。",
+        "keyFacts": [
+          {
+            "name": "获批用途",
+            "value": "在控制饮食和增加运动基础上，用于相关成人体重管理。",
+            "period": "2026-11-12披露",
+            "nature": "statement",
+            "evidenceRefs": [
+              "lilly",
+              "nbd"
+            ]
+          },
+          {
+            "name": "其他适应症",
+            "value": "成人2型糖尿病适应症仍在审批。",
+            "period": "2026-11-12公告",
+            "nature": "statement",
+            "evidenceRefs": [
+              "lilly"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12",
+            "precision": "date",
+            "event": "礼来中国宣布获批；每日经济新闻报道查阅到监管批准信息。",
+            "evidenceRefs": [
+              "lilly",
+              "nbd"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "未直接取得监管批件及最终说明书，“首个”归属于公司声明。",
+          "主稿标15:45、媒体稿标19:09:59，均未明确时区；批准具体时分未知。",
+          "价格和实际供应时间未确认。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "lilly",
+            "name": "礼来中国原始新闻稿，美通社发布",
+            "url": "https://www.prnasia.com/story/556023-1.shtml",
+            "supports": "审批披露、获批用途及糖尿病适应症状态。"
+          },
+          {
+            "id": "nbd",
+            "name": "每日经济新闻",
+            "url": "https://www.nbd.com.cn/articles/2026-11-12/4646034.html",
+            "supports": "记者查阅监管批准信息，并指出最终适用范围仍需说明书确认。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.prnasia.com",
+        "original_url": "https://www.prnasia.com/story/556023-1.shtml",
+        "canonical_url": "https://www.prnasia.com/story/556023-1.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4fef20f78cad660383d85f8e4b015303a044fc80d56d8cad73564e32ab4cac04",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "应用材料宣布2026财年第四季度收入104.09亿美元，同比增长53%；GAAP稀释每股收益3.40美元，非GAAP稀释每股收益4.16美元。公司同时给出下一季度收入111亿美元、上下浮动5亿美元的指引。",
+      "analysis": "推断：设备供应商的收入增长提供了半导体投资扩张的经营证据，但不能据此认定所有芯片细分市场均同步增长。",
+      "evidence_quote": "Applied Materials Announces Fourth Quarter and Fiscal Year 2026 Results",
+      "details": {
+        "kind": "news",
+        "background": "本次为截至2026年10月25日财季的新增业绩及下一财季指引。",
+        "keyFacts": [
+          {
+            "name": "季度收入",
+            "value": "104.09，同比增长53%",
+            "unit": "亿美元",
+            "period": "2026财年第四季度，截至2026-10-25",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "季度盈利口径",
+            "value": "GAAP毛利率50.4%；GAAP稀释EPS 3.40美元，非GAAP稀释EPS 4.16美元。",
+            "period": "2026财年第四季度",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          },
+          {
+            "name": "收入指引",
+            "value": "111，上下浮动5",
+            "unit": "亿美元",
+            "period": "2027财年第一季度",
+            "nature": "statement",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12T16:01:00-05:00",
+            "precision": "datetime",
+            "event": "财报发布；对应北京时间11月13日05:01。",
+            "evidenceRefs": [
+              "release"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "指引为公司预测，不是已实现收入；GAAP与非GAAP指标不可混用。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "release",
+            "name": "应用材料原始财报，GlobeNewswire发布",
+            "url": "https://www.globenewswire.com/news-release/2026/11/12/3402149/0/en/applied-materials-announces-fourth-quarter-and-fiscal-year-2026-results.html",
+            "supports": "业绩数据、报告期、发布时间及下一季度指引。"
+          },
+          {
+            "id": "reuters",
+            "name": "Reuters报道，KELO刊载",
+            "url": "https://kelo.com/2026/11/12/applied-materials-forecasts-quarterly-revenue-above-estimates-on-strong-ai-chip-demand/",
+            "supports": "交叉确认季度收入及下一季度收入指引。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.globenewswire.com",
+        "original_url": "https://www.globenewswire.com/news-release/2026/11/12/3402149/0/en/applied-materials-announces-fourth-quarter-and-fiscal-year-2026-results.html",
+        "canonical_url": "https://www.globenewswire.com/news-release/2026/11/12/3402149/0/en/applied-materials-announces-fourth-quarter-and-fiscal-year-2026-results.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cb7e7c3985a8c4544daf0840ff070fc4c527dafc83844f29b3a2bf46e6bab026",
+      "category": "other",
+      "importance": 4,
+      "fact_summary": "欧盟法院11月12日宣布，驳回波兰针对“Fit for 55”气候立法组合中七项措施提起的撤销诉讼，涉及汽车排放标准、碳边境调节机制、排放交易和能源效率等制度。",
+      "analysis": "推断：裁决降低了这些措施因本组诉讼被撤销的不确定性，但不代表所有实施争议均已解决。",
+      "evidence_quote": "the Court dismisses seven actions brought by Poland against various measures of the ‘Fit for 55’ legislative package",
+      "details": {
+        "kind": "news",
+        "background": "波兰此前要求撤销七项欧盟气候立法；本次新增为法院裁决，原有减排目标并非当天新政策。",
+        "keyFacts": [
+          {
+            "name": "裁决结果",
+            "value": "七项撤销诉讼均被驳回。",
+            "period": "2026-11-12",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "court"
+            ]
+          },
+          {
+            "name": "涉及案件",
+            "value": "C-442/23、C-444/23、C-445/23、C-451/23、C-505/23、C-512/23及C-771/23。",
+            "period": "2026-11-12裁决",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "court"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12",
+            "precision": "date",
+            "event": "法院公布七案裁决结果。",
+            "evidenceRefs": [
+              "court"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "所引为法院新闻稿，未逐案核对判决全文，不延伸概括所有法律理由。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "court",
+            "name": "欧盟法院第163/26号新闻稿",
+            "url": "https://curia.europa.eu/site/upload/docs/application/pdf/2026-11/cp260163en.pdf",
+            "supports": "裁决日期、七案结果和所涉措施。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "curia.europa.eu",
+        "original_url": "https://curia.europa.eu/site/upload/docs/application/pdf/2026-11/cp260163en.pdf",
+        "canonical_url": "https://curia.europa.eu/site/upload/docs/application/pdf/2026-11/cp260163en.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d0685abbe50e4e3ff5bad5dd9d53a14095d5bd4b0f4547cbe767ca8dfa3d92ae",
+      "category": "other",
+      "importance": 3,
+      "fact_summary": "美国劳工部公布，截至11月7日当周季调首次申请失业救济人数为20万人，较前周修订值增加9,000人；截至10月31日当周季调续请人数为169.7万人，减少2万人。",
+      "analysis": null,
+      "evidence_quote": "UNEMPLOYMENT INSURANCE WEEKLY CLAIMS",
+      "details": {
+        "kind": "news",
+        "background": "本次为新增周度劳动力统计，同时修订前周数据；不以单周波动判断就业趋势。",
+        "keyFacts": [
+          {
+            "name": "季调初请",
+            "value": "200000，较前周修订值增加9000",
+            "unit": "人",
+            "period": "截至2026-11-07当周",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "dol"
+            ]
+          },
+          {
+            "name": "前周初请修订",
+            "value": "由189000上修为191000",
+            "unit": "人",
+            "period": "截至2026-10-31当周",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "dol"
+            ]
+          },
+          {
+            "name": "季调续请",
+            "value": "1697000，较前周修订值减少20000",
+            "unit": "人",
+            "period": "截至2026-10-31当周",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "dol"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-12T08:30:00-05:00",
+            "precision": "datetime",
+            "event": "官方规定公开发布时间；对应北京时间11月12日21:30。",
+            "evidenceRefs": [
+              "dol"
+            ]
+          }
+        ],
+        "positions": [],
+        "impacts": [],
+        "uncertainties": [
+          "数据为提前估计，后续可修订；初请与续请统计周不同。"
+        ],
+        "watchpoints": [],
+        "evidence": [
+          {
+            "id": "dol",
+            "name": "美国劳工部失业保险周报",
+            "url": "https://www.dol.gov/sites/dolgov/files/OPA/newsreleases/ui-claims/20261694.pdf",
+            "supports": "发布时间、季调初请与续请数据及历史修订。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.dol.gov",
+        "original_url": "https://www.dol.gov/sites/dolgov/files/OPA/newsreleases/ui-claims/20261694.pdf",
+        "canonical_url": "https://www.dol.gov/sites/dolgov/files/OPA/newsreleases/ui-claims/20261694.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
