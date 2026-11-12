@@ -2,7 +2,7 @@ import { isDeepStrictEqual } from 'node:util';
 import { buildOverview } from './overview.js';
 import { listRunSummaries } from './run-summaries.js';
 import type { RunListQuery, RunListResponse } from '../../../../packages/shared/src/index.js';
-import { taskInput, nextOccurrence } from './configuration.js';
+import { dateInTimezone, taskInput, nextOccurrence } from './configuration.js';
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import type { RunEvent, RunRecord, RunStatus, TaskRecord, TaskConfiguration, TurnRecord } from '../../../../packages/shared/src/index.js';
@@ -16,6 +16,7 @@ interface EngineOptions {
   cwd: string; model?: string; onFatal?: () => void;
   workflows?: ReadonlyMap<string, TaskWorkflow>;
   onAutomaticPublish?: (reportId:string,signal:AbortSignal)=>Promise<void>;
+  clock?: () => Date;
 }
 interface Work { runId: string; turnId: string; input: string; threadId?: string }
 interface Slot { controller: AbortController; done: Promise<void>; reason?: 'cancelled' | 'timeout' | 'backend_stopped' }
@@ -176,7 +177,11 @@ export class TaskEngine {
     this.transaction(() => {
       this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,configuration_json,trigger_kind) VALUES (?,?,?,?,?)').run(runId, taskId, idempotencyKey,managed?JSON.stringify(managed):null,triggerKind);
       this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, managed?.prompts.length===1 ? 'finalize' : research ? 'research' : 'default');
-      if (research) this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, now().slice(0,10), task.channel);
+      if (research) {
+        const timezone = managed?.timezone ?? String((task as TaskRecord & { timezone?: string }).timezone ?? 'UTC');
+        const reportDate = dateInTimezone(this.options.clock?.() ?? new Date(), timezone);
+        this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, reportDate, task.channel);
+      }
       this.event(runId, turnId, 'queued', {});
     });
     this.queue.push({ runId, turnId, input }); this.schedule();
