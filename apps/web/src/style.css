@@ -783,8 +783,13 @@ main {
 @media (min-width: 1001px) {
   .reading-layout.investment-layout,
   .reading-layout.news-layout {
-    max-width: none;
     margin-inline: 0;
+  }
+}
+@media (min-width: 1200px) {
+  .reading-layout.investment-layout,
+  .reading-layout.news-layout {
+    max-width: none;
   }
 }
 .category-section {
