@@ -1,0 +1,539 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "08a95a82-c518-4c2d-a3b1-e566c5ee482a",
+  "report_date": "2026-11-12",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月13日｜北京时间统计：11月12日07:05:27—11月13日07:05:27；补充回溯72小时至11月10日07:05:27，日期级来源不虚构时刻",
+  "collected_at": "2026-11-12T23:16:17.573Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-12T23:16:17.583Z",
+  "reviewed_content_sha256": "b18435199264e0ac9b11a9b918288109da34cb207cec6a6d026abd9d20c3d9a4",
+  "items": [
+    {
+      "id": "217be9e51e2d8fe73a32b282ad0d17b5f6de95fd1c1488860b2a480e706db834",
+      "category": "industry",
+      "importance": 5,
+      "fact_summary": "Cisco宣布上调FY2027全年营收及非GAAP EPS指引，并将超大规模客户AI基础设施营收预期提高至90亿美元。公告发布于北京时间11月13日05:05，属于最近24小时。截至10月24日季度实际营收185.17亿美元，同比增长24%；GAAP净利润45.52亿美元，非GAAP EPS为1.40美元。网络业务收入增长43%，但GAAP毛利率由65.5%降至63.7%；经营现金流44亿美元，同比增长36%。未取得可靠一致预期，不作超预期比较。",
+      "analysis": "推断：网络收入和现金流增长支持AI基础设施需求向网络设备传导，但毛利率下降表明收入增长并非同比例转化为毛利。后续盈利取决于规模效应能否持续覆盖产品组合及成本压力；指引上调不等于当前股价具有吸引力。",
+      "evidence_quote": "CISCO REPORTS FIRST QUARTER EARNINGS",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量同时包含季度实际业绩和全年指引上调，统计期间为FY2027第一季度。",
+        "metrics": [
+          {
+            "name": "营收",
+            "value": "185.17",
+            "unit": "亿美元",
+            "period": "截至2026-10-24季度",
+            "comparison": "同比增长24%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "全年营收",
+            "value": "748—758",
+            "unit": "亿美元",
+            "period": "FY2027",
+            "comparison": "公司上调指引",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "非GAAP EPS",
+            "value": "5.47—5.53",
+            "unit": "美元/股",
+            "period": "FY2027",
+            "comparison": "公司上调指引",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "网络需求→设备收入→毛利与费用吸收→经营现金流。毛利率下降是检验增长质量的关键约束。",
+        "watchpoints": [
+          "AI收入预期兑现",
+          "毛利率及网络收入增速",
+          "经营现金流与收入匹配"
+        ],
+        "risks": [
+          "客户投资节奏放缓",
+          "低毛利产品占比上升抵消规模效应"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Cisco原始业绩公告",
+            "url": "https://www.prnewswire.com/news-releases/cisco-reports-first-quarter-earnings-302938394.html",
+            "supports": "季度财务数据、分业务表现、现金流和全年指引"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.prnewswire.com",
+        "original_url": "https://www.prnewswire.com/news-releases/cisco-reports-first-quarter-earnings-302938394.html",
+        "canonical_url": "https://www.prnewswire.com/news-releases/cisco-reports-first-quarter-earnings-302938394.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b20f26b1182593b3b50c2d376b77087f4857b86879fe56c2b569ca45409a6b97",
+      "category": "industry",
+      "importance": 5,
+      "fact_summary": "英伟达宣布黄仁勋辞去总裁、CEO和董事职务，CFO Colette Kress兼任临时CEO，董事会启动永久继任者搜索，并任命Harvey C. Jones为董事长。新闻稿日期为美国当地11月12日，暂归最近24小时披露；SEC文件记载董事会于当地11月11日接受辞职并立即生效，未核得精确首次公开时刻。公司称客户承诺和产品路线图继续执行，属于公司声明。",
+      "analysis": "推断：管理层交接可能影响客户沟通、资本配置和执行预期，但公告没有证明订单或产品交付已受损。应以随后财报、客户承诺和路线图兑现检验影响，不能据此推导竞争对手获得订单或股票估值便宜。",
+      "evidence_quote": "NVIDIA Announces CEO Transition",
+      "details": {
+        "kind": "investment",
+        "background": "本次新增事实是CEO和董事会治理安排变更；辞职原因未在公司公告中说明。",
+        "investmentLogic": "交接→客户及产品执行的不确定性→订单兑现和费用配置→盈利预期。经营影响尚未证实，公司关于运营连续性的表述仍需验证。",
+        "watchpoints": [
+          "永久CEO人选及权限安排",
+          "11月17日美国当地财报披露中的订单、交付和经营指引",
+          "客户承诺及产品路线图是否调整"
+        ],
+        "risks": [
+          "交接导致决策或客户沟通延迟",
+          "若交付与指引保持稳定，将削弱交接损害经营的判断"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "英伟达CEO交接公告",
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+            "supports": "辞职、临时CEO、董事长任命及公司对运营连续性的声明"
+          },
+          {
+            "id": "e2",
+            "name": "英伟达SEC 8-K",
+            "url": "https://www.sec.gov/Archives/edgar/data/1045810/000104581026000082/nvda-20261111.htm",
+            "supports": "董事会于美国当地11月11日接受辞职并立即生效"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investor.nvidia.com",
+        "original_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+        "canonical_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-CEO-Transition/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e3f1ecda70cd4b22c5972c7fe699cf54de5207d507dd0715e3e57178588fd1c9",
+      "category": "industry",
+      "importance": 5,
+      "fact_summary": "Nebius宣布第三季度营收增长571%至9.808亿美元，调整后EBITDA为4.658亿美元，但持续经营净亏损仍为3,750万美元。来源日期为阿姆斯特丹当地11月12日，未列发布时间；按日期暂归最近24小时。第三季度持续经营现金净流出2.730亿美元，购置固定资产及无形资产现金支出73.004亿美元，较上年同期9.555亿美元明显增加；后者保留原始口径，不等同全部资本开支承诺。",
+      "analysis": "推断：收入和调整后利润改善尚未消除扩建融资压力。季度投资现金支出远高于收入，回报依赖产能交付、回款和客户预付款兑现；调整后EBITDA不能替代自由现金流。",
+      "evidence_quote": "Nebius reports third quarter 2026 financial results",
+      "details": {
+        "kind": "investment",
+        "background": "AI云扩张带来收入增长，同时扩大投资现金需求；财报为未经审计合并数据。",
+        "metrics": [
+          {
+            "name": "调整后EBITDA",
+            "value": "4.658",
+            "unit": "亿美元",
+            "period": "2026Q3",
+            "comparison": "上年同期亏损0.052亿美元；非GAAP",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "持续经营现金流",
+            "value": "-2.730",
+            "unit": "亿美元",
+            "period": "2026Q3",
+            "comparison": "上年同期-0.806亿美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "固定资产及无形资产购置现金支出",
+            "value": "73.004",
+            "unit": "亿美元",
+            "period": "2026Q3",
+            "comparison": "上年同期9.555亿美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "扩建投入→可交付算力→利用率和收入→现金回收。融资流入不是经营盈利，需观察收入增长能否转化为持续回款。",
+        "watchpoints": [
+          "产能交付及利用率",
+          "应收款、预收款和经营现金流",
+          "融资成本及股权稀释"
+        ],
+        "risks": [
+          "客户回款或建设延迟",
+          "折旧和利息增长侵蚀利润"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Nebius第三季度原始财报",
+            "url": "https://assets.nebius.com/assets/e2ac679c-fc62-4799-ba0e-6611e59c6863/Nebius-2026-Q3.pdf",
+            "supports": "营收、利润、经营现金流和资产购置现金支出"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "assets.nebius.com",
+        "original_url": "https://assets.nebius.com/assets/e2ac679c-fc62-4799-ba0e-6611e59c6863/Nebius-2026-Q3.pdf",
+        "canonical_url": "https://assets.nebius.com/assets/e2ac679c-fc62-4799-ba0e-6611e59c6863/Nebius-2026-Q3.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0c4c1d901b6b86b3e92f8a163014ca4eeb600e872afc64ac04d79d32b0d5d724",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "CoreWeave宣布上调2026年营收指引至130亿—133亿美元，并将资本开支指引下限由350亿美元提高至370亿美元，上限维持390亿美元。来源日期为美国当地11月10日，未列时刻，作为24—72小时补充。第三季度实际营收36.61亿美元，上年同期13.65亿美元；净亏损7.09亿美元，净利息费用8.46亿美元。公司预计第四季度利息费用10.5亿—11.5亿美元，属于指引。",
+      "analysis": "推断：收入增长与更快基础设施交付共同抬高资金需求，利息负担限制经营利润向净利润转化。需要同时验证客户回款、资本开支回报和债务成本；签约电力及积压订单均不能直接视作已投运产能或已实现收入。",
+      "evidence_quote": "CoreWeave Reports Strong Third Quarter 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "本次财报同时显示业务扩张和融资负担增加，不能仅以收入增速判断盈利质量。",
+        "metrics": [
+          {
+            "name": "GAAP营业利润",
+            "value": "2.07",
+            "unit": "亿美元",
+            "period": "2026Q3",
+            "comparison": "上年同期0.52亿美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "资本开支",
+            "value": "370—390",
+            "unit": "亿美元",
+            "period": "2026全年",
+            "comparison": "此前350—390亿美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "交付提速→算力收入与投资同步增加→利息及折旧压力→净利润和自由现金流。资金成本下降或客户预付款兑现是改善回报的前提。",
+        "watchpoints": [
+          "资本开支及回款兑现",
+          "第四季度利息费用",
+          "在运电力与利用率"
+        ],
+        "risks": [
+          "建设或客户验收延误",
+          "融资成本上升",
+          "高额积压订单仍受服务可用性和交付条件约束"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "CoreWeave第三季度业绩公告",
+            "url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx",
+            "supports": "实际财务数据及营收、资本开支和利息费用指引"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.coreweave.com",
+        "original_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx",
+        "canonical_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "84757a8b6e04ab0dc5be5bc177eccc4e40619603a4e69d52c77bd55e8acbeef7",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Anthropic宣布启动IPO路演，拟发行8.25亿股，预期发行价每股70—78美元；其中公司拟发行801,351,354股，其余由现有股东出售，公司不获得老股出售所得。公告日期为美国当地11月10日，未列时刻，作为24—72小时补充。公告明确注册声明尚未生效，因此价格、规模和上市均非完成事实；申请交易代码ANT不能写成已上市。",
+      "analysis": "推断：若发行完成，新增资本可提高经营和算力投入的资金承受力，但最终净募资取决于定价、费用和发行结果。缺少完全摊薄股数及可比盈利口径，不据发行价推导总估值或投资吸引力。",
+      "evidence_quote": "Anthropic launches roadshow for proposed initial public offering",
+      "details": {
+        "kind": "investment",
+        "background": "本次实质进展是路演启动和发行条款区间披露，尚非IPO完成。",
+        "metrics": [
+          {
+            "name": "拟发行价格",
+            "value": "70—78",
+            "unit": "美元/股",
+            "period": "本次拟议IPO",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "公司拟发行新股",
+            "value": "801351354",
+            "unit": "股",
+            "period": "本次拟议IPO",
+            "comparison": "不含老股出售及超额配售",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "发行完成→新增资金→研发及算力投入能力；能否形成现金回报仍需收入、成本和现金消耗证据。",
+        "watchpoints": [
+          "注册生效与最终定价",
+          "净募资及稀释后股数",
+          "资金用途和算力合同义务"
+        ],
+        "risks": [
+          "发行调整、延期或未完成",
+          "高投入未带来相称现金回报"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Anthropic路演原始公告",
+            "url": "https://www.anthropic.com/news/roadshow-launch",
+            "supports": "发行规模、价格区间、新老股构成及尚未生效状态"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.anthropic.com",
+        "original_url": "https://www.anthropic.com/news/roadshow-launch",
+        "canonical_url": "https://www.anthropic.com/news/roadshow-launch",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "98a27e0b0eaf8597eafe7b79157697caa1d7cb6b33c7fc4c6118031714a1b3a0",
+      "category": "industry",
+      "importance": 4,
+      "fact_summary": "台积电宣布2026年10月合并营收5,868.9亿新台币，环比增长14.7%、同比增长59.7%；1—10月累计44,856.2亿新台币，同比增长43.3%。来源发布日为11月10日，作为24—72小时补充；正文未列具体时刻。月报只确认总营收变化，没有披露当月先进制程、封装产能、ASP、出货或毛利率，不能将全部增量归因于AI。",
+      "analysis": "推断：月度收入增长提高季度收入兑现的可见度，但盈利仍取决于产能利用率、产品组合、汇率和成本。单月收入不能独立证明先进封装供需缺口扩大，也不能推出设备材料供应商普遍受益。",
+      "evidence_quote": "TSMC October 2026 Revenue Report",
+      "details": {
+        "kind": "investment",
+        "background": "月度实际营收为晶圆代工景气提供经营证据，未提供利润或客户结构分解。",
+        "metrics": [
+          {
+            "name": "合并营收",
+            "value": "5868.9",
+            "unit": "亿新台币",
+            "period": "2026年10月",
+            "comparison": "环比+14.7%；同比+59.7%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "月度收入→季度收入兑现→结合毛利率与资本开支判断利润及现金回报。出货、价格与汇率贡献尚未拆分。",
+        "watchpoints": [
+          "后续两个月营收",
+          "季度毛利率和制程组合",
+          "资本开支与先进封装交付"
+        ],
+        "risks": [
+          "月度波动或汇率放大增长",
+          "收入增长未转化为利润率改善"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "台积电10月营收原始公告",
+            "url": "https://pr.tsmc.com/schinese/news/3349",
+            "supports": "月度及累计营收、同比和环比口径"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "pr.tsmc.com",
+        "original_url": "https://pr.tsmc.com/schinese/news/3349",
+        "canonical_url": "https://pr.tsmc.com/schinese/news/3349",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "408cf18942e460063a9a1ac2e6bb5796ce91247ad9918e1d55ec40022b7d29ad",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Runway宣布公开Praxis-1模型权重及推理、微调代码，采用Apache 2.0并允许商业使用。来源日期为11月11日，未注明时区及时刻，作为24—72小时补充。公司称该模型为270亿参数混合专家扩散Transformer，并报告RoboLab-120的1,200回合测试成功率46.2%；该结果属于发布方报告，未进行独立复现。",
+      "analysis": "推断：可下载和可修改的模型工件可能降低机器人厂商基础模型研发门槛，但适配数据、边缘算力、可靠性和安全验证仍决定部署成本。开源发布与实验成功率本身不构成订单或盈利增长。",
+      "evidence_quote": "Praxis-1 Is Now Available",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量为从伙伴试用推进至公开权重及代码，而非再次展示机器人演示。",
+        "investmentLogic": "开放模型→减少重复研发的可能性→机器人适配成本和部署周期变化→硬件或服务商业化；尚无收入增量证据。",
+        "watchpoints": [
+          "不同机器人本体的独立复现",
+          "微调数据量与算力成本",
+          "实机可靠性及付费部署"
+        ],
+        "risks": [
+          "基准表现不能迁移至真实任务",
+          "集成和维护成本抵消模型开放带来的节省"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Runway公开权重原始公告",
+            "url": "https://runway.com/news/company-news/praxis-1-is-now-available",
+            "supports": "权重及代码开放、商业许可和发布方测试口径"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "runway.com",
+        "original_url": "https://runway.com/news/company-news/praxis-1-is-now-available",
+        "canonical_url": "https://runway.com/news/company-news/praxis-1-is-now-available",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6be13cfc74b8fd84c296fca0d906389645cfbb8d35fc2e2d915c4ef51c858dab",
+      "category": "industry",
+      "importance": 3,
+      "fact_summary": "Rackspace宣布与Together AI签署有约束力的多年推理基础设施协议，拟部署英伟达GB300 NVL72及Spectrum-X网络，计划2027年交付；公司义务仍以融资、场地、电力和设备等条件满足为前提。公告日期为美国当地11月10日，未列时刻，作为24—72小时补充。公告时尚未取得确定GPU融资承诺；另行联合销售意向书不具约束力，合同金额和GPU数量未披露。",
+      "analysis": "推断：协议可为GPU、网络和液冷部署提供需求依据，但资金落实及交付先于收入兑现。融资未完成时，不宜将计划容量计入确定收入；股权融资协议也不等于GPU采购资金已经到位。",
+      "evidence_quote": "Rackspace and Together AI Announce Strategic Agreement to Support Enterprise AI Inference",
+      "details": {
+        "kind": "investment",
+        "background": "本次为具体基础设施合同，须与非约束性联合销售意向分开判断。",
+        "supplyChain": [
+          {
+            "segment": "Rackspace—Together AI推理基础设施",
+            "direction": "拟部署",
+            "reason": "双方已签协议，但融资及交付条件尚待满足",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "英伟达GPU与网络",
+            "direction": "潜在采购需求",
+            "reason": "公告指定GB300 NVL72和Spectrum-X，采购规模及融资未确定",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "融资落实→设备及设施交付→推理服务收入→扣除折旧和资金成本后的现金回报。",
+        "watchpoints": [
+          "确定融资承诺",
+          "合同金额及最低采购义务",
+          "2027年交付和验收"
+        ],
+        "risks": [
+          "融资失败或成本过高",
+          "电力、设备或客户需求延迟"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Rackspace原始合同公告",
+            "url": "https://ir.rackspace.com/node/13806/pdf",
+            "supports": "协议约束力、指定基础设施、交付计划及融资条件"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.rackspace.com",
+        "original_url": "https://ir.rackspace.com/node/13806/pdf",
+        "canonical_url": "https://ir.rackspace.com/node/13806/pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c06fca3b9549fb95708df0f2353796ec58f056e0b405f51a42ea39400a3b35d2",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Google宣布推出Gemini Decisions API，通过AI Studio提供工具选择、模型路由等封闭集合决策服务，标价每百万输入token 0.10美元，输出token不收费。来源日期为11月11日，未注明时区及时刻，作为24—72小时补充，无法精确归入最近24小时。单次最多1,000个问题；150—250毫秒端到端延迟及成本优势均为公司测试主张，不是独立实测。",
+      "analysis": "推断：专用决策端点可能减少Agent为路由和校验调用大型生成模型的成本，但总成本还取决于问题指令token、准确率和失败后的回退调用。低单价可能增加使用量，也可能压低单次调用收入，净利润方向尚不确定。",
+      "evidence_quote": "Gemini Decisions API: Fast, calibrated multimodal decisions",
+      "details": {
+        "kind": "investment",
+        "background": "新增产品与明确收费模式可用于评估Agent编排成本，而非仅比较模型榜单。",
+        "metrics": [
+          {
+            "name": "输入价格",
+            "value": "0.10",
+            "unit": "美元/百万token",
+            "period": "11月11日发布标价",
+            "comparison": "输出token不收费",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "专用路由→可能降低单任务推理支出→采用量与模型组合变化→服务收入和毛利；准确率、回退率及实际采用尚待验证。",
+        "watchpoints": [
+          "真实任务准确率与回退率",
+          "包含问题指令的总成本",
+          "客户采用及服务保障"
+        ],
+        "risks": [
+          "误判增加人工或大模型回退成本",
+          "256K输入上限与16K性能测试上下文不能混用"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Google Decisions API原始发布",
+            "url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/",
+            "supports": "可用渠道、收费、请求规模和公司性能测试口径"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "blog.google",
+        "original_url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/",
+        "canonical_url": "https://blog.google/innovation-and-ai/technology/developers-tools/gemini-decisions-api/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
