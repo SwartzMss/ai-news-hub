@@ -2,13 +2,25 @@
 
 设置感兴趣的话题，让 Codex 每天搜索并整理资讯。你可以在后台查看结果、审核内容，也可以发布到 GitHub 并生成公开阅读网站。
 
+## 功能总览
+
+AI News Hub 将资讯研究、内容审核、归档和分发串联为一条工作流，主要提供以下能力：
+
+- **多主题 AI 新闻研究**：按需创建多个主题任务，围绕 AI、开源、科技、投资、热点等方向搜集和整理资讯。
+- **Codex 多轮研究与 Prompt 管理**：通过 Codex 执行研究，支持单轮或按顺序执行多轮 Prompt，并为不同主题维护独立的研究要求。
+- **人工审核与自动发布归档**：可以先检查研究结果，再批准并归档到 GitHub；也可以为任务开启自动发布。归档失败后可单独重试，无需重新执行研究。
+- **历史日报与版本管理**：按主题保存日报及历史版本，支持回看过往内容，了解每个主题的持续更新。
+- **静态阅读网站与 RSS**：将归档内容构建为静态阅读网站，并提供单主题和全站 RSS 订阅，适配桌面与手机。
+- **邮件订阅与每日汇总**：完成邮件服务配置后，读者可以订阅每日汇总邮件，集中接收已发布主题的更新，并可随时退订。
+- **任务调度与运行诊断**：支持定时执行和手动触发，可查看运行记录、各轮 Prompt 与回复，以及诊断日志和错误信息。
+
 ## 架构一览
 
 ![动态架构图，展示 Prompt、Linux Backend、Codex、SQLite、GitHub、Cloudflare Pages、D1、Resend 与订阅者之间的数据流。](docs/assets/architecture.gif)
 
 [查看 SVG 动画](docs/assets/architecture.svg) · [详细架构](docs/ARCHITECTURE.md)
 
-Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。GitHub Actions 定时触发每日汇总，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。邮件投递需完成生产环境配置。
+Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。每日邮件由 Linux Backend Scheduler 按配置的北京时间计划调度，并通过 GitHub Actions API 触发 `workflow_dispatch`；GitHub Actions 负责运行发送脚本，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。GitHub Actions 不配置 `schedule` 定时触发；邮件投递需完成生产环境配置。
 
 ## 开始使用
 
@@ -163,7 +175,7 @@ bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 - **RSS 订阅**：点击网站上的「RSS 订阅」，将链接添加到 RSS 阅读器，获取话题更新。
 - **邮件订阅**：通过 Resend 发送。启用后，读者填写邮箱并确认，即可每天收到一封汇总全部话题的邮件，也可随时通过邮件退订。
 
-邮件订阅默认关闭，需要自有发件域名；每日发送从北京时间 09:00 开始检查，配置缺失时工作流不会发信。启用及 GitHub 设置核对步骤见 [邮件订阅设置](docs/NEWSLETTER.md)。
+邮件订阅默认关闭，需要自有发件域名。每日发送计划由 Linux Backend 的「邮件发送」设置控制，默认北京时间 09:00；Backend 到达计划时间后调用 GitHub Actions `workflow_dispatch`，工作流执行发送脚本。GitHub Actions 页面保留应急手动运行入口，但不是日常定时调度器。若生产配置缺失，工作流不会发信。启用、调度切换及 GitHub 设置核对步骤见 [邮件订阅设置](docs/NEWSLETTER.md)。
 
 ## 日常使用
 
