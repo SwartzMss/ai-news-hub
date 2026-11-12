@@ -780,6 +780,13 @@ main {
   .reading-layout.news-layout { display: block; max-width: 760px; }
   .news-aside { display: none; }
 }
+@media (min-width: 1001px) {
+  .reading-layout.investment-layout,
+  .reading-layout.news-layout {
+    max-width: none;
+    margin-inline: 0;
+  }
+}
 .category-section {
   margin-bottom: 32px;
   scroll-margin-top: 24px;
