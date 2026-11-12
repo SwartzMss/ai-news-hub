@@ -305,16 +305,13 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 </a>
               </nav>
               {structuredProject ? (
-                <StructuredProjectDetail story={story} number={owner ? owner.items.findIndex((item) => item.key === story.key) + 1 : undefined} />
+                <StructuredProjectDetail story={story} />
               ) : investment ? (
                 <InvestmentDetail story={story} />
               ) : news ? (
                 <NewsDetail story={story} />
               ) : project ? (
-                <ProjectDetail
-                  story={story}
-                  number={owner ? owner.items.findIndex((item) => item.key === story.key) + 1 : undefined}
-                />
+                <ProjectDetail story={story} />
               ) : (
                 <>
                   <header className="article-header">

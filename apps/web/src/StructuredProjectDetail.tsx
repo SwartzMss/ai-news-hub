@@ -17,13 +17,13 @@ export function structuredProjectSections(details:ProjectDetails):DetailSection[
     {id:'project-evidence',label:'来源与证据',show:true},
   ].filter(section=>section.show).map(({id,label})=>({id,label}));
 }
-export function StructuredProjectDetail({story,number}:{story:Story;number?:number}){
+export function StructuredProjectDetail({story}:{story:Story}){
   const details=story.details;
   if(!details||details.kind!=='project')return null;
   const sections=structuredProjectSections(details);
   const show=(id:string)=>sections.some(section=>section.id===id);
   return <article className="project-detail">
-    <header className="project-header"><div className="project-heading">{number&&<span className="project-number">{String(number).padStart(2,'0')}.</span>}<h1>{lead(story).title}</h1></div></header>
+    <header className="project-header detail-page-header"><h1 className="detail-page-title">{lead(story).title}</h1></header>
     <MobileDetailNav sections={sections}/>
     <div className="project-sections">
       {show("project-overview")&&<section id="project-overview"><h2>项目概览</h2><p><InlineText text={details.overview}/></p></section>}

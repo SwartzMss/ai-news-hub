@@ -639,26 +639,15 @@ main {
   max-width: 760px;
   padding-bottom: 48px;
 }
-.project-header {
-  padding-bottom: 28px;
+.detail-page-header {
+  padding-bottom: 26px;
   border-bottom: 1px solid var(--line);
 }
-.project-heading {
-  display: flex;
-  align-items: baseline;
-  gap: 12px;
-}
-.project-number {
-  color: var(--accent);
-  font-size: 15px;
-  font-weight: 700;
-  font-variant-numeric: tabular-nums;
-}
-.project-heading h1 {
-  font-size: clamp(28px, 3vw, 40px);
+.detail-page-title {
+  font-size: clamp(28px, 3vw, 38px);
   font-weight: 720;
   line-height: 1.35;
-  letter-spacing: -0.03em;
+  letter-spacing: -.025em;
 }
 .project-subtitle {
   margin: 12px 0 10px;
@@ -724,9 +713,6 @@ main {
   gap: clamp(36px, 5vw, 80px);
 }
 .investment-detail { min-width: 0; padding-bottom: 48px; }
-.investment-header { padding-bottom: 26px; border-bottom: 1px solid var(--line); }
-.investment-topic { color: var(--accent); font-size: 13px; font-weight: 700; margin-bottom: 12px; }
-.investment-header h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.35; letter-spacing: -.025em; }
 .investment-summary { font-size: 16px; line-height: 1.9; margin-top: 16px; }
 .investment-verification { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 14px; }
 .investment-sections > section { padding: 28px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 24px; }
@@ -759,8 +745,6 @@ main {
 .investment-aside a:hover, .investment-aside a:focus-visible { color: var(--accent); }
 .reading-layout.news-layout { max-width: 1120px; grid-template-columns: minmax(0, 760px) minmax(190px, 240px); gap: clamp(36px, 5vw, 80px); }
 .news-detail { min-width: 0; padding-bottom: 48px; }
-.news-detail-header { padding-bottom: 26px; border-bottom: 1px solid var(--line); }
-.news-detail-header h1 { font-size: clamp(28px, 3vw, 38px); line-height: 1.35; letter-spacing: -.025em; }
 .news-detail-summary { font-size: 16px; line-height: 1.9; margin-top: 16px; }
 .news-detail-verification { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 14px; }
 .news-detail-sections > section { padding: 28px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 24px; }

@@ -34,9 +34,8 @@ export function InvestmentDetail({story}:{story:Story}){
   const sections=investmentSections(details,story.analysis);
   const show=(id:string)=>sections.some(section=>section.id===id);
   return <article className="investment-detail">
-    <header className="investment-header">
-      <p className="investment-topic">科技投资研究</p>
-      <h1>{lead(story).title}</h1>
+    <header className="investment-header detail-page-header">
+      <h1 className="detail-page-title">{lead(story).title}</h1>
       {lead(story).rest&&<p className="investment-summary"><InlineText text={lead(story).rest}/></p>}
       <p className="investment-verification">研究资料由 Codex 提供；来源链接和格式校验不等于独立事实核验。</p>
     </header>

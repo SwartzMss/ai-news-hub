@@ -66,16 +66,13 @@ function legacySections(project:NonNullable<ReturnType<typeof projectDetail>>):D
     ...(project.analysis?.fields.map((field,index)=>({id:`project-analysis-${index}`,label:field.heading}))??[]),
     {id:'project-source',label:'来源与证据'}];
 }
-export function ProjectDetail({ story, number }: { story: Story; number?: number }) {
+export function ProjectDetail({ story }: { story: Story }) {
   const project = projectDetail(story);
   if (!project) return null;
   return (
     <article className="project-detail">
-      <header className="project-header">
-        <div className="project-heading">
-          {number && <span className="project-number">{String(number).padStart(2, "0")}.</span>}
-          <h1>{project.name}</h1>
-        </div>
+      <header className="project-header detail-page-header">
+        <h1 className="detail-page-title">{project.name}</h1>
         {project.subtitle && <p className="project-subtitle">{project.subtitle}</p>}
         <a className="project-repository" href={project.repository} target="_blank" rel="noopener noreferrer">{project.repositoryLabel} ↗</a>
         {(project.status || project.attribution) && <p className="project-status">{[project.attribution, project.status].filter(Boolean).join(" · ")}</p>}

@@ -413,6 +413,10 @@ test("project detail presents verified fields as readable sections", async () =>
     const key = articleKey(report.items[0].id);
     const doc = new JSDOM(readFileSync(join(built.output, `topics/legacy/news/${key}/index.html`), "utf8")).window.document;
     assert.equal(doc.querySelector(".project-detail h1").textContent, "Mesh LLM");
+    assert.equal(doc.querySelector(".project-detail .project-number"), null);
+    assert.ok(doc.querySelector(".project-detail h1.detail-page-title"));
+    const edition = new JSDOM(readFileSync(join(built.output, "archive/2026-11-03/opensource/v000001/index.html"), "utf8")).window.document;
+    assert.ok(edition.querySelector(".news-number"), "the edition list keeps its ordering number");
     assert.equal(doc.querySelector(".project-detail .project-subtitle").textContent, "Mesh LLM 发布分布式推理系统");
     assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
     assert.equal(doc.querySelector(".reading-aside"), null);
@@ -457,6 +461,8 @@ test('structured project detail renders sourced sections without an event timeli
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
   const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.project-detail #project-overview'));
+  assert.equal(doc.querySelector('.project-detail .project-number'),null);
+  assert.ok(doc.querySelector('.project-detail h1.detail-page-title'));
   assert.match(doc.querySelector('#project-change').textContent,/新增增量索引.*2026-11-03/s);
   assert.ok(doc.querySelector('#project-technical a[href="#project-evidence-release"]'));
   assert.match(doc.querySelector('#project-evaluation').textContent,/编辑判断/);
@@ -478,6 +484,8 @@ test('investment detail renders evidence-linked metrics and a section directory'
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
   const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.investment-detail'));
+  assert.equal(doc.querySelector('.investment-topic'),null);
+  assert.ok(doc.querySelector('.investment-detail h1.detail-page-title'));
   assert.match(doc.querySelector('.investment-detail table').textContent,/季度收入.*12.4.*实际值/s);
   assert.match(doc.querySelector('.investment-detail').textContent,/潜在影响|潜在关系/);
   assert.ok(doc.querySelector('.investment-detail a[href="https://example.com/filing"]'));
@@ -499,6 +507,8 @@ test('news detail renders structured evidence, timeline and a section directory'
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
   const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.news-detail'));
+  assert.equal(doc.querySelector('.news-detail .section-kicker'),null);
+  assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.match(doc.querySelector('.news-detail table').textContent,/生效范围.*全国.*已证实/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
