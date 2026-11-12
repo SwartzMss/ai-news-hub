@@ -8,7 +8,7 @@
 
 [查看 SVG 动画](docs/assets/architecture.svg) · [详细架构](docs/ARCHITECTURE.md)
 
-Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。GitHub Actions 定时触发每日汇总，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。邮件投递需完成生产环境配置。
+Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。每日邮件由 Linux Backend Scheduler 按配置的北京时间计划调度，并通过 GitHub Actions API 触发 `workflow_dispatch`；GitHub Actions 负责运行发送脚本，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。GitHub Actions 不配置 `schedule` 定时触发；邮件投递需完成生产环境配置。
 
 ## 开始使用
 
@@ -163,7 +163,7 @@ bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 - **RSS 订阅**：点击网站上的「RSS 订阅」，将链接添加到 RSS 阅读器，获取话题更新。
 - **邮件订阅**：通过 Resend 发送。启用后，读者填写邮箱并确认，即可每天收到一封汇总全部话题的邮件，也可随时通过邮件退订。
 
-邮件订阅默认关闭，需要自有发件域名；每日发送从北京时间 09:00 开始检查，配置缺失时工作流不会发信。启用及 GitHub 设置核对步骤见 [邮件订阅设置](docs/NEWSLETTER.md)。
+邮件订阅默认关闭，需要自有发件域名。每日发送计划由 Linux Backend 的「邮件发送」设置控制，默认北京时间 09:00；Backend 到达计划时间后调用 GitHub Actions `workflow_dispatch`，工作流执行发送脚本。GitHub Actions 页面保留应急手动运行入口，但不是日常定时调度器。若生产配置缺失，工作流不会发信。启用、调度切换及 GitHub 设置核对步骤见 [邮件订阅设置](docs/NEWSLETTER.md)。
 
 ## 日常使用
 
