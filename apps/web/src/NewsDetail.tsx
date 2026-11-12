@@ -33,7 +33,7 @@ export function NewsDetail({story}:{story:Story}){
   const sections=newsSections(details,story.analysis);
   const show=(id:string)=>sections.some(section=>section.id===id);
   return <article className="news-detail">
-    <header className="news-detail-header"><p className="section-kicker">热点新闻观察</p><h1>{lead(story).title}</h1>
+    <header className="news-detail-header detail-page-header"><h1 className="detail-page-title">{lead(story).title}</h1>
       {lead(story).rest&&<p className="news-detail-summary"><InlineText text={lead(story).rest}/></p>}
       <p className="news-detail-verification">研究资料由 Codex 提供；来源链接和格式校验不等于独立事实核验。</p>
     </header>
