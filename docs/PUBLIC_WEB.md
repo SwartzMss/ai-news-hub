@@ -19,7 +19,7 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 
 ## 数据与历史
 
-输入支持历史 [archive v1 Schema](schema/report-archive-v1.schema.json) 的 `YYYY/MM/DD/opensource/vNNNNNN.json`、带 `topic: {id,name}` 的 [archive v2 Schema](schema/report-archive-v2.schema.json)，以及增加必填 `research_area` 的 [archive v3 Schema](schema/report-archive-v3.schema.json)。v2/v3 均使用 `topics/<id>/YYYY/MM/DD/vNNNNNN.json`，路径须与内部话题/日期/版本一致。只接受 approved 数据及约定的 source_only/codex_reported 来源模式；拒绝未知字段、非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
+输入支持历史 [archive v1 Schema](schema/report-archive-v1.schema.json) 的 `YYYY/MM/DD/opensource/vNNNNNN.json`、带 `topic: {id,name}` 的 [archive v2 Schema](schema/report-archive-v2.schema.json)，以及增加必填 `research_area` 的 [archive v3 Schema](schema/report-archive-v3.schema.json)。新闻详情可选扩展平台传播信号、趋势/内容标签、公众讨论和创作角度；这些字段在 v1/v2/v3 中均为可选，旧归档无需迁移，新版热点日报仍使用 v2 话题归档。v2/v3 均使用 `topics/<id>/YYYY/MM/DD/vNNNNNN.json`，路径须与内部话题/日期/版本一致。只接受 approved 数据及约定的 source_only/codex_reported 来源模式；拒绝未知字段、非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
 
 同话题/日期/频道展示最高版本；所有版本仍生成独立页面。当前列表与 RSS 只使用各日最新版本，修订移除的条目不会从旧版本混回来；历史版本正文完整保留，详情链接则指向该来源目前保留的最新内容。同话题跨日相同条目 ID 合并为一个来源详情，新来源键为 SHA-256(topic-id + ":" + item-id) 前 32 位。历史 v1 来源保留原有 ID 哈希键及 GUID，映射后同话题的新归档继续复用；其他话题的相同来源 ID 使用不同键。详情/归档明确区分事实摘要、分析推断、精确引文和三类来源时间，人工允许发布不代表独立事实核验。
 
