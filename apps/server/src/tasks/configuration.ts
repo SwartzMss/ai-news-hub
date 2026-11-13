@@ -22,6 +22,8 @@ export function taskInput(value: unknown): {
           "autoPublish",
           "schedule",
           "timezone",
+          "templateId",
+          "templateVersion",
         ].includes(k),
     )
   )
@@ -50,6 +52,18 @@ export function taskInput(value: unknown): {
   )
     return fail();
   if (v.status !== undefined && v.status !== "active" && v.status !== "paused")
+    return fail();
+  const templateId = v.templateId;
+  const templateVersion = v.templateVersion;
+  if (
+    (templateId === undefined) !== (templateVersion === undefined) ||
+    (templateId !== undefined &&
+      (typeof templateId !== "string" ||
+        !/^[a-z0-9-]+$/.test(templateId) ||
+        typeof templateVersion !== "number" ||
+        !Number.isSafeInteger(templateVersion) ||
+        templateVersion < 1))
+  )
     return fail();
   const timezone = v.timezone ?? "Asia/Shanghai";
   if (typeof timezone !== "string") return fail();
@@ -103,6 +117,9 @@ export function taskInput(value: unknown): {
     name: v.name.trim(),
     status: (v.status ?? "active") as "active" | "paused",
     configuration: {
+      ...(typeof templateId === "string" && typeof templateVersion === "number"
+        ? { templateId, templateVersion }
+        : {}),
       topic: v.topic.trim(),
       prompts: v.prompts as string[],
       autoPublish: v.autoPublish,
