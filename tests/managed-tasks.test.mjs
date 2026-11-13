@@ -74,7 +74,9 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   const prompts=['研究并生成日报'];
   const task=(await s.request('POST','/tasks',{...configuration,name:'每日开源项目',topic:'每日开源项目',prompts})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first-flexible'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[0]);
+  const firstCall=await s.wait(()=>s.adapter.calls[0]);
+  assert.ok(firstCall.input.outputSchema.properties.items.items.required.includes('researchArea'));
+  assert.ok(firstCall.input.outputSchema.properties.items.items.required.includes('details'));
   const summary='项目发布了重要更新。适合本地文件处理；[项目仓库](https://github.com/example/project)';
   const openSourceProposal={title:'每日开源项目',items:[{...proposal.items[0],category:'opensource',researchArea:'rust',factSummary:summary,url:'https://example.com/releases/v2',details:{kind:'project',overview:'用于本地批量文件处理。',change:{summary:'发布并行处理能力。',evidenceRefs:['release']},evidence:[{id:'release',name:'Release',url:'https://example.com/releases/v2',supports:'并行处理能力'}]}}]};
   s.adapter.succeed(0,JSON.stringify(openSourceProposal));
