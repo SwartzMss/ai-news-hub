@@ -137,3 +137,24 @@ test('research-area ordering is stable and is preserved in the report summary',(
  const markdown=reportMarkdown(report);
  assert.ok(markdown.indexOf('【AI Agent 与自动化执行】')<markdown.indexOf('【Rust 生态与工程工具】'));
 });
+
+test('technology categories use a dedicated report validator without widening legacy categories',()=>{
+ const p=proposal();
+ p.items[0].category='ai_industry_chain';
+ p.items[0].details=investmentDetails();
+ assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata,'verified'),{code:'report_schema_invalid'});
+ const report=buildReport(JSON.stringify(p),candidates,metadata,'verified','technology');
+ assert.equal(report.items[0].category,'ai_industry_chain');
+ assert.deepEqual(report.items[0].details,p.items[0].details);
+});
+
+test('technology report accepts codex-reported source provenance with a null fetch timestamp',()=>{
+ const p=proposal();
+ p.items[0].category='ai_industry_chain';
+ p.items[0].details=investmentDetails();
+ const candidate={id:'a'.repeat(64),title:p.items[0].factSummary,originalUrl:'https://example.com/filing',canonicalUrl:'https://example.com/filing',sourceName:'example.com',publishedAt:null,eventAt:null,fetchedAt:null,excerpt:'',sourceMode:'codex_reported'};
+ p.items[0].articleId=candidate.id;
+ const report=buildReport(JSON.stringify(p),[candidate],{...metadata,topic:{id:'t-'+'a'.repeat(24),name:'自定义科技主题'}},'codex_reported','technology');
+ assert.equal(report.items[0].verification,'codex_reported');
+ assert.equal(report.items[0].source.fetchedAt,null);
+});

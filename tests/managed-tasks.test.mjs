@@ -95,6 +95,48 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   assert.ok(Array.isArray(third.input.outputSchema.properties.items.items.properties.details.anyOf));
  }finally{await s.close();}
 });
+test('daily technology template routes to focused AI investment schema independently of editable topic',async()=>{
+ const s=setup();try{
+  const prompts=['发现 AI 产业链、光模块与半导体候选事件','核查并生成科技投资日报 JSON'];
+  const created=await s.request('POST','/tasks',{
+   ...configuration,name:'每日科技投资简报',topic:'自定义科技主题',
+   templateId:'daily-technology',templateVersion:1,prompts,
+  });
+  assert.equal(created.statusCode,201);
+  const task=(await s.request('GET','/tasks')).json().tasks.find(item=>item.name==='每日科技投资简报');
+  assert.ok(task?.id,'technology task should be persisted');
+  const started=await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'technology-schema'});
+  assert.equal(started.statusCode,202);
+  const run=started.json().run.id;
+  const discovery=await s.wait(()=>s.adapter.calls[0]);
+  assert.equal(discovery.input.outputSchema,undefined);
+  s.adapter.succeed(0,'已完成三个方向的候选发现。');
+  const final=await s.wait(()=>s.adapter.calls[1]);
+  const itemSchema=final.input.outputSchema.properties.items.items;
+  assert.ok(itemSchema.required.includes('details'));
+  assert.deepEqual(itemSchema.properties.category.enum,['ai_industry_chain','optical_communications','semiconductor']);
+  for(const field of ['kind','background','evidence'])assert.ok(itemSchema.properties.details.required.includes(field),field);
+  const output={title:'2026-11-13 每日科技投资简报',items:[{
+   url:'https://example.com/filing',category:'ai_industry_chain',importance:5,
+   factSummary:'云厂商上调 AI 数据中心资本开支计划。',
+   analysis:'资本开支兑现可能拉动 GPU、服务器和网络设备需求。',
+   evidenceQuote:'Official AI model release announcement',
+   details:{
+    kind:'investment',
+    background:'公司在业绩会上更新了 AI 数据中心资本开支计划。',
+    evidence:[{id:'filing',name:'公司业绩会纪要',url:'https://example.com/filing',supports:'AI 数据中心资本开支计划'}],
+   },
+  }]};
+  s.adapter.succeed(1,JSON.stringify(output));
+  const completed=await s.wait(async()=>{
+   const result=(await s.request('GET',`/runs/${run}`)).json().run;
+   if(result.status==='failed')throw new Error(JSON.stringify(result));
+   return result.status==='succeeded'&&result;
+  });
+  assert.equal(completed.status,'succeeded');
+  assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
+ }finally{await s.close();}
+});
 test('daily headlines template routes to strict social trend schema independently of editable topic',async()=>{
  const s=setup();try{
   const prompts=['发现最近 24 小时社交平台热点','核查并生成热点日报 JSON'];

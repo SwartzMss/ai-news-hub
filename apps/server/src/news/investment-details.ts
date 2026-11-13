@@ -36,6 +36,15 @@ export const INVESTMENT_DETAILS_SCHEMA={
   },
 };
 
+export const TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA = {
+  ...INVESTMENT_DETAILS_SCHEMA,
+  required: ['kind','background','evidence'],
+  properties: {
+    ...INVESTMENT_DETAILS_SCHEMA.properties,
+    evidence: { ...INVESTMENT_DETAILS_SCHEMA.properties.evidence, minItems: 1 },
+  },
+};
+
 export function validateInvestmentDetails(details:InvestmentDetails):void {
   if(Buffer.byteLength(JSON.stringify(details))>2500)throw new AppError('report_schema_invalid');
   const ids=new Set<string>();

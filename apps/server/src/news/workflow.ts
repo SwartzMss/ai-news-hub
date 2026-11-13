@@ -7,8 +7,8 @@ import { AppError } from "../errors.js";
 import type { PreparedTask, TaskWorkflow } from "../tasks/workflow.js";
 import { NEWS_CHANNEL, NEWS_TASK_ID } from "./source.js";
 import {sourceUrl,type SourceFetch} from "./sources.js";
-import { HEADLINES_RESEARCH_SCHEMA, OPEN_SOURCE_RESEARCH_SCHEMA, RESEARCH_SCHEMA, type ProposalItem } from "./report-schema.js";
-import { CODEX_HEADLINES_RESEARCH_SCHEMA, CODEX_OPEN_SOURCE_RESEARCH_SCHEMA, CODEX_RESEARCH_SCHEMA, normalizeResearchOutput } from "./structured-output-schema.js";
+import { HEADLINES_RESEARCH_SCHEMA, OPEN_SOURCE_RESEARCH_SCHEMA, RESEARCH_SCHEMA, TECHNOLOGY_RESEARCH_SCHEMA, type ProposalItem } from "./report-schema.js";
+import { CODEX_HEADLINES_RESEARCH_SCHEMA, CODEX_OPEN_SOURCE_RESEARCH_SCHEMA, CODEX_RESEARCH_SCHEMA, CODEX_TECHNOLOGY_RESEARCH_SCHEMA, normalizeResearchOutput } from "./structured-output-schema.js";
 import { buildReport, reportMarkdown } from "./report.js";
 import type { ArticleCandidate } from "./types.js";
 
@@ -20,6 +20,7 @@ const validator = new Ajv({ strict: true, coerceTypes: false, removeAdditional: 
 const validate = validator.compile<ResearchProposal>(RESEARCH_SCHEMA);
 const validateOpenSource = validator.compile<ResearchProposal>(OPEN_SOURCE_RESEARCH_SCHEMA);
 const validateHeadlines = validator.compile<ResearchProposal>(HEADLINES_RESEARCH_SCHEMA);
+const validateTechnology = validator.compile<ResearchProposal>(TECHNOLOGY_RESEARCH_SCHEMA);
 const FIXED_COUNT_MARKER = /【固定 (8|10) 条】/;
 const instructions = [
   "你为用户指定的主题研究新闻。使用实时 web search 搜索并打开原始来源；不得凭记忆编造新闻、链接或日期。",
@@ -59,13 +60,14 @@ export class NewsWorkflow implements TaskWorkflow {
     const final = context.mode === "finalize";
     const openSource = run.configuration?.templateId === "daily-opensource";
     const headlines = run.configuration?.templateId === "daily-headlines";
+    const technology = run.configuration?.templateId === "daily-technology";
     const activeResearchSchema = openSource
       ? OPEN_SOURCE_RESEARCH_SCHEMA
-      : headlines ? HEADLINES_RESEARCH_SCHEMA : RESEARCH_SCHEMA;
+      : headlines ? HEADLINES_RESEARCH_SCHEMA : technology ? TECHNOLOGY_RESEARCH_SCHEMA : RESEARCH_SCHEMA;
     const activeOutputSchema = openSource
       ? CODEX_OPEN_SOURCE_RESEARCH_SCHEMA
-      : headlines ? CODEX_HEADLINES_RESEARCH_SCHEMA : CODEX_RESEARCH_SCHEMA;
-    const activeValidate = openSource ? validateOpenSource : headlines ? validateHeadlines : validate;
+      : headlines ? CODEX_HEADLINES_RESEARCH_SCHEMA : technology ? CODEX_TECHNOLOGY_RESEARCH_SCHEMA : CODEX_RESEARCH_SCHEMA;
+    const activeValidate = openSource ? validateOpenSource : headlines ? validateHeadlines : technology ? validateTechnology : validate;
     const managed=!!run.configuration;
     const countMatch=managed ? run.configuration?.prompts.at(-1)?.match(FIXED_COUNT_MARKER) : null;
     const fixedCount=countMatch ? Number(countMatch[1]) : undefined;
@@ -163,6 +165,7 @@ export class NewsWorkflow implements TaskWorkflow {
                   ...(topic ? {topic} : {}),
                 },
                 "codex_reported",
+                technology ? "technology" : "general",
               );
               return (db: DatabaseSync) => {
                 for (const a of candidates)
@@ -209,6 +212,7 @@ export class NewsWorkflow implements TaskWorkflow {
                     ...(topic ? {topic} : {}),
                   },
                   "codex_reported",
+                  technology ? "technology" : "general",
                 );
                 const version = Number(
                   db

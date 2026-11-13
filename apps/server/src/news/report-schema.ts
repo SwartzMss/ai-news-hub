@@ -1,8 +1,10 @@
-import { INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
+import { INVESTMENT_DETAILS_SCHEMA, TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
 import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
 import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
+export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
+export type TechnologyCategory = typeof TECHNOLOGY_CATEGORIES[number];
 const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), 'other'];
 export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
 export type ResearchArea = typeof RESEARCH_AREAS[number];
@@ -24,12 +26,16 @@ const proposalItemWithArea = {
   ...proposalItem,
   properties: { ...proposalItem.properties, researchArea: researchAreaProperty },
 };
-export function proposalSchema(articleIds?: string[]) {
+export function proposalSchema(articleIds?: string[], allowedCategories: readonly string[] = categories) {
   return {
     type: 'object', additionalProperties: false, required: ['title', 'items'],
     properties: { title: text(180), items: {
       type: 'array', minItems: 1, maxItems: articleIds ? Math.min(10, articleIds.length) : 10,
-      items: { ...proposalItemWithArea, properties: { ...proposalItemWithArea.properties, articleId: articleIds ? { type: 'string', enum: articleIds } : text(256) } },
+      items: { ...proposalItemWithArea, properties: {
+        ...proposalItemWithArea.properties,
+        category: { type: 'string', enum: allowedCategories },
+        articleId: articleIds ? { type: 'string', enum: articleIds } : text(256),
+      } },
     } },
   };
 }
@@ -77,6 +83,25 @@ export const HEADLINES_RESEARCH_SCHEMA = {
     },
   },
 };
+
+export const TECHNOLOGY_RESEARCH_SCHEMA = {
+  ...RESEARCH_SCHEMA,
+  properties: {
+    ...RESEARCH_SCHEMA.properties,
+    items: {
+      ...RESEARCH_SCHEMA.properties.items,
+      items: {
+        ...researchItemSchema,
+        required: [...researchItemSchema.required, 'details'],
+        properties: {
+          ...researchItemSchema.properties,
+          category: { type: 'string', enum: TECHNOLOGY_CATEGORIES },
+          details: TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA,
+        },
+      },
+    },
+  },
+};
 export const PUBLIC_TOPIC_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['id', 'name'],
   properties: { id: { type: 'string', pattern: '^t-[a-f0-9]{24}$' }, name: text(200) },
@@ -104,6 +129,23 @@ export const REPORT_SCHEMA = {
               publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: nullableTime,
             },
           },
+        },
+      },
+    },
+  },
+};
+
+export const TECHNOLOGY_REPORT_SCHEMA = {
+  ...REPORT_SCHEMA,
+  properties: {
+    ...REPORT_SCHEMA.properties,
+    items: {
+      ...REPORT_SCHEMA.properties.items,
+      items: {
+        ...REPORT_SCHEMA.properties.items.items,
+        properties: {
+          ...REPORT_SCHEMA.properties.items.items.properties,
+          category: { type: 'string', enum: TECHNOLOGY_CATEGORIES },
         },
       },
     },

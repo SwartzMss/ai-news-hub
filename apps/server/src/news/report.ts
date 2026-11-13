@@ -2,7 +2,7 @@ import { Ajv } from 'ajv';
 import addFormats from 'ajv-formats';
 import type { FormatsPlugin } from 'ajv-formats';
 import { AppError } from '../errors.js';
-import { proposalSchema, REPORT_SCHEMA, RESEARCH_AREAS, type Proposal, type ProposalItem, type ResearchArea } from './report-schema.js';
+import { proposalSchema, REPORT_SCHEMA, TECHNOLOGY_REPORT_SCHEMA, TECHNOLOGY_CATEGORIES, RESEARCH_AREAS, type Proposal, type ProposalItem, type ResearchArea } from './report-schema.js';
 import { validateInvestmentDetails, type InvestmentDetails } from './investment-details.js';
 import { validateNewsDetails, type NewsDetails } from './news-details.js';
 import { validateProjectDetails, type ProjectDetails } from './project-details.js';
@@ -11,7 +11,9 @@ import type { ArticleCandidate } from './types.js';
 const ajv = new Ajv({ allErrors: true, strict: true, coerceTypes: false, removeAdditional: false });
 (addFormats as unknown as FormatsPlugin)(ajv); // Callable CJS export under NodeNext.
 const validateReport = ajv.compile(REPORT_SCHEMA);
+const validateTechnologyReport = ajv.compile(TECHNOLOGY_REPORT_SCHEMA);
 const validateProposal = ajv.compile<Proposal>(proposalSchema());
+const validateTechnologyProposal = ajv.compile<Proposal>(proposalSchema(undefined, TECHNOLOGY_CATEGORIES));
 export interface ReportItem extends ProposalItem {
   verification: 'source_only' | 'codex_reported';
   source: { name: string; originalUrl: string; canonicalUrl: string; publishedAt: string | null; eventAt: string | null; fetchedAt: string | null };
@@ -23,11 +25,12 @@ export interface DailyReport {
 }
 export function buildReport(output: string, candidates: ArticleCandidate[], metadata: {
   reportId: string; runId: string; reportDate: string; collectedAt: string; topic?: PublicTopic;
-}, mode:'verified'|'codex_reported'='verified'): DailyReport {
+}, mode:'verified'|'codex_reported'='verified', categoryScope:'general'|'technology'='general'): DailyReport {
   if(mode!=='verified'&&mode!=='codex_reported')throw new AppError('report_provenance_invalid');
   let proposal: unknown;
   try { proposal = JSON.parse(output); } catch { throw new AppError('report_invalid_json'); }
-  if (!validateProposal(proposal)) throw new AppError('report_schema_invalid');
+  const validProposal = categoryScope==='technology' ? validateTechnologyProposal : validateProposal;
+  if (!validProposal(proposal)) throw new AppError('report_schema_invalid');
   const typed = proposal;
   const byId = new Map(candidates.map((article) => [article.id, article]));
   const seen = new Set<string>();
@@ -52,7 +55,8 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
       b.importance - a.importance || a.articleId.localeCompare(b.articleId);
   });
   const report: DailyReport = { schemaVersion: 1, ...metadata, channel: 'opensource', reviewStatus: 'pending', title: typed.title, items };
-  if (!validateReport(report)) throw new AppError('report_schema_invalid');
+  const validReport = categoryScope==='technology' ? validateTechnologyReport : validateReport;
+  if (!validReport(report)) throw new AppError('report_schema_invalid');
   return report;
 }
 function markdownText(value: string): string {
