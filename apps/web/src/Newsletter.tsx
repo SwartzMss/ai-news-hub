@@ -9,7 +9,7 @@ export function Newsletter() {
         <div className="newsletter-fields">
           <label className="newsletter-email">
             <span>邮箱</span>
-            <input type="email" name="email" required autoComplete="email" maxLength={254} aria-describedby="newsletter-note" placeholder="you@example.com" />
+            <input type="email" name="email" required autoComplete="email" maxLength={254} aria-describedby="newsletter-note" placeholder="you@gmail.com" />
           </label>
           <label className="newsletter-honeypot" aria-hidden="true">
             网站
