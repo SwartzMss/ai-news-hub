@@ -34,7 +34,33 @@ export const categories: Record<string, string> = {
   developer_tools: "开发工具",
   security: "安全动态",
   industry: "公司与产业",
-  other: "综合资讯",
+  social_event: "社会事件",
+  entertainment: "娱乐明星",
+  tech_digital: "科技数码",
+  sports: "体育赛事",
+  film_animation: "影视动漫",
+  gaming: "游戏",
+  finance_consumption: "财经消费",
+  internet_culture: "网络文化",
+  lifestyle_emotion: "生活情感",
+  international_topic: "国际话题",
+  other: "其他",
+};
+export const trendTagLabels: Record<string,string> = {
+  cross_platform: "跨平台传播",
+  single_platform: "单平台热度",
+  controversial: "争议较大",
+  viral_video: "热门视频",
+  sustained_discussion: "持续讨论",
+};
+export const contentTagLabels: Record<string,string> = {
+  short_video: "适合短视频",
+  debate: "观点讨论",
+  story_reversal: "故事反转",
+  explainer: "知识解读",
+  emotional_resonance: "情绪共鸣",
+  entertainment: "娱乐传播",
+  not_suitable: "不建议创作",
 };
 export const dateLabel = (value: string) =>
   new Intl.DateTimeFormat("zh-CN", {
@@ -152,6 +178,12 @@ export function Row({
         <div className="news-meta">
           {story.research_area ? (
             projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>
+          ) : story.details?.kind === "news" && (story.details.trendTags?.length || story.details.contentTags?.length) ? (
+            <span className="news-row-tags">
+              <span className="news-tag news-tag-topic">{categories[story.category] ?? story.category}</span>
+              {story.details.trendTags?.slice(0, 1).map(tag => <span className="news-tag news-tag-trend" key={tag}>{trendTagLabels[tag] ?? tag}</span>)}
+              {story.details.contentTags?.slice(0, 1).map(tag => <span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag] ?? tag}</span>)}
+            </span>
           ) : (
             <span className="category-label">{categories[story.category] ?? story.category}</span>
           )}
