@@ -160,6 +160,15 @@ export function readArchives(
               if(!valid(entry.evidenceRefs))throw Error('invalid news evidence reference');
             for(const impact of item.details.impacts??[])
               if((impact.status==='observed'&&!impact.evidenceRefs?.length)||!valid(impact.evidenceRefs))throw Error('invalid news evidence reference');
+            for(const signal of item.details.trendSignals??[])
+              if(!valid(signal.evidenceRefs))throw Error('invalid news trend evidence reference');
+            if(item.details.publicDiscussion){
+              if(!valid(item.details.publicDiscussion.evidenceRefs))throw Error('invalid news discussion evidence reference');
+              for(const entry of [...(item.details.publicDiscussion.viewpoints??[]),...(item.details.publicDiscussion.controversies??[]),...(item.details.publicDiscussion.representativeComments??[])])
+                if(!valid(entry.evidenceRefs))throw Error('invalid news discussion evidence reference');
+            }
+            for(const angle of item.details.contentAngles??[])
+              if(!valid(angle.evidenceRefs))throw Error('invalid news content evidence reference');
           }
         }
       }
