@@ -141,15 +141,17 @@ export function validateNewsDetails(details:NewsDetails):void {
 
   const platforms=new Set((details.trendSignals??[]).map(signal=>signal.platform));
   const trendTags=new Set(details.trendTags??[]);
+  if(details.trendSignals?.length&&platforms.size>=2&&!trendTags.has('cross_platform'))throw new AppError('report_schema_invalid');
+  if(details.trendSignals?.length&&platforms.size===1&&!trendTags.has('single_platform'))throw new AppError('report_schema_invalid');
   if(trendTags.has('cross_platform')&&platforms.size<2)throw new AppError('report_schema_invalid');
   if(trendTags.has('single_platform')&&platforms.size!==1)throw new AppError('report_schema_invalid');
   if(trendTags.has('cross_platform')&&trendTags.has('single_platform'))throw new AppError('report_schema_invalid');
   if(trendTags.has('controversial')&&!details.publicDiscussion?.controversies?.length)throw new AppError('report_schema_invalid');
   if(trendTags.has('viral_video')&&!details.trendSignals?.some(signal=>signal.contentType==='video'))throw new AppError('report_schema_invalid');
   if(trendTags.has('sustained_discussion')){
-    const repeated= new Set((details.trendSignals??[]).filter((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.observedAt!==signal.observedAt)).map(signal=>signal.platform));
+    const repeated=new Set((details.trendSignals??[]).filter((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.observedAt!==signal.observedAt)).map(signal=>signal.platform));
     if(!repeated.size)throw new AppError('report_schema_invalid');
   }
-  if(details.contentSuitability==='recommended'&&(!details.contentAngles?.length||details.contentTags?.includes('not_suitable')))throw new AppError('report_schema_invalid');
+  if(details.contentSuitability==='recommended'&&(!details.contentAngles?.length||!details.contentTags?.length||details.contentTags.includes('not_suitable')))throw new AppError('report_schema_invalid');
   if(details.contentSuitability==='not_recommended'&&(!!details.contentAngles?.length||!details.contentTags?.includes('not_suitable')))throw new AppError('report_schema_invalid');
 }
