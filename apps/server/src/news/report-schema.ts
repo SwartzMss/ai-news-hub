@@ -1,9 +1,9 @@
 import { INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
-import { NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
+import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
 import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
-const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', 'other'];
+const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), 'other'];
 export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
 export type ResearchArea = typeof RESEARCH_AREAS[number];
 export interface ProposalItem {
@@ -38,7 +38,10 @@ export const RESEARCH_SCHEMA = {
   properties: { title: text(180), items: { type: 'array', minItems: 1, maxItems: 10, items: {
     ...proposalItem,
     required: [...proposalItem.required.filter(key => key !== 'articleId'), 'url'],
-    properties: Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
+    properties: {
+      ...Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
+      details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
+    },
   } } },
 };
 const researchItemSchema = RESEARCH_SCHEMA.properties.items.items;
@@ -52,6 +55,24 @@ export const OPEN_SOURCE_RESEARCH_SCHEMA = {
         ...researchItemSchema,
         required: [...researchItemSchema.required, 'researchArea', 'details'],
         properties: { ...researchItemSchema.properties, researchArea: researchAreaProperty, details: PROJECT_DETAILS_SCHEMA },
+      },
+    },
+  },
+};
+export const HEADLINES_RESEARCH_SCHEMA = {
+  ...RESEARCH_SCHEMA,
+  properties: {
+    ...RESEARCH_SCHEMA.properties,
+    items: {
+      ...RESEARCH_SCHEMA.properties.items,
+      items: {
+        ...researchItemSchema,
+        required: [...researchItemSchema.required, 'details'],
+        properties: {
+          ...researchItemSchema.properties,
+          category: { type: 'string', enum: HEADLINE_CATEGORIES },
+          details: HEADLINES_DETAILS_SCHEMA,
+        },
       },
     },
   },

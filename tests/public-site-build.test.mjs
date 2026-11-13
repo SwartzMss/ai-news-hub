@@ -501,21 +501,61 @@ test('news detail renders structured evidence, timeline and a section directory'
  const dir=mkdtempSync('/tmp/public-news-detail-');
  try{
   const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  const topicId='t-'+'b'.repeat(24);
+  report.schema_version=4;
+  report.topic={id:topicId,name:'每日热点观察'};
   report.items=report.items.slice(0,1);
-  report.items[0].details={kind:'news',background:'政策此前处于征求意见阶段。',keyFacts:[{name:'生效范围',value:'全国',nature:'confirmed',evidenceRefs:['notice']}],timeline:[{time:'2026-11-03',precision:'date',event:'正式发布',evidenceRefs:['notice']}],positions:[{actor:'主管部门',statement:'分阶段实施',form:'paraphrase',evidenceRefs:['notice']}],impacts:[{description:'实施效果待观察',status:'analysis'}],uncertainties:['实施细则未公布'],watchpoints:['跟进细则'],evidence:[{id:'notice',name:'正式通知',url:'https://example.com/notice',supports:'发布时间与范围'}]};
-  const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
+  report.items[0].category='social_event';
+  report.items[0].details={
+   kind:'news',background:'一个社会话题在最近 24 小时内引发多平台讨论。',
+   keyFacts:[{name:'话题状态',value:'多个平台出现讨论',nature:'reported',evidenceRefs:['weibo']}],
+   timeline:[{time:'2026-11-03',precision:'date',event:'话题开始传播',evidenceRefs:['weibo']}],
+   trendTags:['cross_platform','controversial','viral_video'],
+   contentTags:['short_video','debate'],
+   trendSignals:[
+    {platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 3 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['weibo']},
+    {platform:'douyin',contentType:'video',metric:'views',value:'热门视频，未披露完整播放量',observedAt:'2026-11-13T06:30:00+08:00',evidenceType:'reported',evidenceRefs:['douyin']},
+   ],
+   publicDiscussion:{
+    summary:'公开讨论围绕事件责任和处理方式展开。',
+    evidenceRefs:['discussion'],
+    viewpoints:[{label:'支持观点',summary:'认为处理方式合理。',sentiment:'supportive',evidenceRefs:['discussion']}],
+    controversies:[{topic:'责任归属',sides:['观点 A','观点 B'],evidenceRefs:['discussion']}],
+    representativeComments:[{platform:'weibo',quote:'这是一条可追溯的公开评论。',evidenceRefs:['discussion']}],
+   },
+   contentSuitability:'recommended',
+   contentReason:'事件有清晰争议和可解释的背景。',
+   contentAngles:[{angle:'解释争议焦点',suggestedTitle:'大家为什么讨论这个话题？',hook:'真正的分歧在哪里？',corePoints:['还原已确认事实'],evidenceRefs:['discussion']}],
+   positions:[{actor:'相关主体',statement:'公开回应相关争议',form:'paraphrase',evidenceRefs:['notice']}],
+   impacts:[{description:'讨论持续扩散',status:'analysis'}],
+   uncertainties:['部分传播数据未公开'],
+   watchpoints:['关注相关主体后续回应'],
+   evidence:[
+    {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
+    {id:'weibo',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
+    {id:'douyin',name:'抖音视频页',url:'https://example.com/douyin',supports:'抖音视频传播情况'},
+    {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开观点和代表性评论'},
+   ],
+  };
+  const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
-  const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
+  const doc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.news-detail'));
   assert.equal(doc.querySelector('.news-detail .section-kicker'),null);
+  assert.match(doc.querySelector('.news-detail-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
+  assert.match(doc.querySelector('#news-trends').textContent,/微博.*热榜第 3 位.*观察时间/s);
+  assert.match(doc.querySelector('#news-discussion').textContent,/责任归属.*可追溯的公开评论/s);
+  assert.match(doc.querySelector('#news-content').textContent,/大家为什么讨论这个话题.*真正的分歧在哪里/s);
+  const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
+  assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
-  assert.match(doc.querySelector('.news-detail table').textContent,/生效范围.*全国.*已证实/s);
+  assert.match(doc.querySelector('.news-detail table').textContent,/话题状态.*多个平台出现讨论.*媒体报道/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
-  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*正式发布/s);
+  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*话题开始传播/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
-  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('发布时间与范围'),true);
+  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('相关主体公开回应'),true);
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
   assert.equal(doc.querySelectorAll('.news-detail-sections h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
@@ -523,7 +563,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal([...doc.querySelectorAll('.news-detail-sections h2')].filter(h=>h.textContent==='来源与证据').length,1);
   assert.ok(doc.querySelector('#news-primary-source .source-details')===null);
   assert.ok(doc.querySelector('#news-evidence .source-details[open]'));
-  const html=readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8');
+  const html=readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8');
   const browser=new JSDOM(html,{url:'https://demo.invalid/article/',runScripts:'outside-only'});
   browser.window.matchMedia=()=>({matches:false});
   const script=browser.window.document.querySelector('script[type="module"]').getAttribute('src').slice(1);

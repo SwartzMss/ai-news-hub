@@ -21,6 +21,7 @@ const validators = {
   1: ajv.compile(readSchema("report-archive-v1.schema.json")),
   2: ajv.compile(readSchema("report-archive-v2.schema.json")),
   3: ajv.compile(readSchema("report-archive-v3.schema.json")),
+  4: ajv.compile(readSchema("report-archive-v4.schema.json")),
 };
 const topicSchema = {
   type: "object",
@@ -120,7 +121,7 @@ export function readArchives(
           ? report.schema_version !== 1 ||
             report.report_date !== old.slice(1, 4).join("-") ||
             report.version !== Number(old[4])
-          : ![2, 3].includes(report.schema_version) ||
+          : ![2, 3, 4].includes(report.schema_version) ||
             report.topic.id !== scoped[1] ||
             report.report_date !== scoped.slice(2, 5).join("-") ||
             report.version !== Number(scoped[5])
@@ -160,6 +161,28 @@ export function readArchives(
               if(!valid(entry.evidenceRefs))throw Error('invalid news evidence reference');
             for(const impact of item.details.impacts??[])
               if((impact.status==='observed'&&!impact.evidenceRefs?.length)||!valid(impact.evidenceRefs))throw Error('invalid news evidence reference');
+            for(const signal of item.details.trendSignals??[])
+              if(!valid(signal.evidenceRefs))throw Error('invalid news trend evidence reference');
+            if(item.details.publicDiscussion){
+              if(!valid(item.details.publicDiscussion.evidenceRefs))throw Error('invalid news discussion evidence reference');
+              for(const entry of [...(item.details.publicDiscussion.viewpoints??[]),...(item.details.publicDiscussion.controversies??[]),...(item.details.publicDiscussion.representativeComments??[])])
+                if(!valid(entry.evidenceRefs))throw Error('invalid news discussion evidence reference');
+            }
+            for(const angle of item.details.contentAngles??[])
+              if(!valid(angle.evidenceRefs))throw Error('invalid news content evidence reference');
+            const platforms=new Set((item.details.trendSignals??[]).map(signal=>signal.platform));
+            const trendTags=new Set(item.details.trendTags??[]);
+            if(item.details.trendSignals?.length&&platforms.size>=2&&!trendTags.has('cross_platform'))throw Error('invalid news trend tags');
+            if(item.details.trendSignals?.length&&platforms.size===1&&!trendTags.has('single_platform'))throw Error('invalid news trend tags');
+            if(trendTags.has('cross_platform')&&platforms.size<2||trendTags.has('single_platform')&&platforms.size!==1||trendTags.has('cross_platform')&&trendTags.has('single_platform'))throw Error('invalid news trend tags');
+            if(trendTags.has('controversial')&&!item.details.publicDiscussion?.controversies?.length)throw Error('invalid news trend tags');
+            if(trendTags.has('viral_video')&&!item.details.trendSignals?.some(signal=>signal.contentType==='video'))throw Error('invalid news trend tags');
+            if(trendTags.has('sustained_discussion')){
+              const repeated=(item.details.trendSignals??[]).some((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.metric===signal.metric&&other.observedAt!==signal.observedAt));
+              if(!repeated)throw Error('invalid news trend tags');
+            }
+            if(item.details.contentSuitability==='recommended'&&(!item.details.contentAngles?.length||!item.details.contentTags?.length||item.details.contentTags.includes('not_suitable')))throw Error('invalid news content assessment');
+            if(item.details.contentSuitability==='not_recommended'&&(!!item.details.contentAngles?.length||!item.details.contentTags?.includes('not_suitable')))throw Error('invalid news content assessment');
           }
         }
       }

@@ -1,7 +1,7 @@
 import { Ajv } from "ajv";
 import addFormats from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
-import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA, ARCHIVE_V3_SCHEMA } from "./archive-schema.js";
+import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA, ARCHIVE_V3_SCHEMA, ARCHIVE_V4_SCHEMA } from "./archive-schema.js";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { isDeepStrictEqual } from "node:util";
@@ -19,6 +19,7 @@ const validator = new Ajv({
 const validateArchive = validator.compile(ARCHIVE_SCHEMA);
 const validateArchiveV2 = validator.compile(ARCHIVE_V2_SCHEMA);
 const validateArchiveV3 = validator.compile(ARCHIVE_V3_SCHEMA);
+const validateArchiveV4 = validator.compile(ARCHIVE_V4_SCHEMA);
 export const sha256 = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 export function reviewedReport(db: DatabaseSync, id: string) {
@@ -64,9 +65,11 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       )
         throw Error();
     if(!['verified','codex_reported'].includes(String(row.source_mode))||(row.source_id==='github-blog'&&row.source_mode!=='verified'))throw Error();
+    const configuration = row.configuration_json === null ? {} : JSON.parse(String(row.configuration_json));
+    if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) throw Error();
+    const templateId = typeof configuration.templateId === 'string' ? configuration.templateId : undefined;
     const topic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
     if (topic !== undefined) {
-      const configuration = JSON.parse(String(row.configuration_json));
       const expected = {id: 't-' + sha256(String(row.task_id)).slice(0,24), name: configuration.topic};
       if (!isDeepStrictEqual(topic, expected)) throw Error();
     }
@@ -121,8 +124,9 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       version: Number(row.version),
       status: String(row.status),
       contentHash: sha256(
-        JSON.stringify({ document, version: row.version, candidates, links }),
+        JSON.stringify({ document, version: row.version, candidates, links, ...(templateId ? {templateId} : {}) }),
       ),
+      templateId,
     };
   } catch {
     throw new HttpError(409, "report_provenance_invalid");
@@ -135,9 +139,12 @@ export function archiveArtifact(
   const d = report.document;
   const hasAnyResearchArea = d.items.some(item => item.researchArea !== undefined);
   const hasAllResearchAreas = d.items.every(item => item.researchArea !== undefined);
-  if (hasAnyResearchArea && (!hasAllResearchAreas || !d.topic))
+  const isHeadlines = report.templateId === "daily-headlines";
+  if (hasAnyResearchArea && (!hasAllResearchAreas || !d.topic || isHeadlines))
     throw new HttpError(409, "archive_schema_invalid");
-  const schemaVersion = hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
+  if (isHeadlines && !d.topic)
+    throw new HttpError(409, "archive_schema_invalid");
+  const schemaVersion = isHeadlines ? 4 : hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
   const document = {
     schema_version: schemaVersion,
     ...(d.topic ? {topic: d.topic} : {}),
@@ -170,7 +177,7 @@ export function archiveArtifact(
       },
     })),
   };
-  const valid = schemaVersion===3 ? validateArchiveV3(document) : d.topic ? validateArchiveV2(document) : validateArchive(document);
+  const valid = schemaVersion===4 ? validateArchiveV4(document) : schemaVersion===3 ? validateArchiveV3(document) : d.topic ? validateArchiveV2(document) : validateArchive(document);
   if (!valid)
     throw new HttpError(409, "archive_schema_invalid");
   const content = JSON.stringify(document, null, 2) + "\n";
