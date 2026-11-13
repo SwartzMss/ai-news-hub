@@ -3,7 +3,7 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {Ajv} from 'ajv';
 import addFormats from 'ajv-formats';
-import {ARCHIVE_SCHEMA,ARCHIVE_V2_SCHEMA,ARCHIVE_V3_SCHEMA,ARCHIVE_V4_SCHEMA} from '../dist/apps/server/src/publish/archive-schema.js';
+import {ARCHIVE_SCHEMA,ARCHIVE_V2_SCHEMA,ARCHIVE_V3_SCHEMA,ARCHIVE_V4_SCHEMA,ARCHIVE_V5_SCHEMA} from '../dist/apps/server/src/publish/archive-schema.js';
 import {archiveArtifact,reviewedReport} from '../dist/apps/server/src/publish/artifact.js';
 import {publicationFixture} from './fixtures/publication.mjs';
 test('published contract matches documented schema and excludes internal metadata',()=>{
@@ -73,5 +73,34 @@ test('v4 topic archive adds structured social trend details without changing v1-
   assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
   assert.equal(artifact.path,'reports/topics/t-'+'d'.repeat(24)+'/2026/11/03/v000001.json');
   assert.equal(validate({...document,schema_version:3}),false);
+ }finally{f.close();}
+});
+
+
+test('v5 topic archive is reserved for focused technology investment reports',()=>{
+ assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v5.schema.json',import.meta.url),'utf8')),ARCHIVE_V5_SCHEMA);
+ const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V5_SCHEMA);
+ const f=publicationFixture();
+ try{
+  f.db.prepare("UPDATE task_runs SET configuration_json=? WHERE id='run'").run(JSON.stringify({templateId:'daily-technology'}));
+  const report=reviewedReport(f.db,'r');
+  assert.equal(report.templateId,'daily-technology');
+  report.document.topic={id:'t-'+'f'.repeat(24),name:'每日科技投资简报'};
+  report.document.items=report.document.items.map(item=>({...item,category:'optical_communications',details:{
+   kind:'investment',
+   background:'光模块厂商披露 1.6T 产品进入客户验证阶段。',
+   supplyChain:[{segment:'光模块厂商（代码 · NASDAQ）',direction:'潜在受益',reason:'产品认证可能提升高速产品收入占比。',relationship:'potential'}],
+   evidence:[{id:'release',name:'公司公告',url:'https://example.com/release',supports:'1.6T 产品验证进展'}],
+  }}));
+  const artifact=archiveArtifact(report,'2026-11-13T08:00:00Z');
+  const document=JSON.parse(artifact.content);
+  assert.equal(document.schema_version,5);
+  assert.equal(validate(document),true);
+  assert.equal(artifact.path,'reports/topics/t-'+'f'.repeat(24)+'/2026/11/03/v000001.json');
+  const wrongCategory=structuredClone(document);wrongCategory.items[0].category='industry';
+  assert.equal(validate(wrongCategory),false);
+  const missingEvidence=structuredClone(document);delete missingEvidence.items[0].details.evidence;
+  assert.equal(validate(missingEvidence),false);
+  assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
  }finally{f.close();}
 });
