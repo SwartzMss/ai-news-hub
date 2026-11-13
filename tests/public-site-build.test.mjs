@@ -623,3 +623,29 @@ test("news and investment details align to the left without widening medium-widt
     /@media \(max-width: 1199px\) \{\s+\.reading-layout\.investment-layout \{ display: block; max-width: 760px; \}\s+\.investment-aside \{ display: none; \}\s+\.reading-layout\.news-layout \{ display: block; max-width: 760px; \}\s+\.news-aside \{ display: none; \}\s+\}/,
   );
 });
+
+
+test("five-area open-source reports render grouped sections and distinguish discovery from updates",async()=>{
+ const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import("node:fs");
+ const dir=mkdtempSync("/tmp/public-open-source-areas-");
+ const topic={id:"t-"+"e".repeat(24),name:"每日开源项目"};
+ const base=JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json","utf8"));
+ const source=(name,url)=>({name,original_url:url,canonical_url:url,published_at:null,event_at:null,fetched_at:"2026-11-03T00:00:00Z"});
+ const rust={...base.items[0],id:"rust-project",research_area:"rust",category:"opensource",fact_summary:"Rust 工具发布并行读取更新。适合大文件处理。",analysis:"适合评估在批量文件流水线中的价值。",source:source("Rust Release","https://example.com/rust"),details:{kind:"project",overview:"Rust 文件处理工具。",change:{summary:"新增并行读取。",evidenceRefs:["release"]},evidence:[{id:"release",name:"Release",url:"https://example.com/rust",supports:"并行读取能力"}]}};
+ const agent={...base.items[0],id:"agent-project",research_area:"agent",category:"ai",fact_summary:"Agent 工具提供可组合的浏览器执行能力。",analysis:"适合需要网页自动化的工作流。",source:source("Agent Docs","https://example.com/agent"),details:{kind:"project",overview:"面向自动化任务的 Agent 工具。",evidence:[{id:"docs",name:"官方文档",url:"https://example.com/agent",supports:"浏览器执行能力"}]}};
+ const report={...base,schema_version:3,topic,report_id:"five-area-report",items:[rust,agent]};
+ try{
+  const folder=join(dir,"topics",topic.id,"2026","11","03");mkdirSync(folder,{recursive:true});
+  writeFileSync(join(folder,"v000001.json"),JSON.stringify(report));
+  const built=await buildPublic({demo:true,siteUrl:"https://demo.invalid",reportsDir:dir});
+  const home=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/index.html`),"utf8")).window.document;
+  const headings=[...home.querySelectorAll(".research-area-heading h2")].map(x=>x.textContent);
+  assert.deepEqual(headings,["AI Agent 与自动化执行","Rust 生态与工程工具","AI 视频、音频与多媒体创作","性能分析与软件安全","区块链与去中心化基础设施"]);
+  assert.equal(home.querySelectorAll(".research-area-empty").length,3);
+  assert.equal(home.querySelectorAll(".brief-toc-group").length,5);
+  assert.ok(home.querySelector(".project-entry-label")?.textContent==="近期进展");
+  assert.ok([...home.querySelectorAll(".project-entry-label")].some(x=>x.textContent==="项目发现"));
+  const edition=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/archive/2026-11-03/index.html`),"utf8")).window.document;
+  assert.equal(edition.querySelectorAll(".issue-research-area").length,5);
+ }finally{rmSync(dir,{recursive:true,force:true});}
+});
