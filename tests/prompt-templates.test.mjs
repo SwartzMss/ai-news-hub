@@ -20,6 +20,7 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
     assert.ok(opensource.prompts.join(' ').includes(area),area);
   assert.match(opensource.prompts[1],/方向各自精选 0～2 个/);
   assert.match(opensource.prompts[1],/不设全局目标数量/);
+  assert.match(opensource.prompts[1],/title.*北京时间/);
   assert.ok(opensource.prompts.join('').length < 3000, 'open-source prompt should stay concise');
   assert.match(opensource.prompts[1],/有依据|核实|证据/);
   assert.doesNotMatch(opensource.prompts.join('\n'),/【固定 (8|10) 条】/);
