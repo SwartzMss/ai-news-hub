@@ -75,8 +75,7 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   const task=(await s.request('POST','/tasks',{...configuration,name:'自定义任务名',topic:'用户自定义主题',templateId:'daily-opensource',templateVersion:1,prompts})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first-flexible'})).json().run.id;
   const firstCall=await s.wait(()=>s.adapter.calls[0]);
-  assert.ok(firstCall.input.outputSchema.properties.items.items.required.includes('researchArea'));
-  assert.ok(firstCall.input.outputSchema.properties.items.items.required.includes('details'));
+  assert.equal(firstCall.input.outputSchema.properties.items.items.properties.details.anyOf,undefined);
   const summary='项目发布了重要更新。适合本地文件处理；[项目仓库](https://github.com/example/project)';
   const openSourceProposal={title:'每日开源项目',items:[{...proposal.items[0],category:'opensource',researchArea:'rust',factSummary:summary,url:'https://example.com/releases/v2',details:{kind:'project',overview:'用于本地批量文件处理。',change:{summary:'发布并行处理能力。',evidenceRefs:['release']},evidence:[{id:'release',name:'Release',url:'https://example.com/releases/v2',supports:'并行处理能力'}]}}]};
   s.adapter.succeed(0,JSON.stringify(openSourceProposal));
@@ -93,15 +92,14 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   await s.request('POST',`/tasks/${other.id}/runs`,{idempotencyKey:'other-flexible'});
   const third=await s.wait(()=>s.adapter.calls[2]);
   assert.doesNotMatch(third.input.developerInstructions,/近期同任务日报/);
-  assert.equal(third.input.outputSchema.properties.items.items.required.includes('researchArea'),false);
-  assert.equal(third.input.outputSchema.properties.items.items.required.includes('details'),false);
+  assert.ok(Array.isArray(third.input.outputSchema.properties.items.items.properties.details.anyOf));
  }finally{await s.close();}
 });
 test('open-source tasks reject more than two projects in a single research area',async()=>{
  const s=setup();try{
   const task=(await s.request('POST','/tasks',{
    ...configuration,name:'开源日报',topic:'任意可编辑主题',
-   templateId:'daily-opensource',templateVersion:1,
+   templateId:'daily-opensource',templateVersion:1,prompts:['研究并生成日报'],
   })).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'area-limit'})).json().run.id;
   const call=await s.wait(()=>s.adapter.calls[0]);
