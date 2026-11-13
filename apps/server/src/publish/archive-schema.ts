@@ -68,3 +68,19 @@ export const ARCHIVE_V2_SCHEMA = {
   required: [...ARCHIVE_SCHEMA.required, 'topic'],
   properties: { ...ARCHIVE_SCHEMA.properties, schema_version: { const: 2 }, topic: PUBLIC_TOPIC_SCHEMA },
 };
+const v3Properties = { ...properties, research_area: original.researchArea };
+export const ARCHIVE_V3_SCHEMA = {
+  ...ARCHIVE_V2_SCHEMA,
+  properties: {
+    ...ARCHIVE_V2_SCHEMA.properties,
+    schema_version: { const: 3 },
+    items: {
+      ...root.items,
+      items: {
+        ...root.items.items,
+        required: [...root.items.items.required, 'research_area'],
+        properties: v3Properties,
+      },
+    },
+  },
+};
