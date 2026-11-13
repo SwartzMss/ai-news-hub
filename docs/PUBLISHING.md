@@ -11,7 +11,7 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 - 条目稳定 `id`、分类、重要性、`fact_summary`、单独的推断 `analysis`、精确依据 `evidence_quote`。
 - 来源名称、原始/canonical URL、来源发布时间、事件时间、首次抓取时间；未知时间为 NULL。
 
-历史 v1 路径为 `reports/YYYY/MM/DD/opensource/vNNNNNN.json`，例如 `reports/2026/11/03/opensource/v000001.json`。修订须生成新报告/版本，旧路径永不覆盖；其他日期也不改动。当前仅实现 opensource 频道。Markdown 保留于私有 SQLite 预览，不在本次额外提交。v2/v3 均使用 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`；v3 仅用于带五方向分类的开源日报，消费者须支持三个版本。话题 ID 为 `t-` 加任务 ID 的 SHA-256 前 24 位，名字使用该 Run 的不可变配置快照；migration 10 持久化 `public_topic_json` 并在批准/归档时比对，不能从模型输出伪造。报告版本仍沿用数据库按频道/日期分配的序号，不保证某话题内部连续。历史报告的空快照及 v1 字节/哈希保持不变。
+历史 v1 路径为 `reports/YYYY/MM/DD/opensource/vNNNNNN.json`，例如 `reports/2026/11/03/opensource/v000001.json`。修订须生成新报告/版本，旧路径永不覆盖；其他日期也不改动。当前仅实现 opensource 频道。Markdown 保留于私有 SQLite 预览，不在本次额外提交。v2/v3 均使用 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`；v3 仅用于带五方向分类的开源日报，消费者须支持三个版本。每日热点观察仍使用 v2 话题归档；其新增平台信号、受控趋势/内容标签、公众讨论和创作建议均位于可选的 `details.kind=news` 内，是向后兼容的可选字段，不单独升级归档版本。话题 ID 为 `t-` 加任务 ID 的 SHA-256 前 24 位，名字使用该 Run 的不可变配置快照；migration 10 持久化 `public_topic_json` 并在批准/归档时比对，不能从模型输出伪造。报告版本仍沿用数据库按频道/日期分配的序号，不保证某话题内部连续。历史报告的空快照及 v1 字节/哈希保持不变。
 
 归档不包含 Run/Thread/Turn 标识、候选完整快照、Agent 输入/日志、SQLite、Token、代理配置或审批私密笔记。目标仓库已有的源代码/历史不由归档器复制或删除；应选择干净的专用归档仓库/分支。不要把管理后台和数据库目录作为公开产物。
 
