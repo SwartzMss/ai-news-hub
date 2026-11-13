@@ -62,26 +62,37 @@ const contentAngleSchema={type:'object',additionalProperties:false,required:['an
   angle:text(180),suggestedTitle:text(100),hook:text(180),corePoints:stringList(3,180,1),evidenceRefs:refs,
 }};
 
+const legacyNewsProperties={
+  kind:{const:'news'},background:text(800),
+  keyFacts:{type:'array',maxItems:6,items:{type:'object',additionalProperties:false,
+    required:['name','value','nature','evidenceRefs'],properties:{
+      name:text(100),value:text(200),unit:text(40),period:text(100),
+      nature:{enum:['confirmed','statement','reported','estimate','inference']},evidenceRefs:refs,
+    }}},
+  timeline:{type:'array',maxItems:6,items:{type:'object',additionalProperties:false,
+    required:['time','precision','event','evidenceRefs'],properties:{
+      time:text(80),precision:{enum:['date','datetime','approximate']},event:text(260),evidenceRefs:refs,
+    }}},
+  positions:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,
+    required:['actor','statement','form','evidenceRefs'],properties:{
+      actor:text(100),statement:text(320),form:{enum:['quote','paraphrase']},evidenceRefs:refs,
+    }}},
+  impacts:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,
+    required:['description','status'],properties:{description:text(320),status:{enum:['observed','analysis']},evidenceRefs:refs}}},
+  uncertainties:{type:'array',maxItems:6,items:text(200)},
+  watchpoints:{type:'array',maxItems:6,items:text(200)},
+  evidence:{type:'array',maxItems:10,items:{type:'object',additionalProperties:false,
+    required:['id','name','url','supports'],properties:{
+      id:{type:'string',pattern:'^[a-z][a-z0-9-]{0,31}$'},name:text(100),url:text(2048),supports:text(240),
+    }}},
+};
+export const LEGACY_NEWS_DETAILS_SCHEMA={
+  type:'object',additionalProperties:false,required:['kind','background'],properties:legacyNewsProperties,
+};
 export const NEWS_DETAILS_SCHEMA={
-  type:'object',additionalProperties:false,required:['kind','background'],properties:{
-    kind:{const:'news'},background:text(800),
-    keyFacts:{type:'array',maxItems:6,items:{type:'object',additionalProperties:false,
-      required:['name','value','nature','evidenceRefs'],properties:{
-        name:text(100),value:text(200),unit:text(40),period:text(100),
-        nature:{enum:['confirmed','statement','reported','estimate','inference']},evidenceRefs:refs,
-      }}},
-    timeline:{type:'array',maxItems:6,items:{type:'object',additionalProperties:false,
-      required:['time','precision','event','evidenceRefs'],properties:{
-        time:text(80),precision:{enum:['date','datetime','approximate']},event:text(260),evidenceRefs:refs,
-      }}},
-    positions:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,
-      required:['actor','statement','form','evidenceRefs'],properties:{
-        actor:text(100),statement:text(320),form:{enum:['quote','paraphrase']},evidenceRefs:refs,
-      }}},
-    impacts:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,
-      required:['description','status'],properties:{description:text(320),status:{enum:['observed','analysis']},evidenceRefs:refs}}},
-    uncertainties:{type:'array',maxItems:6,items:text(200)},
-    watchpoints:{type:'array',maxItems:6,items:text(200)},
+  ...LEGACY_NEWS_DETAILS_SCHEMA,
+  properties:{
+    ...legacyNewsProperties,
     trendTags:uniqueEnumList(TREND_TAGS,5),
     contentTags:uniqueEnumList(CONTENT_TAGS,7),
     trendSignals:{type:'array',maxItems:8,items:trendSignalSchema},
@@ -89,10 +100,6 @@ export const NEWS_DETAILS_SCHEMA={
     contentSuitability:{type:'string',enum:['recommended','not_recommended']},
     contentReason:text(320),
     contentAngles:{type:'array',maxItems:3,items:contentAngleSchema},
-    evidence:{type:'array',maxItems:10,items:{type:'object',additionalProperties:false,
-      required:['id','name','url','supports'],properties:{
-        id:{type:'string',pattern:'^[a-z][a-z0-9-]{0,31}$'},name:text(100),url:text(2048),supports:text(240),
-      }}},
   },
 };
 
