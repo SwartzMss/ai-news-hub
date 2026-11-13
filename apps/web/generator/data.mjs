@@ -169,6 +169,19 @@ export function readArchives(
             }
             for(const angle of item.details.contentAngles??[])
               if(!valid(angle.evidenceRefs))throw Error('invalid news content evidence reference');
+            const platforms=new Set((item.details.trendSignals??[]).map(signal=>signal.platform));
+            const trendTags=new Set(item.details.trendTags??[]);
+            if(item.details.trendSignals?.length&&platforms.size>=2&&!trendTags.has('cross_platform'))throw Error('invalid news trend tags');
+            if(item.details.trendSignals?.length&&platforms.size===1&&!trendTags.has('single_platform'))throw Error('invalid news trend tags');
+            if(trendTags.has('cross_platform')&&platforms.size<2||trendTags.has('single_platform')&&platforms.size!==1||trendTags.has('cross_platform')&&trendTags.has('single_platform'))throw Error('invalid news trend tags');
+            if(trendTags.has('controversial')&&!item.details.publicDiscussion?.controversies?.length)throw Error('invalid news trend tags');
+            if(trendTags.has('viral_video')&&!item.details.trendSignals?.some(signal=>signal.contentType==='video'))throw Error('invalid news trend tags');
+            if(trendTags.has('sustained_discussion')){
+              const repeated=(item.details.trendSignals??[]).some((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.observedAt!==signal.observedAt));
+              if(!repeated)throw Error('invalid news trend tags');
+            }
+            if(item.details.contentSuitability==='recommended'&&(!item.details.contentAngles?.length||!item.details.contentTags?.length||item.details.contentTags.includes('not_suitable')))throw Error('invalid news content assessment');
+            if(item.details.contentSuitability==='not_recommended'&&(!!item.details.contentAngles?.length||!item.details.contentTags?.includes('not_suitable')))throw Error('invalid news content assessment');
           }
         }
       }
