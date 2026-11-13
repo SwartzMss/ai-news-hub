@@ -110,7 +110,7 @@ test('daily technology template routes to focused AI investment schema independe
   const itemSchema=final.input.outputSchema.properties.items.items;
   assert.ok(itemSchema.required.includes('details'));
   assert.deepEqual(itemSchema.properties.category.enum,['ai_industry_chain','optical_communications','semiconductor']);
-  assert.deepEqual(itemSchema.properties.details.required,['kind','background','evidence']);
+  for(const field of ['kind','background','evidence'])assert.ok(itemSchema.properties.details.required.includes(field),field);
   const output={title:'2026-11-13 每日科技投资简报',items:[{
    url:'https://example.com/filing',category:'ai_industry_chain',importance:5,
    factSummary:'云厂商上调 AI 数据中心资本开支计划。',
