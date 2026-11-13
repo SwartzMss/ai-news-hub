@@ -134,7 +134,13 @@ test('daily technology template routes to focused AI investment schema independe
    return result.status==='succeeded'&&result;
   });
   assert.equal(completed.status,'succeeded');
-  assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
+  const reports=(await s.request('GET','/news/reports')).json().reports;
+  assert.equal(reports.length,1);
+  const publication=await s.request('GET',`/news/reports/${reports[0].id}/publication`);
+  assert.equal(publication.statusCode,200,'technology reports must pass publication provenance checks');
+  assert.match(publication.json().contentHash,/^[a-f0-9]{64}$/);
+  const approved=await s.request('POST',`/news/reports/${reports[0].id}/approve`,{contentHash:publication.json().contentHash,confirm:true});
+  assert.equal(approved.statusCode,200,'technology reports must remain approvable');
  }finally{await s.close();}
 });
 test('daily headlines template routes to strict social trend schema independently of editable topic',async()=>{

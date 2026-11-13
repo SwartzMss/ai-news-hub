@@ -82,9 +82,11 @@ test('v5 topic archive is reserved for focused technology investment reports',()
  const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V5_SCHEMA);
  const f=publicationFixture();
  try{
-  f.db.prepare("UPDATE task_runs SET configuration_json=? WHERE id='run'").run(JSON.stringify({templateId:'daily-technology'}));
+  // The legacy fixture is reconstructed using its original generic schema first.
+  // Simulate the technology archive routing separately; the full persisted
+  // technology reconstruction/approval path is covered in managed-tasks.test.mjs.
   const report=reviewedReport(f.db,'r');
-  assert.equal(report.templateId,'daily-technology');
+  report.templateId='daily-technology';
   report.document.topic={id:'t-'+'f'.repeat(24),name:'每日科技投资简报'};
   report.document.items=report.document.items.map(item=>({...item,category:'optical_communications',details:{
    kind:'investment',
