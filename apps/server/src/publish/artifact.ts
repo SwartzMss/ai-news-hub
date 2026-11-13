@@ -1,7 +1,7 @@
 import { Ajv } from "ajv";
 import addFormats from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
-import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA } from "./archive-schema.js";
+import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA, ARCHIVE_V3_SCHEMA } from "./archive-schema.js";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { isDeepStrictEqual } from "node:util";
@@ -18,6 +18,7 @@ const validator = new Ajv({
 (addFormats as unknown as FormatsPlugin)(validator);
 const validateArchive = validator.compile(ARCHIVE_SCHEMA);
 const validateArchiveV2 = validator.compile(ARCHIVE_V2_SCHEMA);
+const validateArchiveV3 = validator.compile(ARCHIVE_V3_SCHEMA);
 export const sha256 = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 export function reviewedReport(db: DatabaseSync, id: string) {
@@ -80,6 +81,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
           factSummary,
           analysis,
           evidenceQuote,
+          researchArea,
           details,
         }) => ({
           articleId,
@@ -88,6 +90,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
           factSummary,
           analysis,
           evidenceQuote,
+          ...(researchArea?{researchArea}:{}),
           ...(details?{details}:{}),
         }),
       ),
@@ -130,8 +133,13 @@ export function archiveArtifact(
   approvedAt: string,
 ) {
   const d = report.document;
+  const hasAnyResearchArea = d.items.some(item => item.researchArea !== undefined);
+  const hasAllResearchAreas = d.items.every(item => item.researchArea !== undefined);
+  if (hasAnyResearchArea && (!hasAllResearchAreas || !d.topic))
+    throw new HttpError(409, "archive_schema_invalid");
+  const schemaVersion = hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
   const document = {
-    schema_version: d.topic ? 2 : 1,
+    schema_version: schemaVersion,
     ...(d.topic ? {topic: d.topic} : {}),
     report_id: d.reportId,
     report_date: d.reportDate,
@@ -149,6 +157,7 @@ export function archiveArtifact(
       fact_summary: x.factSummary,
       analysis: x.analysis,
       evidence_quote: x.evidenceQuote,
+      ...(schemaVersion===3?{research_area:x.researchArea}:{}),
       ...(x.details?{details:x.details}:{}),
       verification: x.verification,
       source: {
@@ -161,7 +170,8 @@ export function archiveArtifact(
       },
     })),
   };
-  if (!(d.topic ? validateArchiveV2(document) : validateArchive(document)))
+  const valid = schemaVersion===3 ? validateArchiveV3(document) : d.topic ? validateArchiveV2(document) : validateArchive(document);
+  if (!valid)
     throw new HttpError(409, "archive_schema_invalid");
   const content = JSON.stringify(document, null, 2) + "\n";
   const path = d.topic
