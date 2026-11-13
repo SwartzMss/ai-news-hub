@@ -65,9 +65,9 @@ export class NewsWorkflow implements TaskWorkflow {
     const fixedCount=countMatch ? Number(countMatch[1]) : undefined;
     const codexProperties = activeOutputSchema.properties as Record<string, unknown>;
     const outputSchema = fixedCount ? {
-      ...CODEX_RESEARCH_SCHEMA,
+      ...activeOutputSchema,
       properties: { ...codexProperties, items: { ...codexProperties.items as Record<string, unknown>, maxItems: fixedCount } },
-    } : CODEX_RESEARCH_SCHEMA;
+    } : activeOutputSchema;
     const recent = managed ? this.db.prepare(
       `SELECT r.content_json FROM reports r JOIN task_runs tr ON tr.id=r.run_id
        JOIN codex_news_runs n ON n.report_id=r.id
