@@ -48,8 +48,9 @@ test('v4 topic archive adds structured social trend details without changing v1-
  const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V4_SCHEMA);
  const f=publicationFixture();
  try{
+  f.db.prepare("UPDATE task_runs SET configuration_json=? WHERE id='run'").run(JSON.stringify({templateId:'daily-headlines'}));
   const report=reviewedReport(f.db,'r');
-  report.templateId='daily-headlines';
+  assert.equal(report.templateId,'daily-headlines');
   report.document.topic={id:'t-'+'d'.repeat(24),name:'每日热点观察'};
   report.document.items=report.document.items.map(item=>({...item,category:'social_event',details:{
    kind:'news',
