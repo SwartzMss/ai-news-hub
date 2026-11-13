@@ -1,4 +1,4 @@
-import { INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
+import { INVESTMENT_DETAILS_SCHEMA, TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
 import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
 import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
@@ -72,6 +72,27 @@ export const HEADLINES_RESEARCH_SCHEMA = {
           ...researchItemSchema.properties,
           category: { type: 'string', enum: HEADLINE_CATEGORIES },
           details: HEADLINES_DETAILS_SCHEMA,
+        },
+      },
+    },
+  },
+};
+
+export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
+export type TechnologyCategory = typeof TECHNOLOGY_CATEGORIES[number];
+export const TECHNOLOGY_RESEARCH_SCHEMA = {
+  ...RESEARCH_SCHEMA,
+  properties: {
+    ...RESEARCH_SCHEMA.properties,
+    items: {
+      ...RESEARCH_SCHEMA.properties.items,
+      items: {
+        ...researchItemSchema,
+        required: [...researchItemSchema.required, 'details'],
+        properties: {
+          ...researchItemSchema.properties,
+          category: { type: 'string', enum: TECHNOLOGY_CATEGORIES },
+          details: TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA,
         },
       },
     },
