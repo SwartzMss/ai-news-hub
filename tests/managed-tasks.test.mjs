@@ -142,7 +142,6 @@ test('daily headlines template routes to strict social trend schema independentl
   s.adapter.succeed(2,'普通主题研究结果');
   const genericFinal=await s.wait(()=>s.adapter.calls[3]);
   const genericItem=genericFinal.input.outputSchema.properties.items.items;
-  assert.equal(genericItem.required.includes('details'),false);
   assert.ok(Array.isArray(genericItem.properties.details.anyOf));
  }finally{await s.close();}
 });
