@@ -72,7 +72,7 @@ test('two-round flexible technology task accepts a short report and reuses it fo
 test('flexible-count tasks receive full same-task history without leaking it to another task',async()=>{
  const s=setup();try{
   const prompts=['研究并生成日报'];
-  const task=(await s.request('POST','/tasks',{...configuration,name:'每日开源项目',topic:'每日开源项目',prompts})).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,name:'自定义任务名',topic:'用户自定义主题',templateId:'daily-opensource',templateVersion:1,prompts})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first-flexible'})).json().run.id;
   const firstCall=await s.wait(()=>s.adapter.calls[0]);
   assert.ok(firstCall.input.outputSchema.properties.items.items.required.includes('researchArea'));
@@ -93,11 +93,46 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   await s.request('POST',`/tasks/${other.id}/runs`,{idempotencyKey:'other-flexible'});
   const third=await s.wait(()=>s.adapter.calls[2]);
   assert.doesNotMatch(third.input.developerInstructions,/近期同任务日报/);
+  assert.equal(third.input.outputSchema.properties.items.items.required.includes('researchArea'),false);
+  assert.equal(third.input.outputSchema.properties.items.items.required.includes('details'),false);
+ }finally{await s.close();}
+});
+test('open-source tasks reject more than two projects in a single research area',async()=>{
+ const s=setup();try{
+  const task=(await s.request('POST','/tasks',{
+   ...configuration,name:'开源日报',topic:'任意可编辑主题',
+   templateId:'daily-opensource',templateVersion:1,
+  })).json().task;
+  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'area-limit'})).json().run.id;
+  const call=await s.wait(()=>s.adapter.calls[0]);
+  assert.ok(call.input.outputSchema.properties.items.items.required.includes('researchArea'));
+  const items=Array.from({length:3},(_,index)=>({
+   ...proposal.items[0],
+   category:'opensource',
+   importance:3,
+   researchArea:'rust',
+   factSummary:`Rust 工具 ${index+1} 发布并行处理更新。适合批量文件处理；[项目仓库](https://github.com/example/project-${index+1})`,
+   evidenceQuote:`Official Rust tool release announcement ${index+1}`,
+   url:`https://example.com/releases/${index+1}`,
+   details:{
+    kind:'project',
+    overview:'用于本地批量文件处理。',
+    change:{summary:'发布并行处理能力。',evidenceRefs:['release']},
+    evidence:[{id:'release',name:'Release',url:`https://example.com/releases/${index+1}`,supports:'并行处理能力'}],
+   },
+  }));
+  s.adapter.succeed(0,JSON.stringify({title:'开源日报',items}));
+  const failed=await s.wait(async()=>{
+   const result=(await s.request('GET',`/runs/${run}`)).json().run;
+   return result.status==='failed'&&result;
+  });
+  assert.equal(failed.error_code,'report_research_area_limit_exceeded');
+  assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);
  }finally{await s.close();}
 });
 test('stop prevents subsequent rounds; invalid plans are rejected',async()=>{
  const s=setup();try{
-  for(const bad of [{schedule:{kind:'toString'}},{schedule:{kind:'__proto__'}},{schedule:{kind:42}},{prompts:[]},{timezone:'bad/timezone'},{schedule:{kind:'interval',minutes:0}},{schedule:{kind:'weekly',time:'25:00',weekday:8}}])assert.equal((await s.request('POST','/tasks',{...configuration,...bad})).statusCode,400);
+  for(const bad of [{schedule:{kind:'toString'}},{schedule:{kind:'__proto__'}},{schedule:{kind:42}},{prompts:[]},{timezone:'bad/timezone'},{templateId:'daily-opensource'},{templateVersion:1},{templateId:'daily-opensource',templateVersion:0},{templateId:'Daily Open Source',templateVersion:1},{schedule:{kind:'interval',minutes:0}},{schedule:{kind:'weekly',time:'25:00',weekday:8}}])assert.equal((await s.request('POST','/tasks',{...configuration,...bad})).statusCode,400);
   const task=(await s.request('POST','/tasks',configuration)).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'stop'})).json().run;
   await s.wait(()=>s.adapter.calls[0]);await s.request('POST',`/tasks/${task.id}/stop`);
