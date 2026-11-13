@@ -549,7 +549,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
   assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
-  assert.match(doc.querySelector('.news-detail table').textContent,/生效范围.*全国.*已证实/s);
+  assert.match(doc.querySelector('.news-detail table').textContent,/话题状态.*多个平台出现讨论.*媒体报道/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
   assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*正式发布/s);
