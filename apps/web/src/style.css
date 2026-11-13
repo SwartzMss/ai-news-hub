@@ -795,8 +795,7 @@ main {
 .investment-chain .potential { color: var(--muted); background: transparent; border: 1px solid var(--line); }
 .investment-chain { list-style: none; padding: 0 !important; }
 .investment-chain li { border-left: 3px solid var(--line); padding: 0 0 0 16px; }
-.investment-chain li > div { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; }
-.investment-company-symbol { color: var(--muted); font-size: 12px; font-weight: 600; }
+.investment-chain li > div { display: flex; align-items: center; gap: 12px; }
 .investment-chain p { margin-top: 6px; }
 .investment-references { display: block; margin-top: 5px; font-size: 12px; }
 .investment-references a + a { margin-left: 8px; }
