@@ -24,6 +24,10 @@ export function groupResearchAreas(items: Story[]) {
     items: items.filter((item) => item.research_area === area.id),
   }));
 }
+export function projectEntryLabel(story: Story) {
+  if (!story.research_area || story.details?.kind !== 'project') return undefined;
+  return story.details.change ? '近期进展' : '项目发现';
+}
 export const categories: Record<string, string> = {
   ai: "AI 与大模型",
   opensource: "开源项目",
@@ -146,9 +150,11 @@ export function Row({
           </p>
         )}
         <div className="news-meta">
-          <span className="category-label">
-            {categories[story.category] ?? story.category}
-          </span>
+          {story.research_area ? (
+            projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>
+          ) : (
+            <span className="category-label">{categories[story.category] ?? story.category}</span>
+          )}
           <a
             href={story.source.canonical_url}
             target="_blank"
