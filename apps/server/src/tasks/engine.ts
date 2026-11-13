@@ -179,7 +179,15 @@ export class TaskEngine {
       this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, managed?.prompts.length===1 ? 'finalize' : research ? 'research' : 'default');
       if (research) {
         const timezone = managed?.timezone ?? String((task as TaskRecord & { timezone?: string }).timezone ?? 'UTC');
-        const reportDate = dateInTimezone(this.options.clock?.() ?? new Date(), timezone);
+        // Scheduled reports belong to the calendar date of their planned occurrence,
+        // not the date when the worker happened to create the Run.
+        const scheduledAt = triggerKind === 'scheduled' && idempotencyKey.startsWith('scheduled:')
+          ? new Date(idempotencyKey.slice('scheduled:'.length))
+          : null;
+        const reportInstant = scheduledAt && Number.isFinite(scheduledAt.getTime())
+          ? scheduledAt
+          : this.options.clock?.() ?? new Date();
+        const reportDate = dateInTimezone(reportInstant, timezone);
         this.db.prepare('INSERT INTO codex_news_runs(run_id,topic,initial_input,report_date,channel) VALUES (?,?,?,?,?)').run(runId, request.topic!, input, reportDate, task.channel);
       }
       this.event(runId, turnId, 'queued', {});

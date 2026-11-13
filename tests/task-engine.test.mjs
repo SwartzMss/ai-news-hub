@@ -146,7 +146,7 @@ test('report calendar date is derived from each task timezone across UTC midnigh
   assert.equal(dateInTimezone(instant, 'America/Los_Angeles'), '2026-11-11');
 });
 
-test('managed research Run stores report_date in its configured timezone', async () => {
+test('manual managed research Run stores report_date in its configured timezone', async () => {
   const s = setup({ clock: () => new Date('2026-11-11T23:10:00.000Z') });
   try {
     const task = s.engine.createTask({
@@ -160,6 +160,33 @@ test('managed research Run stores report_date in its configured timezone', async
     const { run } = s.engine.start(task.id, 'cross-utc-midnight');
     const row = s.db.prepare('SELECT report_date FROM codex_news_runs WHERE run_id=?').get(run.id);
     assert.equal(row.report_date, '2026-11-12');
+    s.engine.cancel(run.id);
+  } finally {
+    await s.close();
+  }
+});
+
+test('scheduled managed research Run uses the scheduled occurrence date', async () => {
+  // The Run is created at 23:00 on Nov 12 in Beijing, but its scheduled
+  // reporting-window end is 07:00 on Nov 13.
+  const s = setup({ clock: () => new Date('2026-11-12T15:00:00.000Z') });
+  try {
+    const task = s.engine.createTask({
+      name: 'Daily report',
+      topic: 'Daily report',
+      prompts: ['Search for updates'],
+      autoPublish: false,
+      schedule: { kind: 'daily', time: '07:00' },
+      timezone: 'Asia/Shanghai',
+    });
+    const { run } = s.engine.start(
+      task.id,
+      'scheduled:2026-11-12T23:00:00.000Z',
+      {},
+      'scheduled',
+    );
+    const row = s.db.prepare('SELECT report_date FROM codex_news_runs WHERE run_id=?').get(run.id);
+    assert.equal(row.report_date, '2026-11-13');
     s.engine.cancel(run.id);
   } finally {
     await s.close();
