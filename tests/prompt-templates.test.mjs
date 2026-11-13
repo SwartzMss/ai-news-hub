@@ -29,7 +29,7 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.equal(technology.version,1);
   assert.equal(technology.prompts.length,2);
   const [discovery,analysis]=technology.prompts;
-  const prompt=technology.prompts.join('\\n');
+  const prompt=technology.prompts.join('\n');
   assert.equal(technology.name,"每日科技投资简报");
   assert.equal(technology.topic,"每日科技投资简报");
   assert.match(discovery,/只研究三个方向/);
