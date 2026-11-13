@@ -74,7 +74,7 @@ test('headlines v1 focuses on social platform trends and evidence-backed editori
   for(const field of ['trendTags','contentTags','trendSignals','publicDiscussion','contentSuitability','contentReason','contentAngles','evidenceRefs','evidence'])assert.ok(final.includes(field),field);
   for(const category of ['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other'])assert.ok(final.includes(category),category);
   for(const tag of ['cross_platform','single_platform','controversial','viral_video','sustained_discussion','short_video','story_reversal','emotional_resonance','not_suitable'])assert.ok(final.includes(tag),tag);
-  assert.match(final,/至少一条可追溯的平台传播信号/);
+  assert.match(final,/至少有一条可追溯的平台传播信号/);
   assert.match(final,/不得生成示例评论/);
   assert.match(final,/6000 字节/);
   assert.doesNotMatch(final,/全球经济与金融市场.*加密货币与数字资产/s);
