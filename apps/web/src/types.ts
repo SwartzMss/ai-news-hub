@@ -10,6 +10,7 @@ export interface InvestmentDetails {
   kind: "investment";
   background: string;
   metrics?: {name:string;value:string;unit:string;period:string;comparison?:string;basis:"actual"|"guidance"|"consensus"|"estimate"|"inference";evidenceRefs:string[]}[];
+  listedCompanies?: {name:string;ticker:string;market:"NASDAQ"|"NYSE"|"SSE"|"SZSE"|"HKEX"|"OTHER";role:string;relationship:"confirmed"|"potential";evidenceRefs:string[]}[];
   supplyChain?: {segment:string;direction:string;reason:string;relationship:"confirmed"|"potential";evidenceRefs?:string[]}[];
   investmentLogic?: string;
   watchpoints?: string[];
