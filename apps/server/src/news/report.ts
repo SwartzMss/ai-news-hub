@@ -61,7 +61,6 @@ function markdownText(value: string): string {
 function detailsMarkdown(details:InvestmentDetails):string {
   const lines=[`### 研究详情\n\n事件背景：${markdownText(details.background)}`];
   if(details.metrics?.length)lines.push(`核心数据：\n${details.metrics.map(metric=>`- ${markdownText(metric.name)}：${markdownText(metric.value)} ${markdownText(metric.unit)}（${markdownText(metric.period)}；${markdownText(metric.basis)}${metric.comparison?`；${markdownText(metric.comparison)}`:''}；证据 ${metric.evidenceRefs.map(markdownText).join('、')}）`).join('\n')}`);
-  if(details.listedCompanies?.length)lines.push(`相关上市公司：\n${details.listedCompanies.map(company=>`- ${markdownText(company.name)}（${markdownText(company.ticker)} · ${markdownText(company.market)}）：${markdownText(company.role)}；${company.relationship==='confirmed'?'已确认关系':'潜在影响'}（证据 ${company.evidenceRefs.map(markdownText).join('、')}）`).join('\n')}`);
   if(details.supplyChain?.length)lines.push(`产业链影响：\n${details.supplyChain.map(item=>`- ${markdownText(item.segment)}：${markdownText(item.direction)}；${markdownText(item.reason)}（${item.relationship==='confirmed'?'已确认关系':'潜在影响'}）`).join('\n')}`);
   if(details.investmentLogic)lines.push(`投资逻辑：${markdownText(details.investmentLogic)}`);
   if(details.watchpoints?.length)lines.push(`后续观察：${details.watchpoints.map(markdownText).join('；')}`);
