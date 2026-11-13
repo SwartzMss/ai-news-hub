@@ -49,6 +49,7 @@ test('v4 topic archive adds structured social trend details without changing v1-
  const f=publicationFixture();
  try{
   const report=reviewedReport(f.db,'r');
+  report.templateId='daily-headlines';
   report.document.topic={id:'t-'+'d'.repeat(24),name:'每日热点观察'};
   report.document.items=report.document.items.map(item=>({...item,category:'social_event',details:{
    kind:'news',
@@ -68,6 +69,7 @@ test('v4 topic archive adds structured social trend details without changing v1-
   const document=JSON.parse(artifact.content);
   assert.equal(document.schema_version,4);
   assert.equal(validate(document),true);
+  assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
   assert.equal(artifact.path,'reports/topics/t-'+'d'.repeat(24)+'/2026/11/03/v000001.json');
   assert.equal(validate({...document,schema_version:3}),false);
  }finally{f.close();}
