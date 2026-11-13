@@ -293,3 +293,22 @@ test('project details survive publication artifact and public archive loading',(
  const doc={...f.doc,items:[{...f.doc.items[0],details}]};const dir=mkdtempSync('/tmp/web-project-');
  try{f.db.prepare('UPDATE reports SET content_json=? WHERE id=?').run(JSON.stringify(doc),'r');const artifact=JSON.parse(archiveArtifact(reviewedReport(f.db,'r'),'2026-11-03T01:00:00Z').content);assert.deepEqual(artifact.items[0].details,details);const folder=`${dir}/2026/11/03/opensource`;mkdirSync(folder,{recursive:true});writeFileSync(`${folder}/v000001.json`,JSON.stringify(artifact));assert.deepEqual(readArchives(dir,{allowDemo:true}).articles[0].details,details);}finally{f.close();rmSync(dir,{recursive:true,force:true});}
 });
+
+
+test('public archive loader reads schema v3 and retains research-area metadata',()=>{
+ const f=publicationFixture();
+ const dir=mkdtempSync('/tmp/web-open-source-area-');
+ try{
+  const base=reviewedReport(f.db,'r');
+  const topic={id:'t-'+'d'.repeat(24),name:'每日开源项目'};
+  const report={...base,document:{...base.document,topic,items:base.document.items.map(item=>({...item,researchArea:'decentralized'}))}};
+  const artifact=JSON.parse(archiveArtifact(report,'2026-11-03T01:00:00Z').content);
+  const folder=`${dir}/topics/${topic.id}/2026/11/03`;
+  mkdirSync(folder,{recursive:true});
+  writeFileSync(`${folder}/v000001.json`,JSON.stringify(artifact));
+  const data=readArchives(dir,{allowDemo:true});
+  assert.equal(data.latest[0].schema_version,3);
+  assert.equal(data.latest[0].items[0].research_area,'decentralized');
+  assert.equal(data.articles[0].research_area,'decentralized');
+ }finally{f.close();rmSync(dir,{recursive:true,force:true});}
+});
