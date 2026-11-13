@@ -137,12 +137,25 @@ test('daily headlines template routes to strict social trend schema independentl
   assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
 
   const generic=(await s.request('POST','/tasks',{...configuration,name:'普通热点主题',topic:'每日热点观察',prompts:['搜索','整理']})).json().task;
-  await s.request('POST',`/tasks/${generic.id}/runs`,{idempotencyKey:'generic-headlines-name'});
+  const genericRun=(await s.request('POST',`/tasks/${generic.id}/runs`,{idempotencyKey:'generic-headlines-name'})).json().run.id;
   await s.wait(()=>s.adapter.calls[2]);
   s.adapter.succeed(2,'普通主题研究结果');
   const genericFinal=await s.wait(()=>s.adapter.calls[3]);
   const genericItem=genericFinal.input.outputSchema.properties.items.items;
   assert.ok(Array.isArray(genericItem.properties.details.anyOf));
+  assert.equal(JSON.stringify(genericItem.properties.details).includes('trendSignals'),false);
+  const partialSocialOutput={title:'普通主题研究',items:[{
+   url:'https://example.com/generic',category:'social_event',importance:3,
+   factSummary:'普通主题结果不应使用热点专属字段。',analysis:null,evidenceQuote:'Generic source evidence',
+   details:{kind:'news',background:'普通主题背景。',trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}]},
+  }]};
+  s.adapter.succeed(3,JSON.stringify(partialSocialOutput));
+  const genericFailed=await s.wait(async()=>{
+   const result=(await s.request('GET',`/runs/${genericRun}`)).json().run;
+   return result.status==='failed'&&result;
+  });
+  assert.equal(genericFailed.error_code,'report_schema_invalid');
+  assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
  }finally{await s.close();}
 });
 test('open-source tasks reject more than two projects in a single research area',async()=>{
