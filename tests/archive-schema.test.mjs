@@ -68,7 +68,7 @@ test('v4 topic archive adds structured social trend details without changing v1-
   const document=JSON.parse(artifact.content);
   assert.equal(document.schema_version,4);
   assert.equal(validate(document),true);
-  assert.equal(artifact.path,'reports/topics/t-'+'d'.repeat(24)+'/2026/11/13/v000001.json');
+  assert.equal(artifact.path,'reports/topics/t-'+'d'.repeat(24)+'/2026/11/03/v000001.json');
   assert.equal(validate({...document,schema_version:3}),false);
  }finally{f.close();}
 });
