@@ -120,7 +120,7 @@ test('daily technology template routes to focused AI investment schema independe
    url:'https://example.com/filing',category:'ai_industry_chain',importance:5,
    factSummary:'云厂商上调 AI 数据中心资本开支计划。',
    analysis:'资本开支兑现可能拉动 GPU、服务器和网络设备需求。',
-   evidenceQuote:'We expect capital expenditures to increase to support AI infrastructure',
+   evidenceQuote:'Official AI model release announcement',
    details:{
     kind:'investment',
     background:'公司在业绩会上更新了 AI 数据中心资本开支计划。',
@@ -130,6 +130,7 @@ test('daily technology template routes to focused AI investment schema independe
   s.adapter.succeed(1,JSON.stringify(output));
   const completed=await s.wait(async()=>{
    const result=(await s.request('GET',`/runs/${run}`)).json().run;
+   if(result.status==='failed')throw new Error(JSON.stringify(result));
    return result.status==='succeeded'&&result;
   });
   assert.equal(completed.status,'succeeded');
