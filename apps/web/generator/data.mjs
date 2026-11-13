@@ -178,7 +178,7 @@ export function readArchives(
             if(trendTags.has('controversial')&&!item.details.publicDiscussion?.controversies?.length)throw Error('invalid news trend tags');
             if(trendTags.has('viral_video')&&!item.details.trendSignals?.some(signal=>signal.contentType==='video'))throw Error('invalid news trend tags');
             if(trendTags.has('sustained_discussion')){
-              const repeated=(item.details.trendSignals??[]).some((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.observedAt!==signal.observedAt));
+              const repeated=(item.details.trendSignals??[]).some((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.metric===signal.metric&&other.observedAt!==signal.observedAt));
               if(!repeated)throw Error('invalid news trend tags');
             }
             if(item.details.contentSuitability==='recommended'&&(!item.details.contentAngles?.length||!item.details.contentTags?.length||item.details.contentTags.includes('not_suitable')))throw Error('invalid news content assessment');
