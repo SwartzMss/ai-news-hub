@@ -642,7 +642,7 @@ test("five-area open-source reports render grouped sections and distinguish disc
   const headings=[...home.querySelectorAll(".research-area-heading h2")].map(x=>x.textContent);
   assert.deepEqual(headings,["AI Agent 与自动化执行","Rust 生态与工程工具","AI 视频、音频与多媒体创作","性能分析与软件安全","区块链与去中心化基础设施"]);
   assert.equal(home.querySelectorAll(".research-area-empty").length,3);
-  assert.equal(home.querySelectorAll(".brief-toc-group").length,5);
+  assert.equal(home.querySelectorAll(".brief-toc .brief-toc-group").length,5);
   assert.ok(home.querySelector(".project-entry-label")?.textContent==="近期进展");
   assert.ok([...home.querySelectorAll(".project-entry-label")].some(x=>x.textContent==="项目发现"));
   const edition=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/archive/2026-11-03/index.html`),"utf8")).window.document;
