@@ -137,3 +137,13 @@ test('research-area ordering is stable and is preserved in the report summary',(
  const markdown=reportMarkdown(report);
  assert.ok(markdown.indexOf('【AI Agent 与自动化执行】')<markdown.indexOf('【Rust 生态与工程工具】'));
 });
+
+test('technology categories use a dedicated report validator without widening legacy categories',()=>{
+ const p=proposal();
+ p.items[0].category='ai_industry_chain';
+ p.items[0].details=investmentDetails();
+ assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata,'verified'),{code:'report_schema_invalid'});
+ const report=buildReport(JSON.stringify(p),candidates,metadata,'verified','technology');
+ assert.equal(report.items[0].category,'ai_industry_chain');
+ assert.deepEqual(report.items[0].details,p.items[0].details);
+});
