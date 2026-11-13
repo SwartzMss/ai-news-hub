@@ -1,24 +1,27 @@
 import type { PublicData } from "./types";
 import { Shell } from "./Shell";
-import { Row, Empty, dateLabel, lead } from "./ReadingParts";
+import { Row, Empty, dateLabel, lead, groupResearchAreas, hasResearchAreas } from "./ReadingParts";
 import { topicPath, topicArchivePath } from "./paths";
 function BriefLinks({ topic }: { topic: PublicData["topics"][number] }) {
+  const items = topic.latest.items;
+  const grouped = hasResearchAreas(items);
+  const link = (story: (typeof items)[number]) => {
+    const id = `brief-${topic.id}-${story.key}`;
+    return (
+      <a key={story.key} href={`#${id}`} data-brief-target={id} title={lead(story).title}>
+        <span aria-hidden="true">{String(items.indexOf(story) + 1).padStart(2, "0")}</span>
+        <span>{lead(story).title}</span>
+      </a>
+    );
+  };
   return (
     <nav aria-label="本期目录">
-      {topic.latest.items.map((story, i) => {
-        const id = `brief-${topic.id}-${story.key}`;
-        return (
-          <a
-            key={story.key}
-            href={`#${id}`}
-            data-brief-target={id}
-            title={lead(story).title}
-          >
-            <span aria-hidden="true">{String(i + 1).padStart(2, "0")}</span>
-            <span>{lead(story).title}</span>
-          </a>
-        );
-      })}
+      {grouped ? groupResearchAreas(items).map((group) => (
+        <section className="brief-toc-group" key={group.id}>
+          <h3>{group.label} · {group.items.length}</h3>
+          {group.items.length ? group.items.map(link) : <p>本期无合格项目</p>}
+        </section>
+      )) : items.map(link)}
     </nav>
   );
 }
@@ -28,6 +31,8 @@ export function LatestBrief({
   topic: PublicData["topics"][number];
 }) {
   const report = topic.latest;
+  const grouped = hasResearchAreas(report.items);
+  const groups = groupResearchAreas(report.items);
   const weekday = new Intl.DateTimeFormat("zh-CN", {
     weekday: "long",
     timeZone: "UTC",
@@ -66,12 +71,18 @@ export function LatestBrief({
           <BriefLinks topic={topic} />
         </details>
         <div className="news-list">
-          {report.items.map((story) => (
-            <Row
-              key={story.key}
-              story={story}
-              id={`brief-${topic.id}-${story.key}`}
-            />
+          {grouped ? groups.map((group) => (
+            <section className="research-area-section" key={group.id}>
+              <header className="research-area-heading">
+                <h2>{group.label}</h2>
+                <span>{group.items.length} 个项目</span>
+              </header>
+              {group.items.length ? group.items.map((story) => (
+                <Row key={story.key} story={story} level={3} id={`brief-${topic.id}-${story.key}`} />
+              )) : <p className="research-area-empty">本期无符合条件的项目</p>}
+            </section>
+          )) : report.items.map((story) => (
+            <Row key={story.key} story={story} id={`brief-${topic.id}-${story.key}`} />
           ))}
         </div>
       </div>
