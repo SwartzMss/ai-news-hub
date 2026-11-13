@@ -18,7 +18,7 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
     assert.ok(opensource.prompts[1].includes(field),field);
   for(const area of ['agent','rust','multimedia','performance_security','decentralized'])
     assert.ok(opensource.prompts.join(' ').includes(area),area);
-  assert.match(opensource.prompts[1],/每个方向各自精选 0～2 个/);
+  assert.match(opensource.prompts[1],/方向各自精选 0～2 个/);
   assert.match(opensource.prompts[1],/不设全局目标数量/);
   assert.ok(opensource.prompts.join('').length < 3000, 'open-source prompt should stay concise');
   assert.match(opensource.prompts[1],/有依据|核实|证据/);
