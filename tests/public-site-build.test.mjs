@@ -555,7 +555,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*话题开始传播/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
-  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('发布时间与范围'),true);
+  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('相关主体公开回应'),true);
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
   assert.equal(doc.querySelectorAll('.news-detail-sections h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
