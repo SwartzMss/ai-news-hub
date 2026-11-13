@@ -3,8 +3,6 @@ import { InlineText } from './InlineText';
 import { Source, lead } from './ReadingParts';
 import { DetailAsideNav, MobileDetailNav, hasText, type DetailSection } from './DetailNavigation';
 
-const marketLabel:Record<NonNullable<InvestmentDetails['listedCompanies']>[number]['market'],string>={NASDAQ:'纳斯达克',NYSE:'纽约证券交易所',SSE:'上交所',SZSE:'深交所',HKEX:'港交所',OTHER:'其他市场'};
-
 const basisLabel:Record<NonNullable<InvestmentDetails['metrics']>[number]['basis'],string>={
   actual:'实际值',guidance:'公司指引',consensus:'市场预期',estimate:'估算',inference:'推断',
 };
@@ -20,7 +18,6 @@ function EvidenceLinks({ids,details}:{ids?:string[];details:InvestmentDetails}){
 export function investmentSections(details:InvestmentDetails,analysis?:string|null):DetailSection[]{
   return [
     {id:'investment-background',label:'事件概览',show:hasText(details.background)},
-    {id:'investment-companies',label:'相关上市公司',show:!!details.listedCompanies?.length},
     {id:'investment-metrics',label:'核心数据',show:!!details.metrics?.length},
     {id:'investment-chain',label:'产业链影响',show:!!details.supplyChain?.length},
     {id:'investment-logic',label:'投资逻辑',show:hasText(details.investmentLogic)},
@@ -45,7 +42,6 @@ export function InvestmentDetail({story}:{story:Story}){
     <MobileDetailNav sections={sections}/>
     <div className="investment-sections">
       {show("investment-background")&&<section id="investment-background"><h2>事件概览</h2><p><InlineText text={details.background}/></p></section>}
-      {show("investment-companies")&&<section id="investment-companies"><h2>相关上市公司</h2><ul className="investment-chain">{details.listedCompanies?.map((company,index)=><li key={`${company.market}-${company.ticker}-${index}`}><div><strong>{company.name}</strong><span className="investment-company-symbol">{company.ticker} · {marketLabel[company.market]}</span><span className={company.relationship==="confirmed"?"confirmed":"potential"}>{company.relationship==="confirmed"?"已确认关系":"潜在影响"}</span></div><p><InlineText text={company.role}/></p><EvidenceLinks ids={company.evidenceRefs} details={details}/></li>)}</ul></section>}
       {show("investment-metrics")&&<section id="investment-metrics"><h2>核心数据</h2><div className="investment-table-scroll"><table><thead><tr><th scope="col">指标</th><th scope="col">数值</th><th scope="col">期间与口径</th><th scope="col">性质与证据</th></tr></thead><tbody>{details.metrics?.map((metric,index)=><tr key={`${metric.name}-${index}`}><th scope="row">{metric.name}</th><td>{metric.value} {metric.unit}</td><td>{metric.period}{metric.comparison&&<span>{metric.comparison}</span>}</td><td><span className="investment-basis">{basisLabel[metric.basis]}</span><EvidenceLinks ids={metric.evidenceRefs} details={details}/></td></tr>)}</tbody></table></div></section>}
       {show("investment-chain")&&<section id="investment-chain"><h2>产业链影响</h2><ul className="investment-chain">{details.supplyChain?.map((item,index)=><li key={`${item.segment}-${index}`}><div><strong>{item.segment}</strong><span className={item.relationship==='confirmed'?'confirmed':'potential'}>{item.relationship==='confirmed'?'已确认关系':'潜在影响'}</span></div><p>{item.direction}：<InlineText text={item.reason}/></p><EvidenceLinks ids={item.evidenceRefs} details={details}/></li>)}</ul></section>}
       {show("investment-logic")&&<section id="investment-logic"><h2>投资逻辑</h2><p><InlineText text={details.investmentLogic??""}/></p></section>}
