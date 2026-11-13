@@ -1,5 +1,5 @@
 import { INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
-import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
+import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
 import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
@@ -38,7 +38,10 @@ export const RESEARCH_SCHEMA = {
   properties: { title: text(180), items: { type: 'array', minItems: 1, maxItems: 10, items: {
     ...proposalItem,
     required: [...proposalItem.required.filter(key => key !== 'articleId'), 'url'],
-    properties: Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
+    properties: {
+      ...Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
+      details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
+    },
   } } },
 };
 const researchItemSchema = RESEARCH_SCHEMA.properties.items.items;
