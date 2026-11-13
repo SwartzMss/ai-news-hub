@@ -105,7 +105,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       reportDate: String(row.report_date),
       collectedAt: String(row.collected_at),
       ...(topic === undefined ? {} : {topic}),
-    }, row.source_mode as 'verified'|'codex_reported');
+    }, row.source_mode as 'verified'|'codex_reported', templateId === 'daily-technology' ? 'technology' : 'general');
     if (!isDeepStrictEqual(rebuilt, document)) throw Error();
     const links = db
       .prepare(
