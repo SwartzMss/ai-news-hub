@@ -139,7 +139,7 @@ test('daily headlines template routes to strict social trend schema independentl
 
   const generic=(await s.request('POST','/tasks',{...configuration,name:'普通热点主题',topic:'每日热点观察',prompts:['搜索','整理']})).json().task;
   await s.request('POST',`/tasks/${generic.id}/runs`,{idempotencyKey:'generic-headlines-name'});
-  const genericDiscovery=await s.wait(()=>s.adapter.calls[2]);
+  await s.wait(()=>s.adapter.calls[2]);
   s.adapter.succeed(2,'普通主题研究结果');
   const genericFinal=await s.wait(()=>s.adapter.calls[3]);
   const genericItem=genericFinal.input.outputSchema.properties.items.items;
