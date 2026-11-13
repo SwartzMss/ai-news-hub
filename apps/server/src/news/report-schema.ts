@@ -26,12 +26,16 @@ const proposalItemWithArea = {
   ...proposalItem,
   properties: { ...proposalItem.properties, researchArea: researchAreaProperty },
 };
-export function proposalSchema(articleIds?: string[]) {
+export function proposalSchema(articleIds?: string[], allowedCategories: readonly string[] = categories) {
   return {
     type: 'object', additionalProperties: false, required: ['title', 'items'],
     properties: { title: text(180), items: {
       type: 'array', minItems: 1, maxItems: articleIds ? Math.min(10, articleIds.length) : 10,
-      items: { ...proposalItemWithArea, properties: { ...proposalItemWithArea.properties, articleId: articleIds ? { type: 'string', enum: articleIds } : text(256) } },
+      items: { ...proposalItemWithArea, properties: {
+        ...proposalItemWithArea.properties,
+        category: { type: 'string', enum: allowedCategories },
+        articleId: articleIds ? { type: 'string', enum: articleIds } : text(256),
+      } },
     } },
   };
 }
@@ -125,6 +129,23 @@ export const REPORT_SCHEMA = {
               publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: nullableTime,
             },
           },
+        },
+      },
+    },
+  },
+};
+
+export const TECHNOLOGY_REPORT_SCHEMA = {
+  ...REPORT_SCHEMA,
+  properties: {
+    ...REPORT_SCHEMA.properties,
+    items: {
+      ...REPORT_SCHEMA.properties.items,
+      items: {
+        ...REPORT_SCHEMA.properties.items.items,
+        properties: {
+          ...REPORT_SCHEMA.properties.items.items.properties,
+          category: { type: 'string', enum: TECHNOLOGY_CATEGORIES },
         },
       },
     },
