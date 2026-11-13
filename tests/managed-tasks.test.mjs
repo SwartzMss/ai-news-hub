@@ -95,6 +95,58 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   assert.ok(Array.isArray(third.input.outputSchema.properties.items.items.properties.details.anyOf));
  }finally{await s.close();}
 });
+test('daily headlines template routes to strict social trend schema independently of editable topic',async()=>{
+ const s=setup();try{
+  const prompts=['发现最近 24 小时社交平台热点','核查并生成热点日报 JSON'];
+  const task=(await s.request('POST','/tasks',{
+   ...configuration,name:'每日热点观察',topic:'我的网络热点日报',
+   templateId:'daily-headlines',templateVersion:1,prompts,
+  })).json().task;
+  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'headlines-schema'})).json().run.id;
+  const discovery=await s.wait(()=>s.adapter.calls[0]);
+  assert.equal(discovery.input.outputSchema,undefined);
+  s.adapter.succeed(0,'已完成候选话题发现。');
+  const final=await s.wait(()=>s.adapter.calls[1]);
+  const itemSchema=final.input.outputSchema.properties.items.items;
+  assert.ok(itemSchema.required.includes('details'));
+  assert.deepEqual(itemSchema.properties.category.enum,['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other']);
+  assert.equal(itemSchema.properties.details.properties.trendSignals.minItems,1);
+  assert.ok(itemSchema.properties.details.required.includes('contentSuitability'));
+  const output={title:'2026-11-13 北京时间网络热点',items:[{
+   url:'https://example.com/event',category:'social_event',importance:4,
+   factSummary:'一个社会话题在微博平台进入热榜并引发讨论。',
+   analysis:null,evidenceQuote:'Public platform trend signal',
+   details:{
+    kind:'news',background:'该话题在最近 24 小时进入微博热榜。',
+    trendTags:['single_platform'],contentTags:['short_video'],
+    trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
+    contentSuitability:'recommended',contentReason:'话题有明确事实和可解释的讨论焦点。',
+    contentAngles:[{angle:'解释争议焦点',suggestedTitle:'大家为什么讨论这个话题？',hook:'争议到底在哪里？',corePoints:['还原公开事实'],evidenceRefs:['source']}],
+    evidence:[
+     {id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
+     {id:'source',name:'事件来源',url:'https://example.com/source',supports:'话题背景和事实'},
+    ],
+   },
+  }]};
+  s.adapter.succeed(1,JSON.stringify(output));
+  const completed=await s.wait(async()=>{
+   const result=(await s.request('GET',`/runs/${run}`)).json().run;
+   return result.status==='succeeded'&&result;
+  });
+  assert.equal(completed.status,'succeeded');
+  const report=(await s.request('GET','/news/reports')).json().reports[0];
+  assert.equal(report.items[0].details.contentSuitability,'recommended');
+
+  const generic=(await s.request('POST','/tasks',{...configuration,name:'普通热点主题',topic:'每日热点观察',prompts:['搜索','整理']})).json().task;
+  await s.request('POST',`/tasks/${generic.id}/runs`,{idempotencyKey:'generic-headlines-name'});
+  const genericDiscovery=await s.wait(()=>s.adapter.calls[2]);
+  s.adapter.succeed(2,'普通主题研究结果');
+  const genericFinal=await s.wait(()=>s.adapter.calls[3]);
+  const genericItem=genericFinal.input.outputSchema.properties.items.items;
+  assert.equal(genericItem.required.includes('details'),false);
+  assert.ok(Array.isArray(genericItem.properties.details.anyOf));
+ }finally{await s.close();}
+});
 test('open-source tasks reject more than two projects in a single research area',async()=>{
  const s=setup();try{
   const task=(await s.request('POST','/tasks',{
