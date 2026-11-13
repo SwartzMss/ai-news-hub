@@ -3,7 +3,7 @@ import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, NEWS_DETAILS_SCHEMA, typ
 import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
-const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES];
+const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), 'other'];
 export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
 export type ResearchArea = typeof RESEARCH_AREAS[number];
 export interface ProposalItem {
