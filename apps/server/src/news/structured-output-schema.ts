@@ -1,4 +1,4 @@
-import { HEADLINES_RESEARCH_SCHEMA, OPEN_SOURCE_RESEARCH_SCHEMA, RESEARCH_SCHEMA } from './report-schema.js';
+import { HEADLINES_RESEARCH_SCHEMA, OPEN_SOURCE_RESEARCH_SCHEMA, RESEARCH_SCHEMA, TECHNOLOGY_RESEARCH_SCHEMA } from './report-schema.js';
 
 type Schema = Record<string, unknown>;
 
@@ -32,6 +32,7 @@ function strictSchema(schema: Schema): Schema {
 export const CODEX_RESEARCH_SCHEMA = strictSchema(RESEARCH_SCHEMA as unknown as Schema);
 export const CODEX_OPEN_SOURCE_RESEARCH_SCHEMA = strictSchema(OPEN_SOURCE_RESEARCH_SCHEMA as unknown as Schema);
 export const CODEX_HEADLINES_RESEARCH_SCHEMA = strictSchema(HEADLINES_RESEARCH_SCHEMA as unknown as Schema);
+export const CODEX_TECHNOLOGY_RESEARCH_SCHEMA = strictSchema(TECHNOLOGY_RESEARCH_SCHEMA as unknown as Schema);
 
 function normalize(value: unknown, schema: Schema): unknown {
   if (Array.isArray(value))
