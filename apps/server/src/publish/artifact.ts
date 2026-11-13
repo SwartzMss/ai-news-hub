@@ -65,9 +65,11 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       )
         throw Error();
     if(!['verified','codex_reported'].includes(String(row.source_mode))||(row.source_id==='github-blog'&&row.source_mode!=='verified'))throw Error();
+    const configuration = row.configuration_json === null ? {} : JSON.parse(String(row.configuration_json));
+    if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) throw Error();
+    const templateId = typeof configuration.templateId === 'string' ? configuration.templateId : undefined;
     const topic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
     if (topic !== undefined) {
-      const configuration = JSON.parse(String(row.configuration_json));
       const expected = {id: 't-' + sha256(String(row.task_id)).slice(0,24), name: configuration.topic};
       if (!isDeepStrictEqual(topic, expected)) throw Error();
     }
@@ -124,6 +126,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       contentHash: sha256(
         JSON.stringify({ document, version: row.version, candidates, links }),
       ),
+      templateId,
     };
   } catch {
     throw new HttpError(409, "report_provenance_invalid");
@@ -136,13 +139,12 @@ export function archiveArtifact(
   const d = report.document;
   const hasAnyResearchArea = d.items.some(item => item.researchArea !== undefined);
   const hasAllResearchAreas = d.items.every(item => item.researchArea !== undefined);
-  const hasAnyHeadlineDetails = d.items.some(item => item.details?.kind === "news" && item.details.trendSignals !== undefined);
-  const hasAllHeadlineDetails = d.items.every(item => item.details?.kind === "news" && item.details.trendSignals !== undefined);
-  if (hasAnyResearchArea && (!hasAllResearchAreas || !d.topic))
+  const isHeadlines = report.templateId === "daily-headlines";
+  if (hasAnyResearchArea && (!hasAllResearchAreas || !d.topic || isHeadlines))
     throw new HttpError(409, "archive_schema_invalid");
-  if (hasAnyHeadlineDetails && (!hasAllHeadlineDetails || !d.topic || hasAnyResearchArea))
+  if (isHeadlines && !d.topic)
     throw new HttpError(409, "archive_schema_invalid");
-  const schemaVersion = hasAllResearchAreas && d.topic ? 3 : hasAllHeadlineDetails && d.topic ? 4 : d.topic ? 2 : 1;
+  const schemaVersion = isHeadlines ? 4 : hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
   const document = {
     schema_version: schemaVersion,
     ...(d.topic ? {topic: d.topic} : {}),
