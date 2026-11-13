@@ -165,6 +165,7 @@ export class NewsWorkflow implements TaskWorkflow {
                   ...(topic ? {topic} : {}),
                 },
                 "codex_reported",
+                technology ? "technology" : "general",
               );
               return (db: DatabaseSync) => {
                 for (const a of candidates)
