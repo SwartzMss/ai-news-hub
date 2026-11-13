@@ -123,8 +123,8 @@ export function validateNewsDetails(details:NewsDetails):void {
   for(const fact of details.keyFacts??[])if(!validRefs(fact.evidenceRefs))throw new AppError('report_schema_invalid');
   for(const item of details.timeline??[]){
     if(!validRefs(item.evidenceRefs))throw new AppError('report_schema_invalid');
-    if(item.precision==='date'&&!/^\\d{4}-\\d{2}-\\d{2}$/.test(item.time))throw new AppError('report_schema_invalid');
-    if(item.precision==='datetime'&&!/^\\d{4}-\\d{2}-\\d{2}T\\d{2}:\\d{2}(?::\\d{2})?(?:Z|[+-]\\d{2}:\\d{2})$/.test(item.time))throw new AppError('report_schema_invalid');
+    if(item.precision==='date'&&!/^\d{4}-\d{2}-\d{2}$/.test(item.time))throw new AppError('report_schema_invalid');
+    if(item.precision==='datetime'&&!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})$/.test(item.time))throw new AppError('report_schema_invalid');
   }
   for(const position of details.positions??[])if(!validRefs(position.evidenceRefs))throw new AppError('report_schema_invalid');
   for(const impact of details.impacts??[])
