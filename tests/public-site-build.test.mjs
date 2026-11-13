@@ -501,6 +501,9 @@ test('news detail renders structured evidence, timeline and a section directory'
  const dir=mkdtempSync('/tmp/public-news-detail-');
  try{
   const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  const topicId='t-'+'b'.repeat(24);
+  report.schema_version=4;
+  report.topic={id:topicId,name:'每日热点观察'};
   report.items=report.items.slice(0,1);
   report.items[0].category='social_event';
   report.items[0].details={
@@ -534,16 +537,16 @@ test('news detail renders structured evidence, timeline and a section directory'
     {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开观点和代表性评论'},
    ],
   };
-  const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
+  const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
-  const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
+  const doc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.news-detail'));
   assert.equal(doc.querySelector('.news-detail .section-kicker'),null);
   assert.match(doc.querySelector('.news-detail-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
   assert.match(doc.querySelector('#news-trends').textContent,/微博.*热榜第 3 位.*观察时间/s);
   assert.match(doc.querySelector('#news-discussion').textContent,/责任归属.*可追溯的公开评论/s);
   assert.match(doc.querySelector('#news-content').textContent,/大家为什么讨论这个话题.*真正的分歧在哪里/s);
-  const topicDoc=new JSDOM(readFileSync(join(built.output,'topics/legacy/index.html'),'utf8')).window.document;
+  const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
   assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.match(doc.querySelector('.news-detail table').textContent,/生效范围.*全国.*已证实/s);
@@ -560,7 +563,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal([...doc.querySelectorAll('.news-detail-sections h2')].filter(h=>h.textContent==='来源与证据').length,1);
   assert.ok(doc.querySelector('#news-primary-source .source-details')===null);
   assert.ok(doc.querySelector('#news-evidence .source-details[open]'));
-  const html=readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8');
+  const html=readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8');
   const browser=new JSDOM(html,{url:'https://demo.invalid/article/',runScripts:'outside-only'});
   browser.window.matchMedia=()=>({matches:false});
   const script=browser.window.document.querySelector('script[type="module"]').getAttribute('src').slice(1);
