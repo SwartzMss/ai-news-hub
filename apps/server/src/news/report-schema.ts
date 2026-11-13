@@ -3,7 +3,9 @@ import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHE
 import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
-const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), 'other'];
+export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
+export type TechnologyCategory = typeof TECHNOLOGY_CATEGORIES[number];
+const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), ...TECHNOLOGY_CATEGORIES, 'other'];
 export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
 export type ResearchArea = typeof RESEARCH_AREAS[number];
 export interface ProposalItem {
@@ -78,8 +80,6 @@ export const HEADLINES_RESEARCH_SCHEMA = {
   },
 };
 
-export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
-export type TechnologyCategory = typeof TECHNOLOGY_CATEGORIES[number];
 export const TECHNOLOGY_RESEARCH_SCHEMA = {
   ...RESEARCH_SCHEMA,
   properties: {
