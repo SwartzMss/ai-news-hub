@@ -61,7 +61,7 @@ test('two-round flexible technology task accepts a short report and reuses it fo
   const final=await s.wait(()=>s.adapter.calls[1]);
   assert.equal(final.input.outputSchema.properties.items.maxItems,10);
   assert.equal(final.input.threadId,'thread-0');
-  s.adapter.succeed(1,JSON.stringify(openSourceProposal));
+  s.adapter.succeed(1,JSON.stringify(proposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
   await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second'});
   const second=await s.wait(()=>s.adapter.calls[2]);
@@ -85,7 +85,7 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   assert.match(second.input.developerInstructions,/近期同任务日报/);
   assert.ok(second.input.developerInstructions.includes(summary));
   assert.ok(second.input.developerInstructions.includes('https://example.com/releases/v2'));
-  s.adapter.succeed(1,JSON.stringify(proposal));
+  s.adapter.succeed(1,JSON.stringify(openSourceProposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${secondRun}`)).json().run.status==='succeeded');
   const other=(await s.request('POST','/tasks',{...configuration,name:'另一个开源任务',topic:'每日开源项目',prompts})).json().task;
   await s.request('POST',`/tasks/${other.id}/runs`,{idempotencyKey:'other-flexible'});
