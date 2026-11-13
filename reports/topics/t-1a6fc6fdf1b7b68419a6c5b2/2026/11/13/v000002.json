@@ -1,0 +1,501 @@
+{
+  "schema_version": 2,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "a2782c18-53b5-48b1-b54b-4e11b77b153b",
+  "report_date": "2026-11-13",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-13｜北京时间统计：2026-11-12 08:08:38—2026-11-13 08:08:38；重要进展补充回溯至2026-11-10 08:08:38",
+  "collected_at": "2026-11-13T00:21:30.662Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-13T00:21:30.714Z",
+  "reviewed_content_sha256": "151e204441e1a29a6f203252500d557e1751c810dab7f3aeff79bddb7571dac2",
+  "items": [
+    {
+      "id": "383e2012a7f16b65696667f6fbe5c4130178b656a77cf06fe188957330aea097",
+      "category": "security",
+      "importance": 5,
+      "fact_summary": "MCP 参考服务器官方发布安全更新，修复三类服务器六项漏洞。用途：为模型提供文件、Git 和网络获取等工具；技术要点：filesystem 修复文件访问竞争，git 阻止不可信仓库配置触发程序执行；修复版本：filesystem 2.3.0，git、fetch 2026.11.11；近期证据：官方 v2.4.0 Release 页显示11月11日07:07，时区未显示，作为补充窗口进展；许可证：新代码贡献采用 Apache-2.0，未获重授权同意的既有贡献保留 MIT，非规范文档采用 CC-BY-4.0。[项目仓库](https://github.com/modelcontextprotocol/servers)",
+      "analysis": "推荐理由（推断）：这些修复直接影响工具服务器处理不可信文件和仓库时的权限边界，升级价值高。建议逐个核对实际安装的服务器包；日期版本的 npm 用户可能需要显式指定新版本。限制：公告说明 Windows 上部分竞争条件和目录联接边界尚未完全覆盖。",
+      "evidence_quote": "v2.4.0 fixes six vulnerabilities in three servers.",
+      "details": {
+        "kind": "project",
+        "overview": "MCP 协议参考服务器集合。",
+        "change": {
+          "summary": "正式发布安全更新，覆盖 filesystem、git 和 fetch。",
+          "version": "v2.4.0",
+          "type": "release",
+          "evidenceRefs": [
+            "mcp-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "Git 调用覆盖可能执行外部程序的仓库配置，并拒绝无法可靠应用这些覆盖设置的 Git 2.31 之前版本。",
+            "evidenceRefs": [
+              "mcp-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0; MIT; CC-BY-4.0",
+          "scope": "新代码及已获重授权同意的贡献采用 Apache-2.0；未获同意的原 MIT 贡献保留 MIT；非规范文档采用 CC-BY-4.0。",
+          "evidenceRefs": [
+            "mcp-license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "mcp-release",
+            "name": "MCP servers v2.4.0 官方发布记录",
+            "url": "https://github.com/modelcontextprotocol/servers/releases/tag/v2.4.0",
+            "supports": "漏洞数量、修复版本、技术机制、平台限制和页面发布时间。"
+          },
+          {
+            "id": "mcp-license",
+            "name": "v2.4.0 LICENSE",
+            "url": "https://github.com/modelcontextprotocol/servers/blob/v2.4.0/LICENSE",
+            "supports": "许可证过渡及不同贡献的授权范围。"
+          },
+          {
+            "id": "mcp-repo",
+            "name": "MCP servers 官方仓库",
+            "url": "https://github.com/modelcontextprotocol/servers",
+            "supports": "项目存在、维护范围和用途。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/modelcontextprotocol/servers/releases/tag/v2.4.0",
+        "canonical_url": "https://github.com/modelcontextprotocol/servers/releases/tag/v2.4.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0b13d3818f642cbee728d70e8fa8b542049fe687550e3b9a6b8af92ccc28441f",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Pipecat 官方发布新版，统一说话人信息并调整音频依赖。用途：构建实时语音和多模态对话代理；主要技术栈：Python；技术要点：为转录帧增加 speaker 字段，扩展多家语音识别服务的说话人分离支持，并加入 Zoom AI 实时语音服务；近期证据：v1.16.0 正式 Release 页显示11月12日00:45，时区未显示，PyPI 同日有发行文件；迁移事项：resampy、soxr 不再作为核心依赖，部分服务由 user_id 改用 speaker；许可证：代码采用 BSD-2-Clause，外部模型和服务授权另计。[项目仓库](https://github.com/pipecat-ai/pipecat)",
+      "analysis": "推荐理由（推断）：统一说话人字段可减少更换语音识别服务时的适配工作，适合会议转录及多人语音交互。建议先检查依赖旧 user_id 字段和旧重采样器的代码，再评估升级。",
+      "evidence_quote": "Added speaker diarization to",
+      "details": {
+        "kind": "project",
+        "overview": "实时语音与多模态代理的 Python 框架。",
+        "change": {
+          "summary": "正式发布说话人分离、语音服务集成与音频依赖调整。",
+          "version": "v1.16.0",
+          "type": "release",
+          "evidenceRefs": [
+            "pipe-release",
+            "pipe-pypi"
+          ]
+        },
+        "technical": [
+          {
+            "description": "TranscriptionFrame 等转录帧携带提供方标签及说话人编号；部分原有 user_id 用法需要迁移。",
+            "evidenceRefs": [
+              "pipe-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "BSD-2-Clause",
+          "scope": "Pipecat 代码；不代表集成的模型权重或外部服务采用同一授权。",
+          "evidenceRefs": [
+            "pipe-license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "pipe-release",
+            "name": "Pipecat v1.16.0 官方发布记录",
+            "url": "https://github.com/pipecat-ai/pipecat/releases/tag/v1.16.0",
+            "supports": "说话人字段、服务集成、依赖调整、迁移要求和页面发布时间。"
+          },
+          {
+            "id": "pipe-repo",
+            "name": "Pipecat 官方仓库",
+            "url": "https://github.com/pipecat-ai/pipecat",
+            "supports": "用途和 Python 技术栈。"
+          },
+          {
+            "id": "pipe-license",
+            "name": "Pipecat LICENSE",
+            "url": "https://github.com/pipecat-ai/pipecat/blob/main/LICENSE",
+            "supports": "BSD-2-Clause 代码授权。"
+          },
+          {
+            "id": "pipe-pypi",
+            "name": "Pipecat 1.16.0 PyPI 发行记录",
+            "url": "https://pypi.org/project/pipecat-ai/1.16.0/",
+            "supports": "2026年11月12日已有发行文件上传。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/pipecat-ai/pipecat/releases/tag/v1.16.0",
+        "canonical_url": "https://github.com/pipecat-ai/pipecat/releases/tag/v1.16.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "16d1d30dcd8fe22bce6b4e5c983344e40227fb68c82872fa330bc7c6fde5f810",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Diffusers 官方发布新版，新增五种模块化模型集成。用途：搭建生成式图像、视频及音频的推理和训练流程；主要技术栈：Python、PyTorch；技术要点：0.43.0 集成 MiniMax-H3-Image、Pika H3 Flex、P-H3-Image、Kandinsky S2V、PAN 2，覆盖图像编辑、带音频视频、语音驱动动画和世界模拟，并改进注意力后端、张量并行及 LoRA；近期证据：正式 Release 页显示11月12日05:22，时区未显示，PyPI 同日有发行文件；许可证：库代码采用 Apache-2.0，模型权重及素材需分别核查授权。[项目仓库](https://github.com/huggingface/diffusers)",
+      "analysis": "推荐理由（推断）：统一框架中的新模型适配可降低比较多种生成管线的集成成本。建议按具体模型核对硬件要求、权重可获取性和授权；新增集成不意味着所有管线都适合本地低显存运行。",
+      "evidence_quote": "Diffusers 0.43.0: MiniMax-H3-Image, Pika H3 Flex, P-H3-Image, Kandinsky S2V, and PAN 2",
+      "details": {
+        "kind": "project",
+        "overview": "基于 PyTorch 的扩散模型推理与训练工具库。",
+        "change": {
+          "summary": "正式发布五种模块化模型集成及核心执行功能改进。",
+          "version": "v0.43.0",
+          "type": "release",
+          "evidenceRefs": [
+            "diff-release",
+            "diff-pypi"
+          ]
+        },
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "库代码；模型权重、数据集与示例素材不因接入该库而自动取得相同授权。",
+          "evidenceRefs": [
+            "diff-license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "diff-release",
+            "name": "Diffusers 0.43.0 官方发布记录",
+            "url": "https://github.com/huggingface/diffusers/releases/tag/v0.43.0",
+            "supports": "新增模型、覆盖任务、核心改进及页面发布时间。"
+          },
+          {
+            "id": "diff-repo",
+            "name": "Diffusers 官方仓库",
+            "url": "https://github.com/huggingface/diffusers",
+            "supports": "项目用途和 PyTorch 技术栈。"
+          },
+          {
+            "id": "diff-license",
+            "name": "Diffusers LICENSE",
+            "url": "https://github.com/huggingface/diffusers/blob/main/LICENSE",
+            "supports": "Apache-2.0 代码授权。"
+          },
+          {
+            "id": "diff-pypi",
+            "name": "Diffusers 0.43.0 PyPI 发行记录",
+            "url": "https://pypi.org/project/diffusers/0.43.0/",
+            "supports": "Python 包及2026年11月12日发行文件上传记录。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/huggingface/diffusers/releases/tag/v0.43.0",
+        "canonical_url": "https://github.com/huggingface/diffusers/releases/tag/v0.43.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e0ac3af22840550e731cd8ef2049db4c35617746e443c47731b5ead42eb638ee",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "ZeroClaw 官方发布新版，加入多账号登录和权限隔离。用途：运行个人 AI 助手及其工具；技术要点：控制台可接入自有 OpenID Connect 身份提供方，非管理员账号获得限定范围的聊天，每次请求重新检查当前授权；近期证据：v0.9.0 正式 Release 页显示11月12日02:02，时区未显示；升级变化：配置迁至 schema v4，增加不含控制台的服务器构建；许可证：代码采用 MIT OR Apache-2.0，名称和标志另受商标约束。[项目仓库](https://github.com/zeroclaw-labs/zeroclaw)",
+      "analysis": "推荐理由（推断）：身份登录和按账号限制权限，使其更适合评估家庭或团队共享助手。建议先验证权限撤销、非管理员访问和旧配置迁移；新增登录默认关闭，不能仅升级版本就认定已具备共享访问配置。",
+      "evidence_quote": "ZeroClaw v0.9.0",
+      "details": {
+        "kind": "project",
+        "overview": "可自行部署的个人 AI 助手基础设施。",
+        "change": {
+          "summary": "正式发布多账号身份登录、受限聊天及配置 schema v4。",
+          "version": "v0.9.0",
+          "type": "release",
+          "evidenceRefs": [
+            "zero-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "OIDC 访问令牌保留在网关内存中，浏览器仅持有 HttpOnly 会话 Cookie；权限变化在后续请求中重新检查。",
+            "evidenceRefs": [
+              "zero-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Apache-2.0",
+          "scope": "项目代码可择一使用；项目名称和标志不包含在代码授权中。",
+          "evidenceRefs": [
+            "zero-repo",
+            "zero-mit",
+            "zero-apache"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "zero-release",
+            "name": "ZeroClaw v0.9.0 官方发布记录",
+            "url": "https://github.com/zeroclaw-labs/zeroclaw/releases/tag/v0.9.0",
+            "supports": "本次功能、登录机制、默认设置、配置迁移和页面发布时间。"
+          },
+          {
+            "id": "zero-repo",
+            "name": "ZeroClaw 官方仓库",
+            "url": "https://github.com/zeroclaw-labs/zeroclaw",
+            "supports": "用途、双许可证选择及商标范围。"
+          },
+          {
+            "id": "zero-mit",
+            "name": "MIT 许可证",
+            "url": "https://github.com/zeroclaw-labs/zeroclaw/blob/master/LICENSE-MIT",
+            "supports": "MIT 授权文本。"
+          },
+          {
+            "id": "zero-apache",
+            "name": "Apache 许可证",
+            "url": "https://github.com/zeroclaw-labs/zeroclaw/blob/master/LICENSE-APACHE",
+            "supports": "Apache-2.0 授权文本。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/zeroclaw-labs/zeroclaw/releases/tag/v0.9.0",
+        "canonical_url": "https://github.com/zeroclaw-labs/zeroclaw/releases/tag/v0.9.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "eed71fb7e8e08b9745a9a895fb539c23677f193ebab2f2fa0bdbcff03a94df72",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Sentence Transformers 宣布新版加入池化感知训练。用途：训练和运行嵌入、检索与重排序模型；主要技术栈：Python、PyTorch；技术要点：6.3.0 用 MultiVectorTokenPoolingLoss 包装检索损失，让编码器适应文档 token 向量合并，压缩与未压缩分支复用编码结果，无需第二次编码器前向计算；近期证据：正式 Release 页显示11月11日14:45，时区未显示，PyPI 同日有发行文件，列为补充进展；许可证：框架代码采用 Apache-2.0，模型权重和训练数据授权分别核查。[项目仓库](https://github.com/huggingface/sentence-transformers)",
+      "analysis": "推荐理由（推断）：该机制值得有多向量检索存储及评分成本压力的团队评估。建议在自身语料上比较压缩比例和召回质量；发布页实验属于维护者报告，不能据此承诺其他模型或数据集获得相同收益。",
+      "evidence_quote": "Train multi-vector models for smaller document representations with token-pooling-aware and Matryoshka training.",
+      "details": {
+        "kind": "project",
+        "overview": "嵌入、检索和重排序模型的训练与推理框架。",
+        "change": {
+          "summary": "正式发布池化感知训练及多向量表示压缩支持。",
+          "version": "v6.3.0",
+          "type": "release",
+          "evidenceRefs": [
+            "st-release",
+            "st-pypi"
+          ]
+        },
+        "technical": [
+          {
+            "description": "将相似文档 token 嵌入合并，并联合优化压缩与未压缩表示的检索损失。",
+            "evidenceRefs": [
+              "st-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "框架代码；不统一覆盖使用的模型权重和训练数据。",
+          "evidenceRefs": [
+            "st-license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "st-release",
+            "name": "Sentence Transformers v6.3.0 官方发布记录",
+            "url": "https://github.com/huggingface/sentence-transformers/releases/tag/v6.3.0",
+            "supports": "训练机制、表示压缩、实验属性和页面发布时间。"
+          },
+          {
+            "id": "st-repo",
+            "name": "Sentence Transformers 官方仓库",
+            "url": "https://github.com/huggingface/sentence-transformers",
+            "supports": "嵌入、检索与重排序用途。"
+          },
+          {
+            "id": "st-license",
+            "name": "Sentence Transformers LICENSE",
+            "url": "https://github.com/huggingface/sentence-transformers/blob/main/LICENSE",
+            "supports": "Apache-2.0 代码授权。"
+          },
+          {
+            "id": "st-pypi",
+            "name": "Sentence Transformers 6.3.0 PyPI 发行记录",
+            "url": "https://pypi.org/project/sentence-transformers/6.3.0/",
+            "supports": "Python、PyTorch 技术栈及2026年11月11日发行文件上传记录。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/huggingface/sentence-transformers/releases/tag/v6.3.0",
+        "canonical_url": "https://github.com/huggingface/sentence-transformers/releases/tag/v6.3.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "faf93644cfbad1c8656fb998d8fb774532ad29adbc1863c684c444385b4234c7",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "LLM CLI 官方发布安全补丁，修复自定义端点密钥泄漏路径。用途：通过命令行或 Python 调用远程及本地语言模型；技术要点：0.37.2 阻止命名密钥缺失时回退发送 OPENAI_API_KEY，并修复 Responses 模型切换 Chat Completions 路径时误发送 OpenAI 密钥的问题；近期证据：官方 Changelog 和两份安全公告均标注2026年11月11日，未提供时区，列为补充进展；影响范围：两条路径分别涉及0.6及0.32a2起、0.37.2之前的版本，触发条件不同；许可证：Apache-2.0。[项目仓库](https://github.com/simonw/llm)",
+      "analysis": "推荐理由（推断）：同时使用多个兼容端点的开发者更容易遇到相关配置组合，修复有直接的凭据保护价值。建议核对命名密钥和 Responses 转换选项；是否需要轮换密钥应依据实际配置及请求去向判断，不能从安装过旧版本推定已泄漏。",
+      "evidence_quote": "0.37.2 (2026-11-11)",
+      "details": {
+        "kind": "project",
+        "overview": "提供命令行和 Python API 的语言模型调用工具。",
+        "change": {
+          "summary": "正式发布两个自定义端点密钥泄漏问题的修复。",
+          "version": "0.37.2",
+          "type": "release",
+          "publishedAt": "2026-11-11",
+          "evidenceRefs": [
+            "llm-changelog",
+            "llm-advisory-a",
+            "llm-advisory-b"
+          ]
+        },
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "LLM 工具代码；外部模型和服务授权另计。",
+          "evidenceRefs": [
+            "llm-license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "llm-changelog",
+            "name": "LLM 官方 Changelog",
+            "url": "https://github.com/simonw/llm/blob/main/docs/changelog.md",
+            "supports": "0.37.2 发布日期及两条安全修复。"
+          },
+          {
+            "id": "llm-advisory-a",
+            "name": "GHSA-v9h7-jj4g-f862",
+            "url": "https://github.com/simonw/llm/security/advisories/GHSA-v9h7-jj4g-f862",
+            "supports": "命名密钥缺失时的回退泄漏、影响版本和修复版本。"
+          },
+          {
+            "id": "llm-advisory-b",
+            "name": "GHSA-r639-rr7r-x72w",
+            "url": "https://github.com/simonw/llm/security/advisories/GHSA-r639-rr7r-x72w",
+            "supports": "Responses 转换路径的触发条件、影响版本和修复版本。"
+          },
+          {
+            "id": "llm-license",
+            "name": "LLM LICENSE",
+            "url": "https://github.com/simonw/llm/blob/main/LICENSE",
+            "supports": "Apache-2.0 代码授权。"
+          },
+          {
+            "id": "llm-repo",
+            "name": "LLM 官方仓库",
+            "url": "https://github.com/simonw/llm",
+            "supports": "项目用途及 Python API。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/simonw/llm/blob/main/docs/changelog.md",
+        "canonical_url": "https://github.com/simonw/llm/blob/main/docs/changelog.md",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "41f7c5adb3edf09297653a6898bed4be2c37cffc760c00bc803596681631ad65",
+      "category": "developer_tools",
+      "importance": 3,
+      "fact_summary": "DSPy 官方发布三点五版，调整默认适配器和模型依赖。用途：用组合式程序构建并优化语言模型应用；主要技术栈：Python；技术要点：XMLAdapter 成为默认适配器，改变预测调用的提示和输出契约；OpenAI SDK、LiteLLM 变为可选依赖，RLM、Flex 和 GEPA 脱离实验状态；近期证据：3.5.0 正式 Release 页显示11月10日16:25，时区未显示，PyPI 同日有发行文件，列为补充进展；许可证：代码采用 MIT，外部模型和数据授权另计。[项目仓库](https://github.com/stanfordnlp/dspy)",
+      "analysis": "推荐理由（推断）：默认适配器变化会影响已有优化程序的行为，本次更新对现有用户的迁移价值高。建议使用原评估集重跑关键任务，并核对模型提供方适配路径；不能把模块脱离实验状态等同于对所有任务效果的保证。",
+      "evidence_quote": "DSPy 3.5: A Lighter, Faster Foundation",
+      "details": {
+        "kind": "project",
+        "overview": "通过 Python 模块构建及优化语言模型程序的框架。",
+        "change": {
+          "summary": "正式发布默认适配器、模型依赖和核心模块状态调整。",
+          "version": "3.5.0",
+          "type": "release",
+          "evidenceRefs": [
+            "dspy-release",
+            "dspy-pypi"
+          ]
+        },
+        "technical": [
+          {
+            "description": "即使 Signature 不变，默认 XML 格式化和解析也会改变提示与输出契约；官方要求重新评估已优化程序。",
+            "evidenceRefs": [
+              "dspy-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "DSPy 代码；外部模型、服务和数据不包含在同一授权中。",
+          "evidenceRefs": [
+            "dspy-license"
+          ]
+        },
+        "evidence": [
+          {
+            "id": "dspy-release",
+            "name": "DSPy 3.5.0 官方发布记录",
+            "url": "https://github.com/stanfordnlp/dspy/releases/tag/3.5.0",
+            "supports": "默认适配器、可选依赖、模块状态、迁移提示及页面发布时间。"
+          },
+          {
+            "id": "dspy-repo",
+            "name": "DSPy 官方仓库",
+            "url": "https://github.com/stanfordnlp/dspy",
+            "supports": "项目用途和 Python 技术栈。"
+          },
+          {
+            "id": "dspy-license",
+            "name": "DSPy LICENSE",
+            "url": "https://github.com/stanfordnlp/dspy/blob/main/LICENSE",
+            "supports": "MIT 代码授权。"
+          },
+          {
+            "id": "dspy-pypi",
+            "name": "DSPy 3.5.0 PyPI 发行记录",
+            "url": "https://pypi.org/project/dspy/3.5.0/",
+            "supports": "2026年11月10日已有发行文件上传。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/stanfordnlp/dspy/releases/tag/3.5.0",
+        "canonical_url": "https://github.com/stanfordnlp/dspy/releases/tag/3.5.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
