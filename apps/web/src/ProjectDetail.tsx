@@ -1,6 +1,6 @@
 import type { Story } from "./types";
 import { InlineText } from "./InlineText";
-import { Source, lead } from "./ReadingParts";
+import { Source, lead, researchAreaLabels } from "./ReadingParts";
 import { storyPath } from "./paths";
 import { DetailLinks, MobileDetailNav, type DetailSection } from "./DetailNavigation";
 
@@ -75,7 +75,7 @@ export function ProjectDetail({ story }: { story: Story }) {
         <h1 className="detail-page-title">{project.name}</h1>
         {project.subtitle && <p className="project-subtitle">{project.subtitle}</p>}
         <a className="project-repository" href={project.repository} target="_blank" rel="noopener noreferrer">{project.repositoryLabel} ↗</a>
-        {(project.status || project.attribution) && <p className="project-status">{[project.attribution, project.status].filter(Boolean).join(" · ")}</p>}
+        {(story.research_area || project.status || project.attribution) && <p className="project-status">{[story.research_area ? researchAreaLabels[story.research_area] : "", project.attribution, project.status].filter(Boolean).join(" · ")}</p>}
       </header>
       <MobileDetailNav sections={legacySections(project)}/>
       <div className="project-sections">
