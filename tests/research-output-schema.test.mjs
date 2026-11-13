@@ -24,7 +24,6 @@ test('Codex output schema requires nullable optional fields at every level and n
     {url:'https://example.com/news',category:'industry',importance:4,factSummary:'官方发布更新。',analysis:null,evidenceQuote:'Official update announcement',details:{
       kind:'news',background:'此前已有草案。',keyFacts:[{name:'发布日期',value:'2026-11-11',unit:null,period:null,nature:'confirmed',evidenceRefs:['notice']}],
       timeline:null,positions:null,impacts:null,uncertainties:null,watchpoints:null,
-      trendTags:null,contentTags:null,trendSignals:null,publicDiscussion:null,contentSuitability:null,contentReason:null,contentAngles:null,
       evidence:[{id:'notice',name:'官方公告',url:'https://example.com/news',supports:'发布日期'}],
     }},
     {url:'https://example.com/other',category:'other',importance:2,factSummary:'另一项更新。',analysis:null,evidenceQuote:'Another official update',details:null},
