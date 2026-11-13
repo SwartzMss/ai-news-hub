@@ -2,7 +2,7 @@ import { Ajv } from 'ajv';
 import addFormats from 'ajv-formats';
 import type { FormatsPlugin } from 'ajv-formats';
 import { AppError } from '../errors.js';
-import { proposalSchema, REPORT_SCHEMA, type Proposal, type ProposalItem } from './report-schema.js';
+import { proposalSchema, REPORT_SCHEMA, RESEARCH_AREAS, type Proposal, type ProposalItem, type ResearchArea } from './report-schema.js';
 import { validateInvestmentDetails, type InvestmentDetails } from './investment-details.js';
 import { validateNewsDetails, type NewsDetails } from './news-details.js';
 import { validateProjectDetails, type ProjectDetails } from './project-details.js';
@@ -46,7 +46,11 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
       name: article.sourceName, originalUrl: article.originalUrl, canonicalUrl: article.canonicalUrl,
       publishedAt: article.publishedAt, eventAt: article.eventAt, fetchedAt: article.fetchedAt,
     } };
-  }).sort((a, b) => b.importance - a.importance || a.articleId.localeCompare(b.articleId));
+  }).sort((a, b) => {
+    const rank = (area?: ResearchArea) => area ? RESEARCH_AREAS.indexOf(area) : RESEARCH_AREAS.length;
+    return rank(a.researchArea) - rank(b.researchArea) ||
+      b.importance - a.importance || a.articleId.localeCompare(b.articleId);
+  });
   const report: DailyReport = { schemaVersion: 1, ...metadata, channel: 'opensource', reviewStatus: 'pending', title: typed.title, items };
   if (!validateReport(report)) throw new AppError('report_schema_invalid');
   return report;
@@ -91,6 +95,8 @@ function projectDetailsMarkdown(details:ProjectDetails):string {
 export function reportMarkdown(report: DailyReport): string {
   return `# ${markdownText(report.title)}\n\n日期：${report.reportDate}；待人工审核。来源关联和格式校验不等于独立事实核验。\n\n` + report.items.map((item) => {
     const url = item.source.canonicalUrl.replace(/\(/g, '%28').replace(/\)/g, '%29');
-    return `## ${markdownText(item.factSummary)}\n\n来源：[${markdownText(item.source.name)}](${url})\n\n原始发布时间：${item.source.publishedAt ?? '未知'}；事件时间：${item.source.eventAt ?? '未知'}；首次抓取：${item.source.fetchedAt ?? '未抓取（Codex 提供）'}\n\n${item.verification==='codex_reported'?'Codex 提供的引文':'依据原文'}：${markdownText(item.evidenceQuote)}\n\n分析（推断）：${item.analysis ? markdownText(item.analysis) : '无'}\n${item.details?`\n${item.details.kind==='news'?newsDetailsMarkdown(item.details):item.details.kind==='project'?projectDetailsMarkdown(item.details):detailsMarkdown(item.details)}\n`:''}`;
+    const areaLabels: Record<ResearchArea, string> = {agent:'AI Agent 与自动化执行',rust:'Rust 生态与工程工具',multimedia:'AI 视频、音频与多媒体创作',performance_security:'性能分析与软件安全',decentralized:'区块链与去中心化基础设施'};
+    const areaPrefix = item.researchArea ? `【${areaLabels[item.researchArea]}】` : '';
+    return `## ${areaPrefix}${markdownText(item.factSummary)}\n\n来源：[${markdownText(item.source.name)}](${url})\n\n原始发布时间：${item.source.publishedAt ?? '未知'}；事件时间：${item.source.eventAt ?? '未知'}；首次抓取：${item.source.fetchedAt ?? '未抓取（Codex 提供）'}\n\n${item.verification==='codex_reported'?'Codex 提供的引文':'依据原文'}：${markdownText(item.evidenceQuote)}\n\n分析（推断）：${item.analysis ? markdownText(item.analysis) : '无'}\n${item.details?`\n${item.details.kind==='news'?newsDetailsMarkdown(item.details):item.details.kind==='project'?projectDetailsMarkdown(item.details):detailsMarkdown(item.details)}\n`:''}`;
   }).join('\n');
 }
