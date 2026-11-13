@@ -1,5 +1,5 @@
 import { InlineText } from "./InlineText";
-import type { PublicData, Page } from "./types";
+import type { PublicData, Page, Story } from "./types";
 import {
   categories,
   dateLabel,
@@ -8,6 +8,9 @@ import {
   Source,
   Empty,
   EditionLinks,
+  groupResearchAreas,
+  hasResearchAreas,
+  projectEntryLabel,
 } from "./ReadingParts";
 import { issuePath, topicArchivePath, topicPath } from "./paths";
 import { Shell } from "./Shell";
@@ -46,6 +49,29 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
     report_version: selected.version,
     first_approved_at: selected.approved_at,
   }));
+  const selectedHasResearchAreas = !!selectedStories && hasResearchAreas(selectedStories);
+  const selectedResearchGroups = selectedStories ? groupResearchAreas(selectedStories) : [];
+  const renderIssueStory = (item: Story, index: number) => (
+    <article className="issue-story" id={`story-${item.key}`} key={item.id}>
+      <div className="story-heading">
+        <span className="news-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
+        <div>
+          <div className="news-meta">
+            {item.research_area ? (
+              projectEntryLabel(item) && <span className="project-entry-label">{projectEntryLabel(item)}</span>
+            ) : (
+              <span className="category-label">{categories[item.category] ?? item.category}</span>
+            )}
+            <a href={item.source.canonical_url} target="_blank" rel="noopener noreferrer">{item.source.name} ↗</a>
+          </div>
+          <h2>{lead(item).title}</h2>
+        </div>
+      </div>
+      {lead(item).rest && <p className="story-facts"><InlineText text={lead(item).rest} /></p>}
+      {item.analysis && <div className="story-analysis"><h3>分析与推断</h3><p><InlineText text={item.analysis} /></p></div>}
+      <Source story={item} />
+    </article>
+  );
   const owner = story
     ? data.reports.find(
         (r) =>
@@ -236,48 +262,17 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 </details>
               )}
               <div className="issue-stories">
-                {selectedStories?.map((item, i) => (
-                  <article
-                    className="issue-story"
-                    id={`story-${item.key}`}
-                    key={item.id}
-                  >
-                    <div className="story-heading">
-                      <span className="news-number" aria-hidden="true">
-                        {String(i + 1).padStart(2, "0")}
-                      </span>
-                      <div>
-                        <div className="news-meta">
-                          <span className="category-label">
-                            {categories[item.category] ?? item.category}
-                          </span>
-                          <a
-                            href={item.source.canonical_url}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                          >
-                            {item.source.name} ↗
-                          </a>
-                        </div>
-                        <h2>{lead(item).title}</h2>
-                      </div>
-                    </div>
-                    {lead(item).rest && (
-                      <p className="story-facts">
-                        <InlineText text={lead(item).rest} />
-                      </p>
-                    )}
-                    {item.analysis && (
-                      <div className="story-analysis">
-                        <h3>分析与推断</h3>
-                        <p>
-                          <InlineText text={item.analysis} />
-                        </p>
-                      </div>
-                    )}
-                    <Source story={item} />
-                  </article>
-                ))}
+                {selectedHasResearchAreas ? selectedResearchGroups.map((group) => (
+                  <section className="issue-research-area" key={group.id}>
+                    <header className="research-area-heading">
+                      <h2>{group.label}</h2>
+                      <span>{group.items.length} 个项目</span>
+                    </header>
+                    {group.items.length
+                      ? group.items.map((item) => renderIssueStory(item, selectedStories?.indexOf(item) ?? 0))
+                      : <p className="research-area-empty">本期无符合条件的项目</p>}
+                  </section>
+                )) : selectedStories?.map(renderIssueStory)}
               </div>
             </>
           )}

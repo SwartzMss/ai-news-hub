@@ -75,3 +75,17 @@ test('project details reject missing references and unsafe evidence',()=>{
   const p=proposal();p.items[0].details=projectDetails();change(p.items[0].details);assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
  }
 });
+
+
+test('research-area ordering is stable and is preserved in the report summary',()=>{
+ const rust={...candidates[0],id:'article-rust',title:'Rust tool release announcement',canonicalUrl:'https://github.blog/rust',originalUrl:'https://github.blog/rust'};
+ const agent={...candidates[0],id:'article-agent',title:'Agent runtime release announcement',canonicalUrl:'https://github.blog/agent',originalUrl:'https://github.blog/agent'};
+ const output={title:'Five-area open-source report',items:[
+  {articleId:rust.id,researchArea:'rust',category:'opensource',importance:5,factSummary:'Rust 工具发布更新。',analysis:null,evidenceQuote:rust.title},
+  {articleId:agent.id,researchArea:'agent',category:'ai',importance:3,factSummary:'Agent Runtime 发布更新。',analysis:null,evidenceQuote:agent.title},
+ ]};
+ const report=buildReport(JSON.stringify(output),[rust,agent],metadata);
+ assert.deepEqual(report.items.map(item=>item.researchArea),['agent','rust']);
+ const markdown=reportMarkdown(report);
+ assert.ok(markdown.indexOf('【AI Agent 与自动化执行】')<markdown.indexOf('【Rust 生态与工程工具】'));
+});

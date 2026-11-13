@@ -79,7 +79,7 @@ Schema 与迁移规则见 [数据模型](DATA_MODEL.md)。真实开发验证和�
 
 ## 用户配置任务接口
 
-`POST /api/tasks` 新增；`PUT /api/tasks/:taskId` 全量更新；`DELETE /api/tasks/:taskId` 软删除并保留历史；`POST /api/tasks/:taskId/stop` 停止当前执行。新增/更新请求为 `{name,topic,prompts,autoPublish,schedule,timezone,status}`；`status` 为 active/paused。运行中拒绝修改或删除。
+`POST /api/tasks` 新增；`PUT /api/tasks/:taskId` 全量更新；`DELETE /api/tasks/:taskId` 软删除并保留历史；`POST /api/tasks/:taskId/stop` 停止当前执行。新增/更新请求为 `{name,topic,prompts,autoPublish,schedule,timezone,status,templateId?,templateVersion?}`；`templateId` 与 `templateVersion` 必须同时提供，用于保存所选 Prompt 模板的稳定身份，不随可编辑的 `topic` 改名而改变。旧任务未保存模板身份时两个字段均可省略；`status` 为 active/paused。运行中拒绝修改或删除。
 
 计划格式：`{kind:"manual"}`、`{kind:"once",at:"UTC ISO 时间"}`、`{kind:"interval",minutes:60}`、`{kind:"daily",time:"09:00"}`、`{kind:"weekly",time:"09:00",weekday:1}`。周日为 0，默认时区 Asia/Shanghai。每个 Prompt 最多 8000 字符，1–20 轮，最后一条直接生成日报，不追加额外 Prompt。启动仍使用 `/tasks/:taskId/runs` 幂等键；配置任务不接受交互式继续 Turn，执行使用不可变配置快照。
 

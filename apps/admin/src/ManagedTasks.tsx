@@ -13,6 +13,8 @@ type Plan = {
   weekday?: number;
 };
 export type Configuration = {
+  templateId?: string;
+  templateVersion?: number;
   topic: string;
   prompts: string[];
   autoPublish: boolean;
@@ -153,9 +155,10 @@ function TaskEditor({
           <fieldset disabled={busy} className="task-editor-fields">
             <label>
               Prompt 模板
-              <select defaultValue="" onChange={event => {
+              <select value={config.templateId && config.templateVersion ? `${config.templateId}@${config.templateVersion}` : ""} onChange={event => {
                 const template = templates.find(t => `${t.id}@${t.version}` === event.target.value);
-                if (template) update({topic:template.topic,prompts:[...template.prompts]});
+                if (template) update({templateId:template.id,templateVersion:template.version,topic:template.topic,prompts:[...template.prompts]});
+                else update({templateId:undefined,templateVersion:undefined});
               }}>
                 <option value="">选择模板以填入主题和全部 Prompt</option>
                 {templates.map(t => <option key={`${t.id}@${t.version}`} value={`${t.id}@${t.version}`}>{t.name} · v{t.version}</option>)}

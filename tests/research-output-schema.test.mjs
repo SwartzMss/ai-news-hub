@@ -1,8 +1,8 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Ajv} from 'ajv';
-import {RESEARCH_SCHEMA} from '../dist/apps/server/src/news/report-schema.js';
-import {CODEX_RESEARCH_SCHEMA,normalizeResearchOutput} from '../dist/apps/server/src/news/structured-output-schema.js';
+import {OPEN_SOURCE_RESEARCH_SCHEMA,RESEARCH_SCHEMA} from '../dist/apps/server/src/news/report-schema.js';
+import {CODEX_OPEN_SOURCE_RESEARCH_SCHEMA,CODEX_RESEARCH_SCHEMA,normalizeResearchOutput} from '../dist/apps/server/src/news/structured-output-schema.js';
 
 function checkStrict(node){
   assert.equal(node.oneOf,undefined);
@@ -49,4 +49,24 @@ test('strict Codex project output normalizes optional project fields',()=>{
  assert.equal(normalized.items[0].details.useCases,undefined);
  const validateArchive=ajv.compile(RESEARCH_SCHEMA);
  assert.equal(validateArchive(normalized),true,JSON.stringify(validateArchive.errors));
+});
+
+
+test('daily open-source schema requires one of five research areas and structured project details',()=>{
+ const project={kind:'project',overview:'Rust 文件处理工具。',change:{summary:'新增并行流式读取。',version:null,type:null,publishedAt:null,evidenceRefs:['release']},technical:[{description:'按块并行读取并保持输出顺序。',evidenceRefs:['release']}],useCases:null,license:null,evaluation:null,evidence:[{id:'release',name:'官方发布说明',url:'https://example.com/release',supports:'并行流式读取'}]};
+ const output={title:'每日开源项目',items:[{url:'https://example.com/release',researchArea:'rust',category:'opensource',importance:4,factSummary:'工具新增并行流式读取。适合大文件处理。',analysis:'可评估用于批量文件流水线。',evidenceQuote:'Added parallel streaming file reads',details:project}]};
+ const ajv=new Ajv({strict:true});
+ const validateCodex=ajv.compile(CODEX_OPEN_SOURCE_RESEARCH_SCHEMA);
+ assert.equal(validateCodex(output),true,JSON.stringify(validateCodex.errors));
+ const normalized=normalizeResearchOutput(output,OPEN_SOURCE_RESEARCH_SCHEMA);
+ assert.equal(normalized.items[0].details.change.version,undefined);
+ assert.equal(normalized.items[0].details.useCases,undefined);
+ const validateArchive=ajv.compile(OPEN_SOURCE_RESEARCH_SCHEMA);
+ assert.equal(validateArchive(normalized),true,JSON.stringify(validateArchive.errors));
+ const missingArea=JSON.parse(JSON.stringify(normalized));delete missingArea.items[0].researchArea;
+ assert.equal(validateArchive(missingArea),false);
+ const missingDetails=JSON.parse(JSON.stringify(normalized));delete missingDetails.items[0].details;
+ assert.equal(validateArchive(missingDetails),false);
+ const wrongArea=JSON.parse(JSON.stringify(normalized));wrongArea.items[0].researchArea='gpu';
+ assert.equal(validateArchive(wrongArea),false);
 });
