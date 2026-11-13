@@ -10,6 +10,7 @@ import {
   EditionLinks,
   groupResearchAreas,
   hasResearchAreas,
+  projectEntryLabel,
 } from "./ReadingParts";
 import { issuePath, topicArchivePath, topicPath } from "./paths";
 import { Shell } from "./Shell";
@@ -56,7 +57,11 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         <span className="news-number" aria-hidden="true">{String(index + 1).padStart(2, "0")}</span>
         <div>
           <div className="news-meta">
-            <span className="category-label">{categories[item.category] ?? item.category}</span>
+            {item.research_area ? (
+              projectEntryLabel(item) && <span className="project-entry-label">{projectEntryLabel(item)}</span>
+            ) : (
+              <span className="category-label">{categories[item.category] ?? item.category}</span>
+            )}
             <a href={item.source.canonical_url} target="_blank" rel="noopener noreferrer">{item.source.name} ↗</a>
           </div>
           <h2>{lead(item).title}</h2>
