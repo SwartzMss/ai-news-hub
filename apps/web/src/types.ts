@@ -37,11 +37,13 @@ export interface ProjectDetails {
   evaluation?:{description:string;nature:'fact'|'analysis';evidenceRefs?:string[]}[];
   evidence:{id:string;name:string;url:string;supports:string}[];
 }
+export type ResearchArea = 'agent' | 'rust' | 'multimedia' | 'performance_security' | 'decentralized';
 export interface Story {
   topic: Topic;
   id: string;
   key: string;
   category: string;
+  research_area?: ResearchArea;
   importance: number;
   fact_summary: string;
   analysis: string | null;
@@ -61,7 +63,7 @@ export interface Story {
   first_approved_at: string;
 }
 export interface Report {
-  schema_version: 1 | 2;
+  schema_version: 1 | 2 | 3;
   topic: Topic;
   report_id: string;
   report_date: string;
