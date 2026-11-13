@@ -56,7 +56,7 @@ export class NewsWorkflow implements TaskWorkflow {
     if (!snapshot || snapshot.report_id)
       throw new AppError("research_run_unavailable");
     const final = context.mode === "finalize";
-    const openSource = run.configuration?.templateId === "daily-opensource" && run.configuration.templateVersion === 1;
+    const openSource = run.configuration?.templateId === "daily-opensource";
     const activeResearchSchema = openSource ? OPEN_SOURCE_RESEARCH_SCHEMA : RESEARCH_SCHEMA;
     const activeOutputSchema = openSource ? CODEX_OPEN_SOURCE_RESEARCH_SCHEMA : CODEX_RESEARCH_SCHEMA;
     const activeValidate = openSource ? validateOpenSource : validate;
