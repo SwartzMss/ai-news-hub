@@ -579,6 +579,8 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     };
     window.eval(client);
     const email = form.querySelector('[name="email"]');
+    assert.equal(email.getAttribute("placeholder"), "you@gmail.com");
+    assert.equal(email.value, "", "the email field stays empty until the reader types");
     const submit = form.querySelector('button[type="submit"]');
     const status = form.querySelector('[role="status"]');
     const send = () => form.dispatchEvent(new window.Event("submit", { bubbles: true, cancelable: true }));
