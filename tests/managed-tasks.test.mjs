@@ -98,11 +98,16 @@ test('flexible-count tasks receive full same-task history without leaking it to 
 test('daily technology template routes to focused AI investment schema independently of editable topic',async()=>{
  const s=setup();try{
   const prompts=['发现 AI 产业链、光模块与半导体候选事件','核查并生成科技投资日报 JSON'];
-  const task=(await s.request('POST','/tasks',{
+  const created=await s.request('POST','/tasks',{
    ...configuration,name:'每日科技投资简报',topic:'自定义科技主题',
    templateId:'daily-technology',templateVersion:1,prompts,
-  })).json.task;
-  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'technology-schema'})).json.run.id;
+  });
+  assert.equal(created.statusCode,201);
+  const task=(await s.request('GET','/tasks')).json.tasks.find(item=>item.name==='每日科技投资简报');
+  assert.ok(task?.id,'technology task should be persisted');
+  const started=await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'technology-schema'});
+  assert.equal(started.statusCode,202);
+  const run=started.json.run.id;
   const discovery=await s.wait(()=>s.adapter.calls[0]);
   assert.equal(discovery.input.outputSchema,undefined);
   s.adapter.succeed(0,'已完成三个方向的候选发现。');
