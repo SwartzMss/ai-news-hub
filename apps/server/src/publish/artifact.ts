@@ -124,7 +124,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       version: Number(row.version),
       status: String(row.status),
       contentHash: sha256(
-        JSON.stringify({ document, version: row.version, candidates, links }),
+        JSON.stringify({ document, version: row.version, candidates, links, ...(templateId ? {templateId} : {}) }),
       ),
       templateId,
     };
