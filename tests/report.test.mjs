@@ -153,6 +153,7 @@ test('technology report accepts codex-reported source provenance with a null fet
  p.items[0].category='ai_industry_chain';
  p.items[0].details=investmentDetails();
  const candidate={id:'a'.repeat(64),title:p.items[0].factSummary,originalUrl:'https://example.com/filing',canonicalUrl:'https://example.com/filing',sourceName:'example.com',publishedAt:null,eventAt:null,fetchedAt:null,excerpt:'',sourceMode:'codex_reported'};
+ p.items[0].articleId=candidate.id;
  const report=buildReport(JSON.stringify(p),[candidate],{...metadata,topic:{id:'t-'+'a'.repeat(24),name:'自定义科技主题'}},'codex_reported','technology');
  assert.equal(report.items[0].verification,'codex_reported');
  assert.equal(report.items[0].source.fetchedAt,null);
