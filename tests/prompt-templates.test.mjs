@@ -14,8 +14,13 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(opensource.prompts[0],/候选|发现/);
   assert.match(opensource.prompts[1],/JSON Schema/);
   assert.match(opensource.prompts[1],/社区关注|社区热度/);
-  for(const field of ['用途：','主要技术栈：','技术要点：','近期证据：'])
+  for(const field of ['researchArea','factSummary','analysis','evidenceQuote','details','evidenceRefs'])
     assert.ok(opensource.prompts[1].includes(field),field);
+  for(const area of ['agent','rust','multimedia','performance_security','decentralized'])
+    assert.ok(opensource.prompts.join(' ').includes(area),area);
+  assert.match(opensource.prompts[1],/每个方向各自精选 0～2 个/);
+  assert.match(opensource.prompts[1],/不设全局目标数量/);
+  assert.ok(opensource.prompts.join('').length < 3000, 'open-source prompt should stay concise');
   assert.match(opensource.prompts[1],/有依据|核实|证据/);
   assert.doesNotMatch(opensource.prompts.join('\n'),/【固定 (8|10) 条】/);
   for(const t of templates){assert.equal(t.version,1);assert.ok(t.prompts.every(p=>p.length>100));}
