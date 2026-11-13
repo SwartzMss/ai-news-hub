@@ -16,15 +16,20 @@ const proposalItem = {
   properties: {
     articleId: text(256), category: { type: 'string', enum: categories }, importance: { type: 'integer', minimum: 1, maximum: 5 },
     factSummary: text(600), analysis: { anyOf: [text(600), { type: 'null' }] },
-    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 }, researchArea: { type: 'string', enum: RESEARCH_AREAS }, details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
+    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 }, details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
   },
+};
+const researchAreaProperty = { type: 'string', enum: RESEARCH_AREAS };
+const proposalItemWithArea = {
+  ...proposalItem,
+  properties: { ...proposalItem.properties, researchArea: researchAreaProperty },
 };
 export function proposalSchema(articleIds?: string[]) {
   return {
     type: 'object', additionalProperties: false, required: ['title', 'items'],
     properties: { title: text(180), items: {
       type: 'array', minItems: 1, maxItems: articleIds ? Math.min(10, articleIds.length) : 10,
-      items: { ...proposalItem, properties: { ...proposalItem.properties, articleId: articleIds ? { type: 'string', enum: articleIds } : text(256) } },
+      items: { ...proposalItemWithArea, properties: { ...proposalItemWithArea.properties, articleId: articleIds ? { type: 'string', enum: articleIds } : text(256) } },
     } },
   };
 }
@@ -46,7 +51,7 @@ export const OPEN_SOURCE_RESEARCH_SCHEMA = {
       items: {
         ...researchItemSchema,
         required: [...researchItemSchema.required, 'researchArea', 'details'],
-        properties: { ...researchItemSchema.properties, details: PROJECT_DETAILS_SCHEMA },
+        properties: { ...researchItemSchema.properties, researchArea: researchAreaProperty, details: PROJECT_DETAILS_SCHEMA },
       },
     },
   },
@@ -65,10 +70,10 @@ export const REPORT_SCHEMA = {
     channel: { const: 'opensource' }, reviewStatus: { const: 'pending' }, title: text(180),
     collectedAt: { type: 'string', format: 'date-time' }, items: {
       type: 'array', minItems: 1, maxItems: 10, items: {
-        ...proposalItem,
-        required: [...proposalItem.required, 'verification', 'source'],
+        ...proposalItemWithArea,
+        required: [...proposalItemWithArea.required, 'verification', 'source'],
         allOf:[{if:{properties:{verification:{const:'codex_reported'}}},then:{properties:{source:{type:'object',properties:{fetchedAt:{type:'null'}}}}},else:{properties:{source:{type:'object',properties:{fetchedAt:{type:'string',format:'date-time'}}}}}}],
-        properties: { ...proposalItem.properties,
+        properties: { ...proposalItemWithArea.properties,
           verification: { enum: ['source_only','codex_reported'] }, source: {
             type: 'object', additionalProperties: false,
             required: ['name', 'originalUrl', 'canonicalUrl', 'publishedAt', 'eventAt', 'fetchedAt'],
