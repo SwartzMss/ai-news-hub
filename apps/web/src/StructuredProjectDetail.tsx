@@ -1,6 +1,6 @@
 import type { ProjectDetails, Story } from './types';
 import { InlineText } from './InlineText';
-import { Source, lead, researchAreaLabels } from './ReadingParts';
+import { Source, lead, researchAreaLabels, projectEntryLabel } from './ReadingParts';
 import { DetailAsideNav, MobileDetailNav, hasText, type DetailSection } from './DetailNavigation';
 function EvidenceLinks({ids,details}:{ids?:string[];details:ProjectDetails}){
   if(!ids?.length)return null;
@@ -23,7 +23,7 @@ export function StructuredProjectDetail({story}:{story:Story}){
   const sections=structuredProjectSections(details);
   const show=(id:string)=>sections.some(section=>section.id===id);
   return <article className="project-detail">
-    <header className="project-header detail-page-header"><h1 className="detail-page-title">{lead(story).title}</h1>{story.research_area && <p className="project-status">{researchAreaLabels[story.research_area]}</p>}</header>
+    <header className="project-header detail-page-header"><h1 className="detail-page-title">{lead(story).title}</h1>{story.research_area && <p className="project-status">{[researchAreaLabels[story.research_area], projectEntryLabel(story)].filter(Boolean).join(" · ")}</p>}</header>
     <MobileDetailNav sections={sections}/>
     <div className="project-sections">
       {show("project-overview")&&<section id="project-overview"><h2>项目概览</h2><p><InlineText text={details.overview}/></p></section>}
