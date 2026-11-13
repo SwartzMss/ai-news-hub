@@ -70,7 +70,7 @@ test('headlines v1 focuses on social platform trends and evidence-backed editori
   assert.match(final,/5–8 条/);
   assert.match(final,/最多 10 条/);
   assert.match(final,/importance 为 1–5/);
-  assert.match(final,/热度只是发现信号/);
+  assert.match(final,/不要只按热度排序/);
   for(const field of ['trendTags','contentTags','trendSignals','publicDiscussion','contentSuitability','contentReason','contentAngles','evidenceRefs','evidence'])assert.ok(final.includes(field),field);
   for(const category of ['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other'])assert.ok(final.includes(category),category);
   for(const tag of ['cross_platform','single_platform','controversial','viral_video','sustained_discussion','short_video','story_reversal','emotional_resonance','not_suitable'])assert.ok(final.includes(tag),tag);
