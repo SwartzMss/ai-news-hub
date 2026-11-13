@@ -103,11 +103,11 @@ test('daily technology template routes to focused AI investment schema independe
    templateId:'daily-technology',templateVersion:1,prompts,
   });
   assert.equal(created.statusCode,201);
-  const task=(await s.request('GET','/tasks')).json.tasks.find(item=>item.name==='每日科技投资简报');
+  const task=(await s.request('GET','/tasks')).json().tasks.find(item=>item.name==='每日科技投资简报');
   assert.ok(task?.id,'technology task should be persisted');
   const started=await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'technology-schema'});
   assert.equal(started.statusCode,202);
-  const run=started.json.run.id;
+  const run=started.json().run.id;
   const discovery=await s.wait(()=>s.adapter.calls[0]);
   assert.equal(discovery.input.outputSchema,undefined);
   s.adapter.succeed(0,'已完成三个方向的候选发现。');
@@ -129,11 +129,11 @@ test('daily technology template routes to focused AI investment schema independe
   }]};
   s.adapter.succeed(1,JSON.stringify(output));
   const completed=await s.wait(async()=>{
-   const result=(await s.request('GET',`/runs/${run}`)).json.run;
+   const result=(await s.request('GET',`/runs/${run}`)).json().run;
    return result.status==='succeeded'&&result;
   });
   assert.equal(completed.status,'succeeded');
-  assert.equal((await s.request('GET','/news/reports')).json.reports.length,1);
+  assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
  }finally{await s.close();}
 });
 test('daily headlines template routes to strict social trend schema independently of editable topic',async()=>{
