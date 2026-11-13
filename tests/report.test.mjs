@@ -147,3 +147,13 @@ test('technology categories use a dedicated report validator without widening le
  assert.equal(report.items[0].category,'ai_industry_chain');
  assert.deepEqual(report.items[0].details,p.items[0].details);
 });
+
+test('technology report accepts codex-reported source provenance with a null fetch timestamp',()=>{
+ const p=proposal();
+ p.items[0].category='ai_industry_chain';
+ p.items[0].details=investmentDetails();
+ const candidate={...candidates[0],fetchedAt:null,excerpt:'',sourceMode:'codex_reported'};
+ const report=buildReport(JSON.stringify(p),[candidate],metadata,'codex_reported','technology');
+ assert.equal(report.items[0].verification,'codex_reported');
+ assert.equal(report.items[0].source.fetchedAt,null);
+});
