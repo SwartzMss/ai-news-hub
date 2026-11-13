@@ -61,7 +61,7 @@ test('two-round flexible technology task accepts a short report and reuses it fo
   const final=await s.wait(()=>s.adapter.calls[1]);
   assert.equal(final.input.outputSchema.properties.items.maxItems,10);
   assert.equal(final.input.threadId,'thread-0');
-  s.adapter.succeed(1,JSON.stringify(proposal));
+  s.adapter.succeed(1,JSON.stringify(openSourceProposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
   await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second'});
   const second=await s.wait(()=>s.adapter.calls[2]);
@@ -75,8 +75,9 @@ test('flexible-count tasks receive full same-task history without leaking it to 
   const task=(await s.request('POST','/tasks',{...configuration,name:'每日开源项目',topic:'每日开源项目',prompts})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first-flexible'})).json().run.id;
   await s.wait(()=>s.adapter.calls[0]);
-  const summary='项目发布了重要更新。用途：本地开发工具；近期证据：v2 发布；[项目仓库](https://github.com/example/project)';
-  s.adapter.succeed(0,JSON.stringify({...proposal,items:[{...proposal.items[0],factSummary:summary,url:'https://example.com/releases/v2'}]}));
+  const summary='项目发布了重要更新。适合本地文件处理；[项目仓库](https://github.com/example/project)';
+  const openSourceProposal={title:'每日开源项目',items:[{...proposal.items[0],category:'opensource',researchArea:'rust',factSummary:summary,url:'https://example.com/releases/v2',details:{kind:'project',overview:'用于本地批量文件处理。',change:{summary:'发布并行处理能力。',evidenceRefs:['release']},evidence:[{id:'release',name:'Release',url:'https://example.com/releases/v2',supports:'并行处理能力'}]}}]};
+  s.adapter.succeed(0,JSON.stringify(openSourceProposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
   const secondRun=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second-flexible'})).json().run.id;
   const second=await s.wait(()=>s.adapter.calls[1]);
