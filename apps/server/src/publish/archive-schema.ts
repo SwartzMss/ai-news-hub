@@ -4,9 +4,7 @@ const original = REPORT_SCHEMA.properties.items.items.properties;
 const source = original.source.properties;
 const extendedDetails = original.details;
 const legacyDetails = {
-  oneOf: extendedDetails.oneOf.map((schema) =>
-    schema.properties?.kind?.const === "news" ? LEGACY_NEWS_DETAILS_SCHEMA : schema,
-  ),
+  oneOf: [extendedDetails.oneOf[0], LEGACY_NEWS_DETAILS_SCHEMA, extendedDetails.oneOf[2]],
 };
 const legacyCategory = {
   type: "string",
