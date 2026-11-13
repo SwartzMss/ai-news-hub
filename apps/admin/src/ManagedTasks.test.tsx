@@ -467,4 +467,11 @@ test('selecting a versioned template fills all ordered prompts without changing 
   expect((screen.getByLabelText('第 1 轮') as HTMLTextAreaElement).value).toBe('第一轮模板');
   expect((screen.getByLabelText('第 2 轮') as HTMLTextAreaElement).value).toBe('第二轮模板');
   expect((screen.getByLabelText('自动发布到 GitHub') as HTMLInputElement).checked).toBe(false);
+  fireEvent.change(screen.getByLabelText("任务主题"), {target:{value:"用户自定义主题"}});
+  fireEvent.click(screen.getByRole("button",{name:"保存任务"}));
+  await waitFor(() => expect(api.mock.calls.some(call => call[0] === "/tasks/managed-one" && call[3] === "PUT")).toBe(true));
+  const body = api.mock.calls.find(call => call[0] === "/tasks/managed-one" && call[3] === "PUT")![2] as Record<string, unknown>;
+  expect(body.templateId).toBe("sample");
+  expect(body.templateVersion).toBe(2);
+  expect(body.topic).toBe("用户自定义主题");
 });
