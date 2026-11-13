@@ -15,30 +15,29 @@
 <text x="80" y="225" class="green small" font-weight="700">2026年11月14日　星期六</text>
 <text x="80" y="285" class="txt h1">每日情报简报</text>
 <text x="80" y="325" class="muted body">关注重要变化，而不是信息噪声。</text>
-<rect x="80" y="355" width="115" height="42" rx="12" fill="#176b55"/><text x="137" y="382" text-anchor="middle" fill="#fff" class="body" font-weight="700">AI 动态</text>
-<rect x="208" y="355" width="125" height="42" rx="12" class="pill"/><text x="270" y="382" text-anchor="middle" class="txt body">开源项目</text>
-<rect x="346" y="355" width="150" height="42" rx="12" class="pill"/><text x="421" y="382" text-anchor="middle" class="txt body">科技与投资</text>
-<rect x="509" y="355" width="125" height="42" rx="12" class="pill"/><text x="571" y="382" text-anchor="middle" class="txt body">热点观察</text>
+<rect x="80" y="355" width="125" height="42" rx="12" fill="#176b55"/><text x="142" y="382" text-anchor="middle" fill="#fff" class="body" font-weight="700">开源项目</text>
+<rect x="218" y="355" width="150" height="42" rx="12" class="pill"/><text x="293" y="382" text-anchor="middle" class="txt body">科技与投资</text>
+<rect x="381" y="355" width="125" height="42" rx="12" class="pill"/><text x="443" y="382" text-anchor="middle" class="txt body">热点</text>
 <path d="M80 420H1070" class="line"/>
 <text x="80" y="466" class="txt h2">今日重点</text><text x="725" y="464" class="muted small">01 / 04　 ‹　 ›</text>
 <rect x="80" y="488" width="690" height="215" rx="16" fill="#f1f4ee" stroke="#e5e9e1"/>
-<rect x="108" y="516" width="92" height="28" rx="8" fill="#dcebe0"/><text x="154" y="535" text-anchor="middle" class="green small" font-weight="700">AI 动态</text>
+<rect x="108" y="516" width="112" height="28" rx="8" fill="#dcebe0"/><text x="164" y="535" text-anchor="middle" class="green small" font-weight="700">科技与投资</text>
 <text x="108" y="590" class="txt" font-size="31" font-weight="750">AI 基础设施产业链出现新的关键变化</text>
 <text x="108" y="630" class="muted body">多家公司在算力、数据中心与推理部署方面发布新进展，</text><text x="108" y="660" class="muted body">带动产业链出现新的调整信号。</text>
 <text x="108" y="687" class="green small" font-weight="700">阅读完整分析 →</text>
 <text x="80" y="758" class="txt h2">今日资讯</text><text x="715" y="755" class="muted small">共 6 条</text>
-<text x="82" y="820" fill="#a5aea6" font-size="40" font-weight="700">01</text><rect x="150" y="787" width="110" height="27" rx="8" class="pill"/><text x="205" y="806" text-anchor="middle" class="green small">模型与产品</text>
-<text x="280" y="807" class="txt h3">新一代模型发布，重点提升推理与多模态能力</text><text x="280" y="841" class="muted small">最新模型在推理能力、长上下文和多模态表现上带来明显改进。</text>
+<text x="82" y="820" fill="#a5aea6" font-size="40" font-weight="700">01</text><rect x="150" y="787" width="88" height="27" rx="8" class="pill"/><text x="194" y="806" text-anchor="middle" class="green small">光模块</text>
+<text x="260" y="807" class="txt h3">光模块厂商披露高速产品与扩产进展</text><text x="260" y="841" class="muted small">关注高速产品迭代、客户验证与产能释放进展。</text>
 <path d="M80 870H770" class="line"/>
-<text x="82" y="930" fill="#a5aea6" font-size="40" font-weight="700">02</text><rect x="150" y="897" width="110" height="27" rx="8" class="pill"/><text x="205" y="916" text-anchor="middle" class="green small">开源项目</text>
-<text x="280" y="917" class="txt h3">一个值得关注的开源项目更新</text><text x="280" y="951" class="muted small">项目在最新版本中引入新功能，并改善性能与易用性。</text>
+<text x="82" y="930" fill="#a5aea6" font-size="40" font-weight="700">02</text><rect x="150" y="897" width="88" height="27" rx="8" class="pill"/><text x="194" y="916" text-anchor="middle" class="green small">半导体</text>
+<text x="260" y="917" class="txt h3">半导体设备企业更新订单与资本开支指引</text><text x="260" y="951" class="muted small">跟踪订单、产能建设与资本开支变化，观察产业景气度。</text>
 <!-- desktop sidebar -->
 <path d="M805 445V970" class="line"/>
 <text x="835" y="480" class="txt h3">本期目录</text>
 <rect x="830" y="500" width="240" height="42" rx="10" fill="#eaf1e9"/><circle cx="850" cy="521" r="5" fill="#176b55"/><text x="870" y="527" class="green small">今日重点</text>
 <text x="870" y="575" class="muted small">○　今日资讯</text><text x="870" y="620" class="muted small">○　话题速览</text>
 <path d="M830 650H1070" class="line"/><text x="835" y="690" class="txt h3">话题导航</text>
-<text x="850" y="738" class="txt body">✧　AI 动态　 →</text><text x="850" y="783" class="txt body">⌘　开源项目 →</text><text x="850" y="828" class="txt body">▥　科技与投资 →</text><text x="850" y="873" class="txt body">◉　热点观察 →</text>
+<text x="850" y="738" class="txt body">⌘　开源项目 →</text><text x="850" y="783" class="txt body">▥　科技与投资 →</text><text x="850" y="828" class="txt body">◉　热点 →</text>
 <path d="M830 900H1070" class="line"/><text x="835" y="944" class="txt h3">历史日报　 →</text>
 <!-- mobile -->
 <rect x="1160" y="35" width="405" height="980" rx="48" fill="#fafaf6" stroke="#cfd5cc" stroke-width="3"/>
@@ -50,20 +49,20 @@
 <text x="1200" y="211" class="green small">2026年11月14日　星期六</text>
 <text x="1200" y="263" class="txt" font-size="34" font-weight="750">每日情报简报</text>
 <text x="1200" y="296" class="muted small">关注重要变化，而不是信息噪声。</text>
-<rect x="1200" y="321" width="82" height="36" rx="11" fill="#176b55"/><text x="1241" y="344" text-anchor="middle" fill="#fff" class="small" font-weight="700">AI 动态</text>
-<rect x="1290" y="321" width="90" height="36" rx="11" class="pill"/><text x="1335" y="344" text-anchor="middle" class="txt small">开源项目</text>
-<rect x="1388" y="321" width="120" height="36" rx="11" class="pill"/><text x="1448" y="344" text-anchor="middle" class="txt small">科技与投资</text>
+<rect x="1200" y="321" width="90" height="36" rx="11" fill="#176b55"/><text x="1245" y="344" text-anchor="middle" fill="#fff" class="small" font-weight="700">开源项目</text>
+<rect x="1298" y="321" width="120" height="36" rx="11" class="pill"/><text x="1358" y="344" text-anchor="middle" class="txt small">科技与投资</text>
+<rect x="1426" y="321" width="94" height="36" rx="11" class="pill"/><text x="1473" y="344" text-anchor="middle" class="txt small">热点</text>
 <path d="M1200 378H1520" class="line"/>
 <text x="1200" y="418" class="txt h2">今日重点</text><text x="1455" y="417" class="muted small">01/04 ‹ ›</text>
 <rect x="1200" y="438" width="320" height="220" rx="15" fill="#f1f4ee" stroke="#e5e9e1"/>
-<rect x="1220" y="458" width="82" height="25" rx="7" fill="#dcebe0"/><text x="1261" y="476" text-anchor="middle" class="green small">AI 动态</text>
+<rect x="1220" y="458" width="105" height="25" rx="7" fill="#dcebe0"/><text x="1272" y="476" text-anchor="middle" class="green small">科技与投资</text>
 <text x="1220" y="524" class="txt" font-size="24" font-weight="750">AI 基础设施产业链</text><text x="1220" y="554" class="txt" font-size="24" font-weight="750">出现新的关键变化</text>
 <text x="1220" y="592" class="muted small">多家公司在算力、数据中心与</text><text x="1220" y="618" class="muted small">推理部署方面发布新进展。</text>
 <text x="1220" y="642" class="green small" font-weight="700">阅读完整分析 →</text>
 <rect x="1200" y="678" width="320" height="52" rx="12" fill="#f1f4ee"/><text x="1220" y="710" class="txt body">☷　本期目录　⌄</text>
 <text x="1200" y="775" class="txt h2">今日资讯</text><text x="1450" y="773" class="muted small">共 6 条</text>
-<text x="1200" y="830" fill="#a5aea6" font-size="34" font-weight="700">01</text><rect x="1260" y="800" width="94" height="25" rx="7" class="pill"/><text x="1307" y="818" text-anchor="middle" class="green small">模型与产品</text>
-<text x="1260" y="857" class="txt" font-size="19" font-weight="700">新一代模型发布，重点提升</text><text x="1260" y="883" class="txt" font-size="19" font-weight="700">推理与多模态能力</text>
-<text x="1260" y="918" class="muted small">最新模型在推理能力上带来改进。</text>
+<text x="1200" y="830" fill="#a5aea6" font-size="34" font-weight="700">01</text><rect x="1260" y="800" width="80" height="25" rx="7" class="pill"/><text x="1300" y="818" text-anchor="middle" class="green small">光模块</text>
+<text x="1260" y="857" class="txt" font-size="19" font-weight="700">光模块厂商披露高速产品</text><text x="1260" y="883" class="txt" font-size="19" font-weight="700">与扩产进展</text>
+<text x="1260" y="918" class="muted small">关注产品迭代、客户验证与产能释放。</text>
 <text x="1200" y="968" class="muted small">概念布局示意 · 非真实新闻内容</text>
 </svg>
