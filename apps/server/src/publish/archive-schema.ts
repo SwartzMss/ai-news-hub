@@ -1,6 +1,17 @@
 import { REPORT_SCHEMA, PUBLIC_TOPIC_SCHEMA } from "../news/report-schema.js";
+import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
 const original = REPORT_SCHEMA.properties.items.items.properties;
 const source = original.source.properties;
+const extendedDetails = original.details;
+const legacyDetails = {
+  oneOf: extendedDetails.oneOf.map((schema) =>
+    schema.properties?.kind?.const === "news" ? LEGACY_NEWS_DETAILS_SCHEMA : schema,
+  ),
+};
+const legacyCategory = {
+  type: "string",
+  enum: ["ai", "opensource", "developer_tools", "security", "industry", "other"],
+};
 const properties = {
   id: original.articleId,
   category: original.category,
@@ -8,7 +19,7 @@ const properties = {
   fact_summary: original.factSummary,
   analysis: original.analysis,
   evidence_quote: original.evidenceQuote,
-  details: original.details,
+  details: extendedDetails,
   verification: original.verification,
   source: {
     type: "object",
@@ -31,6 +42,11 @@ const properties = {
     },
   },
 };
+const legacyProperties = {
+  ...properties,
+  category: legacyCategory,
+  details: legacyDetails,
+};
 const root = {
   schema_version: { const: 1 },
   report_id: { type: "string", minLength: 1, maxLength: 256 },
@@ -49,9 +65,9 @@ const root = {
     items: {
       type: "object",
       additionalProperties: false,
-      required: Object.keys(properties).filter(key=>key!=='details'),
+      required: Object.keys(legacyProperties).filter(key=>key!=='details'),
       allOf:[{if:{properties:{verification:{const:"codex_reported"}}},then:{properties:{source:{type:"object",properties:{fetched_at:{type:"null"}}}}},else:{properties:{source:{type:"object",properties:{fetched_at:{type:"string",format:"date-time"}}}}}}],
-      properties,
+      properties: legacyProperties,
     },
   },
 };
@@ -68,7 +84,7 @@ export const ARCHIVE_V2_SCHEMA = {
   required: [...ARCHIVE_SCHEMA.required, 'topic'],
   properties: { ...ARCHIVE_SCHEMA.properties, schema_version: { const: 2 }, topic: PUBLIC_TOPIC_SCHEMA },
 };
-const v3Properties = { ...properties, research_area: original.researchArea };
+const v3Properties = { ...legacyProperties, research_area: original.researchArea };
 export const ARCHIVE_V3_SCHEMA = {
   ...ARCHIVE_V2_SCHEMA,
   properties: {
@@ -80,6 +96,26 @@ export const ARCHIVE_V3_SCHEMA = {
         ...root.items.items,
         required: [...root.items.items.required, 'research_area'],
         properties: v3Properties,
+      },
+    },
+  },
+};
+const v4Properties = {
+  ...properties,
+  category: { type: "string", enum: [...HEADLINE_CATEGORIES] },
+  details: HEADLINES_DETAILS_SCHEMA,
+};
+export const ARCHIVE_V4_SCHEMA = {
+  ...ARCHIVE_V2_SCHEMA,
+  properties: {
+    ...ARCHIVE_V2_SCHEMA.properties,
+    schema_version: { const: 4 },
+    items: {
+      ...root.items,
+      items: {
+        ...root.items.items,
+        required: [...root.items.items.required, 'details'],
+        properties: v4Properties,
       },
     },
   },
