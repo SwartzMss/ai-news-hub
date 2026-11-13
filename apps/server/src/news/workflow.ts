@@ -56,7 +56,7 @@ export class NewsWorkflow implements TaskWorkflow {
     if (!snapshot || snapshot.report_id)
       throw new AppError("research_run_unavailable");
     const final = context.mode === "finalize";
-    const openSource = String(snapshot.topic) === "每日开源项目";
+    const openSource = run.configuration?.templateId === "daily-opensource" && run.configuration.templateVersion === 1;
     const activeResearchSchema = openSource ? OPEN_SOURCE_RESEARCH_SCHEMA : RESEARCH_SCHEMA;
     const activeOutputSchema = openSource ? CODEX_OPEN_SOURCE_RESEARCH_SCHEMA : CODEX_RESEARCH_SCHEMA;
     const activeValidate = openSource ? validateOpenSource : validate;
@@ -105,6 +105,16 @@ export class NewsWorkflow implements TaskWorkflow {
               }
               if (!activeValidate(proposal))
                 throw new AppError("report_schema_invalid");
+              if (openSource) {
+                const areaCounts = new Map<string, number>();
+                for (const item of proposal.items) {
+                  const area = item.researchArea;
+                  if (!area) throw new AppError("report_schema_invalid");
+                  const count = (areaCounts.get(area) ?? 0) + 1;
+                  if (count > 2) throw new AppError("report_research_area_limit_exceeded");
+                  areaCounts.set(area, count);
+                }
+              }
               if(fixedCount && proposal.items.length!==fixedCount)
                 throw new AppError('report_item_count_invalid');
               if(signal.aborted)throw new AppError("source_cancelled");
