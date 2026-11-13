@@ -4,8 +4,10 @@ import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.j
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
 const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', 'other'];
+export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
+export type ResearchArea = typeof RESEARCH_AREAS[number];
 export interface ProposalItem {
-  articleId: string; category: string; importance: number; factSummary: string; analysis: string | null; evidenceQuote: string; details?: InvestmentDetails | NewsDetails | ProjectDetails;
+  articleId: string; category: string; importance: number; factSummary: string; analysis: string | null; evidenceQuote: string; researchArea?: ResearchArea; details?: InvestmentDetails | NewsDetails | ProjectDetails;
 }
 export interface Proposal { title: string; items: ProposalItem[] }
 const proposalItem = {
@@ -14,7 +16,7 @@ const proposalItem = {
   properties: {
     articleId: text(256), category: { type: 'string', enum: categories }, importance: { type: 'integer', minimum: 1, maximum: 5 },
     factSummary: text(600), analysis: { anyOf: [text(600), { type: 'null' }] },
-    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 }, details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
+    evidenceQuote: { type: 'string', minLength: 8, maxLength: 240 }, researchArea: { type: 'string', enum: RESEARCH_AREAS }, details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
   },
 };
 export function proposalSchema(articleIds?: string[]) {
@@ -33,6 +35,21 @@ export const RESEARCH_SCHEMA = {
     required: [...proposalItem.required.filter(key => key !== 'articleId'), 'url'],
     properties: Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
   } } },
+};
+const researchItemSchema = RESEARCH_SCHEMA.properties.items.items;
+export const OPEN_SOURCE_RESEARCH_SCHEMA = {
+  ...RESEARCH_SCHEMA,
+  properties: {
+    ...RESEARCH_SCHEMA.properties,
+    items: {
+      ...RESEARCH_SCHEMA.properties.items,
+      items: {
+        ...researchItemSchema,
+        required: [...researchItemSchema.required, 'researchArea', 'details'],
+        properties: { ...researchItemSchema.properties, details: PROJECT_DETAILS_SCHEMA },
+      },
+    },
+  },
 };
 export const PUBLIC_TOPIC_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['id', 'name'],
