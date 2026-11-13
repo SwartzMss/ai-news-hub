@@ -105,3 +105,20 @@ test('daily technology v1 requires focused categories and evidence-backed invest
  const wrongKind=structuredClone(normalized);wrongKind.items[0].details.kind='news';
  assert.equal(validateArchive(wrongKind),false);
 });
+
+test('minimal technology investment output survives normalization and backend validation',()=>{
+ const output={title:'2026-11-13 每日科技投资简报',items:[{
+  url:'https://example.com/filing',category:'ai_industry_chain',importance:5,
+  factSummary:'云厂商上调 AI 数据中心资本开支计划。',
+  analysis:'资本开支兑现可能拉动 GPU、服务器和网络设备需求。',
+  evidenceQuote:'Official AI model release announcement',
+  details:{
+   kind:'investment',
+   background:'公司在业绩会上更新了 AI 数据中心资本开支计划。',
+   evidence:[{id:'filing',name:'公司业绩会纪要',url:'https://example.com/filing',supports:'AI 数据中心资本开支计划'}],
+  },
+ }]};
+ const normalized=normalizeResearchOutput(output,TECHNOLOGY_RESEARCH_SCHEMA);
+ const validate=new Ajv({strict:true}).compile(TECHNOLOGY_RESEARCH_SCHEMA);
+ assert.equal(validate(normalized),true,JSON.stringify(validate.errors));
+});
