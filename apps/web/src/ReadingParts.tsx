@@ -1,6 +1,29 @@
 import { InlineText } from "./InlineText";
-import type { Story, Report } from "./types";
+import type { Story, Report, ResearchArea } from "./types";
 import { issuePath, storyPath } from "./paths";
+export const researchAreaLabels: Record<ResearchArea, string> = {
+  agent: "AI Agent 与自动化执行",
+  rust: "Rust 生态与工程工具",
+  multimedia: "AI 视频、音频与多媒体创作",
+  performance_security: "性能分析与软件安全",
+  decentralized: "区块链与去中心化基础设施",
+};
+export const researchAreaOrder: { id: ResearchArea; label: string }[] = [
+  { id: "agent", label: researchAreaLabels.agent },
+  { id: "rust", label: researchAreaLabels.rust },
+  { id: "multimedia", label: researchAreaLabels.multimedia },
+  { id: "performance_security", label: researchAreaLabels.performance_security },
+  { id: "decentralized", label: researchAreaLabels.decentralized },
+];
+export function hasResearchAreas(items: Story[]) {
+  return items.some((item) => item.research_area !== undefined);
+}
+export function groupResearchAreas(items: Story[]) {
+  return researchAreaOrder.map((area) => ({
+    ...area,
+    items: items.filter((item) => item.research_area === area.id),
+  }));
+}
 export const categories: Record<string, string> = {
   ai: "AI 与大模型",
   opensource: "开源项目",
