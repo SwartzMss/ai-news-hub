@@ -16,6 +16,8 @@ export interface TaskSchedule {
   at?: string; minutes?: number; time?: string; weekday?: number;
 }
 export interface TaskConfiguration {
+  /** Stable identity of the selected versioned prompt template; independent of the editable topic label. */
+  templateId?: string; templateVersion?: number;
   topic: string; prompts: string[]; autoPublish: boolean; schedule: TaskSchedule; timezone: string;
 }
 export interface TaskRecord {
