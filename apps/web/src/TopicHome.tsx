@@ -9,7 +9,6 @@ function BriefLinks({ topic }: { topic: PublicData["topics"][number] }) {
     const id = `brief-${topic.id}-${story.key}`;
     return (
       <a key={story.key} href={`#${id}`} data-brief-target={id} title={lead(story).title}>
-        <span aria-hidden="true">{String(items.indexOf(story) + 1).padStart(2, "0")}</span>
         <span>{lead(story).title}</span>
       </a>
     );
@@ -58,8 +57,8 @@ export function LatestBrief({
             </h1>
             <span>{weekday}</span>
           </div>
+          <p className="brief-description">围绕当前话题整理的最新动态与研究信息。</p>
           <div className="brief-generation">
-            <span>{report.items.length} 条资讯</span>
             <span>
               生成于 <time dateTime={report.collected_at}>{generated}</time>
               （北京时间）
@@ -70,6 +69,10 @@ export function LatestBrief({
           <summary>本期目录 · {report.items.length} 条</summary>
           <BriefLinks topic={topic} />
         </details>
+        <div className="brief-list-heading">
+          <h2>全部资讯</h2>
+          <span>{report.items.length} 条</span>
+        </div>
         <div className="news-list">
           {grouped ? groups.map((group) => (
             <section className="research-area-section" key={group.id}>

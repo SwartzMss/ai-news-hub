@@ -40,6 +40,15 @@ export function Shell({
           </a>
         </nav>
         <div className="header-actions">
+          <a
+            className="rss-action"
+            data-topic-rss
+            href={topic ? `/rss/topics/${topic.id}.xml` : "/rss/all.xml"}
+            aria-label={topic ? "订阅当前话题 RSS" : "订阅全部话题 RSS"}
+            title="订阅 RSS"
+          >
+            RSS
+          </a>
           <button
             id="theme-toggle"
             aria-label="切换明暗主题"

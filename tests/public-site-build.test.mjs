@@ -43,9 +43,12 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
   assert.ok(homeDoc.querySelector(".reader-body > main"));
+  assert.equal(homeDoc.querySelector("[data-topic-rss]")?.getAttribute("href"), `/rss/topics/${data.topics[0].id}.xml`);
+  assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, data.topics.length);
   assert.equal(homeDoc.querySelectorAll(".brief-toc").length,data.topics.length);
   for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
     assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
+    assert.ok(panel.querySelector(".brief-description"));
     const links=panel.querySelectorAll(".brief-toc a[data-brief-target]");
     assert.equal(links.length,panel.querySelectorAll(".news-row").length);
     for(const link of links) assert.ok(panel.querySelector(`[id="${link.dataset.briefTarget}"]`));
@@ -316,6 +319,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
       assert.ok(home.querySelector(`a[data-topic-choice="${topic.id}"][href="/topics/${topic.id}/"]`));
       assert.ok(documentAt("archive/index.html").querySelector(`main a[href="/topics/${topic.id}/archive/"]`));
       assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("footer"), null);
+      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("[data-topic-rss]").getAttribute("href"), `/rss/topics/${topic.id}.xml`);
       assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
     }
     const aMain = mainAt(`topics/${a.id}/archive/2026-11-03/index.html`);
@@ -354,11 +358,13 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(visible().length, 1);
     assert.equal(visible()[0].dataset.topicPanel, b.id);
     assert.equal(browser.window.localStorage.getItem("news-hub-topic"), b.id);
+    assert.equal(browser.window.document.querySelector("[data-topic-rss]").getAttribute("href"), `/rss/topics/${b.id}.xml`);
     const choice = browser.window.document.querySelector(`a[data-topic-choice="${a.id}"]`);
     choice.dispatchEvent(new browser.window.MouseEvent("click", { bubbles: true, cancelable: true, button: 0 }));
     assert.equal(visible().length, 1);
     assert.equal(visible()[0].dataset.topicPanel, a.id);
     assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
+    assert.equal(browser.window.document.querySelector("[data-topic-rss]").getAttribute("href"), `/rss/topics/${a.id}.xml`);
     const tocLink = visible()[0].querySelector(".brief-toc a[data-brief-target]");
     tocLink.dispatchEvent(new browser.window.MouseEvent("click", {bubbles:true,cancelable:true,button:0}));
     assert.equal(tocLink.getAttribute("aria-current"), "location");
@@ -370,6 +376,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
     browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
     assert.equal(visible()[0].dataset.topicPanel, b.id);
+    assert.equal(browser.window.document.querySelector("[data-topic-rss]").getAttribute("href"), `/rss/topics/${b.id}.xml`);
     browser.window.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
@@ -607,7 +614,8 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.equal(form.querySelector('[name="email"]').type, "email");
     assert.ok(form.querySelector('[name="email"]').required);
     assert.equal(form.querySelector('[name="website"]').tabIndex, -1);
-    assert.equal(window.document.querySelector(".header-actions a"), null);
+    assert.equal(window.document.querySelectorAll(".header-actions a").length, 1);
+    assert.equal(window.document.querySelector("[data-topic-rss]")?.getAttribute("href"), "/rss/all.xml");
     assert.equal(window.document.querySelector("footer"), null);
     assert.ok(window.document.querySelector(".site-shell > #newsletter-signup"));
     assert.equal(window.document.querySelector(".topic-picker #newsletter-signup, .brief-toc #newsletter-signup"), null);
