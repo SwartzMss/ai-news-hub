@@ -29,7 +29,7 @@ test('managed Codex reports publish topic-scoped v1 archives after migration',()
    title:document.title,collected_at:collectedAt,review_status:'approved',approved_at:collectedAt,reviewed_content_sha256:contentHash,
    items:[{id:'source',category:'ai',importance:1,fact_summary:'来源宣布更新。',analysis:null,evidence_quote:'Official announcement',
     details:item.details,verification:'codex_reported',source:{name:'example.com',original_url:candidate.originalUrl,canonical_url:candidate.canonicalUrl,published_at:null,event_at:null,fetched_at:null}}],
-  },null,2)+'\\n';
+  },null,2)+'\n';
   assert.equal(reviewed.contentHash,contentHash);
   assert.equal(artifact.content,expected);
   assert.equal(artifact.hash,sha256(expected));
