@@ -123,9 +123,14 @@ test("switching the editor target loads the new task instead of carrying previou
   expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
     "daily-technology@1",
   );
+  fireEvent.click(screen.getByRole("button", { name: "取消" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[1]);
-  expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
-    "daily-headlines@1",
+  await screen.findByRole("option", { name: "每日热点观察 · v1" });
+  await waitFor(() =>
+    expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
+      "daily-headlines@1",
+    ),
   );
 });
 
