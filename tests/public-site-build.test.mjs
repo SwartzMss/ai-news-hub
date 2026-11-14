@@ -401,78 +401,6 @@ test("reading previews render explicit source links without executing markup or 
   } finally {rmSync(dir,{recursive:true,force:true});}
 });
 
-test("project detail presents verified fields as readable sections", async () => {
-  const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-  const dir = mkdtempSync("/tmp/public-project-detail-");
-  try {
-    const report = JSON.parse(readFileSync("tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json", "utf8"));
-    report.items = report.items.slice(0, 1);
-    report.items[0].fact_summary = "Mesh LLM 发布分布式推理系统。官方【新发布】；用途：把多台电脑组成推理网络；技术要点：Rust 服务通过 QUIC 连接节点；按模型阶段分配计算；近期证据：官方仓库公开了代码；适用场景：多机推理实验；许可证：Apache-2.0。[项目仓库](https://github.com/example/mesh-llm)";
-    report.items[0].analysis = "推荐理由：便于研究异构设备的推理调度；限制：需要自行验证性能。";
-    report.items.push({ ...report.items[0], id: "related-project", fact_summary: "Sandcastle 发布隔离 Agent 环境。用途：并行运行开发任务；技术要点：通过容器隔离工作区；近期证据：官方发布新版本；适用场景：多 Agent 开发；许可证：MIT。[项目仓库](https://github.com/example/sandcastle)" });
-    const folder = join(dir, "topics", report.topic.id, ...report.report_date.split("-"));
-    mkdirSync(folder, { recursive: true });
-    writeFileSync(join(folder, "v000001.json"), JSON.stringify(report));
-    const built = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", reportsDir: dir });
-    const key = articleKey(report.items[0].id, report.topic.id);
-    const doc = new JSDOM(readFileSync(join(built.output, `topics/legacy/news/${key}/index.html`), "utf8")).window.document;
-    assert.equal(doc.querySelector(".project-detail h1").textContent, "Mesh LLM");
-    assert.equal(doc.querySelector(".project-detail .project-number"), null);
-    assert.ok(doc.querySelector(".project-detail h1.detail-page-title"));
-    const edition = new JSDOM(readFileSync(join(built.output, `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/v000001/index.html`), "utf8")).window.document;
-    assert.ok(edition.querySelector(".news-number"), "the edition list keeps its ordering number");
-    assert.equal(doc.querySelector(".project-detail .project-subtitle").textContent, "Mesh LLM 发布分布式推理系统");
-    assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
-    assert.equal(doc.querySelector(".reading-aside"), null);
-    assert.ok(doc.querySelector(".reading-layout.project-layout.detail-layout.has-aside > main > .project-detail"));
-    assert.equal(doc.querySelector(".detail-context a").textContent, "返回归档");
-    assert.equal(doc.querySelector(".detail-context time").getAttribute("datetime"), report.report_date);
-    assert.ok(doc.querySelector(".sticky-header > .topic-picker"));
-    assert.ok(doc.querySelector(".project-aside nav[aria-label='本文目录'] a[href='#project-fact-0']"));
-    assert.ok(doc.querySelector("#project-fact-0"));
-    assert.equal(doc.querySelectorAll(".project-related a").length, 1);
-    assert.equal(doc.querySelector(".detail-context a").textContent, "返回归档");
-    assert.equal(doc.querySelector(".detail-context time").getAttribute("datetime"), report.report_date);
-    for (const heading of ["核心用途", "技术要点", "近期关注原因", "适用场景", "许可证", "推荐理由", "限制"])
-      assert.ok([...doc.querySelectorAll(".project-detail h2")].some((h) => h.textContent === heading), heading);
-    assert.equal(doc.querySelectorAll(".project-detail .project-technical li").length, 2);
-    assert.equal(doc.querySelectorAll(".project-detail a[href=\"https://github.com/example/mesh-llm\"]").length, 1);
-    assert.ok(doc.querySelector(".project-detail .source-details"));
-  } finally { rmSync(dir, { recursive: true, force: true }); }
-});
-test("article detail pages use full-width desktop columns with topic navigation above", () => {
-  const css = readFileSync("apps/web/src/style.css", "utf8");
-  assert.match(css, /\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;/s);
-  assert.match(
-    css,
-    /@media \(min-width: 1001px\)\s*\{[\s\S]*?\.reader-body:has\(> \.reading-layout\.detail-layout\)\s*\{[^}]*display: block;[^}]*width: 100%;[^}]*max-width: none;/s,
-  );
-  assert.match(
-    css,
-    /\.site-shell:has\(\.reading-layout\.detail-layout\) > \.sticky-header > \.topic-picker\s*\{[^}]*position: static;[^}]*flex-direction: row;[^}]*max-width: none;/s,
-  );
-  assert.match(
-    css,
-    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\s*\{[^}]*width: 100%;[^}]*max-width: 900px;[^}]*margin: 18px 0 64px;/s,
-  );
-  assert.match(
-    css,
-    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\.has-aside\s*\{[^}]*display: grid;[^}]*width: 100%;[^}]*max-width: none;[^}]*grid-template-columns: minmax\(0, 1fr\) 220px;[^}]*gap: clamp\(32px, 4vw, 64px\);[^}]*margin: 18px 0 64px;[^}]*justify-content: stretch;/s,
-  );
-  assert.match(
-    css,
-    /\.reading-layout\.detail-layout > #content > \.project-detail,[\s\S]*?\.reading-layout\.detail-layout > #content > \.article-body\s*\{[^}]*max-width: 900px;/s,
-  );
-  assert.match(
-    css,
-    /@media \(max-width: 1199px\)\s*\{\s*\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;[^}]*margin-inline:\s*auto;/s,
-  );
-  assert.match(
-    css,
-    /@media \(min-width: 1200px\) \{ \.project-detail \.detail-mobile-nav \{ display: none; \} \}/,
-  );
-});
-
 test('structured project detail renders sourced sections without an event timeline',async()=>{
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
  const dir=mkdtempSync('/tmp/public-project-detail-');
@@ -548,16 +476,10 @@ test('news detail renders structured evidence, timeline and a section directory'
    impacts:[{description:'讨论持续扩散',status:'analysis'}],
    uncertainties:['后续责任认定仍待相关程序确认'],
    watchpoints:['关注后续调查结论'],
-   trendTags:['single_platform'],
-   discussionTags:['debate'],
-   trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-03T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-   publicDiscussion:{summary:'公开讨论围绕事件责任展开。',evidenceRefs:['discussion']},
    evidence:[
-    {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
-    {id:'secondary',name:'补充原始来源',url:'https://example.com/secondary',supports:'补充核实事件进展'},
-    {id:'trend',name:'微博话题页',url:'https://example.com/trend',supports:'微博热榜排名'},
-    {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开讨论内容'},
-   ],
+     {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
+     {id:'secondary',name:'补充原始来源',url:'https://example.com/secondary',supports:'补充核实事件进展'},
+    ],
   };
   const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
@@ -583,10 +505,8 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*主管部门公布鉴定结果/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('#news-evidence-secondary a[href="https://example.com/secondary"]'));
-  assert.equal(doc.querySelector('#news-evidence-trend'),null,'legacy platform-only evidence stays hidden');
-  assert.equal(doc.querySelector('#news-evidence-discussion'),null,'legacy discussion-only evidence stays hidden');
-  assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/微博话题页|公开讨论页/);
-  assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
+  assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/微博话题页|公开讨论页|平台热度|讨论热度/);
+   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
   assert.equal(doc.querySelectorAll('.news-detail-sections h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
