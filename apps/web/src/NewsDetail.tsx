@@ -9,7 +9,7 @@ const natureLabel:Record<NonNullable<NewsDetails['keyFacts']>[number]['nature'],
 function EvidenceLinks({ids,details}:{ids?:string[];details:NewsDetails}){
   if(!ids?.length)return null;
   return <span className="news-references">{ids.map(id=>{
-    const source=details.evidence?.find(item=>item.id===id);
+    const source=details.evidence.find(item=>item.id===id);
     return source?<a key={id} href={`#news-evidence-${id}`}>{source.name}</a>:null;
   })}</span>;
 }
@@ -50,7 +50,7 @@ export function NewsDetail({story}:{story:Story}){
       {show("news-uncertainties")&&<section id="news-uncertainties"><h2>未确定事项</h2><ul>{details.uncertainties?.filter(hasText).map((item,index)=><li key={index}><InlineText text={item}/></li>)}</ul></section>}
       {show("news-watchpoints")&&<section id="news-watchpoints"><h2>后续观察</h2><ul>{details.watchpoints?.filter(hasText).map((item,index)=><li key={index}><InlineText text={item}/></li>)}</ul></section>}
       {show("news-analysis")&&<section id="news-analysis"><h2>分析与推断</h2><p><InlineText text={story.analysis??""}/></p></section>}
-      <section id="news-evidence"><h2>来源与证据</h2><span id="news-primary-source"/><h3>主要原始来源与原文短引</h3><Source story={story} expanded/>{!!details.evidence?.length&&<><h3>其他支持来源</h3><ol className="news-evidence">{details.evidence.map(source=><li id={`news-evidence-${source.id}`} key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name} ↗</a><p>支持：{source.supports}</p></li>)}</ol></>}</section>
+      <section id="news-evidence"><h2>来源与证据</h2><span id="news-primary-source"/><h3>主要原始来源与原文短引</h3><Source story={story} expanded/>{!!details.evidence.length&&<><h3>其他支持来源</h3><ol className="news-evidence">{details.evidence.map(source=><li id={`news-evidence-${source.id}`} key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name} ↗</a><p>支持：{source.supports}</p></li>)}</ol></>}</section>
     </div>
   </article>;
 }
