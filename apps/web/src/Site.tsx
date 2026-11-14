@@ -7,7 +7,6 @@ import {
   counts,
   Source,
   Empty,
-  EditionLinks,
   groupResearchAreas,
   hasResearchAreas,
   projectEntryLabel,
@@ -71,13 +70,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       <Source story={item} />
     </article>
   );
-  const owner = story
-    ? data.reports.find(
-        (r) =>
-          r.report_date === story.report_date &&
-          r.version === story.report_version,
-      )
-    : undefined;
   const investment = story?.details?.kind === "investment" ? story.details : null;
   const news = story?.details?.kind === "news" ? story.details : null;
   const structuredProject = story?.details?.kind === "project" ? story.details : null;
