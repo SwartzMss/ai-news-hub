@@ -4,6 +4,7 @@
   "additionalProperties": false,
   "required": [
     "schema_version",
+    "topic",
     "report_id",
     "report_date",
     "channel",
@@ -13,8 +14,7 @@
     "review_status",
     "approved_at",
     "reviewed_content_sha256",
-    "items",
-    "topic"
+    "items"
   ],
   "properties": {
     "schema_version": {
@@ -71,9 +71,9 @@
           "fact_summary",
           "analysis",
           "evidence_quote",
+          "details",
           "verification",
-          "source",
-          "details"
+          "source"
         ],
         "allOf": [
           {
