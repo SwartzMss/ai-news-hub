@@ -675,7 +675,7 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.ok(publicStyles.includes(".header-actions .subscribe-action svg {\n  width: 18px;\n  height: 18px;"), "Subscribe email icon is comfortably legible");
     assert.match(publicStyles, /\.header-link,\s*\.header-actions \.subscribe-action\s*\{[^}]*min-height:\s*40px;[^}]*padding:\s*0 14px;[^}]*border-radius:\s*10px;[^}]*background:\s*var\(--paper\);/s, "GitHub, Contact and Subscribe share the same outline-button treatment");
     assert.match(publicStyles, /\.header-links\s*\{[^}]*gap:\s*8px;[^}]*\}/s, "header action buttons use a compact consistent gap");
-    assert.match(publicStyles, /\.header-actions button\s*\{[^}]*width:\s*40px;[^}]*height:\s*40px;[^}]*border-radius:\s*10px;/s, "theme toggle aligns with the header action buttons");
+    assert.match(publicStyles, /\.header-actions #theme-toggle\s*\{[^}]*width:\s*40px;[^}]*height:\s*40px;[^}]*border-radius:\s*10px;/s, "theme toggle aligns with the header action buttons");
     assert.ok(publicStyles.includes(".site-footer {\n  flex-shrink: 0;"), "footer is a minimal separated line");
     const client = readFileSync(join(enabled.output, window.document.querySelector('script[type="module"]').getAttribute("src").slice(1)), "utf8");
     let complete;

@@ -180,7 +180,7 @@ h3 {
   height: 18px;
   flex: 0 0 auto;
 }
-.header-actions button {
+.header-actions #theme-toggle {
   display: grid;
   place-items: center;
   width: 40px;
@@ -1973,7 +1973,7 @@ body {
   .header-actions {
     gap: 12px;
   }
-  .header-actions button {
+  .header-actions #theme-toggle {
     width: 36px;
     min-width: 36px;
     height: 36px;
