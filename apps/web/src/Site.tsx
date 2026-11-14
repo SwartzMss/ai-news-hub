@@ -70,7 +70,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       <Source story={item} />
     </article>
   );
-  const investment = story?.details?.kind === "investment" ? story.details : null;
+  const investment = story?.details.kind === "investment" ? story.details : null;
   const news = story?.details?.kind === "news" ? story.details : null;
   const structuredProject = story?.details?.kind === "project" ? story.details : null;
   const nav =
@@ -185,7 +185,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {["date", "report"].includes(page.kind) && selected && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
-                <a href={topicArchivePath(page.topicId ?? "legacy")}>
+                <a href={topicArchivePath(selected.topic.id)}>
                   往期归档
                 </a>
                 <span>/</span>
