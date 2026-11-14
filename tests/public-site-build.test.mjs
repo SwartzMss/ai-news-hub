@@ -99,7 +99,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     "page",
   );
   assert.equal(articleDoc.querySelector(".article-header time"), null);
-  assert.ok(articleDoc.querySelector(".article-header .category-label"));
+  assert.ok(articleDoc.querySelector(".news-detail-tags .news-tag-topic"));
   assert.equal(articleDoc.querySelectorAll(".detail-context a").length, 1);
   assert.equal(articleDoc.querySelector(".detail-context a").textContent, "返回归档");
   assert.ok(articleDoc.querySelector(".detail-context a").getAttribute("href").endsWith("/archive/"));
@@ -287,8 +287,8 @@ test("date and revision readers preserve exact archived text and separate curren
       ),
     ).window.document;
     assert.equal(
-      withdrawnDoc.querySelector(".edition-links a").getAttribute("href"),
-      `/topics/${base.topic.id}/archive/2026-11-02/v000001/`,
+      withdrawnDoc.querySelector(".detail-context a").getAttribute("href"),
+      `/topics/${base.topic.id}/archive/`,
     );
     const current = main(`topics/${base.topic.id}/index.html`);
     assert.equal(current.querySelector(".brief-topic"), null);
