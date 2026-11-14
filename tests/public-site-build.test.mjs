@@ -49,10 +49,13 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.match(publicStyles, /@media\s*\(max-width:\s*1100px\)\s*\{\s*\.brief-layout\s*\{\s*display:\s*block;\s*max-width:\s*none;/s, "tablet brief content remains aligned");
   assert.match(publicStyles, /\.header-actions \.subscribe-action\s*\{[^}]*background:\s*var\(--paper\)[^}]*color:\s*var\(--ink\)/s, "Subscribe uses the neutral theme surface");
   assert.ok(homeDoc.querySelector(".reader-body > main"));
-  assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, data.topics.length);
+  assert.equal(homeDoc.querySelectorAll("[data-topic-panel]").length, data.topics.length, "all three topic feeds are rendered");
+  assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, 0, "all topic feeds omit the generic all-news heading");
+  assert.ok(!homeDoc.body.textContent.includes("全部资讯"), "the all-news heading is removed from every topic");
   assert.equal(homeDoc.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length, 0, "home feed has no side or collapsible directory");
   for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
     assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
+    assert.equal(panel.querySelector(".brief-list-heading"), null, "each topic feed omits the generic all-news heading");
     assert.equal(panel.querySelector(".brief-description"), null, "brief header omits generic topic copy");
     assert.equal(panel.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length, 0);
     assert.equal(panel.querySelector(".brief-generation"), null, "brief header omits build timestamp");
