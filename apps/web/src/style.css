@@ -970,11 +970,11 @@ main {
   line-height: 1.5;
 }
 .newsletter-dialog {
-  width: min(480px, calc(100vw - 32px));
+  width: min(440px, calc(100vw - 32px));
   max-width: none;
-  max-height: min(90dvh, 520px);
+  max-height: min(90dvh, 480px);
   margin: auto;
-  padding: 30px;
+  padding: 20px;
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -990,57 +990,56 @@ main {
   display: flex;
   align-items: flex-start;
   justify-content: space-between;
-  gap: 18px;
-  margin-bottom: 22px;
+  gap: 12px;
+  margin-bottom: 16px;
 }
 .newsletter-dialog h2 {
-  margin: 0 0 8px;
+  margin: 0 0 6px;
   color: var(--ink);
   font-size: 20px;
   line-height: 1.4;
   font-weight: 700;
 }
-.newsletter-dialog p {
+.newsletter-dialog-header p {
+  margin: 0;
   color: var(--muted);
   font-size: 13px;
-  line-height: 1.7;
+  line-height: 1.6;
 }
 .newsletter-close {
   display: grid;
   flex: 0 0 auto;
   place-items: center;
-  width: 36px;
-  height: 36px;
+  width: 32px;
+  height: 32px;
   padding: 0;
   border: 1px solid var(--line);
-  border-radius: 9px;
+  border-radius: 8px;
   background: var(--paper);
   color: var(--muted);
   cursor: pointer;
 }
 .newsletter-close svg {
-  width: 16px;
-  height: 16px;
+  width: 14px;
+  height: 14px;
 }
 .newsletter-fields {
   display: grid;
   grid-template-columns: minmax(0, 1fr);
   align-items: stretch;
-  gap: 14px;
+  gap: 10px;
 }
 .newsletter-email {
   display: grid;
   min-width: 0;
-  gap: 8px;
-  color: var(--muted);
-  font-size: 12px;
+  gap: 0;
 }
 .newsletter-email input[type="email"] {
   display: block;
   width: 100%;
   min-width: 0;
-  min-height: 46px;
-  padding: 0 14px;
+  min-height: 44px;
+  padding: 0 12px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--paper);
@@ -1054,9 +1053,9 @@ main {
 }
 .newsletter-fields button {
   justify-self: start;
-  width: 170px;
-  min-height: 46px;
-  padding: 0 18px;
+  width: 160px;
+  min-height: 42px;
+  padding: 0 16px;
   border: 1px solid var(--accent);
   border-radius: 8px;
   background: var(--accent);
@@ -1067,12 +1066,12 @@ main {
   cursor: pointer;
 }
 .newsletter-fields button:disabled { opacity: 0.6; cursor: wait; }
-.newsletter-dialog [role="status"]:not(:empty) { margin-top: 12px; }
+.newsletter-dialog [role="status"]:not(:empty) { margin-top: 10px; }
 .newsletter-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @media (max-width: 700px) {
   .newsletter-dialog {
-    width: min(480px, calc(100vw - 24px));
-    padding: 22px;
+    width: min(440px, calc(100vw - 24px));
+    padding: 18px;
   }
   .newsletter-fields button {
     justify-self: stretch;
