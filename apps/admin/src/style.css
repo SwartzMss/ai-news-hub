@@ -2857,7 +2857,7 @@ summary {
   min-height: 34px;
 }
 .task-table td:last-child {
-  width: 285px;
+  width: 200px;
 }
 .task-pagination {
   display: flex;
