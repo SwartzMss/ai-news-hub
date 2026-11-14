@@ -5,8 +5,8 @@ const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength }
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
 export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
 export type TechnologyCategory = typeof TECHNOLOGY_CATEGORIES[number];
-export const REPORT_CATEGORIES = [...new Set(['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), ...TECHNOLOGY_CATEGORIES, 'other'])];
-const categories = REPORT_CATEGORIES;
+const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), 'other'];
+export const REPORT_CATEGORIES = [...new Set([...categories, ...TECHNOLOGY_CATEGORIES])];
 export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
 export type ResearchArea = typeof RESEARCH_AREAS[number];
 export interface ProposalItem {
