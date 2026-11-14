@@ -970,11 +970,11 @@ main {
   line-height: 1.5;
 }
 .newsletter-dialog {
-  width: min(520px, calc(100vw - 32px));
+  width: min(480px, calc(100vw - 32px));
   max-width: none;
-  max-height: min(90vh, 480px);
+  max-height: min(90dvh, 520px);
   margin: auto;
-  padding: 28px;
+  padding: 30px;
   overflow: auto;
   border: 1px solid var(--line);
   border-radius: 16px;
@@ -991,7 +991,7 @@ main {
   align-items: flex-start;
   justify-content: space-between;
   gap: 18px;
-  margin-bottom: 24px;
+  margin-bottom: 22px;
 }
 .newsletter-dialog h2 {
   margin: 0 0 8px;
@@ -1024,22 +1024,23 @@ main {
 }
 .newsletter-fields {
   display: grid;
-  grid-template-columns: minmax(0, 1fr) auto;
-  align-items: end;
-  gap: 12px;
+  grid-template-columns: minmax(0, 1fr);
+  align-items: stretch;
+  gap: 14px;
 }
 .newsletter-email {
   display: grid;
   min-width: 0;
-  gap: 7px;
+  gap: 8px;
   color: var(--muted);
   font-size: 12px;
 }
-.newsletter input {
+.newsletter-email input[type="email"] {
+  display: block;
   width: 100%;
   min-width: 0;
-  min-height: 44px;
-  padding: 10px 12px;
+  min-height: 46px;
+  padding: 0 14px;
   border: 1px solid var(--line);
   border-radius: 8px;
   background: var(--paper);
@@ -1047,14 +1048,20 @@ main {
   font: inherit;
   font-size: 14px;
 }
+.newsletter-email input[type="email"]::placeholder {
+  color: var(--muted);
+  opacity: 0.75;
+}
 .newsletter-fields button {
-  min-height: 44px;
-  padding: 0 16px;
+  justify-self: start;
+  width: 170px;
+  min-height: 46px;
+  padding: 0 18px;
   border: 1px solid var(--accent);
   border-radius: 8px;
   background: var(--accent);
   color: var(--paper);
-  font-size: 13px;
+  font-size: 14px;
   font-weight: 650;
   white-space: nowrap;
   cursor: pointer;
@@ -1063,9 +1070,14 @@ main {
 .newsletter-dialog [role="status"]:not(:empty) { margin-top: 12px; }
 .newsletter-honeypot { position: absolute; width: 1px; height: 1px; overflow: hidden; clip-path: inset(50%); }
 @media (max-width: 700px) {
-  .newsletter-dialog { padding: 22px; }
-  .newsletter-fields { grid-template-columns: minmax(0, 1fr); }
-  .newsletter-fields button { width: 100%; }
+  .newsletter-dialog {
+    width: min(480px, calc(100vw - 24px));
+    padding: 22px;
+  }
+  .newsletter-fields button {
+    justify-self: stretch;
+    width: 100%;
+  }
 }
 .demo-banner {
   border: 1px solid #dbc47d;
