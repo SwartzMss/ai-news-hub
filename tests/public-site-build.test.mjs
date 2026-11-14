@@ -598,6 +598,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.doesNotMatch(doc.querySelector('#news-uncertainties').textContent,/Reddit|互动量/);
   assert.match(doc.querySelector('#news-watchpoints').textContent,/关注后续调查结论/);
   assert.doesNotMatch(doc.querySelector('#news-watchpoints').textContent,/Reddit/);
+  assert.equal(doc.querySelector('#news-impacts'),null);
   assert.equal(doc.querySelectorAll('#news-evidence .news-evidence li').length,1);
   assert.doesNotMatch(doc.querySelector('#news-evidence').textContent,/Reddit|转载和评论样本/);
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
