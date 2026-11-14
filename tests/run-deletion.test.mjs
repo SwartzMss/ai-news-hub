@@ -50,7 +50,7 @@ test('concurrent deletion shares the operation and blocks continuing the same ru
  const s=setup({async publish(){throw Error('unexpected publish');},async remove(){calls++;started();await new Promise(resolve=>{release=resolve;});}});
  try{
   // A failed publication may have committed remotely, so its recorded target must also be removed.
-  s.db.prepare("INSERT INTO publication_records(id,report_id,target,idempotency_key,status,repository,branch,artifact_path,content_hash) VALUES ('p','r','github','p','failed',?,?,?,?)").run(target.repository,target.branch,'reports/2026/11/03/opensource/v000001.json','a'.repeat(64));
+  s.db.prepare("INSERT INTO publication_records(id,report_id,target,idempotency_key,status,repository,branch,artifact_path,content_hash) VALUES ('p','r','github','p','failed',?,?,?,?)").run(target.repository,target.branch,`reports/topics/${s.doc.topic.id}/2026/11/03/v000001.json`,'a'.repeat(64));
   const first=s.remove();await ready;
   assert.equal(s.engine.busy(),true);
   assert.throws(()=>s.engine.continueRun('run','followup','next'),/run_deleting/);
@@ -74,7 +74,7 @@ test('shutdown interrupts remote deletion and waits before releasing database wo
  const ready=new Promise(resolve=>{started=resolve;});
  const s=setup({async publish(){throw Error('unexpected publish');},async remove(_artifact,_target,signal){started();await new Promise((_resolve,reject)=>signal.addEventListener('abort',()=>reject(Error('aborted')),{once:true}));}});
  try{
-  s.db.prepare("INSERT INTO publication_records(id,report_id,target,idempotency_key,status,repository,branch,artifact_path,content_hash) VALUES ('p','r','github','p','failed',?,?,?,?)").run(target.repository,target.branch,'reports/2026/11/03/opensource/v000001.json','a'.repeat(64));
+  s.db.prepare("INSERT INTO publication_records(id,report_id,target,idempotency_key,status,repository,branch,artifact_path,content_hash) VALUES ('p','r','github','p','failed',?,?,?,?)").run(target.repository,target.branch,`reports/topics/${s.doc.topic.id}/2026/11/03/v000001.json`,'a'.repeat(64));
   const deletion=s.remove();await ready;
   s.publications.interrupt();const closing=s.engine.close();
   await assert.rejects(deletion,/publication_interrupted/);await closing;
