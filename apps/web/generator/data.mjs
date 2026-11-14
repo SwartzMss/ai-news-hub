@@ -23,6 +23,7 @@ const validators = {
   3: ajv.compile(readSchema("report-archive-v3.schema.json")),
   4: ajv.compile(readSchema("report-archive-v4.schema.json")),
   5: ajv.compile(readSchema("report-archive-v5.schema.json")),
+  6: ajv.compile(readSchema("report-archive-v6.schema.json")),
 };
 const topicSchema = {
   type: "object",
@@ -122,7 +123,7 @@ export function readArchives(
           ? report.schema_version !== 1 ||
             report.report_date !== old.slice(1, 4).join("-") ||
             report.version !== Number(old[4])
-          : ![2, 3, 4, 5].includes(report.schema_version) ||
+          : ![2, 3, 4, 5, 6].includes(report.schema_version) ||
             report.topic.id !== scoped[1] ||
             report.report_date !== scoped.slice(2, 5).join("-") ||
             report.version !== Number(scoped[5])
@@ -169,8 +170,6 @@ export function readArchives(
               for(const entry of [...(item.details.publicDiscussion.viewpoints??[]),...(item.details.publicDiscussion.controversies??[]),...(item.details.publicDiscussion.representativeComments??[])])
                 if(!valid(entry.evidenceRefs))throw Error('invalid news discussion evidence reference');
             }
-            for(const angle of item.details.contentAngles??[])
-              if(!valid(angle.evidenceRefs))throw Error('invalid news content evidence reference');
             const platforms=new Set((item.details.trendSignals??[]).map(signal=>signal.platform));
             const trendTags=new Set(item.details.trendTags??[]);
             if(item.details.trendSignals?.length&&platforms.size>=2&&!trendTags.has('cross_platform'))throw Error('invalid news trend tags');
@@ -182,8 +181,6 @@ export function readArchives(
               const repeated=(item.details.trendSignals??[]).some((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.metric===signal.metric&&other.observedAt!==signal.observedAt));
               if(!repeated)throw Error('invalid news trend tags');
             }
-            if(item.details.contentSuitability==='recommended'&&(!item.details.contentAngles?.length||!item.details.contentTags?.length||item.details.contentTags.includes('not_suitable')))throw Error('invalid news content assessment');
-            if(item.details.contentSuitability==='not_recommended'&&(!!item.details.contentAngles?.length||!item.details.contentTags?.includes('not_suitable')))throw Error('invalid news content assessment');
           }
         }
       }

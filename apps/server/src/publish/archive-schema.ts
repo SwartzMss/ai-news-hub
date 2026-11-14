@@ -1,6 +1,6 @@
 import { REPORT_SCHEMA, PUBLIC_TOPIC_SCHEMA, TECHNOLOGY_CATEGORIES } from "../news/report-schema.js";
 import { TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA } from "../news/investment-details.js";
-import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
+import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_HEADLINES_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
 const original = REPORT_SCHEMA.properties.items.items.properties;
 const source = original.source.properties;
 const extendedDetails = original.details;
@@ -102,7 +102,7 @@ export const ARCHIVE_V3_SCHEMA = {
 const v4Properties = {
   ...properties,
   category: { type: "string", enum: [...HEADLINE_CATEGORIES] },
-  details: HEADLINES_DETAILS_SCHEMA,
+  details: LEGACY_HEADLINES_DETAILS_SCHEMA,
 };
 export const ARCHIVE_V4_SCHEMA = {
   ...ARCHIVE_V2_SCHEMA,
@@ -136,6 +136,28 @@ export const ARCHIVE_V5_SCHEMA = {
         ...root.items.items,
         required: [...root.items.items.required, 'details'],
         properties: v5Properties,
+      },
+    },
+  },
+};
+
+
+const v6Properties = {
+  ...properties,
+  category: { type: "string", enum: [...HEADLINE_CATEGORIES] },
+  details: HEADLINES_DETAILS_SCHEMA,
+};
+export const ARCHIVE_V6_SCHEMA = {
+  ...ARCHIVE_V2_SCHEMA,
+  properties: {
+    ...ARCHIVE_V2_SCHEMA.properties,
+    schema_version: { const: 6 },
+    items: {
+      ...root.items,
+      items: {
+        ...root.items.items,
+        required: [...root.items.items.required, 'details'],
+        properties: v6Properties,
       },
     },
   },

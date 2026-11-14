@@ -882,12 +882,6 @@ main {
   padding-left: 12px;
   color: var(--ink);
 }
-.news-content-suitability { border-left: 3px solid var(--accent); padding-left: 14px; }
-.news-content-suitability strong { color: var(--accent); }
-.news-content-angles { display: grid; gap: 12px; }
-.news-content-angles > article { border: 1px solid var(--line); border-radius: 5px; padding: 16px; }
-.news-content-angles h3 { font-size: 16px; margin-bottom: 10px; }
-.news-content-angles p { margin: 6px 0; }
 .news-timeline { padding-left: 24px; border-left: 2px solid var(--line); list-style: none; }
 .news-timeline li { position: relative; padding-left: 12px; }
 .news-timeline li::before { content: ''; position: absolute; top: 12px; left: -30px; width: 10px; height: 10px; border-radius: 50%; background: var(--accent); }

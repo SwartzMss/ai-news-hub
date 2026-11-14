@@ -8,7 +8,7 @@ export const HEADLINE_CATEGORIES = [
   'gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other',
 ] as const;
 export const TREND_TAGS = ['cross_platform','single_platform','controversial','viral_video','sustained_discussion'] as const;
-export const CONTENT_TAGS = ['short_video','debate','story_reversal','explainer','emotional_resonance','entertainment','not_suitable'] as const;
+export const DISCUSSION_TAGS = ['debate','explainer'] as const;
 
 export interface NewsDetails {
   kind:'news';
@@ -20,7 +20,7 @@ export interface NewsDetails {
   uncertainties?:string[];
   watchpoints?:string[];
   trendTags?:typeof TREND_TAGS[number][];
-  contentTags?:typeof CONTENT_TAGS[number][];
+  discussionTags?:typeof DISCUSSION_TAGS[number][];
   trendSignals?:{platform:SocialPlatform;contentType:'hashtag'|'post'|'video'|'thread'|'topic_page'|'other';metric:'rank'|'views'|'likes'|'comments'|'shares'|'posts'|'discussion'|'other';value:string;observedAt:string;evidenceType:'direct'|'reported';evidenceRefs:string[]}[];
   publicDiscussion?:{
     summary:string;
@@ -29,9 +29,6 @@ export interface NewsDetails {
     controversies?:{topic:string;sides:string[];evidenceRefs:string[]}[];
     representativeComments?:{platform:SocialPlatform;quote:string;evidenceRefs:string[]}[];
   };
-  contentSuitability?:'recommended'|'not_recommended';
-  contentReason?:string;
-  contentAngles?:{angle:string;suggestedTitle:string;hook:string;corePoints:string[];evidenceRefs:string[]}[];
   evidence?:{id:string;name:string;url:string;supports:string}[];
 }
 
@@ -58,10 +55,6 @@ const publicDiscussionSchema={type:'object',additionalProperties:false,required:
     platform:{type:'string',enum:[...SOCIAL_PLATFORMS]},quote:text(240),evidenceRefs:refs,
   }}},
 }};
-const contentAngleSchema={type:'object',additionalProperties:false,required:['angle','suggestedTitle','hook','corePoints','evidenceRefs'],properties:{
-  angle:text(180),suggestedTitle:text(100),hook:text(180),corePoints:stringList(3,180,1),evidenceRefs:refs,
-}};
-
 const legacyNewsProperties={
   kind:{const:'news'},background:text(800),
   keyFacts:{type:'array',maxItems:6,items:{type:'object',additionalProperties:false,
@@ -94,31 +87,45 @@ export const NEWS_DETAILS_SCHEMA={
   properties:{
     ...legacyNewsProperties,
     trendTags:uniqueEnumList(TREND_TAGS,5),
-    contentTags:uniqueEnumList(CONTENT_TAGS,7),
+    discussionTags:uniqueEnumList(DISCUSSION_TAGS,2),
     trendSignals:{type:'array',maxItems:8,items:trendSignalSchema},
+    publicDiscussion:publicDiscussionSchema,
+  },
+};
+
+// Frozen compatibility contract for existing v4 social-headline archives.
+const LEGACY_CONTENT_TAGS=['short_video','debate','story_reversal','explainer','emotional_resonance','entertainment','not_suitable'] as const;
+const legacyContentAngleSchema={type:'object',additionalProperties:false,required:['angle','suggestedTitle','hook','corePoints','evidenceRefs'],properties:{
+  angle:text(180),suggestedTitle:text(100),hook:text(180),corePoints:stringList(3,180,1),evidenceRefs:refs,
+}};
+export const LEGACY_HEADLINES_DETAILS_SCHEMA={
+  ...LEGACY_NEWS_DETAILS_SCHEMA,
+  required:[...LEGACY_NEWS_DETAILS_SCHEMA.required,'trendTags','contentTags','trendSignals','contentSuitability','contentReason','contentAngles'],
+  properties:{
+    ...legacyNewsProperties,
+    trendTags:uniqueEnumList(TREND_TAGS,5),
+    contentTags:uniqueEnumList(LEGACY_CONTENT_TAGS,7),
+    trendSignals:{type:'array',minItems:1,maxItems:8,items:trendSignalSchema},
     publicDiscussion:publicDiscussionSchema,
     contentSuitability:{type:'string',enum:['recommended','not_recommended']},
     contentReason:text(320),
-    contentAngles:{type:'array',maxItems:3,items:contentAngleSchema},
+    contentAngles:{type:'array',maxItems:3,items:legacyContentAngleSchema},
   },
 };
 
 export const HEADLINES_DETAILS_SCHEMA={
   ...NEWS_DETAILS_SCHEMA,
-  required:[...NEWS_DETAILS_SCHEMA.required,'trendTags','contentTags','trendSignals','contentSuitability','contentReason','contentAngles'],
+  required:[...NEWS_DETAILS_SCHEMA.required,'trendTags','discussionTags','trendSignals'],
   properties:{
     ...NEWS_DETAILS_SCHEMA.properties,
     trendTags:uniqueEnumList(TREND_TAGS,5),
-    contentTags:uniqueEnumList(CONTENT_TAGS,7),
+    discussionTags:uniqueEnumList(DISCUSSION_TAGS,2),
     trendSignals:{type:'array',minItems:1,maxItems:8,items:trendSignalSchema},
-    contentSuitability:{type:'string',enum:['recommended','not_recommended']},
-    contentReason:text(320),
-    contentAngles:{type:'array',maxItems:3,items:contentAngleSchema},
   },
 };
 
 export function validateNewsDetails(details:NewsDetails):void {
-  const extended=!!(details.trendSignals||details.trendTags||details.contentTags||details.publicDiscussion||details.contentSuitability||details.contentAngles);
+  const extended=!!(details.trendSignals||details.trendTags||details.discussionTags||details.publicDiscussion);
   if(Buffer.byteLength(JSON.stringify(details))>(extended?6000:2500))throw new AppError('report_schema_invalid');
   const ids=new Set<string>();
   for(const evidence of details.evidence??[]){
@@ -144,8 +151,6 @@ export function validateNewsDetails(details:NewsDetails):void {
     for(const item of [...(details.publicDiscussion.viewpoints??[]),...(details.publicDiscussion.controversies??[]),...(details.publicDiscussion.representativeComments??[])])
       if(!validRefs(item.evidenceRefs))throw new AppError('report_schema_invalid');
   }
-  for(const angle of details.contentAngles??[])if(!validRefs(angle.evidenceRefs))throw new AppError('report_schema_invalid');
-
   const platforms=new Set((details.trendSignals??[]).map(signal=>signal.platform));
   const trendTags=new Set(details.trendTags??[]);
   if(details.trendSignals?.length&&platforms.size>=2&&!trendTags.has('cross_platform'))throw new AppError('report_schema_invalid');
@@ -159,6 +164,4 @@ export function validateNewsDetails(details:NewsDetails):void {
     const repeated=new Set((details.trendSignals??[]).filter((signal,index,all)=>all.some((other,otherIndex)=>otherIndex!==index&&other.platform===signal.platform&&other.metric===signal.metric&&other.observedAt!==signal.observedAt)).map(signal=>signal.platform));
     if(!repeated.size)throw new AppError('report_schema_invalid');
   }
-  if(details.contentSuitability==='recommended'&&(!details.contentAngles?.length||!details.contentTags?.length||details.contentTags.includes('not_suitable')))throw new AppError('report_schema_invalid');
-  if(details.contentSuitability==='not_recommended'&&(!!details.contentAngles?.length||!details.contentTags?.includes('not_suitable')))throw new AppError('report_schema_invalid');
 }

@@ -1,6 +1,6 @@
 import type { NewsDetails, SocialPlatform, Story } from './types';
 import { InlineText } from './InlineText';
-import { categories, contentTagLabels, Source, lead, trendTagLabels } from './ReadingParts';
+import { categories, discussionTagLabels, Source, lead, trendTagLabels } from './ReadingParts';
 import { DetailAsideNav, MobileDetailNav, hasText, type DetailSection } from './DetailNavigation';
 
 const natureLabel:Record<NonNullable<NewsDetails['keyFacts']>[number]['nature'],string>={
@@ -32,7 +32,6 @@ export function newsSections(details:NewsDetails,analysis?:string|null):DetailSe
     {id:'news-timeline',label:'事件时间线',show:(details.timeline?.length??0)>1},
     {id:'news-positions',label:'各方表态',show:present(details.positions)},
     {id:'news-impacts',label:'影响',show:present(details.impacts)},
-    {id:'news-content',label:'内容创作建议',show:!!details.contentSuitability},
     {id:'news-uncertainties',label:'未确定事项',show:present(details.uncertainties?.filter(hasText).map(value=>({value})))},
     {id:'news-watchpoints',label:'后续观察',show:present(details.watchpoints?.filter(hasText).map(value=>({value})))},
     {id:'news-analysis',label:'分析与推断',show:hasText(analysis)},
@@ -50,7 +49,7 @@ export function NewsDetail({story}:{story:Story}){
       <div className="news-detail-tags">
         <span className="news-tag news-tag-topic">{categories[story.category]??story.category}</span>
         {details.trendTags?.map(tag=><span className="news-tag news-tag-trend" key={tag}>{trendTagLabels[tag]??tag}</span>)}
-        {details.contentTags?.filter(tag=>tag!=='short_video').map(tag=><span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag]??tag}</span>)}
+        {details.discussionTags?.map(tag=><span className="news-tag news-tag-content" key={tag}>{discussionTagLabels[tag]??tag}</span>)}
       </div>
       <p className="news-detail-verification">研究资料由 Codex 提供；平台热度和讨论仅代表可观察的公开样本，不等于整体民意；来源链接和格式校验不等于独立事实核验。</p>
     </header>
@@ -67,7 +66,6 @@ export function NewsDetail({story}:{story:Story}){
       {show("news-timeline")&&<section id="news-timeline"><h2>事件时间线</h2><ol className="news-timeline">{details.timeline?.map((entry,index)=><li key={`${entry.time}-${index}`}><time>{entry.time}</time><p><InlineText text={entry.event}/></p><EvidenceLinks ids={entry.evidenceRefs} details={details}/></li>)}</ol></section>}
       {show("news-positions")&&<section id="news-positions"><h2>各方表态</h2><ul className="news-positions">{details.positions?.map((position,index)=><li key={`${position.actor}-${index}`}><div><strong>{position.actor}</strong><span>{position.form==='quote'?'原话':'转述'}</span></div><p><InlineText text={position.statement}/></p><EvidenceLinks ids={position.evidenceRefs} details={details}/></li>)}</ul></section>}
       {show("news-impacts")&&<section id="news-impacts"><h2>影响</h2><ul className="news-impacts">{details.impacts?.map((impact,index)=><li key={index}><span>{impact.status==='observed'?'已观察':'分析推断'}</span><p><InlineText text={impact.description}/></p><EvidenceLinks ids={impact.evidenceRefs} details={details}/></li>)}</ul></section>}
-      {show("news-content")&&<section id="news-content"><h2>内容创作建议</h2><p className="news-content-suitability"><strong>{details.contentSuitability==='recommended'?'适合进一步创作':'不建议制作短视频'}</strong> · <InlineText text={details.contentReason??''}/></p>{!!details.contentAngles?.length&&<div className="news-content-angles">{details.contentAngles.map((angle,index)=><article key={index}><h3>{angle.angle}</h3><p><strong>建议标题：</strong><InlineText text={angle.suggestedTitle}/></p><p><strong>开头 Hook：</strong><InlineText text={angle.hook}/></p><p><strong>核心内容：</strong></p><ul>{angle.corePoints.map((point,i)=><li key={i}><InlineText text={point}/></li>)}</ul><EvidenceLinks ids={angle.evidenceRefs} details={details}/></article>)}</div>}</section>}
       {show("news-uncertainties")&&<section id="news-uncertainties"><h2>未确定事项</h2><ul>{details.uncertainties?.filter(hasText).map((item,index)=><li key={index}><InlineText text={item}/></li>)}</ul></section>}
       {show("news-watchpoints")&&<section id="news-watchpoints"><h2>后续观察</h2><ul>{details.watchpoints?.filter(hasText).map((item,index)=><li key={index}><InlineText text={item}/></li>)}</ul></section>}
       {show("news-analysis")&&<section id="news-analysis"><h2>分析与推断</h2><p><InlineText text={story.analysis??""}/></p></section>}
