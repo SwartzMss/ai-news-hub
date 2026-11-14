@@ -233,10 +233,7 @@
             "additionalProperties": false,
             "required": [
               "kind",
-              "background",
-              "trendTags",
-              "discussionTags",
-              "trendSignals"
+              "background"
             ],
             "properties": {
               "kind": {
@@ -573,8 +570,7 @@
                       }
                     }
                   }
-                },
-                "minItems": 1
+                }
               },
               "publicDiscussion": {
                 "type": "object",
