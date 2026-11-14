@@ -58,7 +58,7 @@ function fixture(initialTasks = [makeTask(
         const current = tasks[index];
         const updated = {
           ...current,
-          status: body?.status ?? current.status,
+          status: typeof body?.status === "string" ? body.status : current.status,
           configuration: {
             ...current.configuration,
             ...body,
@@ -132,7 +132,7 @@ test("the schedule switch only pauses or enables the existing task", async () =>
   const toggle = screen.getByRole("switch", {
     name: "定时执行：每日科技投资简报",
   });
-  expect(toggle).toBeChecked();
+  expect((toggle as HTMLInputElement).checked).toBe(true);
   fireEvent.click(toggle);
 
   await waitFor(() =>
