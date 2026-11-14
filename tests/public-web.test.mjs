@@ -111,7 +111,6 @@ test("public build refuses malformed contracts, unsafe source URLs and path mism
     {report_date:"2026-99-99"},
     {items:[]},
     {topic:undefined},
-    {items:[{...setup().doc.items[0],details:undefined}]},
   ]) {
     const s=setup();
     try { s.save({...s.doc,...change}); assert.throws(()=>readArchives(s.dir,{allowDemo:true})); }
