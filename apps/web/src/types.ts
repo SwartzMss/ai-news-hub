@@ -47,7 +47,7 @@ export interface Story {
   importance: number;
   fact_summary: string;
   analysis: string | null;
-  details?: InvestmentDetails | NewsDetails | ProjectDetails;
+  details: InvestmentDetails | NewsDetails | ProjectDetails;
   evidence_quote: string;
   verification: "source_only" | "codex_reported";
   source: {
@@ -63,7 +63,7 @@ export interface Story {
   first_approved_at: string;
 }
 export interface Report {
-  schema_version: 1 | 2 | 3 | 4 | 5 | 6 | 7;
+  schema_version: 1;
   topic: Topic;
   report_id: string;
   report_date: string;
