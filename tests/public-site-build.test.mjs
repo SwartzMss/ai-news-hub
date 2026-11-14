@@ -36,10 +36,10 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
   );
   assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
-  assert.equal(historyDoc.querySelector("footer"), null);
+  assert.equal(historyDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
-  assert.equal(homeDoc.querySelector("footer"), null);
+  assert.equal(homeDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
   const publicStyles = readFileSync(new URL("../apps/web/src/style.css", import.meta.url), "utf8");
@@ -84,7 +84,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   const articleDoc = new JSDOM(
     readFileSync(join(root, `news/${data.current[0].key}/index.html`), "utf8"),
   ).window.document;
-  assert.equal(articleDoc.querySelector("footer"), null);
+  assert.equal(articleDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
   assert.equal(
     articleDoc
       .querySelector('.site-nav a[href="/"]')
@@ -327,7 +327,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     for (const topic of [a, b]) {
       assert.ok(home.querySelector(`a[data-topic-choice="${topic.id}"][href="/topics/${topic.id}/"]`));
       assert.ok(documentAt("archive/index.html").querySelector(`main a[href="/topics/${topic.id}/archive/"]`));
-      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("footer"), null);
+      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
       assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
     }
     const aMain = mainAt(`topics/${a.id}/archive/2026-11-03/index.html`);
@@ -373,7 +373,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
     assert.equal(visible()[0].querySelector(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']"), null);
 
-    assert.equal(browser.window.document.querySelector("footer"), null);
+    assert.equal(browser.window.document.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
     assert.equal(browser.window.document.querySelector("[data-topic-archive]").getAttribute("href"), `/topics/${a.id}/archive/`);
     browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
     browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
@@ -630,7 +630,7 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
   try {
     const disabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: false });
     const disabledHtml = readFileSync(join(disabled.output, "index.html"), "utf8");
-    assert.doesNotMatch(disabledHtml, /newsletter-signup/);
+    assert.doesNotMatch(disabledHtml, /newsletter-dialog/);
     assert.doesNotMatch(disabledHtml, /subscribe-action/);
     assert.match(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src 'none'/);
     const enabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: true });
@@ -638,25 +638,50 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     const browser = new JSDOM(html, { url: "https://news.example/", runScripts: "outside-only" });
     const { window } = browser;
     window.matchMedia = () => ({ matches: false });
-    const form = window.document.querySelector("#newsletter-signup form");
+    const dialog = window.document.querySelector("#newsletter-dialog");
+    const form = dialog?.querySelector("form");
+    assert.ok(dialog, "enabled build renders the subscription dialog");
+    assert.equal(dialog.tagName, "DIALOG");
     assert.ok(form, "enabled build has a signup form");
     assert.equal(form.getAttribute("method"), "post");
     assert.equal(form.getAttribute("action"), "/api/newsletter/subscribe");
     assert.equal(form.querySelector('[name="email"]').type, "email");
     assert.ok(form.querySelector('[name="email"]').required);
     assert.equal(form.querySelector('[name="website"]').tabIndex, -1);
+    window.HTMLDialogElement.prototype.showModal = function () { this.setAttribute("open", ""); };
+    window.HTMLDialogElement.prototype.close = function () { this.removeAttribute("open"); };
     const subscribe = window.document.querySelector(".header-actions .subscribe-action");
     assert.ok(subscribe, "enabled build exposes a compact Subscribe entry");
-    assert.equal(subscribe.getAttribute("href"), "#newsletter-signup");
+    assert.equal(subscribe.tagName, "BUTTON");
+    assert.equal(subscribe.getAttribute("type"), "button");
+    assert.equal(subscribe.hasAttribute("data-newsletter-open"), true);
+    assert.equal(subscribe.getAttribute("aria-controls"), "newsletter-dialog");
     assert.equal(subscribe.textContent.trim(), "Subscribe");
-    assert.ok(window.document.querySelector(subscribe.getAttribute("href")), "Subscribe points to the existing signup form");
-    assert.equal(window.document.querySelector("footer"), null);
-    assert.ok(window.document.querySelector(".site-shell > #newsletter-signup"));
-    assert.equal(window.document.querySelector(".topic-picker #newsletter-signup, .brief-toc #newsletter-signup"), null);
+    const github = window.document.querySelector('.header-links a[href="https://github.com/SwartzMss/ai-news-hub"]');
+    const contact = window.document.querySelector('.header-links a[href="https://github.com/SwartzMss/ai-news-hub/discussions"]');
+    assert.ok(github, "header exposes the project repository");
+    assert.ok(contact, "header exposes the contact destination");
+    assert.equal(contact.textContent.trim(), "Contact");
+    const footer = window.document.querySelector("footer");
+    assert.equal(footer?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
+    assert.equal(footer?.querySelectorAll("a").length, 0, "footer contains only the copyright line");
+    assert.ok(window.document.querySelector(".site-shell > #newsletter-dialog"));
+    assert.equal(window.document.querySelector(".topic-picker #newsletter-dialog, .brief-toc #newsletter-dialog"), null);
+    subscribe.click();
+    assert.equal(dialog.open, true, "Subscribe opens the modal");
+    dialog.querySelector("[data-newsletter-close]").click();
+    assert.equal(dialog.open, false, "close button dismisses the modal");
+    subscribe.click();
+    assert.equal(dialog.open, true, "Subscribe can reopen the modal");
+    dialog.dispatchEvent(new window.MouseEvent("click", { bubbles: true }));
+    assert.equal(dialog.open, false, "backdrop click dismisses the modal");
     assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /connect-src 'self'/);
     assert.match(readFileSync(join(enabled.output, "_headers"), "utf8"), /Referrer-Policy: strict-origin/);
     assert.equal(JSON.parse(readFileSync(join(enabled.output, "data/index.json"), "utf8")).newsletterEnabled, true);
     assert.doesNotMatch(html, /RESEND_API_KEY|NEWSLETTER_TOKEN_SECRET/);
+    const publicStyles = readFileSync("apps/web/src/style.css", "utf8");
+    assert.ok(publicStyles.includes(".header-actions .subscribe-action svg {\n  width: 18px;\n  height: 18px;"), "Subscribe email icon is comfortably legible");
+    assert.ok(publicStyles.includes(".site-footer {\n  flex-shrink: 0;"), "footer is a minimal separated line");
     const client = readFileSync(join(enabled.output, window.document.querySelector('script[type="module"]').getAttribute("src").slice(1)), "utf8");
     let complete;
     const calls = [];
@@ -691,7 +716,7 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.doesNotMatch(window.location.href + JSON.stringify(window.localStorage), /reader@/);
     browser.window.close();
     const demo = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", newsletterEnabled: true });
-    assert.doesNotMatch(readFileSync(join(demo.output, "index.html"), "utf8"), /newsletter-signup/);
+    assert.doesNotMatch(readFileSync(join(demo.output, "index.html"), "utf8"), /newsletter-dialog/);
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
