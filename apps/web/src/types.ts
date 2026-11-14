@@ -63,7 +63,7 @@ export interface Story {
   first_approved_at: string;
 }
 export interface Report {
-  schema_version: 1 | 2 | 3 | 4 | 5 | 6;
+  schema_version: 1 | 2 | 3 | 4 | 5 | 6 | 7;
   topic: Topic;
   report_id: string;
   report_date: string;
