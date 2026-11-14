@@ -22,10 +22,10 @@ export const sha256 = (value: string) =>
 export function reviewedReport(db: DatabaseSync, id: string) {
   const row = db
     .prepare(
-      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,n.public_topic_json,t.task_id,t.configuration_json,t.status run_status
+      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,n.public_topic_json,n.snapshot_topic,t.task_id,t.configuration_json,t.status run_status
  FROM reports r JOIN (
- SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel,NULL public_topic_json FROM news_runs
- UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel,public_topic_json FROM codex_news_runs
+ SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel,NULL public_topic_json,NULL snapshot_topic FROM news_runs
+ UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel,public_topic_json,topic snapshot_topic FROM codex_news_runs
  ) n ON n.report_id=r.id AND n.run_id=r.run_id JOIN task_runs t ON t.id=r.run_id WHERE r.id=?`,
     )
     .get(id);
@@ -66,9 +66,17 @@ export function reviewedReport(db: DatabaseSync, id: string) {
     if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) throw Error();
     const templateId = typeof configuration.templateId === 'string' ? configuration.templateId : undefined;
     const storedTopic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
-    const expectedTopic = typeof configuration.topic === 'string' && configuration.topic.trim()
-      ? {id: 't-' + sha256(String(row.task_id)).slice(0,24), name: configuration.topic}
-      : undefined;
+    const topicName = typeof configuration.topic === 'string' && configuration.topic.trim()
+      ? configuration.topic
+      : typeof row.snapshot_topic === 'string' && row.snapshot_topic.trim()
+        ? String(row.snapshot_topic)
+        : undefined;
+    const topicSeed = topicName === undefined ? undefined
+      : typeof configuration.topic === 'string' && configuration.topic.trim()
+        ? String(row.task_id)
+        : JSON.stringify([String(row.task_id), topicName]);
+    const expectedTopic = topicName === undefined || topicSeed === undefined ? undefined
+      : {id: 't-' + sha256(topicSeed).slice(0,24), name: topicName};
     const topic = storedTopic ?? expectedTopic;
     if (!topic || !expectedTopic || !isDeepStrictEqual(topic, expectedTopic)) throw Error();
     if (!isDeepStrictEqual(document.topic, topic)) throw Error();
