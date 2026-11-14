@@ -102,7 +102,8 @@ export function Shell({
           </nav>
         )}
       </div>
-      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>        {children}
+      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>
+        {children}
       </div>
       <footer className="site-footer">
         <span>© 2026 AI News Hub. All rights reserved.</span>

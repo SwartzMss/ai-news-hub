@@ -48,6 +48,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   const publicClient = readFileSync(new URL("../apps/web/src/client.ts", import.meta.url), "utf8");
   assert.match(publicStyles, /\.sticky-header\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*100;[^}]*background:\s*var\(--bg\)/s, "masthead and topic tabs remain pinned together");
   assert.match(publicStyles, /html\s*\{[^}]*scroll-padding-top:\s*calc\(var\(--sticky-header-height, 0px\) \+ 16px\);/s, "in-page navigation clears the sticky header");
+  assert.match(publicStyles, /\.reading-aside\s*\{[^}]*position:\s*sticky;[^}]*top:\s*calc\(var\(--sticky-header-height, 0px\) \+ 24px\)/s, "sticky reading directory starts below the global header");
   assert.match(publicClient, /new ResizeObserver\(syncStickyHeaderHeight\)/, "sticky header offset tracks responsive height changes");
   assert.match(publicStyles, /\.site-shell\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/s, "public shell spans the full viewport width");
   assert.match(publicStyles, /\.reader-body\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/s, "reader body is not capped by a fixed maximum width");

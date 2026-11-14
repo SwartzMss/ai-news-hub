@@ -218,8 +218,8 @@ h3 {
   .project-aside {
     display: block;
     position: sticky;
-    top: 26px;
-    max-height: calc(100dvh - 52px);
+    top: calc(var(--sticky-header-height, 0px) + 24px);
+    max-height: calc(100dvh - var(--sticky-header-height, 0px) - 24px);
     overflow-y: auto;
     min-width: 0;
     padding: 6px 0 20px 24px;
@@ -568,11 +568,11 @@ main {
   color: var(--accent);
 }
 .reading-aside {
-  max-height: calc(100dvh - 52px);
+  max-height: calc(100dvh - var(--sticky-header-height, 0px) - 24px);
   overflow-y: auto;
   overscroll-behavior: contain;
   position: sticky;
-  top: 26px;
+  top: calc(var(--sticky-header-height, 0px) + 24px);
   min-width: 0;
   padding-top: 7px;
 }
@@ -849,7 +849,7 @@ main {
 .investment-analysis { background: var(--tint); padding-inline: 20px !important; }
 .investment-evidence { padding-left: 22px; }
 .investment-evidence p { color: var(--muted); font-size: 13px; }
-.investment-aside { position: sticky; top: 28px; align-self: start; border-left: 1px solid var(--line); padding-left: 22px; }
+.investment-aside { position: sticky; top: calc(var(--sticky-header-height, 0px) + 24px); align-self: start; border-left: 1px solid var(--line); padding-left: 22px; }
 .investment-aside h2 { font-size: 13px; margin-bottom: 10px; }
 .investment-aside ol { list-style: none; padding: 0; margin: 0; }
 .investment-aside li { border-top: 1px solid var(--line); }
@@ -1600,7 +1600,7 @@ main {
 .news-aside a, .investment-aside a, .project-toc li a { font-size: 14px; line-height: 1.5; padding: 8px 10px; border-left: 3px solid transparent; border-radius: 3px; }
 [data-detail-target][aria-current="location"] { color: var(--accent); font-weight: 700; border-left-color: currentColor; background: color-mix(in srgb, var(--accent) 9%, transparent); }
 [data-detail-target]:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
-.news-detail-sections > section, .investment-sections > section, .project-sections > section, .project-sections > div[id] { scroll-margin-top: 88px; }
+.news-detail-sections > section, .investment-sections > section, .project-sections > section, .project-sections > div[id] { scroll-margin-top: 16px; }
 @media (min-width: 1200px) { .news-detail .detail-mobile-nav, .investment-detail .detail-mobile-nav { display: none; } }
 @media (min-width: 1200px) { .project-detail .detail-mobile-nav { display: none; } }
 @media (prefers-reduced-motion: no-preference) { html:has([data-detail-target]) { scroll-behavior: smooth; } }
