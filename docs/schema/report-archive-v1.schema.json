@@ -13,7 +13,8 @@
     "review_status",
     "approved_at",
     "reviewed_content_sha256",
-    "items"
+    "items",
+    "topic"
   ],
   "properties": {
     "schema_version": {
@@ -71,7 +72,8 @@
           "analysis",
           "evidence_quote",
           "verification",
-          "source"
+          "source",
+          "details"
         ],
         "allOf": [
           {
@@ -123,7 +125,20 @@
               "developer_tools",
               "security",
               "industry",
-              "other"
+              "other",
+              "ai_industry_chain",
+              "optical_communications",
+              "semiconductor",
+              "social_event",
+              "entertainment",
+              "tech_digital",
+              "sports",
+              "film_animation",
+              "gaming",
+              "finance_consumption",
+              "internet_culture",
+              "lifestyle_emotion",
+              "international_topic"
             ]
           },
           "importance": {
@@ -228,7 +243,228 @@
                 "additionalProperties": false,
                 "required": [
                   "kind",
-                  "background"
+                  "overview",
+                  "evidence"
+                ],
+                "properties": {
+                  "kind": {
+                    "const": "project"
+                  },
+                  "overview": {
+                    "type": "string",
+                    "minLength": 1,
+                    "maxLength": 600
+                  },
+                  "change": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "summary",
+                      "evidenceRefs"
+                    ],
+                    "properties": {
+                      "summary": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 400
+                      },
+                      "version": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 80
+                      },
+                      "type": {
+                        "enum": [
+                          "release",
+                          "feature",
+                          "technical",
+                          "community"
+                        ]
+                      },
+                      "publishedAt": {
+                        "type": "string",
+                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
+                      },
+                      "evidenceRefs": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 3,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9-]{0,31}$"
+                        }
+                      }
+                    }
+                  },
+                  "technical": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "description",
+                        "evidenceRefs"
+                      ],
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 320
+                        },
+                        "evidenceRefs": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 3,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9-]{0,31}$"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "useCases": {
+                    "type": "array",
+                    "maxItems": 4,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "description",
+                        "evidenceRefs"
+                      ],
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 320
+                        },
+                        "evidenceRefs": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 3,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9-]{0,31}$"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "license": {
+                    "type": "object",
+                    "additionalProperties": false,
+                    "required": [
+                      "code",
+                      "evidenceRefs"
+                    ],
+                    "properties": {
+                      "code": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 160
+                      },
+                      "scope": {
+                        "type": "string",
+                        "minLength": 1,
+                        "maxLength": 240
+                      },
+                      "evidenceRefs": {
+                        "type": "array",
+                        "minItems": 1,
+                        "maxItems": 3,
+                        "uniqueItems": true,
+                        "items": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9-]{0,31}$"
+                        }
+                      }
+                    }
+                  },
+                  "evaluation": {
+                    "type": "array",
+                    "maxItems": 5,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "description",
+                        "nature"
+                      ],
+                      "properties": {
+                        "description": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 280
+                        },
+                        "nature": {
+                          "enum": [
+                            "fact",
+                            "analysis"
+                          ]
+                        },
+                        "evidenceRefs": {
+                          "type": "array",
+                          "minItems": 1,
+                          "maxItems": 3,
+                          "uniqueItems": true,
+                          "items": {
+                            "type": "string",
+                            "pattern": "^[a-z][a-z0-9-]{0,31}$"
+                          }
+                        }
+                      }
+                    }
+                  },
+                  "evidence": {
+                    "type": "array",
+                    "minItems": 1,
+                    "maxItems": 10,
+                    "items": {
+                      "type": "object",
+                      "additionalProperties": false,
+                      "required": [
+                        "id",
+                        "name",
+                        "url",
+                        "supports"
+                      ],
+                      "properties": {
+                        "id": {
+                          "type": "string",
+                          "pattern": "^[a-z][a-z0-9-]{0,31}$"
+                        },
+                        "name": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 100
+                        },
+                        "url": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 2048
+                        },
+                        "supports": {
+                          "type": "string",
+                          "minLength": 1,
+                          "maxLength": 240
+                        }
+                      }
+                    }
+                  }
+                }
+              },
+              {
+                "type": "object",
+                "additionalProperties": false,
+                "required": [
+                  "kind",
+                  "background",
+                  "evidence"
                 ],
                 "properties": {
                   "kind": {
@@ -409,7 +645,8 @@
                           "maxLength": 240
                         }
                       }
-                    }
+                    },
+                    "minItems": 1
                   }
                 }
               },
@@ -418,7 +655,8 @@
                 "additionalProperties": false,
                 "required": [
                   "kind",
-                  "background"
+                  "background",
+                  "evidence"
                 ],
                 "properties": {
                   "kind": {
@@ -658,229 +896,38 @@
                     }
                   }
                 }
-              },
-              {
-                "type": "object",
-                "additionalProperties": false,
-                "required": [
-                  "kind",
-                  "overview",
-                  "evidence"
-                ],
-                "properties": {
-                  "kind": {
-                    "const": "project"
-                  },
-                  "overview": {
-                    "type": "string",
-                    "minLength": 1,
-                    "maxLength": 600
-                  },
-                  "change": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "summary",
-                      "evidenceRefs"
-                    ],
-                    "properties": {
-                      "summary": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 400
-                      },
-                      "version": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 80
-                      },
-                      "type": {
-                        "enum": [
-                          "release",
-                          "feature",
-                          "technical",
-                          "community"
-                        ]
-                      },
-                      "publishedAt": {
-                        "type": "string",
-                        "pattern": "^\\d{4}-\\d{2}-\\d{2}$"
-                      },
-                      "evidenceRefs": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 3,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": "string",
-                          "pattern": "^[a-z][a-z0-9-]{0,31}$"
-                        }
-                      }
-                    }
-                  },
-                  "technical": {
-                    "type": "array",
-                    "maxItems": 5,
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "description",
-                        "evidenceRefs"
-                      ],
-                      "properties": {
-                        "description": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 320
-                        },
-                        "evidenceRefs": {
-                          "type": "array",
-                          "minItems": 1,
-                          "maxItems": 3,
-                          "uniqueItems": true,
-                          "items": {
-                            "type": "string",
-                            "pattern": "^[a-z][a-z0-9-]{0,31}$"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "useCases": {
-                    "type": "array",
-                    "maxItems": 4,
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "description",
-                        "evidenceRefs"
-                      ],
-                      "properties": {
-                        "description": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 320
-                        },
-                        "evidenceRefs": {
-                          "type": "array",
-                          "minItems": 1,
-                          "maxItems": 3,
-                          "uniqueItems": true,
-                          "items": {
-                            "type": "string",
-                            "pattern": "^[a-z][a-z0-9-]{0,31}$"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "license": {
-                    "type": "object",
-                    "additionalProperties": false,
-                    "required": [
-                      "code",
-                      "evidenceRefs"
-                    ],
-                    "properties": {
-                      "code": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 160
-                      },
-                      "scope": {
-                        "type": "string",
-                        "minLength": 1,
-                        "maxLength": 240
-                      },
-                      "evidenceRefs": {
-                        "type": "array",
-                        "minItems": 1,
-                        "maxItems": 3,
-                        "uniqueItems": true,
-                        "items": {
-                          "type": "string",
-                          "pattern": "^[a-z][a-z0-9-]{0,31}$"
-                        }
-                      }
-                    }
-                  },
-                  "evaluation": {
-                    "type": "array",
-                    "maxItems": 5,
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "description",
-                        "nature"
-                      ],
-                      "properties": {
-                        "description": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 280
-                        },
-                        "nature": {
-                          "enum": [
-                            "fact",
-                            "analysis"
-                          ]
-                        },
-                        "evidenceRefs": {
-                          "type": "array",
-                          "minItems": 1,
-                          "maxItems": 3,
-                          "uniqueItems": true,
-                          "items": {
-                            "type": "string",
-                            "pattern": "^[a-z][a-z0-9-]{0,31}$"
-                          }
-                        }
-                      }
-                    }
-                  },
-                  "evidence": {
-                    "type": "array",
-                    "minItems": 1,
-                    "maxItems": 10,
-                    "items": {
-                      "type": "object",
-                      "additionalProperties": false,
-                      "required": [
-                        "id",
-                        "name",
-                        "url",
-                        "supports"
-                      ],
-                      "properties": {
-                        "id": {
-                          "type": "string",
-                          "pattern": "^[a-z][a-z0-9-]{0,31}$"
-                        },
-                        "name": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 100
-                        },
-                        "url": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 2048
-                        },
-                        "supports": {
-                          "type": "string",
-                          "minLength": 1,
-                          "maxLength": 240
-                        }
-                      }
-                    }
-                  }
-                }
               }
             ]
+          },
+          "research_area": {
+            "type": "string",
+            "enum": [
+              "agent",
+              "rust",
+              "multimedia",
+              "performance_security",
+              "decentralized"
+            ]
           }
+        }
+      }
+    },
+    "topic": {
+      "type": "object",
+      "additionalProperties": false,
+      "required": [
+        "id",
+        "name"
+      ],
+      "properties": {
+        "id": {
+          "type": "string",
+          "pattern": "^t-[a-f0-9]{24}$"
+        },
+        "name": {
+          "type": "string",
+          "minLength": 1,
+          "maxLength": 200
         }
       }
     }
