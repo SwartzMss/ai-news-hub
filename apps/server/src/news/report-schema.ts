@@ -1,11 +1,12 @@
 import { INVESTMENT_DETAILS_SCHEMA, TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
-import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
+import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
 import { PROJECT_DETAILS_SCHEMA, PROJECT_RESEARCH_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
 export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
 export type TechnologyCategory = typeof TECHNOLOGY_CATEGORIES[number];
 const categories = ['ai', 'opensource', 'developer_tools', 'security', 'industry', ...HEADLINE_CATEGORIES.filter(category => category !== 'other'), 'other'];
+export const REPORT_CATEGORIES = [...new Set([...categories, ...TECHNOLOGY_CATEGORIES])];
 export const RESEARCH_AREAS = ['agent', 'rust', 'multimedia', 'performance_security', 'decentralized'] as const;
 export type ResearchArea = typeof RESEARCH_AREAS[number];
 export interface ProposalItem {
@@ -39,6 +40,24 @@ export function proposalSchema(articleIds?: string[], allowedCategories: readonl
     } },
   };
 }
+export function headlinesProposalSchema(articleIds?: string[]) {
+  return {
+    type: 'object', additionalProperties: false, required: ['title', 'items'],
+    properties: { title: text(180), items: {
+      type: 'array', minItems: 1, maxItems: articleIds ? Math.min(10, articleIds.length) : 10,
+      items: {
+        ...proposalItem,
+        required: [...proposalItem.required, 'details'],
+        properties: {
+          ...proposalItem.properties,
+          category: { type: 'string', enum: HEADLINE_CATEGORIES },
+          articleId: articleIds ? { type: 'string', enum: articleIds } : text(256),
+          details: HEADLINES_DETAILS_SCHEMA,
+        },
+      },
+    } },
+  };
+}
 export const RESEARCH_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['title','items'],
   properties: { title: text(180), items: { type: 'array', minItems: 1, maxItems: 10, items: {
@@ -46,7 +65,7 @@ export const RESEARCH_SCHEMA = {
     required: [...proposalItem.required.filter(key => key !== 'articleId'), 'url'],
     properties: {
       ...Object.fromEntries([...Object.entries(proposalItem.properties).filter(([key]) => key !== 'articleId'), ['url', {type:'string',minLength:1,maxLength:2048}]]),
-      details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
+      details: { oneOf: [INVESTMENT_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, PROJECT_DETAILS_SCHEMA] },
     },
   } } },
 };
@@ -129,6 +148,25 @@ export const REPORT_SCHEMA = {
               publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: nullableTime,
             },
           },
+        },
+      },
+    },
+  },
+};
+
+export const HEADLINES_REPORT_SCHEMA = {
+  ...REPORT_SCHEMA,
+  properties: {
+    ...REPORT_SCHEMA.properties,
+    items: {
+      ...REPORT_SCHEMA.properties.items,
+      items: {
+        ...REPORT_SCHEMA.properties.items.items,
+        required: [...REPORT_SCHEMA.properties.items.items.required, 'details'],
+        properties: {
+          ...REPORT_SCHEMA.properties.items.items.properties,
+          category: { type: 'string', enum: HEADLINE_CATEGORIES },
+          details: HEADLINES_DETAILS_SCHEMA,
         },
       },
     },

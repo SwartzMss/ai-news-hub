@@ -9,7 +9,7 @@ import {nextOccurrence} from '../dist/apps/server/src/tasks/configuration.js';
 import {promptTemplates} from '../dist/apps/server/src/tasks/prompt-templates.js';
 const headers={authorization:'Bearer test_only_0123456789_abcdefghijklmnop'};
 const configuration={name:'AI 日报',topic:'AI',prompts:['搜索原始公告','筛选并核实'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
-const proposal={title:'AI 日报',items:[{url:'https://example.com/model',category:'ai',importance:2,factSummary:'来源宣布模型更新。',analysis:null,evidenceQuote:'Official AI model release announcement'}]};
+const proposal={title:'AI 日报',items:[{url:'https://example.com/model',category:'ai',importance:2,factSummary:'来源宣布模型更新。',analysis:null,evidenceQuote:'Official AI model release announcement',details:{kind:'news',background:'来源发布了模型更新信息。',evidence:[{id:'source',name:'发布说明',url:'https://example.com/model',supports:'模型更新内容'}]}}]};
 function setup(publish){
  const dir=mkdtempSync('/tmp/managed-tasks-'),adapter=new ControlledAdapter();
  const env={AI_NEWS_HUB_DATA_DIR:dir,AI_NEWS_HUB_ADMIN_TOKEN:headers.authorization.slice(7),AI_NEWS_HUB_LOG_LEVEL:'silent',...(publish?{AI_NEWS_HUB_GITHUB_REPOSITORY:'fixture/archive',AI_NEWS_HUB_GITHUB_BRANCH:'reports',AI_NEWS_HUB_GITHUB_TOKEN:'fixture_github_secret_012345678901234'}:{})};
@@ -30,7 +30,7 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   s.adapter.succeed(0,'first');await s.wait(()=>s.adapter.calls[1]);assert.equal(s.adapter.calls[1].input.threadId,'thread-0');assert.ok(s.adapter.calls[1].input.input.includes(configuration.prompts[1]));
   assert.ok(s.adapter.calls[1].input.outputSchema);assert.equal(s.adapter.calls[1].input.input,configuration.prompts[1]);
   assert.ok(s.adapter.calls[1].input.outputSchema.properties.items.items.required.includes('details'));
-  s.adapter.succeed(1,JSON.stringify({...proposal,items:[{...proposal.items[0],details:null}]}));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
+  s.adapter.succeed(1,JSON.stringify(proposal));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
   const report=(await s.request('GET','/news/reports')).json().reports[0];assert.equal(report.status,'validated');
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,204);
   assert.ok(!(await s.request('GET','/tasks')).json().tasks.some(t=>t.id===task.id));

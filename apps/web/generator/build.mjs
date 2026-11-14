@@ -108,27 +108,6 @@ export async function buildPublic({
       },
     );
   }
-  const oldDates = new Set();
-  for (const r of data.reports.filter((r) => r.schema_version === 1)) {
-    if (!oldDates.has(r.report_date)) {
-      oldDates.add(r.report_date);
-      routes.push({
-        kind: "date",
-        date: r.report_date,
-        topicId: r.topic.id,
-        path: `/archive/${r.report_date}/`,
-        canonicalPath: editionPath(r),
-      });
-    }
-    routes.push({
-      kind: "report",
-      date: r.report_date,
-      version: r.version,
-      topicId: r.topic.id,
-      path: `/archive/${r.report_date}/opensource/v${String(r.version).padStart(6, "0")}/`,
-      canonicalPath: editionPath(r, true),
-    });
-  }
   function write(path, content) {
     const target = join(output, path);
     mkdirSync(dirname(target), { recursive: true });

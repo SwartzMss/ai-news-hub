@@ -3,137 +3,92 @@ import assert from 'node:assert/strict';
 import {readFileSync} from 'node:fs';
 import {Ajv} from 'ajv';
 import addFormats from 'ajv-formats';
-import {ARCHIVE_SCHEMA,ARCHIVE_V2_SCHEMA,ARCHIVE_V3_SCHEMA,ARCHIVE_V4_SCHEMA,ARCHIVE_V5_SCHEMA,ARCHIVE_V6_SCHEMA} from '../dist/apps/server/src/publish/archive-schema.js';
+import {ARCHIVE_SCHEMA} from '../dist/apps/server/src/publish/archive-schema.js';
 import {archiveArtifact,reviewedReport} from '../dist/apps/server/src/publish/artifact.js';
 import {publicationFixture} from './fixtures/publication.mjs';
-test('published contract matches documented schema and excludes internal metadata',()=>{
+
+const validator=new Ajv({strict:true});
+addFormats(validator);
+const validate=validator.compile(ARCHIVE_SCHEMA);
+const approvedAt='2026-11-03T01:00:00Z';
+
+test('one v1 schema is the public contract for every topic and matches its documentation',()=>{
  assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v1.schema.json',import.meta.url),'utf8')),ARCHIVE_SCHEMA);
- const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_SCHEMA);
- const s=publicationFixture();try{const artifact=archiveArtifact(reviewedReport(s.db,'r'),'2026-11-03T01:00:00Z');const doc=JSON.parse(artifact.content);assert.equal(validate(doc),true);assert.equal(validate({...doc,run_id:'private'}),false);assert.equal(validate({...doc,review_status:'pending'}),false);}finally{s.close();}
+ const f=publicationFixture();
+ try{
+  const report=reviewedReport(f.db,'r');
+  const artifact=archiveArtifact(report,approvedAt);
+  const document=JSON.parse(artifact.content);
+  assert.equal(document.schema_version,1);
+  assert.equal(document.topic.id,report.document.topic.id);
+  assert.equal(validate(document),true);
+  assert.equal(artifact.path,`reports/topics/${document.topic.id}/2026/11/03/v000001.json`);
+  assert.equal(validate({...document,run_id:'private'}),false);
+  assert.equal(validate({...document,review_status:'pending'}),false);
+  assert.equal(validate({...document,topic:undefined}),false);
+  assert.equal(validate({...document,items:[{...document.items[0],details:undefined}]}),false);
+  assert.equal(validate({...document,items:[{...document.items[0],research_area:'gpu'}]}),false);
+ }finally{f.close();}
 });
 
-test('v2 contract adds only required topic identity and uses its own archive path',()=>{
- assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v2.schema.json',import.meta.url),'utf8')),ARCHIVE_V2_SCHEMA);
- const clone=structuredClone(ARCHIVE_V2_SCHEMA);clone.properties.schema_version={const:1};delete clone.properties.topic;clone.required=clone.required.filter(key=>key!=='topic');assert.deepEqual(clone,ARCHIVE_SCHEMA);
- const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V2_SCHEMA),validateLegacy=validator.compile(ARCHIVE_SCHEMA);
- const s=publicationFixture();try{
-  const report=reviewedReport(s.db,'r');report.document.topic={id:'t-'+'a'.repeat(24),name:'AI'};
-  const artifact=archiveArtifact(report,'2026-11-03T01:00:00Z'),document=JSON.parse(artifact.content);
-  assert.equal(artifact.path,'reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json');assert.equal(validate(document),true);assert.equal(validateLegacy(document),false);
-  for(const topic of [undefined,{},null,{id:'../../private',name:'AI'},{id:'t-'+'a'.repeat(23),name:'AI'},{id:'t-'+'a'.repeat(24),name:''},{id:'t-'+'a'.repeat(24),name:'a'.repeat(201)},{id:'t-'+'a'.repeat(24),name:'AI',run_id:'private'}])assert.equal(validate({...document,topic}),false);
-  report.document.topic.id='../../private';assert.throws(()=>archiveArtifact(report,'2026-11-03T01:00:00Z'),/archive_schema_invalid/);
- }finally{s.close();}
-});
-
-
-test('v3 topic archive adds required research area without changing v1/v2 contracts',()=>{
- assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v3.schema.json',import.meta.url),'utf8')),ARCHIVE_V3_SCHEMA);
- const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V3_SCHEMA);
+test('open-source, technology and headlines details share v1 without weakening their detail contracts',()=>{
  const f=publicationFixture();
  try{
   const base=reviewedReport(f.db,'r');
-  const report={...base,document:{...base.document,topic:{id:'t-'+'c'.repeat(24),name:'每日开源项目'},items:base.document.items.map(item=>({...item,researchArea:'rust'}))}};
-  const artifact=archiveArtifact(report,'2026-11-03T01:00:00Z');
-  const document=JSON.parse(artifact.content);
-  assert.equal(document.schema_version,3);
-  assert.equal(document.items[0].research_area,'rust');
-  assert.equal(validate(document),true);
-  assert.equal(validate({...document,items:[{...document.items[0],research_area:'gpu'}]}),false);
-  assert.equal(artifact.path,'reports/topics/t-cccccccccccccccccccccccc/2026/11/03/v000001.json');
- }finally{f.close();}
-});
+  const project=archiveArtifact({...base,templateId:'daily-opensource'},approvedAt);
+  assert.equal(JSON.parse(project.content).schema_version,1);
+  assert.equal(JSON.parse(project.content).items[0].details.kind,'project');
 
-test('v4 social headline archives remain backward compatible',()=>{
- assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v4.schema.json',import.meta.url),'utf8')),ARCHIVE_V4_SCHEMA);
- const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V4_SCHEMA);
- const f=publicationFixture();
- try{
-  f.db.prepare("UPDATE task_runs SET configuration_json=? WHERE id='run'").run(JSON.stringify({templateId:'daily-headlines'}));
-  const report=reviewedReport(f.db,'r');
-  assert.equal(report.templateId,'daily-headlines');
-  report.document.topic={id:'t-'+'d'.repeat(24),name:'每日热点观察'};
-  report.document.items=report.document.items.map(item=>({...item,category:'social_event',details:{
-   kind:'news',
-   background:'话题在最近 24 小时于微博出现传播。',
-   trendTags:['single_platform'],
-   discussionTags:['debate'],
-   trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-   evidence:[
-    {id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-    {id:'source',name:'事件来源',url:'https://example.com/source',supports:'话题背景'},
-   ],
-  }}));
-  const artifact=archiveArtifact(report,'2026-11-13T08:00:00Z');
-  const currentDocument=JSON.parse(artifact.content);
-  assert.equal(currentDocument.schema_version,6);
-  const legacyDocument=structuredClone(currentDocument);
-  legacyDocument.schema_version=4;
-  for(const item of legacyDocument.items){
-   delete item.details.discussionTags;
-   item.details.contentTags=['short_video'];
-   item.details.contentSuitability='recommended';
-   item.details.contentReason='旧版归档中的历史字段。';
-   item.details.contentAngles=[{angle:'历史选题角度',suggestedTitle:'旧版标题',hook:'旧版 Hook',corePoints:['历史内容'],evidenceRefs:['source']}];
+  const investmentReport={...base,templateId:'daily-technology',document:{
+   ...base.document,
+   items:base.document.items.map(item=>({
+    ...item,researchArea:undefined,category:'optical_communications',
+    details:{kind:'investment',background:'光模块厂商披露 1.6T 产品进入客户验证阶段。',
+     metrics:[{name:'产品进度',value:'客户验证',unit:'阶段',period:'2026 Q4',basis:'actual',evidenceRefs:['filing']}],
+     evidence:[{id:'filing',name:'公司公告',url:'https://example.com/filing',supports:'1.6T 产品验证进展'}]},
+   })),
+  }};
+  const investment=JSON.parse(archiveArtifact(investmentReport,approvedAt).content);
+  assert.equal(investment.schema_version,1);
+  assert.equal(investment.items[0].details.kind,'investment');
+  assert.equal(validate(investment),true);
+
+  const headlinesReport={...base,templateId:'daily-headlines',document:{
+   ...base.document,
+   items:base.document.items.map(item=>({
+    ...item,researchArea:undefined,category:'social_event',
+    details:{kind:'news',background:'主管部门公布了新的鉴定结果。',
+     keyFacts:[{name:'鉴定结果',value:'已公布',nature:'confirmed',evidenceRefs:['notice']}],
+     evidence:[{id:'notice',name:'正式通报',url:'https://example.com/notice',supports:'鉴定结果及公布时间'}]},
+   })),
+  }};
+  const headlines=JSON.parse(archiveArtifact(headlinesReport,approvedAt).content);
+  assert.equal(headlines.schema_version,1);
+  assert.equal(headlines.items[0].details.kind,'news');
+  assert.equal(validate(headlines),true);
+  for(const [field,value] of [
+   ['trendTags',['single_platform']],
+   ['discussionTags',['debate']],
+   ['trendSignals',[]],
+   ['publicDiscussion',{summary:'平台讨论摘要',evidenceRefs:['notice']}],
+  ]){
+   const invalid=JSON.parse(JSON.stringify(headlines));
+   invalid.items[0].details[field]=value;
+   assert.equal(validate(invalid),false,field);
   }
-  assert.equal(validate(legacyDocument),true);
-  assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
-  assert.equal(artifact.path,'reports/topics/t-'+'d'.repeat(24)+'/2026/11/03/v000001.json');
-  assert.equal(validate({...legacyDocument,schema_version:3}),false);
- }finally{f.close();}
-});
-
-
-test('v6 topic archive publishes current social headlines without content-creation fields',()=>{
- assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v6.schema.json',import.meta.url),'utf8')),ARCHIVE_V6_SCHEMA);
- const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V6_SCHEMA);
- const f=publicationFixture();
- try{
-  f.db.prepare("UPDATE task_runs SET configuration_json=? WHERE id='run'").run(JSON.stringify({templateId:'daily-headlines'}));
-  const report=reviewedReport(f.db,'r');
-  report.document.topic={id:'t-'+'e'.repeat(24),name:'每日热点观察'};
-  report.document.items=report.document.items.map(item=>({...item,category:'social_event',details:{
-   kind:'news',background:'话题在最近 24 小时于微博出现传播。',
-   trendTags:['single_platform'],discussionTags:['debate'],
-   trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-   evidence:[{id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'}],
-  }}));
-  const artifact=archiveArtifact(report,'2026-11-13T08:00:00Z');
-  const document=JSON.parse(artifact.content);
-  assert.equal(document.schema_version,6);
-  assert.equal(validate(document),true);
-  assert.equal(document.items[0].details.contentSuitability,undefined);
-  assert.equal(document.items[0].details.contentAngles,undefined);
-  assert.equal(document.items[0].details.discussionTags[0],'debate');
-  assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
- }finally{f.close();}
-});
-
-test('v5 topic archive is reserved for focused technology investment reports',()=>{
- assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v5.schema.json',import.meta.url),'utf8')),ARCHIVE_V5_SCHEMA);
- const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V5_SCHEMA);
- const f=publicationFixture();
- try{
-  // The legacy fixture is reconstructed using its original generic schema first.
-  // Simulate the technology archive routing separately; the full persisted
-  // technology reconstruction/approval path is covered in managed-tasks.test.mjs.
-  const report=reviewedReport(f.db,'r');
-  report.templateId='daily-technology';
-  report.document.topic={id:'t-'+'f'.repeat(24),name:'每日科技投资简报'};
-  report.document.items=report.document.items.map(item=>({...item,category:'optical_communications',details:{
-   kind:'investment',
-   background:'光模块厂商披露 1.6T 产品进入客户验证阶段。',
-   supplyChain:[{segment:'光模块厂商（代码 · NASDAQ）',direction:'潜在受益',reason:'产品认证可能提升高速产品收入占比。',relationship:'potential'}],
-   evidence:[{id:'release',name:'公司公告',url:'https://example.com/release',supports:'1.6T 产品验证进展'}],
-  }}));
-  const artifact=archiveArtifact(report,'2026-11-13T08:00:00Z');
-  const document=JSON.parse(artifact.content);
-  assert.equal(document.schema_version,5);
-  assert.equal(validate(document),true);
-  assert.equal(artifact.path,'reports/topics/t-'+'f'.repeat(24)+'/2026/11/03/v000001.json');
-  const wrongCategory=structuredClone(document);wrongCategory.items[0].category='industry';
-  assert.equal(validate(wrongCategory),false);
-  const missingEvidence=structuredClone(document);delete missingEvidence.items[0].details.evidence;
+  const missingEvidence=JSON.parse(JSON.stringify(headlines));
+  delete missingEvidence.items[0].details.evidence;
   assert.equal(validate(missingEvidence),false);
-  assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
+ }finally{f.close();}
+});
+
+test('archive publication rejects missing topic/details and template/detail mismatches',()=>{
+ const f=publicationFixture();
+ try{
+  const base=reviewedReport(f.db,'r');
+  assert.throws(()=>archiveArtifact({...base,document:{...base.document,topic:undefined}},approvedAt),/archive_schema_invalid/);
+  assert.throws(()=>archiveArtifact({...base,document:{...base.document,items:base.document.items.map(({details,...item})=>item)}},approvedAt),/archive_schema_invalid/);
+  assert.throws(()=>archiveArtifact({...base,templateId:'daily-headlines'},approvedAt),/archive_schema_invalid/);
+  assert.throws(()=>archiveArtifact({...base,templateId:'daily-technology'},approvedAt),/archive_schema_invalid/);
  }finally{f.close();}
 });

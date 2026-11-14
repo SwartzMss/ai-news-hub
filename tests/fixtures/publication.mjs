@@ -1,4 +1,5 @@
 import { mkdtempSync, rmSync } from "node:fs";
+import { createHash } from "node:crypto";
 import { openDatabase } from "../../dist/apps/server/src/db/database.js";
 import { buildReport } from "../../dist/apps/server/src/news/report.js";
 export function publicationFixture() {
@@ -15,6 +16,10 @@ export function publicationFixture() {
     eventAt: null,
     fetchedAt: "2026-11-03T00:00:00Z",
   };
+  const topic = {
+    id: "t-" + createHash("sha256").update("news-github").digest("hex").slice(0, 24),
+    name: "开源项目观察",
+  };
   const proposal = {
     title: "[TEST] Archive fixture",
     items: [
@@ -25,6 +30,12 @@ export function publicationFixture() {
         factSummary: "测试数据，仅用于验证归档。",
         analysis: null,
         evidenceQuote: candidate.title,
+        researchArea: "rust",
+        details: {
+          kind: "project",
+          overview: "用于验证统一归档契约的项目。",
+          evidence: [{id:"source",name:"GitHub Blog",url:candidate.canonicalUrl,supports:"测试来源"}],
+        },
       },
     ],
   };
@@ -33,13 +44,14 @@ export function publicationFixture() {
     runId: "run",
     reportDate: "2026-11-03",
     collectedAt: candidate.fetchedAt,
+    topic,
   });
   db.prepare(
     "INSERT INTO tasks(id,name,channel,prompt) VALUES ('news-github','test','opensource','test')",
   ).run();
   db.prepare(
-    "INSERT INTO task_runs(id,task_id,idempotency_key,status) VALUES ('run','news-github','test','succeeded')",
-  ).run();
+    "INSERT INTO task_runs(id,task_id,idempotency_key,status,configuration_json) VALUES ('run','news-github','test','succeeded',?)",
+  ).run(JSON.stringify({templateId:"daily-opensource",topic:topic.name}));
   db.prepare(
     "INSERT INTO articles(id,original_url,canonical_url,source_name,title,fetched_at) VALUES (?,?,?,?,?,?)",
   ).run(

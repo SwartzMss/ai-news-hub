@@ -4,20 +4,17 @@ Issue #7 将来源校验通过、Run 成功且已人工允许发布的日报归�
 
 ## 内容与归档协议
 
-归档只输出严格 JSON。旧报告继续使用 [archive v1 Schema](schema/report-archive-v1.schema.json)，一般受管任务报告使用带话题的 [archive v2 Schema](schema/report-archive-v2.schema.json)；五方向开源日报使用 [archive v3 Schema](schema/report-archive-v3.schema.json)，在 v2 话题归档基础上要求每条目包含 `research_area`。代码中的 Schema 与对应文件保持一致：
-
-- `schema_version: 1`、稳定 `report_id`、`report_date`（UTC 日期）、`channel`、报告 `version`、标题和采集时间。
-- `review_status: approved`、批准时间与 `reviewed_content_sha256`；来源仍为 `verification: source_only`，人工允许发布不等于独立事实证实。
+归档只输出严格 JSON，所有三个主题统一使用 [archive v1 Schema](schema/report-archive-v1.schema.json)。根对象必须包含稳定 `topic`；每条目必须包含 `details`，并按 `details.kind` 使用 `project`、`investment` 或 `news` 结构。开源条目额外携带 `research_area`。
 - 条目稳定 `id`、分类、重要性、`fact_summary`、单独的推断 `analysis`、精确依据 `evidence_quote`。
 - 来源名称、原始/canonical URL、来源发布时间、事件时间、首次抓取时间；未知时间为 NULL。
 
-历史 v1 路径为 `reports/YYYY/MM/DD/opensource/vNNNNNN.json`，例如 `reports/2026/11/03/opensource/v000001.json`。修订须生成新报告/版本，旧路径永不覆盖；其他日期也不改动。当前仅实现 opensource 频道。Markdown 保留于私有 SQLite 预览，不在本次额外提交。v2/v3/v4/v5/v6 均使用 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`；v3 用于五方向开源日报，v4 保留旧版社交热点日报契约，v5 用于 AI 产业链/光模块/半导体科技投资日报，v6 用于当前社交热点日报。v5 限定三个科技投资分类，并要求 `details.kind=investment` 和至少一个原始证据；v6 要求结构化新闻详情、平台传播信号和讨论类型标签，不包含内容创作建议字段。v1～v5 的既有 Schema 文件和归档内容保持不变。话题 ID 为 `t-` 加任务 ID 的 SHA-256 前 24 位，名字使用该 Run 的不可变配置快照；migration 10 持久化 `public_topic_json` 并在批准/归档时比对，不能从模型输出伪造。报告版本仍沿用数据库按频道/日期分配的序号，不保证某话题内部连续。历史报告的空快照及 v1 字节/哈希保持不变。
+所有新归档统一写入 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`。修订须生成新报告/版本，旧路径永不覆盖。话题 ID 为 `t-` 加任务 ID 的 SHA-256 前 24 位，名字使用该 Run 的不可变配置快照；migration 10 持久化 `public_topic_json` 并在批准/归档时比对，不能从模型输出伪造。报告版本仍沿用数据库按频道/日期分配的序号，不保证某话题内部连续。历史归档已清理，不再维护 v1～v7 多版本 Schema 或旧日期路径兼容。
 
 归档不包含 Run/Thread/Turn 标识、候选完整快照、Agent 输入/日志、SQLite、Token、代理配置或审批私密笔记。目标仓库已有的源代码/历史不由归档器复制或删除；应选择干净的专用归档仓库/分支。不要把管理后台和数据库目录作为公开产物。
 
 主机需要代理时，使用 `npm run network:configure` 生成项目根目录的私有 `network.env` 并通过 systemd 或启动脚本加载。GitHub HTTPS 归档和删除客户端沿用 EnvHttpProxyAgent 读取 HTTP_PROXY/HTTPS_PROXY/NO_PROXY 及其小写别名，配置说明见 [Linux 部署](DEPLOY_LINUX.md#代理网络配置)。
 
-`DELETE /api/runs/:runId` 携带 `{ "confirm": true }` 可删除完整执行记录。有关联日报时逐份复用既有日报删除流程，清理所有历史 GitHub 归档目标与旧话题映射，再事务删除本地 Run、Turn、Thread、事件和研究快照。失败可重复请求，同一 Run 的并发删除共享结果，已有日报删除记录保留版本占用。共享来源原文保留。
+`DELETE /api/runs/:runId` 携带 `{ "confirm": true }` 可删除完整执行记录。有关联日报时逐份复用既有日报删除流程，清理所有历史 GitHub 归档目标，再事务删除本地 Run、Turn、Thread、事件和研究快照。失败可重复请求，同一 Run 的并发删除共享结果，已有日报删除记录保留版本占用。共享来源原文保留。
 
 ## 管理 API
 
@@ -57,7 +54,7 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 ## Codex 主题研究兼容
 
-当前报告来自 news-research 的显式最终生成，发布时比对 codex_news_runs 的持久模式、内容快照和条目关联，不联网访问原文；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。底层 opensource 频道键保持兼容；公共阅读边界由 v2/v3 话题归档区分。
+当前报告来自 news-research 的显式最终生成，发布时比对 codex_news_runs 的持久模式、内容快照和条目关联，不联网访问原文；来源可为不同公开 HTTPS 站点，不再限定 GitHub Blog。历史 RSS 报告仍按旧快照和原来源域名规则读取。两类报告均需最近 Run 成功、不可变文档和哈希授权记录（manual 或 automatic）。底层 opensource 频道键仍是内部存储键；三个主题的公开边界统一由必填 topic 区分，并使用同一 v1 归档契约。
 
 ## 任务自动发布
 
@@ -69,12 +66,12 @@ GitHub 分支必须预先存在。先取得分支固定提交快照，再检查�
 
 GitHub 归档不再设全局启用开关：仓库、分支和已保存 Token 完整即为可用；允许保存未完整配置，清除凭据后恢复未配置。旧 `github.enabled` 写入参数为可选兼容字段且被忽略，返回值表示派生配置状态，旧数据库中的 false 不再禁用完整目标。任务 `autoPublish` 继续独立控制自动归档。建议创建 fine-grained PAT，仅选择归档仓库并授予 Contents read/write；后台不展示已保存 Token。
 
-GitHub 上传器同时允许历史 v1 日期路径与 v2 话题路径，话题 ID 必须为 `t-` 加 24 位小写十六进制；保留路径边界、256 KiB 大小上限和只追加检查。旧版上传器若对 v2 报告返回 `archive_invalid`，更新服务后可直接重试归档，无需重跑研究。
+GitHub 上传器只允许 `reports/topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`，话题 ID 必须为 `t-` 加 24 位小写十六进制；保留路径边界、256 KiB 大小上限和只追加检查。
 
-`DELETE /api/news/reports/:reportId` 接受 `{ "confirm": true }`。已归档日报按 publication_records 中的历史仓库、分支、路径和哈希删除，逐个目标处理；成功后删除本地日报。远端缺失视为已删除，内容变化拒绝操作；日报与对应 reports/topics.json 旧映射在单次 Git 提交内更新，ref 使用非强制更新防止覆盖并发提交。删除进度保存于 report_deletions，失败保留日报并禁止再次批准/发布，可重复调用删除恢复。没有归档记录的日报无需配置 GitHub。删除不清除 Git 历史、运行对话和来源原文。
+`DELETE /api/news/reports/:reportId` 接受 `{ "confirm": true }`。已归档日报按 publication_records 中的历史仓库、分支、路径和哈希删除，逐个目标处理；成功后删除本地日报。远端缺失视为已删除，内容变化拒绝操作；仅删除归档 JSON 文件，在单次 Git 提交内更新，ref 使用非强制更新防止覆盖并发提交。删除进度保存于 report_deletions，失败保留日报并禁止再次批准/发布，可重复调用删除恢复。没有归档记录的日报无需配置 GitHub。删除不清除 Git 历史、运行对话和来源原文。
 
 ## 可选投资详情的归档
 
-归档 v1/v2/v3 条目均允许可选 `details`；缺少该字段的既有文件字节和审批哈希保持不变。发布前重建报告时完整比较 details，再将其写入归档和内容哈希；多来源仅表示 Codex 报告的证据归属，格式检查不等于 Backend 独立核验事实。
+统一 v1 要求每个条目包含 `details`。发布前重建报告时完整比较 details，再将其写入归档和内容哈希；多来源仅表示 Codex 报告的证据归属，格式检查不等于 Backend 独立核验事实。
 
-热点新闻 `details.kind=news` 与投资详情使用相同发布完整性重建：发布前按候选来源重建整份日报，比较包含详情在内的完整 JSON，再写入 v1/v2 归档。证据 URL 与引用须通过校验；这仍不构成独立事实审核。
+热点新闻 `details.kind=news` 与投资详情使用相同发布完整性重建：发布前按候选来源重建整份日报，比较包含详情在内的完整 JSON，再写入统一 v1 归档。证据 URL 与引用须通过校验；这仍不构成独立事实审核。

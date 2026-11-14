@@ -27,7 +27,7 @@ test("pending cannot publish; explicit approval binds snapshot; repeat is idempo
     assert.equal(first.commit_sha, "a".repeat(40));
     assert.equal(second.id, first.id);
     assert.equal(calls, 1);
-    assert.equal(saved.path, "reports/2026/11/03/opensource/v000001.json");
+    assert.equal(saved.path, `reports/topics/${s.doc.topic.id}/2026/11/03/v000001.json`);
     const json = JSON.parse(saved.content);
     assert.equal(json.schema_version, 1);
     assert.equal(json.review_status, "approved");
@@ -201,9 +201,9 @@ test("new dates and revisions produce distinct immutable artifact paths", async 
       const doc = { ...s.doc, reportId: id, runId: id, reportDate: date };
       s.db
         .prepare(
-          "INSERT INTO task_runs(id,task_id,idempotency_key,status) VALUES (?,'news-github',?,'succeeded')",
+          "INSERT INTO task_runs(id,task_id,idempotency_key,status,configuration_json) VALUES (?,'news-github',?,'succeeded',?)",
         )
-        .run(id, id);
+        .run(id, id, JSON.stringify({templateId:"daily-opensource",topic:s.doc.topic.name}));
       s.db
         .prepare(
           "INSERT INTO reports(id,run_id,report_date,channel,version,title,body_markdown,content_json,status) VALUES (?,?,?,'opensource',?,?,'test',?,'validated')",
@@ -226,9 +226,9 @@ test("new dates and revisions produce distinct immutable artifact paths", async 
       await p.publish(id);
     }
     assert.deepEqual(paths, [
-      "reports/2026/11/03/opensource/v000001.json",
-      "reports/2026/11/03/opensource/v000002.json",
-      "reports/2026/11/04/opensource/v000001.json",
+      `reports/topics/${s.doc.topic.id}/2026/11/03/v000001.json`,
+      `reports/topics/${s.doc.topic.id}/2026/11/03/v000002.json`,
+      `reports/topics/${s.doc.topic.id}/2026/11/04/v000001.json`,
     ]);
   } finally {
     s.close();

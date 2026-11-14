@@ -92,10 +92,12 @@ export class NewsWorkflow implements TaskWorkflow {
     const projectRules=final&&openSource
       ? '\n项目详情 evaluation 中 nature=fact 时 evidenceRefs 必须包含本条 evidence 中的有效 id；没有来源证据的项目事实应省略。历史去重状态是任务内部信息，不要写入任何项目的 evaluation。'
       : '';
-    const topic = run.configuration ? {
-      id: 't-' + createHash('sha256').update(run.task_id).digest('hex').slice(0,24),
-      name: run.configuration.topic,
-    } : undefined;
+    const topicName = run.configuration?.topic ?? String(snapshot.topic);
+    const topicSeed = managed ? run.task_id : JSON.stringify([run.task_id, topicName]);
+    const topic = {
+      id: 't-' + createHash('sha256').update(topicSeed).digest('hex').slice(0,24),
+      name: topicName,
+    };
     return {
       input: managed ? context.input : `研究主题：${String(snapshot.topic)}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? "最终生成轮：依据本 Thread 的研究和本轮要求，返回日报 JSON。" : "研究轮：搜索、核实并回答用户，保留来源链接。"}\n用户 prompt：\n${context.input}`,
       outputSchema: final ? outputSchema : undefined,
@@ -165,10 +167,10 @@ export class NewsWorkflow implements TaskWorkflow {
                   runId: run.id,
                   reportDate: String(snapshot.report_date),
                   collectedAt,
-                  ...(topic ? {topic} : {}),
+                  topic,
                 },
                 "codex_reported",
-                technology ? "technology" : "general",
+                headlines ? "headlines" : technology ? "technology" : "general",
               );
               return (db: DatabaseSync) => {
                 for (const a of candidates)
@@ -215,7 +217,7 @@ export class NewsWorkflow implements TaskWorkflow {
                     ...(topic ? {topic} : {}),
                   },
                   "codex_reported",
-                  technology ? "technology" : "general",
+                  headlines ? "headlines" : technology ? "technology" : "general",
                 );
                 const version = Number(
                   db
@@ -250,7 +252,7 @@ export class NewsWorkflow implements TaskWorkflow {
                   reportId,
                   collectedAt,
                   JSON.stringify(candidates),
-                  topic ? JSON.stringify(topic) : null,
+                  JSON.stringify(topic),
                   run.id,
                 );
               };

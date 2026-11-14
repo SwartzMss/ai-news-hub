@@ -7,7 +7,6 @@ import {
   counts,
   Source,
   Empty,
-  EditionLinks,
   groupResearchAreas,
   hasResearchAreas,
   projectEntryLabel,
@@ -15,7 +14,6 @@ import {
 import { issuePath, topicArchivePath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
-import { ProjectAside, ProjectDetail, projectDetail } from "./ProjectDetail";
 import { StructuredProjectAside, StructuredProjectDetail } from "./StructuredProjectDetail";
 import { InvestmentAside, InvestmentDetail } from "./InvestmentDetail";
 import { NewsAside, NewsDetail } from "./NewsDetail";
@@ -72,17 +70,9 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       <Source story={item} />
     </article>
   );
-  const owner = story
-    ? data.reports.find(
-        (r) =>
-          r.report_date === story.report_date &&
-          r.version === story.report_version,
-      )
-    : undefined;
-  const investment = story?.details?.kind === "investment" ? story.details : null;
-  const news = story?.details?.kind === "news" ? story.details : null;
-  const structuredProject = story?.details?.kind === "project" ? story.details : null;
-  const project = story && !investment && !news && !structuredProject ? projectDetail(story) : null;
+  const investment = story?.details.kind === "investment" ? story.details : null;
+  const news = story?.details.kind === "news" ? story.details : null;
+  const structuredProject = story?.details.kind === "project" ? story.details : null;
   const nav =
     page.kind === "topic" ||
     ((page.kind === "article" || page.kind === "date") &&
@@ -117,30 +107,8 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
     <StructuredProjectAside details={structuredProject} />
   ) : page.kind === "article" && news ? (
     <NewsAside details={news} analysis={story?.analysis}/>
-  ) : page.kind === "article" && owner && !project ? (
-    <aside className="reading-aside">
-      <h2>所属简报</h2>
-      <EditionLinks
-        reports={[owner]}
-        versioned={
-          owner.version !==
-          data.latest.find((r) => r.report_date === owner.report_date)?.version
-        }
-      />
-      <a
-        className="aside-more"
-        href={
-          owner.version ===
-          data.latest.find((r) => r.report_date === owner.report_date)?.version
-            ? issuePath(owner)
-            : issuePath(owner, true)
-        }
-      >
-        阅读整期 →
-      </a>
-    </aside>
   ) : null;
-  const hasAside = Boolean(aside) || (page.kind === "article" && Boolean(project));
+  const hasAside = Boolean(aside);
   return (
     <Shell
       data={fullData}
@@ -149,7 +117,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       page="reader"
     >
       <div
-        className={`reading-layout${hasAside ? " has-aside" : ""}${page.kind === "article" ? " detail-layout" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && (project || structuredProject) ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}${page.kind === "article" && news ? " news-layout" : ""}`}
+        className={`reading-layout${hasAside ? " has-aside" : ""}${page.kind === "article" ? " detail-layout" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && structuredProject ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}${page.kind === "article" && news ? " news-layout" : ""}`}
       >
         <main id="content">
           {page.kind === "topic" &&
@@ -217,7 +185,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {["date", "report"].includes(page.kind) && selected && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
-                <a href={topicArchivePath(page.topicId ?? "legacy")}>
+                <a href={topicArchivePath(selected.topic.id)}>
                   往期归档
                 </a>
                 <span>/</span>
@@ -289,44 +257,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 <InvestmentDetail story={story} />
               ) : news ? (
                 <NewsDetail story={story} />
-              ) : project ? (
-                <ProjectDetail story={story} />
-              ) : (
-                <>
-                  <header className="article-header">
-                    <div className="news-meta">
-                      <span className="category-label">
-                        {categories[story.category] ?? story.category}
-                      </span>
-                    </div>
-                    <h1>{lead(story).title}</h1>
-                    <a
-                      className="original-link"
-                      href={story.source.canonical_url}
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      {story.source.name} · 查看原文 ↗
-                    </a>
-                  </header>
-                  <section className="article-body" aria-label="来源事实摘要">
-                    {lead(story).rest && (
-                      <p>
-                        <InlineText text={lead(story).rest} />
-                      </p>
-                    )}
-                    {story.analysis && (
-                      <section className="story-analysis">
-                        <h2>分析与推断</h2>
-                        <p>
-                          <InlineText text={story.analysis} />
-                        </p>
-                      </section>
-                    )}
-                    <Source story={story} />
-                  </section>
-                </>
-              )}
+              ) : null}
             </>
           )}
           {page.kind === "404" && (
@@ -337,9 +268,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           )}
         </main>
         {aside}
-        {page.kind === "article" && project && story && (
-          <ProjectAside project={project} related={owner?.items.filter((item) => item.key !== story.key) ?? []} />
-        )}
       </div>
     </Shell>
   );

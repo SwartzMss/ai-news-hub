@@ -1,7 +1,7 @@
 import { Ajv } from "ajv";
 import addFormats from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
-import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA, ARCHIVE_V3_SCHEMA, ARCHIVE_V5_SCHEMA, ARCHIVE_V6_SCHEMA } from "./archive-schema.js";
+import { ARCHIVE_SCHEMA } from "./archive-schema.js";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { isDeepStrictEqual } from "node:util";
@@ -17,19 +17,15 @@ const validator = new Ajv({
 });
 (addFormats as unknown as FormatsPlugin)(validator);
 const validateArchive = validator.compile(ARCHIVE_SCHEMA);
-const validateArchiveV2 = validator.compile(ARCHIVE_V2_SCHEMA);
-const validateArchiveV3 = validator.compile(ARCHIVE_V3_SCHEMA);
-const validateArchiveV5 = validator.compile(ARCHIVE_V5_SCHEMA);
-const validateArchiveV6 = validator.compile(ARCHIVE_V6_SCHEMA);
 export const sha256 = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 export function reviewedReport(db: DatabaseSync, id: string) {
   const row = db
     .prepare(
-      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,n.public_topic_json,t.task_id,t.configuration_json,t.status run_status
+      `SELECT r.*,n.source_id,n.source_mode,n.candidates_json,n.collected_at,n.report_date snapshot_date,n.channel snapshot_channel,n.public_topic_json,n.snapshot_topic,t.task_id,t.configuration_json,t.status run_status
  FROM reports r JOIN (
- SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel,NULL public_topic_json FROM news_runs
- UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel,public_topic_json FROM codex_news_runs
+ SELECT run_id,report_id,source_id,'verified' source_mode,candidates_json,collected_at,report_date,channel,NULL public_topic_json,NULL snapshot_topic FROM news_runs
+ UNION ALL SELECT run_id,report_id,'codex-research' source_id,source_mode,candidates_json,collected_at,report_date,channel,public_topic_json,topic snapshot_topic FROM codex_news_runs
  ) n ON n.report_id=r.id AND n.run_id=r.run_id JOIN task_runs t ON t.id=r.run_id WHERE r.id=?`,
     )
     .get(id);
@@ -69,11 +65,20 @@ export function reviewedReport(db: DatabaseSync, id: string) {
     const configuration = row.configuration_json === null ? {} : JSON.parse(String(row.configuration_json));
     if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) throw Error();
     const templateId = typeof configuration.templateId === 'string' ? configuration.templateId : undefined;
-    const topic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
-    if (topic !== undefined) {
-      const expected = {id: 't-' + sha256(String(row.task_id)).slice(0,24), name: configuration.topic};
-      if (!isDeepStrictEqual(topic, expected)) throw Error();
-    }
+    const storedTopic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
+    const topicName = typeof configuration.topic === 'string' && configuration.topic.trim()
+      ? configuration.topic
+      : typeof row.snapshot_topic === 'string' && row.snapshot_topic.trim()
+        ? String(row.snapshot_topic)
+        : undefined;
+    const topicSeed = topicName === undefined ? undefined
+      : typeof configuration.topic === 'string' && configuration.topic.trim()
+        ? String(row.task_id)
+        : JSON.stringify([String(row.task_id), topicName]);
+    const expectedTopic = topicName === undefined || topicSeed === undefined ? undefined
+      : {id: 't-' + sha256(topicSeed).slice(0,24), name: topicName};
+    const topic = storedTopic ?? expectedTopic;
+    if (!topic || !expectedTopic || !isDeepStrictEqual(topic, expectedTopic)) throw Error();
     if (!isDeepStrictEqual(document.topic, topic)) throw Error();
     const proposal = {
       title: document.title,
@@ -105,7 +110,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       reportDate: String(row.report_date),
       collectedAt: String(row.collected_at),
       ...(topic === undefined ? {} : {topic}),
-    }, row.source_mode as 'verified'|'codex_reported', templateId === 'daily-technology' ? 'technology' : 'general');
+    }, row.source_mode as 'verified'|'codex_reported', templateId === 'daily-headlines' ? 'headlines' : templateId === 'daily-technology' ? 'technology' : 'general');
     if (!isDeepStrictEqual(rebuilt, document)) throw Error();
     const links = db
       .prepare(
@@ -142,16 +147,20 @@ export function archiveArtifact(
   const hasAllResearchAreas = d.items.every(item => item.researchArea !== undefined);
   const isHeadlines = report.templateId === "daily-headlines";
   const isTechnology = report.templateId === "daily-technology";
-  if (hasAnyResearchArea && (!hasAllResearchAreas || !d.topic || isHeadlines || isTechnology))
+  const isOpenSource = report.templateId === "daily-opensource";
+  if (!d.topic || d.items.some(item => !item.details))
     throw new HttpError(409, "archive_schema_invalid");
-  if ((isHeadlines || isTechnology) && !d.topic)
+  if (hasAnyResearchArea && (!hasAllResearchAreas || !isOpenSource))
+    throw new HttpError(409, "archive_schema_invalid");
+  if (isOpenSource && (!hasAllResearchAreas || d.items.some(item => item.details?.kind !== "project")))
+    throw new HttpError(409, "archive_schema_invalid");
+  if (isHeadlines && d.items.some(item => item.details?.kind !== "news"))
     throw new HttpError(409, "archive_schema_invalid");
   if (isTechnology && d.items.some(item => item.details?.kind !== "investment"))
     throw new HttpError(409, "archive_schema_invalid");
-  const schemaVersion: 1 | 2 | 3 | 5 | 6 = isHeadlines ? 6 : isTechnology ? 5 : hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
   const document = {
-    schema_version: schemaVersion,
-    ...(d.topic ? {topic: d.topic} : {}),
+    schema_version: 1,
+    topic: d.topic,
     report_id: d.reportId,
     report_date: d.reportDate,
     channel: d.channel,
@@ -168,8 +177,8 @@ export function archiveArtifact(
       fact_summary: x.factSummary,
       analysis: x.analysis,
       evidence_quote: x.evidenceQuote,
-      ...(schemaVersion===3?{research_area:x.researchArea}:{}),
-      ...(x.details?{details:x.details}:{}),
+      ...(x.researchArea ? {research_area:x.researchArea} : {}),
+      details: x.details,
       verification: x.verification,
       source: {
         name: x.source.name,
@@ -181,12 +190,9 @@ export function archiveArtifact(
       },
     })),
   };
-  const valid = schemaVersion===6 ? validateArchiveV6(document) : schemaVersion===5 ? validateArchiveV5(document) : schemaVersion===3 ? validateArchiveV3(document) : d.topic ? validateArchiveV2(document) : validateArchive(document);
-  if (!valid)
+  if (!validateArchive(document))
     throw new HttpError(409, "archive_schema_invalid");
   const content = JSON.stringify(document, null, 2) + "\n";
-  const path = d.topic
-    ? `reports/topics/${d.topic.id}/${d.reportDate.replaceAll("-", "/")}/v${String(report.version).padStart(6, "0")}.json`
-    : `reports/${d.reportDate.replaceAll("-", "/")}/${d.channel}/v${String(report.version).padStart(6, "0")}.json`;
+  const path = `reports/topics/${d.topic.id}/${d.reportDate.replaceAll("-", "/")}/v${String(report.version).padStart(6, "0")}.json`;
   return { path, content, hash: sha256(content) };
 }

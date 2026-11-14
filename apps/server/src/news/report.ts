@@ -2,7 +2,7 @@ import { Ajv } from 'ajv';
 import addFormats from 'ajv-formats';
 import type { FormatsPlugin } from 'ajv-formats';
 import { AppError } from '../errors.js';
-import { proposalSchema, REPORT_SCHEMA, TECHNOLOGY_REPORT_SCHEMA, TECHNOLOGY_CATEGORIES, RESEARCH_AREAS, type Proposal, type ProposalItem, type ResearchArea } from './report-schema.js';
+import { proposalSchema, headlinesProposalSchema, REPORT_SCHEMA, HEADLINES_REPORT_SCHEMA, TECHNOLOGY_REPORT_SCHEMA, TECHNOLOGY_CATEGORIES, RESEARCH_AREAS, type Proposal, type ProposalItem, type ResearchArea } from './report-schema.js';
 import { validateInvestmentDetails, type InvestmentDetails } from './investment-details.js';
 import { validateNewsDetails, type NewsDetails } from './news-details.js';
 import { validateProjectDetails, type ProjectDetails } from './project-details.js';
@@ -11,8 +11,10 @@ import type { ArticleCandidate } from './types.js';
 const ajv = new Ajv({ allErrors: true, strict: true, coerceTypes: false, removeAdditional: false });
 (addFormats as unknown as FormatsPlugin)(ajv); // Callable CJS export under NodeNext.
 const validateReport = ajv.compile(REPORT_SCHEMA);
+const validateHeadlinesReport = ajv.compile(HEADLINES_REPORT_SCHEMA);
 const validateTechnologyReport = ajv.compile(TECHNOLOGY_REPORT_SCHEMA);
 const validateProposal = ajv.compile<Proposal>(proposalSchema());
+const validateHeadlinesProposal = ajv.compile<Proposal>(headlinesProposalSchema());
 const validateTechnologyProposal = ajv.compile<Proposal>(proposalSchema(undefined, TECHNOLOGY_CATEGORIES));
 export interface ReportItem extends ProposalItem {
   verification: 'source_only' | 'codex_reported';
@@ -25,11 +27,11 @@ export interface DailyReport {
 }
 export function buildReport(output: string, candidates: ArticleCandidate[], metadata: {
   reportId: string; runId: string; reportDate: string; collectedAt: string; topic?: PublicTopic;
-}, mode:'verified'|'codex_reported'='verified', categoryScope:'general'|'technology'='general'): DailyReport {
+}, mode:'verified'|'codex_reported'='verified', categoryScope:'general'|'technology'|'headlines'='general'): DailyReport {
   if(mode!=='verified'&&mode!=='codex_reported')throw new AppError('report_provenance_invalid');
   let proposal: unknown;
   try { proposal = JSON.parse(output); } catch { throw new AppError('report_invalid_json'); }
-  const validProposal = categoryScope==='technology' ? validateTechnologyProposal : validateProposal;
+  const validProposal = categoryScope==='headlines' ? validateHeadlinesProposal : categoryScope==='technology' ? validateTechnologyProposal : validateProposal;
   if (!validProposal(proposal)) throw new AppError('report_schema_invalid');
   const typed = proposal;
   const byId = new Map(candidates.map((article) => [article.id, article]));
@@ -55,7 +57,7 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
       b.importance - a.importance || a.articleId.localeCompare(b.articleId);
   });
   const report: DailyReport = { schemaVersion: 1, ...metadata, channel: 'opensource', reviewStatus: 'pending', title: typed.title, items };
-  const validReport = categoryScope==='technology' ? validateTechnologyReport : validateReport;
+  const validReport = categoryScope==='headlines' ? validateHeadlinesReport : categoryScope==='technology' ? validateTechnologyReport : validateReport;
   if (!validReport(report)) throw new AppError('report_schema_invalid');
   return report;
 }
@@ -76,27 +78,13 @@ function detailsMarkdown(details:InvestmentDetails):string {
 function newsDetailsMarkdown(details:NewsDetails):string {
   const lines=[`### 新闻详情\n\n事件背景：${markdownText(details.background)}`];
   const withRefs=(refs?:string[])=>refs?.length?`（证据 ${refs.map(markdownText).join('、')}）`:'';
-  const internalRefs=new Set([
-    ...(details.trendSignals??[]).flatMap(signal=>signal.evidenceRefs),
-    ...(details.publicDiscussion?.evidenceRefs??[]),
-    ...(details.publicDiscussion?.viewpoints??[]).flatMap(item=>item.evidenceRefs),
-    ...(details.publicDiscussion?.controversies??[]).flatMap(item=>item.evidenceRefs),
-    ...(details.publicDiscussion?.representativeComments??[]).flatMap(item=>item.evidenceRefs),
-  ]);
-  const factualRefs=new Set([
-    ...(details.keyFacts??[]).flatMap(item=>item.evidenceRefs),
-    ...(details.timeline??[]).flatMap(item=>item.evidenceRefs),
-    ...(details.positions??[]).flatMap(item=>item.evidenceRefs),
-    ...(details.impacts??[]).flatMap(item=>item.evidenceRefs??[]),
-  ]);
-  const readerEvidence=(details.evidence??[]).filter(source=>!internalRefs.has(source.id)||factualRefs.has(source.id));
   if(details.keyFacts?.length)lines.push(`关键事实：\n${details.keyFacts.map(f=>`- ${markdownText(f.name)}：${markdownText(f.value)}${f.unit?` ${markdownText(f.unit)}`:''}${f.period?`；${markdownText(f.period)}`:''}；${markdownText(f.nature)}${withRefs(f.evidenceRefs)}`).join('\n')}`);
   if(details.timeline?.length)lines.push(`事件时间线：\n${details.timeline.map(e=>`- ${markdownText(e.time)}：${markdownText(e.event)}${withRefs(e.evidenceRefs)}`).join('\n')}`);
   if(details.positions?.length)lines.push(`各方表态：\n${details.positions.map(p=>`- ${markdownText(p.actor)}（${p.form==='quote'?'原话':'转述'}）：${markdownText(p.statement)}${withRefs(p.evidenceRefs)}`).join('\n')}`);
   if(details.impacts?.length)lines.push(`影响：\n${details.impacts.map(i=>`- ${i.status==='observed'?'已观察':'分析推断'}：${markdownText(i.description)}${withRefs(i.evidenceRefs)}`).join('\n')}`);
   if(details.uncertainties?.length)lines.push(`未确定事项：${details.uncertainties.map(markdownText).join('；')}`);
   if(details.watchpoints?.length)lines.push(`后续观察：${details.watchpoints.map(markdownText).join('；')}`);
-  if(readerEvidence.length)lines.push(`补充证据：\n${readerEvidence.map(s=>`- ${markdownText(s.id)} ${markdownText(s.name)}：[查看原文](${s.url.replace(/\(/g,'%28').replace(/\)/g,'%29')})；支持 ${markdownText(s.supports)}`).join('\n')}`);
+  if(details.evidence?.length)lines.push(`补充证据：\n${details.evidence.map(s=>`- ${markdownText(s.id)} ${markdownText(s.name)}：[查看原文](${s.url.replace(/\(/g,'%28').replace(/\)/g,'%29')})；支持 ${markdownText(s.supports)}`).join('\n')}`);
   return lines.join('\n\n');
 }
 function projectDetailsMarkdown(details:ProjectDetails):string {

@@ -8,7 +8,7 @@ import {loadConfig} from '../dist/apps/server/src/config.js';
 import {ControlledAdapter} from './fixtures/controlled-adapter.mjs';
 const headers={authorization:'Bearer test_only_0123456789_abcdefghijklmnop'};
 const configuration={name:'AI 日报',topic:'AI',prompts:['搜索最新新闻'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
-const proposal={title:'AI 日报',items:[{url:'https://example.com/inaccessible.pdf',category:'ai',importance:2,factSummary:'来源称宣布更新。',analysis:null,evidenceQuote:'Codex-provided excerpt absent from Backend source content'}]};
+const proposal={title:'AI 日报',items:[{url:'https://example.com/inaccessible.pdf',category:'ai',importance:2,factSummary:'来源称宣布更新。',analysis:null,evidenceQuote:'Codex-provided excerpt absent from Backend source content',details:{kind:'news',background:'来源披露了新的产品进展。',evidence:[{id:'source',name:'来源材料',url:'https://example.com/source',supports:'产品进展'}]}}]};
 function setup(){
  const dir=mkdtempSync('/tmp/codex-reported-'),adapter=new ControlledAdapter();let fetched=0;const artifacts=[];
  const app=buildServer(loadConfig({AI_NEWS_HUB_DATA_DIR:dir,AI_NEWS_HUB_ADMIN_TOKEN:headers.authorization.slice(7),AI_NEWS_HUB_LOG_LEVEL:'silent',AI_NEWS_HUB_GITHUB_REPOSITORY:'owner/reports',AI_NEWS_HUB_GITHUB_BRANCH:'reports',AI_NEWS_HUB_GITHUB_TOKEN:'fixture_only_012345678901234567890'}),{adapter,newsFetcher:async()=>{fetched++;throw new Error('Backend source fetch must never happen');},githubAdapter:{async publish(artifact){artifacts.push(JSON.parse(artifact.content));return {sha:'a'.repeat(40),committedAt:'2026-11-05T00:00:00Z'};}}});
@@ -64,10 +64,13 @@ test('migration preserves existing independently verified Codex reports and thei
  const db=new DatabaseSync(':memory:');migrate(db,migrations.slice(0,8));
  try{
   const fetchedAt='2026-11-03T00:00:00.000Z',candidate={id:'old-source',title:'A previously verified announcement',originalUrl:'https://example.com/old',canonicalUrl:'https://example.com/old',sourceName:'example.com',publishedAt:null,eventAt:null,fetchedAt,excerpt:'A previously verified announcement'};
-  const proposal={title:'Old verified Codex report',items:[{articleId:candidate.id,category:'ai',importance:1,factSummary:'来源宣布更新。',analysis:null,evidenceQuote:candidate.title}]};
-  const document=buildReport(JSON.stringify(proposal),[candidate],{reportId:'old-report',runId:'old-run',reportDate:'2026-11-03',collectedAt:fetchedAt});
-  db.prepare("INSERT INTO tasks(id,name,channel,prompt) VALUES('old-task','Old','opensource','Search')").run();
-  db.prepare("INSERT INTO task_runs(id,task_id,idempotency_key,status) VALUES('old-run','old-task','run','succeeded')").run();
+  const {createHash}=await import('node:crypto');
+  const topic={id:'t-'+createHash('sha256').update('old-task').digest('hex').slice(0,24),name:'Old AI topic'};
+  const oldConfiguration=JSON.stringify({topic:topic.name});
+  const proposal={title:'Old verified Codex report',items:[{articleId:candidate.id,category:'ai',importance:1,factSummary:'来源宣布更新。',analysis:null,evidenceQuote:candidate.title,details:{kind:'news',background:'来源披露新的进展。',evidence:[{id:'source',name:'原始来源',url:candidate.canonicalUrl,supports:'事件进展'}]}}]};
+  const document=buildReport(JSON.stringify(proposal),[candidate],{reportId:'old-report',runId:'old-run',reportDate:'2026-11-03',collectedAt:fetchedAt,topic},'verified');
+  db.prepare("INSERT INTO tasks(id,name,channel,prompt,configuration_json) VALUES('old-task','Old','opensource','Search',?)").run(oldConfiguration);
+  db.prepare("INSERT INTO task_runs(id,task_id,idempotency_key,status,configuration_json) VALUES('old-run','old-task','run','succeeded',?)").run(oldConfiguration);
   db.prepare("INSERT INTO articles(id,original_url,canonical_url,source_name,title,fetched_at) VALUES(?,?,?,?,?,?)").run(candidate.id,candidate.originalUrl,candidate.canonicalUrl,candidate.sourceName,candidate.title,fetchedAt);
   db.prepare("INSERT INTO reports(id,run_id,report_date,channel,title,body_markdown,content_json,status) VALUES('old-report','old-run','2026-11-03','opensource',?,'test',?,'validated')").run(document.title,JSON.stringify(document));
   db.prepare("INSERT INTO report_articles(report_id,article_id,position) VALUES('old-report',?,0)").run(candidate.id);
@@ -75,7 +78,7 @@ test('migration preserves existing independently verified Codex reports and thei
   const oldHash=sha256(JSON.stringify({document,version:1,candidates:[candidate],links:[candidate.id]}));
   migrate(db);assert.equal(db.prepare("SELECT public_topic_json FROM codex_news_runs WHERE run_id='old-run'").get().public_topic_json,null);assert.equal(db.prepare("SELECT source_mode FROM codex_news_runs WHERE run_id='old-run'").get().source_mode,'verified');
   let saved;const service=new PublicationService(db,{repository:'owner/reports',branch:'reports'},{async publish(artifact){saved=JSON.parse(artifact.content);return {sha:'a'.repeat(40),committedAt:fetchedAt};}});
-  assert.equal(service.inspect('old-report').contentHash,oldHash);const legacyArtifact=archiveArtifact(reviewedReport(db,'old-report'),fetchedAt);assert.equal(JSON.parse(legacyArtifact.content).schema_version,1);assert.equal(legacyArtifact.path,'reports/2026/11/03/opensource/v000001.json');service.approve('old-report',oldHash);assert.equal((await service.publish('old-report')).status,'succeeded');
+  assert.equal(service.inspect('old-report').contentHash,oldHash);const legacyArtifact=archiveArtifact(reviewedReport(db,'old-report'),fetchedAt);assert.equal(JSON.parse(legacyArtifact.content).schema_version,1);assert.equal(legacyArtifact.path,`reports/topics/${topic.id}/2026/11/03/v000001.json`);service.approve('old-report',oldHash);assert.equal((await service.publish('old-report')).status,'succeeded');
   assert.equal(saved.items[0].verification,'source_only');assert.equal(saved.items[0].source.fetched_at,fetchedAt);await service.close();
  }finally{db.close();}
 });
@@ -97,7 +100,7 @@ test('managed report snapshots topic independently of shared sources and later t
    assert.equal((await s.request('PUT',`/tasks/${task.id}`,{...configuration,name:'Renamed task',topic:'Renamed topic'})).statusCode,200);
    assert.equal((await s.request('GET',`/news/reports/${row.id}/publication`)).json().contentHash,inspection.contentHash);
    await s.request('POST',`/news/reports/${row.id}/approve`,{confirm:true,contentHash:inspection.contentHash});assert.equal((await s.request('POST',`/news/reports/${row.id}/publish`,{})).statusCode,200);
-   assert.equal(s.artifacts[index].schema_version,2);assert.deepEqual(s.artifacts[index].topic,expected);reports.push(row);
+   assert.equal(s.artifacts[index].schema_version,1);assert.deepEqual(s.artifacts[index].topic,expected);reports.push(row);
   }
   assert.equal(reports[0].report_date,reports[1].report_date);assert.equal(reports[1].version,reports[0].version+1);
   assert.equal(s.artifacts[0].items[0].id,s.artifacts[1].items[0].id);assert.notEqual(s.artifacts[0].topic.id,s.artifacts[1].topic.id);assert.equal(s.adapter.calls.length,2);assert.equal(s.fetched,0);

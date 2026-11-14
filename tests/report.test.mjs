@@ -7,28 +7,6 @@ const metadata = { reportId: 'report-a', runId: 'run-a', reportDate: '2026-11-03
 const proposal = () => ({ title: 'Fixture daily report', items: [{ articleId: 'article-a', category: 'opensource', importance: 4, factSummary: '来源宣布发布更新。', analysis: '这可能有助于开发者。', evidenceQuote: 'A genuine fixture release announcement' }] });
 const investmentDetails = () => ({kind:'investment',background:'公司披露新一季财报，较此前指引有所变化。',metrics:[{name:'季度收入',value:'12.4',unit:'亿美元',period:'2026 Q3',basis:'actual',evidenceRefs:['filing']}],supplyChain:[{segment:'服务器内存',direction:'需求增加',reason:'新产品配置提高单机用量',relationship:'potential'}],investmentLogic:'若订单兑现，收入和毛利率可能改善。',watchpoints:['下季订单量'],risks:['客户认证延迟'],evidence:[{id:'filing',name:'公司财报',url:'https://example.com/filing',supports:'季度收入实际值'}]});
 const newsDetails = () => ({kind:'news',background:'该政策此前处于征求意见阶段，本次正式发布。',keyFacts:[{name:'生效范围',value:'全国',nature:'confirmed',evidenceRefs:['notice']}],timeline:[{time:'2026-11-03',precision:'date',event:'主管部门发布正式通知',evidenceRefs:['notice']}],positions:[{actor:'主管部门',statement:'将分阶段实施',form:'paraphrase',evidenceRefs:['notice']}],impacts:[{description:'企业需更新申报流程',status:'analysis'}],uncertainties:['实施细则尚未公布'],watchpoints:['查看后续实施细则'],evidence:[{id:'notice',name:'正式通知',url:'https://example.com/notice',supports:'政策发布时间与范围'}]});
-const socialNewsDetails = () => ({
- kind:'news',
- background:'此前该事件已立案，本次新增信息为鉴定结果。',
- trendTags:['cross_platform','controversial','viral_video'],
- discussionTags:['debate'],
- trendSignals:[
-  {platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 3 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['weibo']},
-  {platform:'douyin',contentType:'video',metric:'views',value:'热门视频，未披露完整播放量',observedAt:'2026-11-13T06:30:00+08:00',evidenceType:'reported',evidenceRefs:['douyin']},
- ],
- publicDiscussion:{
-  summary:'公开讨论围绕责任归属和事件处理方式展开。',
-  evidenceRefs:['discussion'],
-  viewpoints:[{label:'支持观点',summary:'认为处理方式合理。',sentiment:'supportive',evidenceRefs:['discussion']}],
-  controversies:[{topic:'责任归属',sides:['观点 A','观点 B'],evidenceRefs:['discussion']}],
-  representativeComments:[{platform:'weibo',quote:'这是一条有公开来源的代表性评论。',evidenceRefs:['discussion']}],
- },
- evidence:[
-  {id:'weibo',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-  {id:'douyin',name:'抖音视频页',url:'https://example.com/douyin',supports:'视频传播情况'},
-  {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'讨论观点和代表性评论'},
- ],
-});
 test('news details survive report construction and Markdown without changing investment details',()=>{
  const p=proposal();p.items[0].details=newsDetails();
  const report=buildReport(JSON.stringify(p),candidates,metadata);
@@ -37,24 +15,19 @@ test('news details survive report construction and Markdown without changing inv
  const investment=proposal();investment.items[0].details=investmentDetails();
  assert.equal(buildReport(JSON.stringify(investment),candidates,metadata).items[0].details.kind,'investment');
 });
-test('legacy social metadata is retained for compatibility but omitted from reader-facing Markdown',()=>{
- const p=proposal();p.items[0].category='social_event';p.items[0].details=socialNewsDetails();
+test('headlines reject internal research fields and Markdown renders all supplied public evidence',()=>{
+ const p=proposal();p.items[0].category='social_event';p.items[0].details=newsDetails();
+ p.items[0].details.evidence.push({id:'secondary',name:'补充原始来源',url:'https://example.com/secondary',supports:'补充核实事件进展'});
  const report=buildReport(JSON.stringify(p),candidates,metadata);
- assert.deepEqual(report.items[0].details,p.items[0].details);
- const markdown=reportMarkdown(report);
- assert.doesNotMatch(markdown,/平台传播信号|公众讨论|讨论类型标签|跨平台传播|微博|抖音|公开讨论页/);
- assert.doesNotMatch(markdown,/内容创作评估|建议标题|Hook|适合短视频/);
-});
-test('social trend tags must match platform and discussion evidence',()=>{
- for(const mutate of [
-  d=>{d.trendSignals=d.trendSignals.slice(0,1);},
-  d=>{d.publicDiscussion.controversies=[];},
-  d=>{d.trendTags.push('sustained_discussion');},
-  d=>{d.trendSignals[0].evidenceRefs=['missing'];},
-  d=>{d.discussionTags=['short_video'];},
+ assert.match(reportMarkdown(report),/补充原始来源/);
+ for(const [field,value] of [
+  ['trendTags',[]],
+  ['discussionTags',[]],
+  ['trendSignals',[]],
+  ['publicDiscussion',{summary:'内部讨论摘要',evidenceRefs:['notice']}],
  ]){
-  const p=proposal();p.items[0].category='social_event';p.items[0].details=socialNewsDetails();mutate(p.items[0].details);
-  assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
+  const invalid=proposal();invalid.items[0].category='social_event';invalid.items[0].details={...newsDetails(),[field]:value};
+  assert.throws(()=>buildReport(JSON.stringify(invalid),candidates,metadata,'verified','headlines'),{code:'report_schema_invalid'});
  }
 });
 test('news details reject missing evidence references, duplicate IDs and unsafe URLs',()=>{
