@@ -33,6 +33,6 @@ export function renderNewsletterPage(options: PageOptions): string {
   const retry = state === 'error' && status < 500;
   const action = form
     ? `<form method="post" action="${escapeHtml(form.action)}"><input type="hidden" name="token" value="${escapeHtml(form.token)}"><button class="primary" type="submit">${escapeHtml(title)}</button></form><a class="secondary" href="/">${state === 'unsubscribe' ? '保留订阅，返回首页' : '暂不订阅，返回首页'}</a>`
-    : `<a class="primary" href="${retry ? '/#newsletter-signup' : '/'}">${retry ? '重新订阅' : state === 'success' ? '开始阅读' : '返回首页'}</a>`;
+    : `<a class="primary" href="${retry ? '/#newsletter-dialog' : '/'}">${retry ? '重新订阅' : state === 'success' ? '开始阅读' : '返回首页'}</a>`;
   return `<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escapeHtml(title)} · AI News Hub</title><style nonce="${escapeHtml(nonce)}">${css}</style></head><body><header class="masthead"><a class="brand" href="/" aria-label="AI News Hub 首页"><span class="brand-mark" aria-hidden="true">N</span>AI News Hub</a></header><main><section class="panel ${state}" aria-labelledby="page-title"><div class="status-icon" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.6" stroke-linecap="round" stroke-linejoin="round">${icon}</svg></div><h1 id="page-title">${escapeHtml(title)}</h1><p>${escapeHtml(message)}</p><div class="actions">${action}</div></section></main></body></html>`;
 }

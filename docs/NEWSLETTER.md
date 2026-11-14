@@ -38,7 +38,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 可以在终端分别运行 `openssl rand -hex 32` 生成两段随机值。不要使用管理后台密码，也不要把密钥填入 `VITE_*`、公开页面或 Git。更换签名密钥会使旧退订链接失效，正常运行时请保留此密钥。
 
-配置好后重新部署 Pages。页面底部显示邮件订阅表单。未启用时现有阅读、RSS 和后台不受影响；演示站始终不显示表单。预览域名与 `SITE_URL` 不一致时接口拒绝操作。
+配置好后重新部署 Pages。启用时，Header 显示 Subscribe 按钮，点击打开邮件订阅弹窗；页面底部仅保留版权信息。弹窗使用现有订阅 API，未启用时不显示按钮和弹窗，演示站始终禁用订阅。预览域名与 `SITE_URL` 不一致时接口拒绝操作。
 
 订阅接口由仓库根目录的 Pages Functions 提供，构建输出仍为 `dist/web`。Pages 的 Functions 路由只处理 `/api/newsletter/*`，不连接私有管理后台。
 

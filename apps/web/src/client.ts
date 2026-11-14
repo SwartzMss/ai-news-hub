@@ -1,5 +1,20 @@
 import "./style.css";
 
+const newsletterDialog = document.querySelector<HTMLDialogElement>("#newsletter-dialog");
+document.querySelectorAll<HTMLButtonElement>("[data-newsletter-open]").forEach((trigger) => {
+  trigger.addEventListener("click", () => {
+    if (newsletterDialog && !newsletterDialog.open) newsletterDialog.showModal();
+  });
+});
+document.querySelectorAll<HTMLButtonElement>("[data-newsletter-close]").forEach((close) => {
+  close.addEventListener("click", () => newsletterDialog?.close());
+});
+newsletterDialog?.addEventListener("click", (event) => {
+  if (event.target === newsletterDialog) newsletterDialog.close();
+});
+if (location.hash === "#newsletter-dialog" && newsletterDialog && !newsletterDialog.open)
+  newsletterDialog.showModal();
+
 const newsletterForm = document.querySelector<HTMLFormElement>("[data-newsletter-form]");
 if (newsletterForm) {
   const email = newsletterForm.querySelector<HTMLInputElement>('[name="email"]')!;
