@@ -1,6 +1,6 @@
 import { REPORT_SCHEMA, PUBLIC_TOPIC_SCHEMA, TECHNOLOGY_CATEGORIES } from "../news/report-schema.js";
 import { TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA } from "../news/investment-details.js";
-import { NEWS_DETAILS_SCHEMA, HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_HEADLINES_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
+import { NEWS_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_HEADLINES_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
 const original = REPORT_SCHEMA.properties.items.items.properties;
 const source = original.source.properties;
 const extendedDetails = original.details;
