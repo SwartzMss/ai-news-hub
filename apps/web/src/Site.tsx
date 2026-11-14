@@ -4,6 +4,7 @@ import {
   categories,
   dateLabel,
   lead,
+  readerText,
   counts,
   Source,
   Empty,
@@ -35,6 +36,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
   const latest = data.latest[0],
     latestDate = latest?.report_date;
   const story = data.articles.find((item) => item.key === page.key);
+  const storyAnalysis = story ? readerText(story, story.analysis) : "";
   const daily = data.latest.find((r) => r.report_date === page.date);
   const selected =
     page.kind === "report"
@@ -68,7 +70,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
         </div>
       </div>
       {lead(item).rest && <p className="story-facts"><InlineText text={lead(item).rest} /></p>}
-      {item.analysis && <div className="story-analysis"><h3>分析与推断</h3><p><InlineText text={item.analysis} /></p></div>}
+      {readerText(item,item.analysis) && <div className="story-analysis"><h3>分析与推断</h3><p><InlineText text={readerText(item,item.analysis)} /></p></div>}
       <Source story={item} />
     </article>
   );
@@ -116,7 +118,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
   ) : page.kind === "article" && structuredProject ? (
     <StructuredProjectAside details={structuredProject} />
   ) : page.kind === "article" && news ? (
-    <NewsAside details={news} analysis={story?.analysis}/>
+    <NewsAside story={story!}/>
   ) : page.kind === "article" && owner && !project ? (
     <aside className="reading-aside">
       <h2>所属简报</h2>
@@ -315,11 +317,11 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                         <InlineText text={lead(story).rest} />
                       </p>
                     )}
-                    {story.analysis && (
+                    {storyAnalysis && (
                       <section className="story-analysis">
                         <h2>分析与推断</h2>
                         <p>
-                          <InlineText text={story.analysis} />
+                          <InlineText text={storyAnalysis} />
                         </p>
                       </section>
                     )}

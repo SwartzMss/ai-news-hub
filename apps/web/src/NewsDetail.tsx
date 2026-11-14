@@ -1,12 +1,12 @@
 import type { NewsDetails, Story } from './types';
 import { InlineText } from './InlineText';
-import { categories, Source, lead } from './ReadingParts';
+import { categories, readerText, Source, lead } from './ReadingParts';
 import { DetailAsideNav, MobileDetailNav, hasText, type DetailSection } from './DetailNavigation';
 
 const natureLabel:Record<NonNullable<NewsDetails['keyFacts']>[number]['nature'],string>={
   confirmed:'已证实',statement:'当事方表述',reported:'媒体报道',estimate:'估算',inference:'推断',
 };
-function readerEvidence(details:NewsDetails){
+function readerEvidence(details:NewsDetails,story:Story){
   const internalRefs=new Set([
     ...(details.trendSignals??[]).flatMap(signal=>signal.evidenceRefs),
     ...(details.publicDiscussion?.evidenceRefs??[]),
@@ -20,7 +20,33 @@ function readerEvidence(details:NewsDetails){
     ...(details.positions??[]).flatMap(item=>item.evidenceRefs),
     ...(details.impacts??[]).flatMap(item=>item.evidenceRefs??[]),
   ]);
-  return (details.evidence??[]).filter(source=>!internalRefs.has(source.id)||factualRefs.has(source.id));
+  return (details.evidence??[]).filter(source=>
+    (!internalRefs.has(source.id)||factualRefs.has(source.id)) &&
+    !!readerText(story,`${source.name} ${source.supports}`).trim()
+  );
+}
+function readerDetails(story:Story,details:NewsDetails):NewsDetails{
+  return {
+    ...details,
+    background:readerText(story,details.background),
+    keyFacts:details.keyFacts?.map(fact=>({
+      ...fact,
+      name:readerText(story,fact.name),
+      value:readerText(story,fact.value),
+      unit:fact.unit?readerText(story,fact.unit):undefined,
+      period:fact.period?readerText(story,fact.period):undefined,
+    })).filter(fact=>hasText(fact.name)||hasText(fact.value)),
+    timeline:details.timeline?.map(entry=>({...entry,event:readerText(story,entry.event)})).filter(entry=>hasText(entry.event)),
+    positions:details.positions?.map(position=>({
+      ...position,
+      actor:readerText(story,position.actor),
+      statement:readerText(story,position.statement),
+    })).filter(position=>hasText(position.actor)&&hasText(position.statement)),
+    impacts:details.impacts?.map(impact=>({...impact,description:readerText(story,impact.description)})).filter(impact=>hasText(impact.description)),
+    uncertainties:details.uncertainties?.map(item=>readerText(story,item)).filter(hasText),
+    watchpoints:details.watchpoints?.map(item=>readerText(story,item)).filter(hasText),
+    evidence:readerEvidence(details,story),
+  };
 }
 function EvidenceLinks({ids,details}:{ids?:string[];details:NewsDetails}){
   if(!ids?.length)return null;
@@ -44,13 +70,16 @@ export function newsSections(details:NewsDetails,analysis?:string|null):DetailSe
   ].filter(section=>section.show).map(({id,label})=>({id,label}));
 }
 export function NewsDetail({story}:{story:Story}){
-  const details=story.details;
-  if(!details||details.kind!=='news')return null;
-  const sections=newsSections(details,story.analysis);
+  const rawDetails=story.details;
+  if(!rawDetails||rawDetails.kind!=='news')return null;
+  const details=readerDetails(story,rawDetails);
+  const summary=lead(story);
+  const analysis=readerText(story,story.analysis);
+  const sections=newsSections(details,analysis);
   const show=(id:string)=>sections.some(section=>section.id===id);
   return <article className="news-detail">
-    <header className="news-detail-header detail-page-header"><h1 className="detail-page-title">{lead(story).title}</h1>
-      {lead(story).rest&&<p className="news-detail-summary"><InlineText text={lead(story).rest}/></p>}
+    <header className="news-detail-header detail-page-header"><h1 className="detail-page-title">{summary.title}</h1>
+      {summary.rest&&<p className="news-detail-summary"><InlineText text={summary.rest}/></p>}
       <div className="news-detail-tags">
         <span className="news-tag news-tag-topic">{categories[story.category]??story.category}</span>
       </div>
@@ -65,11 +94,15 @@ export function NewsDetail({story}:{story:Story}){
       {show("news-impacts")&&<section id="news-impacts"><h2>影响</h2><ul className="news-impacts">{details.impacts?.map((impact,index)=><li key={index}><span>{impact.status==='observed'?'已观察':'分析推断'}</span><p><InlineText text={impact.description}/></p><EvidenceLinks ids={impact.evidenceRefs} details={details}/></li>)}</ul></section>}
       {show("news-uncertainties")&&<section id="news-uncertainties"><h2>未确定事项</h2><ul>{details.uncertainties?.filter(hasText).map((item,index)=><li key={index}><InlineText text={item}/></li>)}</ul></section>}
       {show("news-watchpoints")&&<section id="news-watchpoints"><h2>后续观察</h2><ul>{details.watchpoints?.filter(hasText).map((item,index)=><li key={index}><InlineText text={item}/></li>)}</ul></section>}
-      {show("news-analysis")&&<section id="news-analysis"><h2>分析与推断</h2><p><InlineText text={story.analysis??""}/></p></section>}
-      <section id="news-evidence"><h2>来源与证据</h2><span id="news-primary-source"/><h3>主要原始来源与原文短引</h3><Source story={story} expanded/>{!!readerEvidence(details).length&&<><h3>其他支持来源</h3><ol className="news-evidence">{readerEvidence(details).map(source=><li id={`news-evidence-${source.id}`} key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name} ↗</a><p>支持：{source.supports}</p></li>)}</ol></>}</section>
+      {show("news-analysis")&&<section id="news-analysis"><h2>分析与推断</h2><p><InlineText text={analysis}/></p></section>}
+      <section id="news-evidence"><h2>来源与证据</h2><span id="news-primary-source"/><h3>主要原始来源与原文短引</h3><Source story={story} expanded/>{!!details.evidence?.length&&<><h3>其他支持来源</h3><ol className="news-evidence">{details.evidence.map(source=><li id={`news-evidence-${source.id}`} key={source.id}><a href={source.url} target="_blank" rel="noopener noreferrer">{source.name} ↗</a><p>支持：{source.supports}</p></li>)}</ol></>}</section>
     </div>
   </article>;
 }
-export function NewsAside({details,analysis}:{details:NewsDetails;analysis?:string|null}){
+export function NewsAside({story}:{story:Story}){
+  const rawDetails=story.details;
+  if(!rawDetails||rawDetails.kind!=='news')return null;
+  const details=readerDetails(story,rawDetails);
+  const analysis=readerText(story,story.analysis);
   return <DetailAsideNav sections={newsSections(details,analysis)} className="news-aside"/>;
 }

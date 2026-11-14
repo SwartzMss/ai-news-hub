@@ -66,15 +66,34 @@ const timeLabel = (value: string) =>
     minute: "2-digit",
     hour12: false,
   });
-// Presentation only: keep the archived wording and original quote unchanged.
+// Presentation only: hide internal social-platform research from the headlines UI.
+const HEADLINES_TOPIC_NAME = "每日热点观察";
+const headlinePlatformName = /(?:Reddit|微博|抖音|B站|哔哩哔哩|小红书|知乎|Twitter|\bX\b|TikTok|YouTube|Instagram|Facebook|Telegram|Discord|Threads)/iu;
+const headlineSocialSignal = /(?:社区.{0,12}(?:出现|集中|讨论|转载|评论)|(?:出现|集中).{0,12}(?:转载|转发|转述|评论|讨论|帖子)|(?:转载|转发|转述|评论|讨论).{0,12}(?:帖子|社区|话题)|(?:转载|转发|转述|评论|讨论)(?:与|及|和)(?:评论|讨论|转载|转发)|带话题帖子|传播帖|平台传播|讨论样本|评论样本|互动量|热榜|热搜|跨平台)/u;
+const headlineInternalResearch = /(?:入选依据|统计窗口|窗口内新增|平台样本|平台证据|互动量未披露|互动数据|传播规模|公众观点比例|原帖票数|原帖|原视频(?:页|评论|链接)|评论者身份|评论中的|推广投入|自然传播|刷量|不同平台账号的数据|不能称为全网热议|编辑推断|适合进一步制作|不建议进一步制作|平台传播信号|转录通知|不采用搜索索引票数)/u;
+export function readerText(story: Pick<Story, "topic">, value: string | null | undefined) {
+  const text = value ?? "";
+  if (story.topic.name !== HEADLINES_TOPIC_NAME || !text.trim()) return text;
+  const segments = text.match(/[^。！？；;\n]+[。！？；;]?/gu) ?? [];
+  return segments
+    .filter((segment) => {
+      const sentence = segment.trim();
+      if (!sentence || headlineInternalResearch.test(sentence)) return false;
+      return !(headlinePlatformName.test(sentence) && headlineSocialSignal.test(sentence));
+    })
+    .join("")
+    .trim();
+}
+// Presentation only: split the reader-facing summary without changing archived data.
 export function lead(story: Story) {
-  const index = story.fact_summary.search(/[。；\n]/u);
+  const summary = readerText(story, story.fact_summary);
+  const index = summary.search(/[。；\n]/u);
   return index > 0
     ? {
-        title: story.fact_summary.slice(0, index),
-        rest: story.fact_summary.slice(index + 1).trim(),
+        title: summary.slice(0, index),
+        rest: summary.slice(index + 1).trim(),
       }
-    : { title: story.fact_summary, rest: "" };
+    : { title: summary, rest: "" };
 }
 export function counts(items: Story[]) {
   return Object.entries(
