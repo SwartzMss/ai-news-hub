@@ -551,7 +551,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   report.topic={id:topicId,name:'每日热点观察'};
   report.items=report.items.slice(0,1);
   report.items[0].category='social_event';
-  report.items[0].fact_summary='主管部门公布鉴定结果。同日Reddit中文社区出现转载与评论；此前已立案，本次新增信息是鉴定结果。';
+  report.items[0].fact_summary='主管部门公布鉴定结果。同日Reddit中文社区出现转载与评论；此前已立案，本次新增信息是鉴定结果。案件后续处理仍在推进。';
   report.items[0].analysis='编辑推断：调查结果提供了新的公共讨论依据，适合解释伦理审查与风险告知；当前直接核实的平台样本较小，不能称为全网热议。';
   report.items[0].details={
    kind:'news',background:'事件此前已经曝光。本次入选依据是11月13日公布调查结果及窗口内的新转载讨论，而非重复报道早前患儿死亡消息。',
@@ -587,7 +587,8 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal(doc.querySelector('#news-content'),null);
   assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/内容创作建议|建议标题|开头 Hook|适合短视频/);
   assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/Reddit|转载与评论|入选依据|平台样本|编辑推断/);
-  assert.match(doc.querySelector('.news-detail-summary').textContent,/此前已立案，本次新增信息是鉴定结果/);
+  assert.match(doc.querySelector('.news-detail-summary').textContent,/案件后续处理仍在推进/);
+  assert.doesNotMatch(doc.querySelector('.news-detail-summary').textContent,/此前已立案|本次新增信息/);
   assert.match(doc.querySelector('#news-background').textContent,/事件此前已经曝光/);
   assert.doesNotMatch(doc.querySelector('#news-background').textContent,/入选依据|窗口内/);
   assert.match(doc.querySelector('#news-background').textContent,/主管部门公布鉴定结果/);
@@ -603,10 +604,11 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal(topicDoc.querySelector('.category-label').textContent.trim(),'社会事件');
   assert.doesNotMatch(topicDoc.querySelector('.category-label').textContent,/跨平台|观点讨论/);
   assert.doesNotMatch(topicDoc.querySelector('.news-summary')?.textContent??'',/Reddit|转载与评论/);
-  assert.match(topicDoc.querySelector('.news-summary')?.textContent??'',/此前已立案/);
+  assert.match(topicDoc.querySelector('.news-summary')?.textContent??'',/案件后续处理仍在推进/);
+  assert.doesNotMatch(topicDoc.querySelector('.news-summary')?.textContent??'',/此前已立案|本次新增信息/);
   const editionDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/archive/${report.report_date}/v000001/index.html`),'utf8')).window.document;
   assert.doesNotMatch(editionDoc.querySelector('.issue-story').textContent,/Reddit|转载与评论|入选依据|平台样本|编辑推断/);
-  assert.match(editionDoc.querySelector('.story-facts').textContent,/此前已立案/);
+  assert.match(editionDoc.querySelector('.story-facts').textContent,/案件后续处理仍在推进/);
   assert.equal(editionDoc.querySelector('.story-analysis'),null);
   const otherTopicDoc=new JSDOM(readFileSync(join(built.output,`topics/${otherTopicId}/index.html`),'utf8')).window.document;
   assert.match(otherTopicDoc.querySelector('.news-summary')?.textContent??'',/Reddit中文社区出现转载与评论/);
