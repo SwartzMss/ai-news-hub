@@ -139,34 +139,14 @@ h3 {
 .header-links {
   display: flex;
   align-items: center;
-  gap: 18px;
-  padding-right: 18px;
-  border-right: 1px solid var(--line);
+  gap: 8px;
 }
-.header-link {
-  display: inline-flex;
-  align-items: center;
-  gap: 7px;
-  color: var(--muted);
-  font-size: 13px;
-  font-weight: 550;
-  white-space: nowrap;
-}
-.header-link:hover {
-  color: var(--ink);
-  text-decoration: none;
-}
-.header-link svg {
-  width: 16px;
-  height: 16px;
-  flex: 0 0 auto;
-}
+.header-link,
 .header-actions .subscribe-action {
   display: inline-flex;
   align-items: center;
   justify-content: center;
   gap: 8px;
-  min-width: auto;
   min-height: 40px;
   padding: 0 14px;
   border: 1px solid var(--line);
@@ -176,14 +156,24 @@ h3 {
   font-size: 12px;
   font-weight: 650;
   text-decoration: none;
-  cursor: pointer;
+  white-space: nowrap;
   transition: background-color 160ms ease, border-color 160ms ease;
 }
+.header-link:hover,
 .header-actions .subscribe-action:hover {
   border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
   background: var(--tint);
   color: var(--ink);
   text-decoration: none;
+}
+.header-link svg {
+  width: 18px;
+  height: 18px;
+  flex: 0 0 auto;
+}
+.header-actions .subscribe-action {
+  min-width: auto;
+  cursor: pointer;
 }
 .header-actions .subscribe-action svg {
   width: 18px;
@@ -193,10 +183,13 @@ h3 {
 .header-actions button {
   display: grid;
   place-items: center;
-  min-width: 36px;
-  min-height: 36px;
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  min-height: 40px;
+  padding: 0;
   border: 1px solid var(--line);
-  border-radius: 7px;
+  border-radius: 10px;
   background: var(--paper);
   color: var(--ink);
   font-size: 20px;
@@ -1148,11 +1141,14 @@ main {
     padding-bottom: 4px;
   }
   .header-links {
-    gap: 12px;
-    padding-right: 12px;
+    gap: 8px;
+    padding-right: 0;
+    border-right: 0;
   }
   .header-link {
-    gap: 5px;
+    min-height: 36px;
+    padding-inline: 10px;
+    gap: 6px;
     font-size: 12px;
   }
   .site-nav {
@@ -1656,7 +1652,7 @@ body {
   font-size: 13px;
 }
 .header-actions {
-  gap: 10px;
+  gap: 8px;
 }
 .header-actions button {
   min-width: 40px;
@@ -1978,7 +1974,9 @@ body {
     gap: 12px;
   }
   .header-actions button {
+    width: 36px;
     min-width: 36px;
+    height: 36px;
     min-height: 36px;
   }
   .site-nav {
@@ -2198,7 +2196,7 @@ body {
 @media (min-width: 701px) and (max-width: 1000px) {
   .masthead { gap: 16px; }
   .site-nav { gap: 18px; margin-left: 0; }
-  .header-actions { gap: 12px; }
-  .header-links { gap: 12px; padding-right: 12px; }
+  .header-actions { gap: 8px; }
+  .header-links { gap: 8px; padding-right: 0; border-right: 0; }
   .header-link { font-size: 12px; }
 }
