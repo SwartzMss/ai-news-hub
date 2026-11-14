@@ -15,7 +15,7 @@ export interface InvestmentDetails {
   watchpoints?: string[];
   risks?: string[];
   valuation?: string;
-  evidence?: {id:string;name:string;url:string;supports:string}[];
+  evidence: {id:string;name:string;url:string;supports:string}[];
 }
 export interface NewsDetails {
   kind: "news";
