@@ -441,16 +441,24 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".project-detail .source-details"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test("article detail pages center the body and TOC as one reading unit", () => {
+test("article detail pages align with the reader edge and keep topic navigation above the article", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
   assert.match(css, /\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;/s);
   assert.match(
     css,
-    /\.reader-body:has\(> \.reading-layout\.detail-layout\)\s*\{[^}]*display: block;[^}]*width: 100%;[^}]*max-width: none;/s,
+    /@media \(min-width: 1001px\)\s*\{[\s\S]*?\.reader-body:has\(> \.reading-layout\.detail-layout\)\s*\{[^}]*display: block;[^}]*width: 100%;[^}]*max-width: none;/s,
   );
   assert.match(
     css,
-    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width: 1176px;[^}]*grid-template-columns: minmax\(0, 900px\) 220px;[^}]*gap: 56px;[^}]*margin: 18px auto 64px;/s,
+    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.topic-picker\s*\{[^}]*position: static;[^}]*flex-direction: row;[^}]*max-width: none;/s,
+  );
+  assert.match(
+    css,
+    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\s*\{[^}]*width: 100%;[^}]*max-width: 900px;[^}]*margin: 18px 0 64px;/s,
+  );
+  assert.match(
+    css,
+    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width: 1176px;[^}]*grid-template-columns: minmax\(0, 900px\) 220px;[^}]*gap: 56px;[^}]*margin: 18px 0 64px;[^}]*justify-content: start;/s,
   );
   assert.match(
     css,
