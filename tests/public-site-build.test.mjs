@@ -559,9 +559,15 @@ test('news detail renders structured evidence, timeline and a section directory'
    impacts:[{description:'讨论持续扩散',status:'analysis'}],
    uncertainties:['后续责任认定仍待相关程序确认'],
    watchpoints:['关注后续调查结论'],
+   trendTags:['single_platform'],
+   discussionTags:['debate'],
+   trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-03T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
+   publicDiscussion:{summary:'公开讨论围绕事件责任展开。',evidenceRefs:['discussion']},
    evidence:[
     {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
     {id:'secondary',name:'补充原始来源',url:'https://example.com/secondary',supports:'补充核实事件进展'},
+    {id:'trend',name:'微博话题页',url:'https://example.com/trend',supports:'微博热榜排名'},
+    {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开讨论内容'},
    ],
   };
   const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
@@ -588,6 +594,9 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*主管部门公布鉴定结果/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('#news-evidence-secondary a[href="https://example.com/secondary"]'));
+  assert.equal(doc.querySelector('#news-evidence-trend'),null,'legacy platform-only evidence stays hidden');
+  assert.equal(doc.querySelector('#news-evidence-discussion'),null,'legacy discussion-only evidence stays hidden');
+  assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/微博话题页|公开讨论页/);
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
