@@ -27,10 +27,6 @@ export function LatestBrief({
             <span>{weekday}</span>
           </div>
         </header>
-        <div className="brief-list-heading">
-          <h2>全部资讯</h2>
-          <span>{report.items.length} 条</span>
-        </div>
         <div className="news-list">
           {grouped ? groups.map((group) => (
             <section className="research-area-section" key={group.id}>

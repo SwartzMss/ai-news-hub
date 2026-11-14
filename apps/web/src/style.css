@@ -1667,25 +1667,6 @@ body {
   color: var(--muted);
   font-size: 14px;
 }
-.brief-list-heading {
-  display: flex;
-  align-items: baseline;
-  justify-content: space-between;
-  gap: 12px;
-  margin-top: 25px;
-  padding-bottom: 11px;
-  border-bottom: 1px solid var(--line);
-}
-.brief-list-heading h2 {
-  color: var(--ink);
-  font-size: 17px;
-  font-weight: 750;
-}
-.brief-list-heading > span {
-  color: var(--muted);
-  font-size: 12px;
-  white-space: nowrap;
-}
 .brief-toc {
   position: sticky;
   top: 24px;
@@ -1937,13 +1918,6 @@ body {
   }
   .brief-date > span {
     font-size: 12px;
-  }
-  .brief-list-heading {
-    margin-top: 21px;
-    padding-bottom: 9px;
-  }
-  .brief-list-heading h2 {
-    font-size: 15px;
   }
   .news-row {
     padding: 19px 0;
