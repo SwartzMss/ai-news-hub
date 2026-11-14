@@ -82,31 +82,21 @@ export function readArchives(
         seen.add(item.id);
         safeUrl(item.source.canonical_url);
         safeUrl(item.source.original_url);
-        if(item.details){
-          const ids=new Set();
-          for(const evidence of item.details.evidence??[]){
-            if(ids.has(evidence.id)||new URL(evidence.url).protocol!=='https:')throw Error('unsafe investment evidence');
-            ids.add(evidence.id);safeUrl(evidence.url);
-          }
-          if(item.details.kind==='investment'){
-            for(const metric of item.details.metrics??[])
-              if(metric.evidenceRefs.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
-            for(const relation of item.details.supplyChain??[])
-              if((relation.relationship==='confirmed'&&!relation.evidenceRefs?.length)||relation.evidenceRefs?.some(id=>!ids.has(id)))throw Error('invalid investment evidence reference');
-          }else if(item.details.kind==='project'){
-            const valid=refs=>!refs?.some(id=>!ids.has(id));
-            if(!item.details.evidence?.length)throw Error('missing project evidence');
-            for(const entry of [item.details.change,...(item.details.technical??[]),...(item.details.useCases??[]),item.details.license,...(item.details.evaluation??[])])
-              if(entry&&((entry.nature==='fact'&&!entry.evidenceRefs?.length)||!valid(entry.evidenceRefs)))throw Error('invalid project evidence reference');
-          }else if(item.details.kind==='news'){
-            const valid=refs=>!refs?.some(id=>!ids.has(id));
-            for(const entry of [...(item.details.keyFacts??[]),...(item.details.timeline??[]),...(item.details.positions??[])])
-              if(!valid(entry.evidenceRefs))throw Error('invalid news evidence reference');
-            for(const impact of item.details.impacts??[])
-              if((impact.status==='observed'&&!impact.evidenceRefs?.length)||!valid(impact.evidenceRefs))throw Error('invalid news evidence reference');
-
-          }
+        const evidenceIds=new Set();
+        for(const evidence of item.details.evidence){
+          if(evidenceIds.has(evidence.id)||new URL(evidence.url).protocol!=='https:')throw Error('invalid public evidence');
+          evidenceIds.add(evidence.id);
+          safeUrl(evidence.url);
         }
+        const validateEvidenceRefs=value=>{
+          if(Array.isArray(value)){for(const entry of value)validateEvidenceRefs(entry);return;}
+          if(!value||typeof value!=='object')return;
+          for(const [key,entry] of Object.entries(value)){
+            if(key==='evidenceRefs'&&Array.isArray(entry)&&entry.some(id=>!evidenceIds.has(id)))throw Error('invalid public evidence reference');
+            validateEvidenceRefs(entry);
+          }
+        };
+        validateEvidenceRefs(item.details);
       }
       rawReports.push(report);
     }
