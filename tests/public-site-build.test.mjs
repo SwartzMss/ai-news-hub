@@ -580,12 +580,14 @@ test('news detail renders structured evidence, timeline and a section directory'
   const doc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.news-detail'));
   assert.equal(doc.querySelector('.news-detail .section-kicker'),null);
-  assert.match(doc.querySelector('.news-detail-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
+  assert.match(doc.querySelector('.news-detail-tags').textContent,/社会事件.*跨平台传播.*观点讨论/s);
+  assert.doesNotMatch(doc.querySelector('.news-detail-tags').textContent,/适合短视频/);
   assert.match(doc.querySelector('#news-trends').textContent,/微博.*热榜第 3 位.*观察时间/s);
   assert.match(doc.querySelector('#news-discussion').textContent,/责任归属.*可追溯的公开评论/s);
   assert.match(doc.querySelector('#news-content').textContent,/大家为什么讨论这个话题.*真正的分歧在哪里/s);
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
-  assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
+  assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*观点讨论/s);
+  assert.doesNotMatch(topicDoc.querySelector('.news-row-tags').textContent,/适合短视频/);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
   assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');

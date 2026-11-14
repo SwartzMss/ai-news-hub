@@ -50,7 +50,7 @@ export function NewsDetail({story}:{story:Story}){
       <div className="news-detail-tags">
         <span className="news-tag news-tag-topic">{categories[story.category]??story.category}</span>
         {details.trendTags?.map(tag=><span className="news-tag news-tag-trend" key={tag}>{trendTagLabels[tag]??tag}</span>)}
-        {details.contentTags?.map(tag=><span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag]??tag}</span>)}
+        {details.contentTags?.filter(tag=>tag!=='short_video').map(tag=><span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag]??tag}</span>)}
       </div>
       <p className="news-detail-verification">研究资料由 Codex 提供；平台热度和讨论仅代表可观察的公开样本，不等于整体民意；来源链接和格式校验不等于独立事实核验。</p>
     </header>
