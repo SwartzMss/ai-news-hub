@@ -26,7 +26,7 @@ export interface NewsDetails {
   impacts?: {description:string;status:"observed"|"analysis";evidenceRefs?:string[]}[];
   uncertainties?: string[];
   watchpoints?: string[];
-  evidence?: {id:string;name:string;url:string;supports:string}[];
+  evidence: {id:string;name:string;url:string;supports:string}[];
 }
 export interface ProjectDetails {
   kind:'project'; overview:string;
