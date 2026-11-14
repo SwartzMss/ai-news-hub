@@ -19,9 +19,9 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     "index.html",
     "channel/opensource/index.html",
     "archive/index.html",
-    "archive/2026-11-02/index.html",
-    "archive/2026-11-03/index.html",
-    "archive/2026-11-03/opensource/v000001/index.html",
+    `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-02/index.html`,
+    `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/index.html`,
+    `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/v000001/index.html`,
     "404.html",
   ])
     assert.ok(readFileSync(join(root, p), "utf8").includes("AI News Hub"));
@@ -208,7 +208,7 @@ test("date and revision readers preserve exact archived text and separate curren
   try {
     const base = JSON.parse(
       readFileSync(
-        "tests/fixtures/web-reports/2026/11/03/opensource/v000001.json",
+        "tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json",
         "utf8",
       ),
     );
@@ -271,26 +271,26 @@ test("date and revision readers preserve exact archived text and separate curren
       new JSDOM(
         readFileSync(join(built.output, path), "utf8"),
       ).window.document.querySelector("main");
-    const old = main("archive/2026-11-02/opensource/v000001/index.html");
+    const old = main(`topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-02/v000001/index.html`);
     assert.ok(old.textContent.includes("原始版本独有摘要"));
     assert.ok(old.textContent.includes("原始版本的分析"));
     assert.ok(!old.textContent.includes("修订版本独有摘要"));
     assert.ok(!old.textContent.includes("最新一期独有摘要"));
-    const revised = main("archive/2026-11-02/index.html");
+    const revised = main(`topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-02/index.html`);
     assert.ok(revised.textContent.includes("修订版本独有摘要"));
     assert.ok(revised.textContent.includes("往期简报"));
     assert.ok(!revised.textContent.includes("最新一期独有摘要"));
     const withdrawnDoc = new JSDOM(
       readFileSync(
-        join(built.output, `news/${articleKey(withdrawn.id)}/index.html`),
+        join(built.output, `topics/${base.topic.id}/news/${articleKey(withdrawn.id, base.topic.id)}/index.html`),
         "utf8",
       ),
     ).window.document;
     assert.equal(
       withdrawnDoc.querySelector(".edition-links a").getAttribute("href"),
-      "/topics/legacy/archive/2026-11-02/v000001/",
+      `/topics/${base.topic.id}/archive/2026-11-02/v000001/`,
     );
-    const current = main("topics/legacy/index.html");
+    const current = main(`topics/${base.topic.id}/index.html`);
     assert.equal(current.querySelector(".brief-topic"), null);
     assert.ok(current.querySelector(".brief-heading > .brief-date:first-child"));
     assert.equal(current.querySelector(".brief-date time").getAttribute("datetime"), base.report_date);
@@ -307,11 +307,9 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
   const dir = mkdtempSync("/tmp/public-topic-reading-");
   const a = { id: "t-" + "a".repeat(24), name: "模型进展" };
   const b = { id: "t-" + "b".repeat(24), name: "开源工具" };
-  const base = JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json", "utf8"));
+  const base = JSON.parse(readFileSync("tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json", "utf8"));
   const save = (doc) => {
-    const path = doc.schema_version === 1
-      ? join(dir, ...doc.report_date.split("-"), "opensource")
-      : join(dir, "topics", doc.topic.id, ...doc.report_date.split("-"));
+    const path = join(dir, "topics", doc.topic.id, ...doc.report_date.split("-"));
     mkdirSync(path, { recursive: true });
     writeFileSync(join(path, `v${String(doc.version).padStart(6, "0")}.json`), JSON.stringify(doc));
   };
@@ -348,10 +346,10 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     const bMain = mainAt(`topics/${b.id}/archive/2026-11-03/v000001/index.html`);
     assert.match(bMain.textContent, /乙话题最新事实/);
     assert.doesNotMatch(bMain.textContent, /甲话题|修订记录/);
-    assert.match(mainAt("archive/2026-11-03/opensource/v000001/index.html").textContent, /甲话题原始事实/);
-    assert.equal(documentAt("archive/2026-11-03/index.html").querySelector('link[rel="canonical"]').href,
+    assert.match(mainAt(`topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/v000001/index.html`).textContent, /甲话题原始事实/);
+    assert.equal(documentAt(`topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/index.html`).querySelector('link[rel="canonical"]').href,
       `https://demo.invalid/topics/${a.id}/archive/2026-11-03/`);
-    const key = articleKey(base.items[0].id);
+    const key = articleKey(base.items[0].id, a.id);
     const bKey = articleKey(base.items[0].id, b.id);
     assert.match(mainAt(`news/${key}/index.html`).textContent, /甲话题最新事实/);
     assert.match(mainAt(`topics/${b.id}/news/${bKey}/index.html`).textContent, /乙话题最新事实/);
@@ -393,12 +391,12 @@ test("reading previews render explicit source links without executing markup or 
   const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
   const dir=mkdtempSync('/tmp/public-inline-text-');
   try {
-    const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+    const report=JSON.parse(readFileSync('tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json','utf8'));
     report.items=report.items.slice(0,1).map(item=>({...item,fact_summary:'一条完整的标题。参考[官方公告](https://example.com/release)与[不安全地址](javascript:alert(1))、[带凭据地址](https://user:secret@example.com/private)，<img src=x onerror=alert(1)>。'}));
-    const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});
+    const folder=join(dir,'topics',report.topic.id,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});
     const file=join(folder,'v000001.json'),bytes=JSON.stringify(report);writeFileSync(file,bytes);
     const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
-    for(const path of ['index.html',`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`]) {
+    for(const path of ['index.html',`topics/${report.topic.id}/news/${articleKey(report.items[0].id, report.topic.id)}/index.html`]) {
       const doc=new JSDOM(readFileSync(join(built.output,path),'utf8')).window.document;
       const content=doc.querySelector('main');
       const link=content.querySelector('a[href="https://example.com/release"]');
@@ -416,21 +414,21 @@ test("project detail presents verified fields as readable sections", async () =>
   const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
   const dir = mkdtempSync("/tmp/public-project-detail-");
   try {
-    const report = JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json", "utf8"));
+    const report = JSON.parse(readFileSync("tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json", "utf8"));
     report.items = report.items.slice(0, 1);
     report.items[0].fact_summary = "Mesh LLM 发布分布式推理系统。官方【新发布】；用途：把多台电脑组成推理网络；技术要点：Rust 服务通过 QUIC 连接节点；按模型阶段分配计算；近期证据：官方仓库公开了代码；适用场景：多机推理实验；许可证：Apache-2.0。[项目仓库](https://github.com/example/mesh-llm)";
     report.items[0].analysis = "推荐理由：便于研究异构设备的推理调度；限制：需要自行验证性能。";
     report.items.push({ ...report.items[0], id: "related-project", fact_summary: "Sandcastle 发布隔离 Agent 环境。用途：并行运行开发任务；技术要点：通过容器隔离工作区；近期证据：官方发布新版本；适用场景：多 Agent 开发；许可证：MIT。[项目仓库](https://github.com/example/sandcastle)" });
-    const folder = join(dir, ...report.report_date.split("-"), "opensource");
+    const folder = join(dir, "topics", report.topic.id, ...report.report_date.split("-"));
     mkdirSync(folder, { recursive: true });
     writeFileSync(join(folder, "v000001.json"), JSON.stringify(report));
     const built = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", reportsDir: dir });
-    const key = articleKey(report.items[0].id);
+    const key = articleKey(report.items[0].id, report.topic.id);
     const doc = new JSDOM(readFileSync(join(built.output, `topics/legacy/news/${key}/index.html`), "utf8")).window.document;
     assert.equal(doc.querySelector(".project-detail h1").textContent, "Mesh LLM");
     assert.equal(doc.querySelector(".project-detail .project-number"), null);
     assert.ok(doc.querySelector(".project-detail h1.detail-page-title"));
-    const edition = new JSDOM(readFileSync(join(built.output, "archive/2026-11-03/opensource/v000001/index.html"), "utf8")).window.document;
+    const edition = new JSDOM(readFileSync(join(built.output, `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/v000001/index.html`), "utf8")).window.document;
     assert.ok(edition.querySelector(".news-number"), "the edition list keeps its ordering number");
     assert.equal(doc.querySelector(".project-detail .project-subtitle").textContent, "Mesh LLM 发布分布式推理系统");
     assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
@@ -488,12 +486,12 @@ test('structured project detail renders sourced sections without an event timeli
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
  const dir=mkdtempSync('/tmp/public-project-detail-');
  try{
-  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json','utf8'));
   report.items=report.items.slice(0,1);
   report.items[0].details={kind:'project',overview:'本地代码检索工具。',change:{summary:'新增增量索引。',publishedAt:'2026-11-03',evidenceRefs:['release']},technical:[{description:'只处理变更文件。',evidenceRefs:['release']}],evaluation:[{description:'可先用于小型仓库。',nature:'analysis'}],evidence:[{id:'release',name:'发布说明',url:'https://example.com/release',supports:'增量索引功能'}]};
-  const folder=join(dir,...report.report_date.split('-'),'opensource');mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
+  const folder=join(dir,'topics',report.topic.id,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
-  const doc=new JSDOM(readFileSync(join(built.output,`topics/legacy/news/${articleKey(report.items[0].id)}/index.html`),'utf8')).window.document;
+  const doc=new JSDOM(readFileSync(join(built.output,`topics/${report.topic.id}/news/${articleKey(report.items[0].id, report.topic.id)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.project-detail #project-overview'));
   assert.equal(doc.querySelector('.project-detail .project-number'),null);
   assert.ok(doc.querySelector('.project-detail h1.detail-page-title'));
@@ -514,9 +512,9 @@ test('investment detail renders evidence-linked metrics and a section directory'
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
  const dir=mkdtempSync('/tmp/public-investment-detail-');
  try{
-  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json','utf8'));
   const topic={id:'t-'+'c'.repeat(24),name:'每日科技投资简报'};
-  report.schema_version=5;report.topic=topic;
+  report.schema_version=1;report.topic=topic;
   report.items=report.items.slice(0,1);
   report.items[0].category='semiconductor';
   report.items[0].details={kind:'investment',background:'公司发布季度业绩。',metrics:[{name:'季度收入',value:'12.4',unit:'亿美元',period:'2026 Q3',comparison:'同比增长 8%',basis:'actual',evidenceRefs:['filing']}],supplyChain:[{segment:'服务器内存',direction:'需求可能增加',reason:'单机配置提高',relationship:'potential'}],investmentLogic:'订单兑现后可能影响收入。',watchpoints:['订单交付'],risks:['客户认证推迟'],evidence:[{id:'filing',name:'季度财报',url:'https://example.com/filing',supports:'季度收入实际值'}]};
@@ -545,9 +543,9 @@ test('news detail renders structured evidence, timeline and a section directory'
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import('node:fs');
  const dir=mkdtempSync('/tmp/public-news-detail-');
  try{
-  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
+  const report=JSON.parse(readFileSync('tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json','utf8'));
   const topicId='t-'+'b'.repeat(24);
-  report.schema_version=6;
+  report.schema_version=1;
   report.topic={id:topicId,name:'每日热点观察'};
   report.items=report.items.slice(0,1);
   report.items[0].category='social_event';
@@ -746,11 +744,11 @@ test("five-area open-source reports render article labels and distinguish discov
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import("node:fs");
  const dir=mkdtempSync("/tmp/public-open-source-areas-");
  const topic={id:"t-"+"e".repeat(24),name:"每日开源项目"};
- const base=JSON.parse(readFileSync("tests/fixtures/web-reports/2026/11/03/opensource/v000001.json","utf8"));
+ const base=JSON.parse(readFileSync("tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json","utf8"));
  const source=(name,url)=>({name,original_url:url,canonical_url:url,published_at:null,event_at:null,fetched_at:"2026-11-03T00:00:00Z"});
  const rust={...base.items[0],id:"rust-project",research_area:"rust",category:"opensource",fact_summary:"Rust 工具发布并行读取更新。适合大文件处理。",analysis:"适合评估在批量文件流水线中的价值。",source:source("Rust Release","https://example.com/rust"),details:{kind:"project",overview:"Rust 文件处理工具。",change:{summary:"新增并行读取。",evidenceRefs:["release"]},evidence:[{id:"release",name:"Release",url:"https://example.com/rust",supports:"并行读取能力"}]}};
  const agent={...base.items[0],id:"agent-project",research_area:"agent",category:"ai",fact_summary:"Agent 工具提供可组合的浏览器执行能力。",analysis:"适合需要网页自动化的工作流。",source:source("Agent Docs","https://example.com/agent"),details:{kind:"project",overview:"面向自动化任务的 Agent 工具。",evidence:[{id:"docs",name:"官方文档",url:"https://example.com/agent",supports:"浏览器执行能力"}]}};
- const report={...base,schema_version:3,topic,report_id:"five-area-report",items:[rust,agent]};
+ const report={...base,schema_version:1,topic,report_id:"five-area-report",items:[rust,agent]};
  try{
   const folder=join(dir,"topics",topic.id,"2026","11","03");mkdirSync(folder,{recursive:true});
   writeFileSync(join(folder,"v000001.json"),JSON.stringify(report));
