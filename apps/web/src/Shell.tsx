@@ -20,6 +20,7 @@ export function Shell({
       <a className="skip-link" href="#content">
         跳到正文
       </a>
+      <div className="sticky-header" data-sticky-header>
       <header className="masthead">
         <a className="brand" href="/" aria-label="AI News Hub 首页">
           <span className="brand-mark" aria-hidden="true">
@@ -77,7 +78,6 @@ export function Shell({
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
-      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>
         {data.topics.length > 0 && (
           <nav className="topic-picker" aria-label="话题选择">
             {data.topics.map((t) => (
@@ -101,7 +101,8 @@ export function Shell({
             ))}
           </nav>
         )}
-        {children}
+      </div>
+      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>        {children}
       </div>
       <footer className="site-footer">
         <span>© 2026 AI News Hub. All rights reserved.</span>

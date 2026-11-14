@@ -1,5 +1,19 @@
 import "./style.css";
 
+const stickyHeader = document.querySelector<HTMLElement>("[data-sticky-header]");
+if (stickyHeader) {
+  const syncStickyHeaderHeight = () => {
+    const height = Math.ceil(stickyHeader.getBoundingClientRect().height);
+    document.documentElement.style.setProperty("--sticky-header-height", `${height}px`);
+  };
+  syncStickyHeaderHeight();
+  if (typeof ResizeObserver !== "undefined") {
+    const observer = new ResizeObserver(syncStickyHeaderHeight);
+    observer.observe(stickyHeader);
+  }
+  window.addEventListener("resize", syncStickyHeaderHeight, { passive: true });
+}
+
 const newsletterDialog = document.querySelector<HTMLDialogElement>("#newsletter-dialog");
 document.querySelectorAll<HTMLButtonElement>("[data-newsletter-open]").forEach((trigger) => {
   trigger.addEventListener("click", () => {

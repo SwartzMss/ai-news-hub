@@ -41,8 +41,14 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
   assert.equal(homeDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
-  assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
+  assert.ok(homeDoc.querySelector(".sticky-header > .masthead"), "masthead is inside the sticky header");
+  assert.ok(homeDoc.querySelector(".sticky-header > .topic-picker"), "topic tabs stay inside the sticky header");
+  assert.ok(homeDoc.querySelector(".reader-body > main"), "only the reading content scrolls below the sticky header");
   const publicStyles = readFileSync(new URL("../apps/web/src/style.css", import.meta.url), "utf8");
+  const publicClient = readFileSync(new URL("../apps/web/src/client.ts", import.meta.url), "utf8");
+  assert.match(publicStyles, /\.sticky-header\s*\{[^}]*position:\s*sticky;[^}]*top:\s*0;[^}]*z-index:\s*100;[^}]*background:\s*var\(--bg\)/s, "masthead and topic tabs remain pinned together");
+  assert.match(publicStyles, /html\s*\{[^}]*scroll-padding-top:\s*calc\(var\(--sticky-header-height, 0px\) \+ 16px\);/s, "in-page navigation clears the sticky header");
+  assert.match(publicClient, /new ResizeObserver\(syncStickyHeaderHeight\)/, "sticky header offset tracks responsive height changes");
   assert.match(publicStyles, /\.site-shell\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/s, "public shell spans the full viewport width");
   assert.match(publicStyles, /\.reader-body\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/s, "reader body is not capped by a fixed maximum width");
   assert.match(publicStyles, /\.brief-layout\s*\{[^}]*max-width:\s*none;/s, "brief content uses the full shared reader width");
@@ -431,7 +437,7 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".reading-layout.project-layout.detail-layout.has-aside > main > .project-detail"));
     assert.equal(doc.querySelector(".detail-context a").textContent, "返回归档");
     assert.equal(doc.querySelector(".detail-context time").getAttribute("datetime"), report.report_date);
-    assert.ok(doc.querySelector(".reader-body.has-topics > .topic-picker"));
+    assert.ok(doc.querySelector(".sticky-header > .topic-picker"));
     assert.ok(doc.querySelector(".project-aside nav[aria-label='本文目录'] a[href='#project-fact-0']"));
     assert.ok(doc.querySelector("#project-fact-0"));
     assert.equal(doc.querySelectorAll(".project-related a").length, 1);
@@ -453,7 +459,7 @@ test("article detail pages use full-width desktop columns with topic navigation 
   );
   assert.match(
     css,
-    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.topic-picker\s*\{[^}]*position: static;[^}]*flex-direction: row;[^}]*max-width: none;/s,
+    /\.site-shell:has\(\.reading-layout\.detail-layout\) > \.sticky-header > \.topic-picker\s*\{[^}]*position: static;[^}]*flex-direction: row;[^}]*max-width: none;/s,
   );
   assert.match(
     css,
