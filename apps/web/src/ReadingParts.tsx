@@ -188,7 +188,7 @@ export function Row({
             <span className="news-row-tags">
               <span className="news-tag news-tag-topic">{categories[story.category] ?? story.category}</span>
               {story.details.trendTags?.slice(0, 1).map(tag => <span className="news-tag news-tag-trend" key={tag}>{trendTagLabels[tag] ?? tag}</span>)}
-              {story.details.contentTags?.slice(0, 1).map(tag => <span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag] ?? tag}</span>)}
+              {story.details.contentTags?.filter(tag => tag !== "short_video").slice(0, 1).map(tag => <span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag] ?? tag}</span>)}
             </span>
           ) : (
             <span className="category-label">{categories[story.category] ?? story.category}</span>
