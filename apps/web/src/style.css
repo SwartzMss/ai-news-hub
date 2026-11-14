@@ -2018,14 +2018,21 @@ body {
   line-height: 1.5;
 }
 .detail-context a {
-  color: var(--muted);
-  font-weight: 650;
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.15px;
   text-decoration: none;
 }
-.detail-context a:hover,
+.detail-context a:hover {
+  color: var(--accent);
+  opacity: 0.82;
+}
 .detail-context a:focus-visible {
   color: var(--accent);
-  text-decoration: underline;
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
 }
 .detail-context time {
   padding-left: 14px;
