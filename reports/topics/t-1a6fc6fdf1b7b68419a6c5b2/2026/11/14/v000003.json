@@ -1,0 +1,448 @@
+{
+  "schema_version": 3,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "f492e243-a61e-4418-bdbd-ec5d390b257e",
+  "report_date": "2026-11-14",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日开源项目｜2026-11-14｜统计：北京时间 2026-11-13 08:34—11-14 08:34；更新回溯至 11-11 08:34，项目发现回溯 90 天",
+  "collected_at": "2026-11-14T00:38:29.934Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-14T00:38:29.944Z",
+  "reviewed_content_sha256": "de63fc950a229d976786731748e4754bdf0b4936f7e0fba378a56b2726054950",
+  "items": [
+    {
+      "id": "cc868e3ee4201aef720133a65a0526724e7ed9946314c7585cb53f3f14c63ab7",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Microsoft Agent Framework 官方宣布 python-1.26.0：Hyperlight 执行默认限制为 30 秒，并支持中断已取消的 guest 执行。此次还增加 Copilot 结构化输出支持；使用相关执行工具的应用需检查 SDK 兼容性和超时配置。[项目仓库](https://github.com/microsoft/agent-framework)",
+      "analysis": "执行预算和取消传播值得运行代码工具的 Agent 服务关注，可帮助控制任务占用资源的时间。但宿主回调和初始化不在中断覆盖范围内，应用仍需自行设置限制。",
+      "evidence_quote": "python-1.26.0",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "提供 Agent 与工作流开发组件，本次重点改善沙箱执行控制。",
+        "change": {
+          "summary": "update：11 月 13 日正式发布 Python 1.26.0，加入 Hyperlight 默认执行预算与取消中断。",
+          "version": "python-1.26.0",
+          "type": "release",
+          "publishedAt": "2026-11-13",
+          "evidenceRefs": [
+            "a1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "默认执行预算为 30 秒，可设置更大的有限正值；超时返回错误内容，取消传播 CancelledError。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          },
+          {
+            "description": "guest 执行依赖提供 Sandbox.interrupt_handle() 的 SDK，发布说明标明 Hyperlight SDK 0.9.0 或以上。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为 Agent 代码执行任务设置时间预算并响应调用方取消。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "a2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "初始化与宿主回调无法被该机制中断，需自行限制。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "a1"
+            ]
+          },
+          {
+            "description": "相对旧版的新增价值是执行预算与取消控制；最近 7 天日报记录不可得，未完成历史去重。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "a1",
+            "name": "Python 1.26.0 发布说明",
+            "url": "https://github.com/microsoft/agent-framework/releases/tag/python-1.26.0",
+            "supports": "版本、发布日期、执行预算、取消行为和迁移限制"
+          },
+          {
+            "id": "a2",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/microsoft/agent-framework/blob/main/LICENSE",
+            "supports": "代码 MIT 授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/microsoft/agent-framework/releases/tag/python-1.26.0",
+        "canonical_url": "https://github.com/microsoft/agent-framework/releases/tag/python-1.26.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4ba20179c6333ede3390db904b30dd77b64d7d65c0830b6053a7ccd1b68c8b67",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Dust 官方仓库介绍其为更直观的 Rust 磁盘占用查看工具，通过目录层级与比例条展示空间分布，并可限制显示深度和条目数。此次作为成熟项目发现收录；11 月 1 日发布的 v1.2.7 主要涉及构建修复。[项目仓库](https://github.com/bootandy/dust)",
+      "analysis": "适合在终端中快速定位大型目录，展示方式比逐项阅读空间数字更便于筛查。当前发布不构成重大功能新闻；Snap 安装方式还存在文件访问范围限制。",
+      "evidence_quote": "du + rust = dust. Like du but more intuitive.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "帮助用户查看磁盘空间被哪些目录占用。本条为 discovery，不代表今日发布。",
+        "technical": [
+          {
+            "description": "结合目录层级和比例条展示占用，支持限制目录深度及显示条目数。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "清理开发目录前，定位占用空间较大的子目录。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "r2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v1.2.7 于 11 月 1 日发布，说明主要涉及构建修复，证明近期仍有维护。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "r3"
+            ]
+          },
+          {
+            "description": "Snap 版本只能访问 /home 下的文件。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "r1"
+            ]
+          },
+          {
+            "description": "最近 7 天日报记录不可得，历史去重未完成；如近期已介绍且无新增进展，应跳过。",
+            "nature": "analysis"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "r1",
+            "name": "Dust 官方仓库与使用说明",
+            "url": "https://github.com/bootandy/dust",
+            "supports": "项目能力、展示方式和 Snap 限制"
+          },
+          {
+            "id": "r2",
+            "name": "Apache 2.0 授权文件",
+            "url": "https://github.com/bootandy/dust/blob/master/LICENSE",
+            "supports": "代码授权"
+          },
+          {
+            "id": "r3",
+            "name": "官方发布记录",
+            "url": "https://github.com/bootandy/dust/releases",
+            "supports": "11 月 1 日发布 v1.2.7 及维护情况"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/bootandy/dust",
+        "canonical_url": "https://github.com/bootandy/dust",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4ac78633fe1780a9a5d57a71fa396c3a0646938edf370dbb14401335628accf8",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Shotcut 官方仓库介绍其为跨平台开源视频编辑器，使用 MLT、Qt 和 FFmpeg 等组件。此次作为成熟创作工具发现收录；10 月 31 日发布的 v26.11 BETA 包含代理素材命名兼容、字幕烧录修复和转场处理改进，仍属预发布版本。[项目仓库](https://github.com/mltframework/shotcut)",
+      "analysis": "适合寻找桌面开源剪辑工具、需要处理代理素材的创作者关注。近期 beta 涉及剪辑稳定性与素材互通，但不能把这些改进视为正式稳定版已具备的保证。",
+      "evidence_quote": "Shotcut - a free, open source, cross-platform video editor",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "提供跨平台桌面视频编辑能力。本条为 discovery，近期维护证据来自 beta 发布。",
+        "technical": [
+          {
+            "description": "直接依赖 MLT 媒体创作框架、Qt 和 FFmpeg。",
+            "evidenceRefs": [
+              "m1"
+            ]
+          },
+          {
+            "description": "v26.11 BETA 支持 Premiere、Resolve 代理文件命名约定，并修复字幕烧录问题。",
+            "evidenceRefs": [
+              "m2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "进行桌面视频剪辑，并在 beta 中评估现有代理素材的识别。",
+            "evidenceRefs": [
+              "m1",
+              "m2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "GPL-3.0",
+          "scope": "Shotcut 代码；第三方组件分别遵循自身授权",
+          "evidenceRefs": [
+            "m1",
+            "m3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "10 月 31 日发布的 v26.11 BETA 标为预发布，不能等同正式稳定版。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "m2"
+            ]
+          },
+          {
+            "description": "最近 7 天日报记录不可得，历史去重未完成；如近期已介绍且无新增进展，应跳过。",
+            "nature": "analysis"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "m1",
+            "name": "Shotcut 官方仓库",
+            "url": "https://github.com/mltframework/shotcut",
+            "supports": "项目定位、依赖及 GPLv3 授权声明"
+          },
+          {
+            "id": "m2",
+            "name": "官方发布记录",
+            "url": "https://github.com/mltframework/shotcut/releases",
+            "supports": "beta 日期、状态及代理素材和字幕改进"
+          },
+          {
+            "id": "m3",
+            "name": "GPLv3 授权文件",
+            "url": "https://github.com/mltframework/shotcut/blob/master/COPYING",
+            "supports": "GPL 第三版授权文本"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mltframework/shotcut",
+        "canonical_url": "https://github.com/mltframework/shotcut",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2303616314696cdd541cab71fef7ef0b1af31db858cce4d7f03a53cd72b96331",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Trivy 官方仓库介绍其可扫描镜像、文件系统和代码仓库，发现已知漏洞、敏感信息、配置问题并生成 SBOM。此次作为成熟安全工具发现收录；11 月 5 日的 v0.76.2 更新了发布镜像及多项依赖的安全修复。[项目仓库](https://github.com/aquasecurity/trivy)",
+      "analysis": "适合将依赖盘点、漏洞检查和许可证识别纳入交付流程的团队。扫描器自身也需要维护升级；发布说明中的依赖 CVE 不能全部解释为 Trivy 本体存在可利用漏洞。",
+      "evidence_quote": "Trivy has scanners that look for security issues, and targets where it can find those issues.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "统一检查软件制品与代码中的多类安全问题。本条为 discovery，不作为 72 小时内安全新闻。",
+        "technical": [
+          {
+            "description": "覆盖镜像、文件系统、远程 Git 仓库等目标，可识别依赖、已知漏洞、秘密信息和软件许可证。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在交付前盘点镜像依赖并检查已知漏洞。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "s2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11 月 5 日的 v0.76.2 包含发布镜像基础包与 golang.org/x/net 等依赖安全修复。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "s3"
+            ]
+          },
+          {
+            "description": "适合集中建立软件成分检查流程；最近 7 天日报记录不可得，历史去重未完成。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "Trivy 官方仓库",
+            "url": "https://github.com/aquasecurity/trivy",
+            "supports": "扫描目标、检测类型和 SBOM 能力"
+          },
+          {
+            "id": "s2",
+            "name": "Apache 2.0 授权文件",
+            "url": "https://github.com/aquasecurity/trivy/blob/main/LICENSE",
+            "supports": "代码授权"
+          },
+          {
+            "id": "s3",
+            "name": "官方发布记录",
+            "url": "https://github.com/aquasecurity/trivy/releases",
+            "supports": "v0.76.2 日期、安全修复与维护情况"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/aquasecurity/trivy",
+        "canonical_url": "https://github.com/aquasecurity/trivy",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "547c31bd8ecb32e715da95d9b506d5cd6848331fa2a7cbaa60f9ea30e4c78ada",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Iroh 官方仓库介绍其以公钥寻址建立端点连接，结合 QUIC、NAT 穿透与中继回退，为应用提供 P2P 通信基础。此次作为成熟项目发现收录；仓库同时提供中继客户端与服务端实现，最近发布记录为 10 月 22 日的 v1.4.1。[项目仓库](https://github.com/n0-computer/iroh)",
+      "analysis": "适合需要跨 NAT 连接的设备通信或 P2P 应用原型，可减少自行拼接传输和穿透机制的工作。直连失败时仍依赖中继路径，部署前应评估目标网络和中继可用性。",
+      "evidence_quote": "Iroh gives you an API for dialing by public key.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "为应用提供按公钥连接端点的网络能力。本条为 discovery，不代表近期新发布。",
+        "technical": [
+          {
+            "description": "尝试 NAT 打洞建立直连，失败时回退到中继服务器。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          },
+          {
+            "description": "基于 QUIC 提供认证加密、并发流与数据报传输，仓库包含中继客户端和服务端。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建跨 NAT 的设备间通信与 P2P 应用连接层。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0 OR MIT",
+          "scope": "仓库代码，可任选其一",
+          "evidenceRefs": [
+            "d1",
+            "d2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v1.4.1 于 10 月 22 日发布，包含 rustls-webpki 依赖更新。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d3"
+            ]
+          },
+          {
+            "description": "需要评估直连失败后的中继可用性；最近 7 天日报记录不可得，历史去重未完成。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "d1",
+            "name": "Iroh 官方仓库",
+            "url": "https://github.com/n0-computer/iroh",
+            "supports": "公钥寻址、QUIC、打洞、中继实现和双授权声明"
+          },
+          {
+            "id": "d2",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/n0-computer/iroh/blob/main/LICENSE-MIT",
+            "supports": "MIT 授权文本"
+          },
+          {
+            "id": "d3",
+            "name": "官方发布记录",
+            "url": "https://github.com/n0-computer/iroh/releases",
+            "supports": "v1.4.1 日期及近期维护情况"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/n0-computer/iroh",
+        "canonical_url": "https://github.com/n0-computer/iroh",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
