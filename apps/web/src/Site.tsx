@@ -12,7 +12,7 @@ import {
   hasResearchAreas,
   projectEntryLabel,
 } from "./ReadingParts";
-import { issuePath, topicArchivePath, topicPath } from "./paths";
+import { issuePath, topicArchivePath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
 import { ProjectAside, ProjectDetail, projectDetail } from "./ProjectDetail";
@@ -140,6 +140,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       </a>
     </aside>
   ) : null;
+  const hasAside = Boolean(aside) || (page.kind === "article" && Boolean(project));
   return (
     <Shell
       data={fullData}
@@ -148,7 +149,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
       page="reader"
     >
       <div
-        className={`reading-layout${aside ? " has-aside" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && (project || structuredProject) ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}${page.kind === "article" && news ? " news-layout" : ""}`}
+        className={`reading-layout${hasAside ? " has-aside" : ""}${page.kind === "article" ? " detail-layout" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && (project || structuredProject) ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}${page.kind === "article" && news ? " news-layout" : ""}`}
       >
         <main id="content">
           {page.kind === "topic" &&
@@ -278,26 +279,9 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           )}
           {page.kind === "article" && story && (
             <>
-              <nav className="breadcrumb" aria-label="面包屑">
-                {(project || structuredProject || investment || news) && (
-                  <>
-                    <a href={topicPath(story.topic.id)}>{story.topic.name}</a>
-                    <span>/</span>
-                  </>
-                )}
-                <a href={topicArchivePath(page.topicId ?? "legacy")}>
-                  往期归档
-                </a>
-                <span>/</span>
-                <a
-                  href={
-                    owner
-                      ? issuePath(owner, true)
-                      : `${topicArchivePath(story.topic.id)}${story.report_date}/`
-                  }
-                >
-                  {dateLabel(story.report_date)}
-                </a>
+              <nav className="detail-context" aria-label="文章导航">
+                <a href={topicArchivePath(story.topic.id)}>← 返回归档</a>
+                <time dateTime={story.report_date}>{dateLabel(story.report_date)}</time>
               </nav>
               {structuredProject ? (
                 <StructuredProjectDetail story={story} />
