@@ -1547,25 +1547,6 @@ body {
 .header-actions {
   gap: 10px;
 }
-.header-actions .rss-action {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-  min-height: 40px;
-  padding: 0 13px;
-  border: 1px solid var(--line);
-  border-radius: 10px;
-  background: var(--paper);
-  color: var(--muted);
-  font-size: 12px;
-  font-weight: 700;
-}
-.header-actions .rss-action:hover {
-  border-color: color-mix(in srgb, var(--accent) 35%, var(--line));
-  background: var(--tint);
-  color: var(--accent);
-  text-decoration: none;
-}
 .header-actions button {
   min-width: 40px;
   min-height: 40px;
@@ -1918,11 +1899,6 @@ body {
   .header-actions {
     gap: 7px;
   }
-  .header-actions .rss-action {
-    min-height: 36px;
-    padding-inline: 10px;
-    font-size: 11px;
-  }
   .header-actions button {
     min-width: 36px;
     min-height: 36px;
@@ -1992,7 +1968,6 @@ body {
   }
 }
 @media (prefers-reduced-motion: reduce) {
-  .header-actions .rss-action,
   .news-row {
     transition: none;
   }

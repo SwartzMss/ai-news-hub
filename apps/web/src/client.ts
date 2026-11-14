@@ -105,8 +105,6 @@ function selectTopic(
   document
     .querySelectorAll<HTMLAnchorElement>("a[data-topic-archive]")
     .forEach((a) => (a.href = `/topics/${id}/archive/`));
-  const rssLink = document.querySelector<HTMLAnchorElement>("a[data-topic-rss]");
-  if (rssLink) rssLink.href = `/rss/topics/${id}.xml`;
   if (shell) shell.dataset.topicId = id;
   rememberTopic(id);
   if (navigation) {
