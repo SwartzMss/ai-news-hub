@@ -7,7 +7,8 @@ import { publicationFixture } from "./fixtures/publication.mjs";
 import { archiveArtifact, reviewedReport } from "../dist/apps/server/src/publish/artifact.js";
 
 function saveArchive(dir, document) {
-  const folder = `${dir}/topics/${document.topic.id}/${document.report_date.replaceAll("-", "/")}`;
+  const topicId = document.topic?.id ?? "t-aaaaaaaaaaaaaaaaaaaaaaaa";
+  const folder = `${dir}/topics/${topicId}/${document.report_date.replaceAll("-", "/")}`;
   mkdirSync(folder, { recursive: true });
   writeFileSync(`${folder}/v${String(document.version).padStart(6, "0")}.json`, JSON.stringify(document));
 }
