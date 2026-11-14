@@ -168,7 +168,7 @@ export class NewsWorkflow implements TaskWorkflow {
                   ...(topic ? {topic} : {}),
                 },
                 "codex_reported",
-                technology ? "technology" : "general",
+                headlines ? "headlines" : technology ? "technology" : "general",
               );
               return (db: DatabaseSync) => {
                 for (const a of candidates)
@@ -215,7 +215,7 @@ export class NewsWorkflow implements TaskWorkflow {
                     ...(topic ? {topic} : {}),
                   },
                   "codex_reported",
-                  technology ? "technology" : "general",
+                  headlines ? "headlines" : technology ? "technology" : "general",
                 );
                 const version = Number(
                   db

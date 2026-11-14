@@ -83,7 +83,7 @@ test('v4 social headline archives remain backward compatible',()=>{
 });
 
 
-test('v6 topic archive publishes current social headlines without content-creation fields',()=>{
+test('v6 topic archive publishes reader-facing news without internal research metadata',()=>{
  assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v6.schema.json',import.meta.url),'utf8')),ARCHIVE_V6_SCHEMA);
  const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V6_SCHEMA);
  const f=publicationFixture();
@@ -92,22 +92,26 @@ test('v6 topic archive publishes current social headlines without content-creati
   const report=reviewedReport(f.db,'r');
   report.document.topic={id:'t-'+'e'.repeat(24),name:'每日热点观察'};
   report.document.items=report.document.items.map(item=>({...item,category:'social_event',details:{
-   kind:'news',background:'话题在最近 24 小时于微博出现传播。',
-   trendTags:['single_platform'],discussionTags:['debate'],
-   trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-   evidence:[{id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'}],
+   kind:'news',background:'主管部门公布了新的鉴定结果。',
+   evidence:[{id:'notice',name:'官方通报',url:'https://example.com/notice',supports:'鉴定结果及公布时间'}],
   }}));
   const artifact=archiveArtifact(report,'2026-11-13T08:00:00Z');
   const document=JSON.parse(artifact.content);
   assert.equal(document.schema_version,6);
   assert.equal(validate(document),true);
-  assert.equal(document.items[0].details.contentSuitability,undefined);
-  assert.equal(document.items[0].details.contentAngles,undefined);
-  assert.equal(document.items[0].details.discussionTags[0],'debate');
+  for(const [field,value] of [
+   ['trendTags',['single_platform']],
+   ['discussionTags',['debate']],
+   ['trendSignals',[]],
+   ['publicDiscussion',{summary:'内部讨论摘要',evidenceRefs:['notice']}],
+  ]){
+   const invalid=structuredClone(document);
+   invalid.items[0].details[field]=value;
+   assert.equal(validate(invalid),false,field);
+  }
   assert.throws(()=>archiveArtifact({...report,templateId:undefined},'2026-11-13T08:00:00Z'),/archive_schema_invalid/);
  }finally{f.close();}
 });
-
 test('v5 topic archive is reserved for focused technology investment reports',()=>{
  assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v5.schema.json',import.meta.url),'utf8')),ARCHIVE_V5_SCHEMA);
  const validator=new Ajv({strict:true});addFormats(validator);const validate=validator.compile(ARCHIVE_V5_SCHEMA);

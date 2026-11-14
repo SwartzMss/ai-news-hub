@@ -39,6 +39,24 @@ export function proposalSchema(articleIds?: string[], allowedCategories: readonl
     } },
   };
 }
+export function headlinesProposalSchema(articleIds?: string[]) {
+  return {
+    type: 'object', additionalProperties: false, required: ['title', 'items'],
+    properties: { title: text(180), items: {
+      type: 'array', minItems: 1, maxItems: articleIds ? Math.min(10, articleIds.length) : 10,
+      items: {
+        ...proposalItem,
+        required: [...proposalItem.required, 'details'],
+        properties: {
+          ...proposalItem.properties,
+          category: { type: 'string', enum: HEADLINE_CATEGORIES },
+          articleId: articleIds ? { type: 'string', enum: articleIds } : text(256),
+          details: HEADLINES_DETAILS_SCHEMA,
+        },
+      },
+    } },
+  };
+}
 export const RESEARCH_SCHEMA = {
   type: 'object', additionalProperties: false, required: ['title','items'],
   properties: { title: text(180), items: { type: 'array', minItems: 1, maxItems: 10, items: {
@@ -129,6 +147,25 @@ export const REPORT_SCHEMA = {
               publishedAt: nullableTime, eventAt: nullableTime, fetchedAt: nullableTime,
             },
           },
+        },
+      },
+    },
+  },
+};
+
+export const HEADLINES_REPORT_SCHEMA = {
+  ...REPORT_SCHEMA,
+  properties: {
+    ...REPORT_SCHEMA.properties,
+    items: {
+      ...REPORT_SCHEMA.properties.items,
+      items: {
+        ...REPORT_SCHEMA.properties.items.items,
+        required: [...REPORT_SCHEMA.properties.items.items.required, 'details'],
+        properties: {
+          ...REPORT_SCHEMA.properties.items.items.properties,
+          category: { type: 'string', enum: HEADLINE_CATEGORIES },
+          details: HEADLINES_DETAILS_SCHEMA,
         },
       },
     },

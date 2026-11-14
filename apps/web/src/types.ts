@@ -17,9 +17,6 @@ export interface InvestmentDetails {
   valuation?: string;
   evidence?: {id:string;name:string;url:string;supports:string}[];
 }
-export type SocialPlatform = "weibo"|"douyin"|"bilibili"|"xiaohongshu"|"zhihu"|"x"|"reddit"|"other";
-export type TrendTag = "cross_platform"|"single_platform"|"controversial"|"viral_video"|"sustained_discussion";
-export type DiscussionTag = "debate"|"explainer";
 export interface NewsDetails {
   kind: "news";
   background: string;
@@ -29,16 +26,6 @@ export interface NewsDetails {
   impacts?: {description:string;status:"observed"|"analysis";evidenceRefs?:string[]}[];
   uncertainties?: string[];
   watchpoints?: string[];
-  trendTags?: TrendTag[];
-  discussionTags?: DiscussionTag[];
-  trendSignals?: {platform:SocialPlatform;contentType:"hashtag"|"post"|"video"|"thread"|"topic_page"|"other";metric:"rank"|"views"|"likes"|"comments"|"shares"|"posts"|"discussion"|"other";value:string;observedAt:string;evidenceType:"direct"|"reported";evidenceRefs:string[]}[];
-  publicDiscussion?: {
-    summary:string;
-    evidenceRefs:string[];
-    viewpoints?:{label:string;summary:string;sentiment:"supportive"|"critical"|"concerned"|"mixed"|"humorous"|"neutral";evidenceRefs:string[]}[];
-    controversies?:{topic:string;sides:string[];evidenceRefs:string[]}[];
-    representativeComments?:{platform:SocialPlatform;quote:string;evidenceRefs:string[]}[];
-  };
   evidence?: {id:string;name:string;url:string;supports:string}[];
 }
 export interface ProjectDetails {

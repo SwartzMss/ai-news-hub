@@ -1,6 +1,6 @@
 import { REPORT_SCHEMA, PUBLIC_TOPIC_SCHEMA, TECHNOLOGY_CATEGORIES } from "../news/report-schema.js";
 import { TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA } from "../news/investment-details.js";
-import { NEWS_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_HEADLINES_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
+import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_HEADLINES_DETAILS_SCHEMA, LEGACY_NEWS_DETAILS_SCHEMA } from "../news/news-details.js";
 const original = REPORT_SCHEMA.properties.items.items.properties;
 const source = original.source.properties;
 const extendedDetails = original.details;
@@ -145,9 +145,7 @@ export const ARCHIVE_V5_SCHEMA = {
 const v6Properties = {
   ...properties,
   category: { type: "string", enum: [...HEADLINE_CATEGORIES] },
-  // Archive schema remains backward-compatible with legacy internal research fields.
-  // The model-facing HEADLINES_DETAILS_SCHEMA stays strict and excludes them.
-  details: NEWS_DETAILS_SCHEMA,
+  details: HEADLINES_DETAILS_SCHEMA,
 };
 export const ARCHIVE_V6_SCHEMA = {
   ...ARCHIVE_V2_SCHEMA,
