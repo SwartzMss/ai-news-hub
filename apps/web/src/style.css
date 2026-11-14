@@ -141,21 +141,21 @@ h3 {
   align-items: center;
   justify-content: center;
   gap: 7px;
-  min-height: 36px;
+  min-height: 40px;
   padding: 0 13px;
-  border: 1px solid #1877e8;
-  border-radius: 7px;
-  background: #1877e8;
-  color: #fff;
+  border: 1px solid var(--line);
+  border-radius: 10px;
+  background: var(--paper);
+  color: var(--ink);
   font-size: 12px;
   font-weight: 650;
   text-decoration: none;
   transition: background-color 160ms ease, border-color 160ms ease;
 }
 .header-actions .subscribe-action:hover {
-  border-color: #1267cc;
-  background: #1267cc;
-  color: #fff;
+  border-color: color-mix(in srgb, var(--accent) 28%, var(--line));
+  background: var(--tint);
+  color: var(--ink);
   text-decoration: none;
 }
 .header-actions .subscribe-action svg {
@@ -1266,14 +1266,6 @@ main {
   color: var(--muted);
   white-space: nowrap;
 }
-.brief-generation {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 4px 18px;
-  margin-top: 10px;
-  font-size: 12px;
-  color: var(--muted);
-}
 .brief-toc {
   position: sticky;
   top: 28px;
@@ -1406,9 +1398,6 @@ main {
   }
   .brief-date {
     gap: 12px;
-  }
-  .brief-generation {
-    font-size: 12px;
   }
   .topic-directory {
     grid-template-columns: minmax(0, 1fr);
@@ -1651,7 +1640,7 @@ body {
   gap: clamp(30px, 4.2vw, 60px);
   align-items: start;
   width: 100%;
-  max-width: 1300px;
+  max-width: none;
   margin-inline: auto;
 }
 .brief-main {
@@ -1677,20 +1666,6 @@ body {
 .brief-date > span {
   color: var(--muted);
   font-size: 14px;
-}
-.brief-description {
-  margin-top: 10px;
-  color: var(--muted);
-  font-size: 14px;
-  line-height: 1.8;
-}
-.brief-generation {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px 18px;
-  margin-top: 15px;
-  color: var(--muted);
-  font-size: 12px;
 }
 .brief-list-heading {
   display: flex;
@@ -1898,7 +1873,7 @@ body {
 @media (max-width: 1100px) {
   .brief-layout {
     display: block;
-    max-width: 920px;
+    max-width: none;
   }
   .brief-toc {
     display: none;
@@ -1962,14 +1937,6 @@ body {
   }
   .brief-date > span {
     font-size: 12px;
-  }
-  .brief-description {
-    margin-top: 8px;
-    font-size: 13px;
-  }
-  .brief-generation {
-    margin-top: 12px;
-    font-size: 11px;
   }
   .brief-list-heading {
     margin-top: 21px;

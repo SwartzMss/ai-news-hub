@@ -42,16 +42,20 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(homeDoc.querySelector("footer"), null);
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
+  const publicStyles = readFileSync(new URL("../apps/web/src/style.css", import.meta.url), "utf8");
+  assert.match(publicStyles, /\.brief-layout\s*\{[^}]*max-width:\s*none;/s, "brief content uses the full shared reader width");
+  assert.match(publicStyles, /@media\s*\(max-width:\s*1100px\)\s*\{\s*\.brief-layout\s*\{\s*display:\s*block;\s*max-width:\s*none;/s, "tablet brief content remains aligned");
+  assert.match(publicStyles, /\.header-actions \.subscribe-action\s*\{[^}]*background:\s*var\(--paper\)[^}]*color:\s*var\(--ink\)/s, "Subscribe uses the neutral theme surface");
   assert.ok(homeDoc.querySelector(".reader-body > main"));
   assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, data.topics.length);
   assert.equal(homeDoc.querySelectorAll(".brief-toc").length,data.topics.length);
   for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
     assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
-    assert.ok(panel.querySelector(".brief-description"));
+    assert.equal(panel.querySelector(".brief-description"), null, "brief header omits generic topic copy");
     const links=panel.querySelectorAll(".brief-toc a[data-brief-target]");
     assert.equal(links.length,panel.querySelectorAll(".news-row").length);
     for(const link of links) assert.ok(panel.querySelector(`[id="${link.dataset.briefTarget}"]`));
-    assert.ok(panel.querySelector(".brief-generation time[datetime]"));
+    assert.equal(panel.querySelector(".brief-generation"), null, "brief header omits build timestamp");
     assert.equal(panel.querySelector(".brief-date time").getAttribute("datetime"),data.topics.find(t=>t.id===panel.dataset.topicPanel).latest.report_date);
   }
   assert.ok(homeDoc.querySelector(".news-row h2 a[href*='/news/']"));

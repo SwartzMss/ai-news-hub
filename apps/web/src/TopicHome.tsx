@@ -36,15 +36,6 @@ export function LatestBrief({
     weekday: "long",
     timeZone: "UTC",
   }).format(new Date(report.report_date + "T00:00:00Z"));
-  const generated = new Intl.DateTimeFormat("zh-CN", {
-    year: "numeric",
-    month: "2-digit",
-    day: "2-digit",
-    hour: "2-digit",
-    minute: "2-digit",
-    hour12: false,
-    timeZone: "Asia/Shanghai",
-  }).format(new Date(report.collected_at));
   return (
     <div className="brief-layout">
       <div className="brief-main">
@@ -56,13 +47,6 @@ export function LatestBrief({
               </time>
             </h1>
             <span>{weekday}</span>
-          </div>
-          <p className="brief-description">围绕当前话题整理的最新动态与研究信息。</p>
-          <div className="brief-generation">
-            <span>
-              生成于 <time dateTime={report.collected_at}>{generated}</time>
-              （北京时间）
-            </span>
           </div>
         </header>
         <details className="brief-mobile-toc">
