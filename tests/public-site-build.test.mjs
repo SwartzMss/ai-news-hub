@@ -552,9 +552,9 @@ test('news detail renders structured evidence, timeline and a section directory'
   report.items=report.items.slice(0,1);
   report.items[0].category='social_event';
   report.items[0].details={
-   kind:'news',background:'一个社会话题在最近 24 小时内引发多平台讨论。',
-   keyFacts:[{name:'话题状态',value:'多个平台出现讨论',nature:'reported',evidenceRefs:['weibo']}],
-   timeline:[{time:'2026-11-03',precision:'date',event:'话题开始传播',evidenceRefs:['weibo']}],
+   kind:'news',background:'此前相关事件已立案，本次公布了新的鉴定结果。',
+   keyFacts:[{name:'鉴定结果',value:'已公布',nature:'confirmed',evidenceRefs:['notice']}],
+   timeline:[{time:'2026-11-03',precision:'date',event:'主管部门公布鉴定结果',evidenceRefs:['notice']}],
    trendTags:['cross_platform','controversial','viral_video'],
    discussionTags:['debate'],
    trendSignals:[
@@ -570,13 +570,10 @@ test('news detail renders structured evidence, timeline and a section directory'
    },
    positions:[{actor:'相关主体',statement:'公开回应相关争议',form:'paraphrase',evidenceRefs:['notice']}],
    impacts:[{description:'讨论持续扩散',status:'analysis'}],
-   uncertainties:['部分传播数据未公开'],
-   watchpoints:['关注相关主体后续回应'],
+   uncertainties:['后续责任认定仍待相关程序确认'],
+   watchpoints:['关注后续调查结论'],
    evidence:[
     {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
-    {id:'weibo',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-    {id:'douyin',name:'抖音视频页',url:'https://example.com/douyin',supports:'抖音视频传播情况'},
-    {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开观点和代表性评论'},
    ],
   };
   const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
@@ -597,13 +594,13 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
   assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
   assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
-  assert.match(doc.querySelector('.news-detail table').textContent,/话题状态.*多个平台出现讨论.*媒体报道/s);
+  assert.match(doc.querySelector('.news-detail table').textContent,/鉴定结果.*已公布.*已证实/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
-  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*话题开始传播/s);
+  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*主管部门公布鉴定结果/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
-  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('相关主体公开回应'),true);
+  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('鉴定结果及公布时间'),true);
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
   assert.equal(doc.querySelectorAll('.news-detail-sections h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
