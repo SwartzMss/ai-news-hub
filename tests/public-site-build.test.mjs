@@ -126,10 +126,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(new Set(ids).size, 2);
   assert.equal(ids[0], "urn:ai-news-hub:article:" + data.current[0].key);
   assert.ok(
-    readFileSync(
-      join(root, `news/${data.current[0].key}/index.html`),
-      "utf8",
-    ).includes("来源事实摘要"),
+    articleDoc.querySelector("#project-overview")?.textContent.includes(data.current[0].details.overview),
   );
   function inspect(dir) {
     for (const f of readdirSync(dir)) {
