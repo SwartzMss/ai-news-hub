@@ -673,6 +673,11 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.doesNotMatch(html, /RESEND_API_KEY|NEWSLETTER_TOKEN_SECRET/);
     const publicStyles = readFileSync("apps/web/src/style.css", "utf8");
     assert.ok(publicStyles.includes(".header-actions .subscribe-action svg {\n  width: 18px;\n  height: 18px;"), "Subscribe email icon is comfortably legible");
+    assert.match(publicStyles, /\.newsletter-dialog\s*\{[^}]*width:\s*min\(480px, calc\(100vw - 32px\)\);[^}]*padding:\s*30px;/s, "newsletter dialog uses a compact card proportion");
+    assert.match(publicStyles, /\.newsletter-fields\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);[^}]*gap:\s*14px;/s, "newsletter fields stack vertically");
+    assert.match(publicStyles, /\.newsletter-email input\[type="email"\]\s*\{[^}]*min-height:\s*46px;[^}]*border-radius:\s*8px;/s, "email input receives the dialog input styling");
+    assert.match(publicStyles, /\.newsletter-fields button\s*\{[^}]*width:\s*170px;[^}]*min-height:\s*46px;/s, "desktop subscribe button has a balanced width and height");
+    assert.match(publicStyles, /@media \(max-width: 700px\)\s*\{[^}]*\.newsletter-fields button\s*\{[^}]*width:\s*100%;/s, "subscribe button fills the mobile dialog width");
     assert.match(publicStyles, /\.header-link,\s*\.header-actions \.subscribe-action\s*\{[^}]*min-height:\s*40px;[^}]*padding:\s*0 14px;[^}]*border-radius:\s*10px;[^}]*background:\s*var\(--paper\);/s, "GitHub, Contact and Subscribe share the same outline-button treatment");
     assert.match(publicStyles, /\.header-links\s*\{[^}]*gap:\s*8px;[^}]*\}/s, "header action buttons use a compact consistent gap");
     assert.match(publicStyles, /\.header-actions #theme-toggle\s*\{[^}]*width:\s*40px;[^}]*height:\s*40px;[^}]*border-radius:\s*10px;/s, "theme toggle aligns with the header action buttons");
