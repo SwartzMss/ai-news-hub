@@ -58,7 +58,7 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.doesNotMatch(prompt,/覆盖 AI\/大模型\/Agent\/开源项目、半导体与算力/);
   assert.doesNotMatch(prompt,/股票市场、科技股与估值，以及/);
 });
-test('headlines v1 focuses on social platform trends and evidence-backed editorial tags',()=>{
+test('headlines v1 keeps platform research internal and publishes factual news only',()=>{
   const template=promptTemplates().find(t=>t.id==='daily-headlines');
   assert.equal(template.version,1);
   assert.equal(template.prompts.length,2);
@@ -67,51 +67,35 @@ test('headlines v1 focuses on social platform trends and evidence-backed editori
   assert.match(discovery,/最近 24 小时/);
   assert.match(discovery,/10–15/);
   assert.match(discovery,/不输出最终 JSON/);
-  assert.match(discovery,/平台不可访问时如实说明/);
-  assert.match(discovery,/普通政策发布/);
+  assert.match(discovery,/内部研究材料/);
   assert.match(final,/5–8 条/);
   assert.match(final,/最多 10 条/);
   assert.match(final,/importance 为 1–5/);
-  assert.match(final,/不要只按热度排序/);
-  for(const field of ['trendTags','discussionTags','trendSignals','publicDiscussion','evidenceRefs','evidence'])assert.ok(final.includes(field),field);
+  assert.match(final,/不得输出平台热度/);
+  assert.match(final,/来源核验、搜索过程、跨平台比对、事件去重/);
+  assert.match(final,/只有当平台行为本身就是事件核心/);
+  for(const field of ['keyFacts','timeline','positions','impacts','uncertainties','watchpoints','evidence'])assert.ok(final.includes(field),field);
   for(const category of ['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other'])assert.ok(final.includes(category),category);
-  for(const tag of ['cross_platform','single_platform','controversial','viral_video','sustained_discussion','debate','explainer'])assert.ok(final.includes(tag),tag);
-  assert.match(final,/至少有一条可追溯的平台传播信号/);
-  assert.match(final,/不得生成示例评论/);
+  assert.doesNotMatch(final,/trendTags|discussionTags|trendSignals|publicDiscussion|cross_platform|single_platform/);
   assert.match(final,/6000 字节/);
-  assert.doesNotMatch(final,/全球经济与金融市场.*加密货币与数字资产/s);
-  assert.doesNotMatch(final,/国际热点.*单独设配额/);
-  assert.doesNotMatch(discovery+'\\n'+final,/短视频|内容创作|创作建议|内容价值|contentSuitability|contentReason|contentAngles|contentTags|short_video|not_suitable|Hook/);
 });
-test('headlines strict schema requires category, news details, trend evidence and discussion tags',()=>{
+test('headlines strict schema accepts reader-facing news and rejects internal social signals',()=>{
   const validate=new Ajv({strict:true}).compile(HEADLINES_RESEARCH_SCHEMA);
-  const base={title:'2026-11-13 北京时间最近 24 小时网络热点',items:[{
+  const base={title:'2026-11-13 北京时间最近 24 小时热点',items:[{
     url:'https://example.com/event',category:'social_event',importance:4,
-    factSummary:'某话题在微博和抖音出现跨平台讨论。',
-    analysis:null,evidenceQuote:'A verifiable public platform discussion',
-    details:{
-      kind:'news',background:'该话题在最近 24 小时出现新的讨论。',
-      trendTags:['cross_platform','controversial','viral_video'],
-      discussionTags:['debate'],
-      trendSignals:[
-        {platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 3 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['weibo']},
-        {platform:'douyin',contentType:'video',metric:'views',value:'公开页面显示热门视频，未披露完整数据',observedAt:'2026-11-13T06:30:00+08:00',evidenceType:'reported',evidenceRefs:['douyin']},
-      ],
-      publicDiscussion:{summary:'公开讨论中存在不同观点。',evidenceRefs:['discussion'],viewpoints:[{label:'观点 A',summary:'支持这一做法。',sentiment:'supportive',evidenceRefs:['discussion']}],controversies:[{topic:'责任归属',sides:['观点 A','观点 B'],evidenceRefs:['discussion']}],representativeComments:[{platform:'weibo',quote:'这是一条可核实的公开评论。',evidenceRefs:['discussion']}]},
-      evidence:[
-        {id:'weibo',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-        {id:'douyin',name:'抖音视频页',url:'https://example.com/douyin',supports:'抖音视频讨论'},
-        {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开观点和评论'},
-      ],
-    },
+    factSummary:'主管部门公布鉴定结果，案件调查取得新进展。',
+    analysis:'鉴定结果为后续责任认定提供了依据。',evidenceQuote:'The investigation result was published',
+    details:{kind:'news',background:'此前相关事件已立案，本次公布了新的鉴定结果。',keyFacts:[{name:'鉴定结果',value:'已公布',nature:'confirmed',evidenceRefs:['notice']}],evidence:[{id:'notice',name:'官方通报',url:'https://example.com/notice',supports:'鉴定结果及公布时间'}]},
   }]};
   assert.equal(validate(base),true,JSON.stringify(validate.errors));
   const missingDetails=structuredClone(base);delete missingDetails.items[0].details;
   assert.equal(validate(missingDetails),false);
   const wrongCategory=structuredClone(base);wrongCategory.items[0].category='industry';
   assert.equal(validate(wrongCategory),false);
-  const noSignal=structuredClone(base);noSignal.items[0].details.trendSignals=[];
-  assert.equal(validate(noSignal),false);
+  const internalSignals=structuredClone(base);internalSignals.items[0].details.trendSignals=[{platform:'reddit'}];
+  assert.equal(validate(internalSignals),false);
+  const internalTags=structuredClone(base);internalTags.items[0].details.trendTags=['cross_platform'];
+  assert.equal(validate(internalTags),false);
 });
 test('headlines news examples match the actual research schema, including omitted optional sections',()=>{
   const validate=new Ajv({strict:true}).compile(RESEARCH_SCHEMA);

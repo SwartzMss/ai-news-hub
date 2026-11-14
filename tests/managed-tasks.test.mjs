@@ -145,7 +145,7 @@ test('daily technology template routes to focused AI investment schema independe
   assert.equal(approved.statusCode,200,'technology reports must remain approvable');
  }finally{await s.close();}
 });
-test('daily headlines template routes to strict social trend schema independently of editable topic',async()=>{
+test('daily headlines template routes to reader-facing news schema independently of editable topic',async()=>{
  const s=setup();try{
   const prompts=['发现最近 24 小时社交平台热点','核查并生成热点日报 JSON'];
   const task=(await s.request('POST','/tasks',{
@@ -160,22 +160,20 @@ test('daily headlines template routes to strict social trend schema independentl
   const itemSchema=final.input.outputSchema.properties.items.items;
   assert.ok(itemSchema.required.includes('details'));
   assert.deepEqual(itemSchema.properties.category.enum,['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other']);
-  assert.equal(itemSchema.properties.details.properties.trendSignals.minItems,1);
-  assert.ok(itemSchema.properties.details.required.includes('discussionTags'));
+  assert.equal(itemSchema.properties.details.properties.trendSignals,undefined);
+  assert.equal(itemSchema.properties.details.properties.trendTags,undefined);
+  assert.equal(itemSchema.properties.details.properties.discussionTags,undefined);
+  assert.ok(itemSchema.properties.details.required.includes('evidence'));
   assert.equal(itemSchema.properties.details.properties.contentSuitability,undefined);
   assert.equal(itemSchema.properties.details.properties.contentAngles,undefined);
   const output={title:'2026-11-13 北京时间网络热点',items:[{
    url:'https://example.com/event',category:'social_event',importance:4,
-   factSummary:'一个社会话题在微博平台进入热榜并引发讨论。',
+   factSummary:'主管部门公布鉴定结果，案件调查取得新进展。',
    analysis:null,evidenceQuote:'Public platform trend signal',
    details:{
-    kind:'news',background:'该话题在最近 24 小时进入微博热榜。',
-    trendTags:['single_platform'],discussionTags:['debate'],
-    trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-    evidence:[
-     {id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-     {id:'source',name:'事件来源',url:'https://example.com/source',supports:'话题背景和事实'},
-    ],
+    kind:'news',background:'此前相关事件已立案，本次公布了新的鉴定结果。',
+    keyFacts:[{name:'鉴定结果',value:'已公布',nature:'confirmed',evidenceRefs:['notice']}],
+    evidence:[{id:'notice',name:'官方通报',url:'https://example.com/notice',supports:'鉴定结果及公布时间'}],
    },
   }]};
   s.adapter.succeed(1,JSON.stringify(output));

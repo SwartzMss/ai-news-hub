@@ -552,31 +552,15 @@ test('news detail renders structured evidence, timeline and a section directory'
   report.items=report.items.slice(0,1);
   report.items[0].category='social_event';
   report.items[0].details={
-   kind:'news',background:'一个社会话题在最近 24 小时内引发多平台讨论。',
-   keyFacts:[{name:'话题状态',value:'多个平台出现讨论',nature:'reported',evidenceRefs:['weibo']}],
-   timeline:[{time:'2026-11-03',precision:'date',event:'话题开始传播',evidenceRefs:['weibo']}],
-   trendTags:['cross_platform','controversial','viral_video'],
-   discussionTags:['debate'],
-   trendSignals:[
-    {platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 3 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['weibo']},
-    {platform:'douyin',contentType:'video',metric:'views',value:'热门视频，未披露完整播放量',observedAt:'2026-11-13T06:30:00+08:00',evidenceType:'reported',evidenceRefs:['douyin']},
-   ],
-   publicDiscussion:{
-    summary:'公开讨论围绕事件责任和处理方式展开。',
-    evidenceRefs:['discussion'],
-    viewpoints:[{label:'支持观点',summary:'认为处理方式合理。',sentiment:'supportive',evidenceRefs:['discussion']}],
-    controversies:[{topic:'责任归属',sides:['观点 A','观点 B'],evidenceRefs:['discussion']}],
-    representativeComments:[{platform:'weibo',quote:'这是一条可追溯的公开评论。',evidenceRefs:['discussion']}],
-   },
+   kind:'news',background:'此前相关事件已立案，本次公布了新的鉴定结果。',
+   keyFacts:[{name:'鉴定结果',value:'已公布',nature:'confirmed',evidenceRefs:['notice']}],
+   timeline:[{time:'2026-11-03',precision:'date',event:'主管部门公布鉴定结果',evidenceRefs:['notice']}],
    positions:[{actor:'相关主体',statement:'公开回应相关争议',form:'paraphrase',evidenceRefs:['notice']}],
    impacts:[{description:'讨论持续扩散',status:'analysis'}],
-   uncertainties:['部分传播数据未公开'],
-   watchpoints:['关注相关主体后续回应'],
+   uncertainties:['后续责任认定仍待相关程序确认'],
+   watchpoints:['关注后续调查结论'],
    evidence:[
     {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
-    {id:'weibo',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-    {id:'douyin',name:'抖音视频页',url:'https://example.com/douyin',supports:'抖音视频传播情况'},
-    {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开观点和代表性评论'},
    ],
   };
   const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
@@ -584,26 +568,25 @@ test('news detail renders structured evidence, timeline and a section directory'
   const doc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.news-detail'));
   assert.equal(doc.querySelector('.news-detail .section-kicker'),null);
-  assert.match(doc.querySelector('.news-detail-tags').textContent,/社会事件.*跨平台传播.*观点讨论/s);
-  assert.match(doc.querySelector('.news-detail-tags').textContent,/观点讨论/);
-  assert.match(doc.querySelector('#news-trends').textContent,/微博.*热榜第 3 位.*观察时间/s);
-  assert.match(doc.querySelector('#news-discussion').textContent,/责任归属.*可追溯的公开评论/s);
+  assert.equal(doc.querySelector('.news-detail-tags').textContent.trim(),'社会事件');
+  assert.doesNotMatch(doc.querySelector('.news-detail-tags').textContent,/跨平台|观点讨论/);
+  assert.equal(doc.querySelector('#news-trends'),null);
+  assert.equal(doc.querySelector('#news-discussion'),null);
   assert.equal(doc.querySelector('#news-content'),null);
   assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/内容创作建议|建议标题|开头 Hook|适合短视频/);
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
-  assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*观点讨论/s);
-  assert.match(topicDoc.querySelector('.news-row-tags').textContent,/观点讨论/);
+  assert.equal(topicDoc.querySelector('.category-label').textContent.trim(),'社会事件');
+  assert.doesNotMatch(topicDoc.querySelector('.category-label').textContent,/跨平台|观点讨论/);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
   assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
   assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
-  assert.match(doc.querySelector('.news-detail table').textContent,/话题状态.*多个平台出现讨论.*媒体报道/s);
+  assert.match(doc.querySelector('.news-detail table').textContent,/鉴定结果.*已公布.*已证实/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
-  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*话题开始传播/s);
+  assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*主管部门公布鉴定结果/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
-  assert.equal(doc.querySelector('#news-evidence-notice')?.textContent.includes('相关主体公开回应'),true);
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));
   assert.equal(doc.querySelectorAll('.news-detail-sections h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);

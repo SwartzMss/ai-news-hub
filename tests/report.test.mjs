@@ -9,7 +9,7 @@ const investmentDetails = () => ({kind:'investment',background:'公司披露新�
 const newsDetails = () => ({kind:'news',background:'该政策此前处于征求意见阶段，本次正式发布。',keyFacts:[{name:'生效范围',value:'全国',nature:'confirmed',evidenceRefs:['notice']}],timeline:[{time:'2026-11-03',precision:'date',event:'主管部门发布正式通知',evidenceRefs:['notice']}],positions:[{actor:'主管部门',statement:'将分阶段实施',form:'paraphrase',evidenceRefs:['notice']}],impacts:[{description:'企业需更新申报流程',status:'analysis'}],uncertainties:['实施细则尚未公布'],watchpoints:['查看后续实施细则'],evidence:[{id:'notice',name:'正式通知',url:'https://example.com/notice',supports:'政策发布时间与范围'}]});
 const socialNewsDetails = () => ({
  kind:'news',
- background:'该话题在最近 24 小时内于多个社交平台出现讨论。',
+ background:'此前该事件已立案，本次新增信息为鉴定结果。',
  trendTags:['cross_platform','controversial','viral_video'],
  discussionTags:['debate'],
  trendSignals:[
@@ -37,16 +37,13 @@ test('news details survive report construction and Markdown without changing inv
  const investment=proposal();investment.items[0].details=investmentDetails();
  assert.equal(buildReport(JSON.stringify(investment),candidates,metadata).items[0].details.kind,'investment');
 });
-test('social headline details retain evidence-backed signals and discussion tags',()=>{
+test('legacy social metadata is retained for compatibility but omitted from reader-facing Markdown',()=>{
  const p=proposal();p.items[0].category='social_event';p.items[0].details=socialNewsDetails();
  const report=buildReport(JSON.stringify(p),candidates,metadata);
  assert.deepEqual(report.items[0].details,p.items[0].details);
  const markdown=reportMarkdown(report);
- assert.match(markdown,/平台传播信号/);
- assert.match(markdown,/公众讨论/);
- assert.match(markdown,/讨论类型标签/);
+ assert.doesNotMatch(markdown,/平台传播信号|公众讨论|讨论类型标签|跨平台传播|微博|抖音|公开讨论页/);
  assert.doesNotMatch(markdown,/内容创作评估|建议标题|Hook|适合短视频/);
- assert.match(markdown,/微博/);
 });
 test('social trend tags must match platform and discussion evidence',()=>{
  for(const mutate of [
