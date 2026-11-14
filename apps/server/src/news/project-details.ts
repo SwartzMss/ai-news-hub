@@ -20,6 +20,16 @@ export const PROJECT_DETAILS_SCHEMA={type:'object',additionalProperties:false,re
   evaluation:{type:'array',maxItems:5,items:{type:'object',additionalProperties:false,required:['description','nature'],properties:{description:text(280),nature:{enum:['fact','analysis']},evidenceRefs:refs}}},
   evidence:{type:'array',minItems:1,maxItems:10,items:{type:'object',additionalProperties:false,required:['id','name','url','supports'],properties:{id:{type:'string',pattern:'^[a-z][a-z0-9-]{0,31}$'},name:text(100),url:text(2048),supports:text(240)}}},
 }};
+export const PROJECT_RESEARCH_DETAILS_SCHEMA={
+  ...PROJECT_DETAILS_SCHEMA,
+  properties:{
+    ...PROJECT_DETAILS_SCHEMA.properties,
+    evaluation:{type:'array',maxItems:5,items:{oneOf:[
+      {type:'object',additionalProperties:false,required:['description','nature','evidenceRefs'],properties:{description:text(280),nature:{const:'fact'},evidenceRefs:refs}},
+      {type:'object',additionalProperties:false,required:['description','nature'],properties:{description:text(280),nature:{const:'analysis'},evidenceRefs:refs}},
+    ]}},
+  },
+};
 export function validateProjectDetails(details:ProjectDetails):void {
   if(Buffer.byteLength(JSON.stringify(details))>2500)throw new AppError('report_schema_invalid');
   const ids=new Set<string>();

@@ -41,9 +41,9 @@ function normalize(value: unknown, schema: Schema): unknown {
   if (value === null || typeof value !== 'object') return value;
   if (Array.isArray(schema.oneOf)) {
     const alternatives = schema.oneOf as Schema[];
-    const kind = (value as Record<string, unknown>).kind;
     const selected = alternatives.find(option =>
-      (option.properties as Record<string, Schema> | undefined)?.kind?.const === kind);
+      Object.entries(option.properties as Record<string, Schema> | undefined ?? {}).some(([name, property]) =>
+        Object.hasOwn(property, 'const') && property.const === (value as Record<string, unknown>)[name]));
     if (selected) return normalize(value, selected);
   }
   const properties = schema.properties as Record<string, Schema> | undefined;
