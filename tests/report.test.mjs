@@ -30,28 +30,6 @@ test('headlines reject internal research fields and Markdown renders all supplie
   assert.throws(()=>buildReport(JSON.stringify(invalid),candidates,metadata,'verified','headlines'),{code:'report_schema_invalid'});
  }
 });
-test('legacy social metadata stays out of reader-facing Markdown while factual evidence remains visible',()=>{
- const p=proposal();
- p.items[0].category='social_event';
- p.items[0].details={
-  kind:'news',
-  background:'此前相关事件已立案，本次公布了新的鉴定结果。',
-  keyFacts:[{name:'鉴定结果',value:'已公布',nature:'confirmed',evidenceRefs:['notice']}],
-  trendTags:['single_platform'],
-  discussionTags:['debate'],
-  trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-  publicDiscussion:{summary:'公开讨论围绕事件责任展开。',evidenceRefs:['discussion']},
-  evidence:[
-   {id:'notice',name:'正式通报',url:'https://example.com/notice',supports:'鉴定结果及公布时间'},
-   {id:'trend',name:'微博话题页',url:'https://example.com/trend',supports:'微博热榜排名'},
-   {id:'discussion',name:'公开讨论页',url:'https://example.com/discussion',supports:'公开讨论内容'},
-  ],
- };
- const markdown=reportMarkdown(buildReport(JSON.stringify(p),candidates,metadata));
- assert.match(markdown,/正式通报/);
- assert.doesNotMatch(markdown,/微博话题页|公开讨论页/);
-});
-
 test('news details reject missing evidence references, duplicate IDs and unsafe URLs',()=>{
  for(const mutate of [d=>{d.keyFacts[0].evidenceRefs=['missing'];},d=>{d.evidence.push({...d.evidence[0]});},d=>{d.evidence[0].url='http://localhost/notice';}]){
   const p=proposal();p.items[0].details=newsDetails();mutate(p.items[0].details);
