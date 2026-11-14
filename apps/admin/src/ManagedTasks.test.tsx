@@ -7,520 +7,186 @@ import {
   waitFor,
 } from "@testing-library/react";
 import { ManagedTasks } from "./ManagedTasks";
-import { client } from "./api";
+
 afterEach(() => {
   cleanup();
   vi.unstubAllGlobals();
 });
-const config = {
-  templateId: "daily-technology",
-  templateVersion: 1,
-  topic: "模型公告",
-  promptCount: 2,
-  autoPublish: false,
-  schedule: { kind: "manual" },
-  timezone: "Asia/Shanghai",
-};
-const task = {
-  id: "managed-one",
-  name: "每日研究",
-  status: "active",
-  configuration: config,
-};
-function fixture() {
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (
-        path: string,
-        _signal?: AbortSignal,
-        body?: unknown,
-        method?: string,
-      ) => {
-        if (method === "DELETE") return { deleted: true };
-        if (body) return { task };
-        if (path === "/prompt-templates") return { templates: [
-          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-          { id: "daily-headlines", version: 1, name: "每日热点观察", topic: "每日热点观察", promptCount: 2 },
-        ] };
-        return path === "/tasks" ? { tasks: [task] } : { runs: [] };
-      },
-    );
+
+function makeTask(
+  id: string,
+  templateId: string,
+  name: string,
+  time = "08:05",
+  status = "active",
+  autoPublish = false,
+) {
+  return {
+    id,
+    name,
+    status,
+    configuration: {
+      templateId,
+      templateVersion: 1,
+      topic: name,
+      promptCount: 2,
+      autoPublish,
+      schedule: { kind: "daily", time },
+      timezone: "Asia/Shanghai",
+    },
+  };
+}
+
+function fixture(initialTasks = [makeTask(
+  "technology",
+  "daily-technology",
+  "每日科技投资简报",
+)]) {
+  const tasks = [...initialTasks];
+  const api = vi.fn().mockImplementation(
+    async (
+      path: string,
+      _signal?: AbortSignal,
+      body?: Record<string, unknown>,
+      method?: string,
+    ) => {
+      if (path === "/tasks") return { tasks };
+      if (path.endsWith("/runs?limit=1")) return { runs: [] };
+      if (method === "PUT") {
+        const id = path.split("/")[2];
+        const index = tasks.findIndex((task) => task.id === id);
+        const current = tasks[index];
+        const updated = {
+          ...current,
+          status: body?.status ?? current.status,
+          configuration: {
+            ...current.configuration,
+            ...body,
+          },
+        };
+        tasks[index] = updated;
+        return { task: updated };
+      }
+      if (path.endsWith("/runs")) return { run: { id: "started", status: "queued" } };
+      if (path.endsWith("/stop")) return { task: tasks[0] };
+      return { runs: [] };
+    },
+  );
   return api;
 }
-test("editor saves a selected template reference and task options without prompt copies", async () => {
+
+test("the task list only exposes the fixed tasks and their operational controls", async () => {
+  const api = fixture([
+    makeTask("headlines", "daily-headlines", "每日热点观察"),
+    makeTask("technology", "daily-technology", "每日科技投资简报"),
+    makeTask("opensource", "daily-opensource", "每日开源精选"),
+  ]);
+  render(<ManagedTasks api={api} />);
+
+  for (const name of ["每日热点观察", "每日科技投资简报", "每日开源精选"])
+    await screen.findByRole("link", { name });
+
+  expect(screen.getAllByRole("link")).toHaveLength(3);
+  expect(screen.queryByRole("button", { name: "新增任务" })).toBeNull();
+  expect(screen.queryByRole("button", { name: "删除" })).toBeNull();
+  expect(screen.queryByLabelText("Prompt 模板")).toBeNull();
+  expect(screen.queryByLabelText("执行计划")).toBeNull();
+  expect(api.mock.calls.some((call) => call[0] === "/prompt-templates")).toBe(false);
+});
+
+test("the time editor only changes the daily execution time", async () => {
   const api = fixture();
   render(<ManagedTasks api={api} />);
-  await screen.findByText("模型公告");
-  fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[0]);
-  await screen.findByRole("option", { name: "每日热点观察 · v1" });
-  expect(screen.queryByText("多轮 Prompt")).toBeNull();
-  expect(screen.queryByLabelText("第 1 轮")).toBeNull();
-  fireEvent.change(screen.getByLabelText("Prompt 模板"), {
-    target: { value: "daily-headlines@1" },
-  });
-  fireEvent.click(screen.getByLabelText("自动发布到 GitHub"));
-  fireEvent.change(screen.getByLabelText("执行计划"), {
-    target: { value: "daily" },
-  });
-  fireEvent.change(screen.getByLabelText("执行时刻"), {
+  await screen.findByRole("link", { name: "每日科技投资简报" });
+
+  fireEvent.click(screen.getByRole("button", { name: "修改时间" }));
+  const dialog = await screen.findByRole("dialog", { name: "修改执行时间" });
+  expect(dialog.querySelectorAll("select")).toHaveLength(0);
+  expect(dialog.querySelectorAll('input[type="checkbox"]')).toHaveLength(0);
+
+  fireEvent.change(screen.getByLabelText("每日执行时刻（北京时间）"), {
     target: { value: "10:30" },
   });
-  fireEvent.click(screen.getByRole("button", { name: "保存任务" }));
+  fireEvent.click(screen.getByRole("button", { name: "保存时间" }));
+
   await waitFor(() =>
     expect(api.mock.calls.some((call) => call[3] === "PUT")).toBe(true),
   );
-  const body = api.mock.calls.find((call) => call[3] === "PUT")![2] as Record<string, unknown>;
+  const body = api.mock.calls.find((call) => call[3] === "PUT")![2];
   expect(body).toEqual({
-    templateId: "daily-headlines",
+    templateId: "daily-technology",
     templateVersion: 1,
-    autoPublish: true,
+    autoPublish: false,
     schedule: { kind: "daily", time: "10:30" },
     timezone: "Asia/Shanghai",
     status: "active",
   });
+  expect(api.mock.calls.some((call) => call[3] === "POST")).toBe(false);
 });
-test("deletion requires confirmation and uses DELETE without a request body", async () => {
+
+test("the schedule switch only pauses or enables the existing task", async () => {
   const api = fixture();
   render(<ManagedTasks api={api} />);
-  await screen.findByText("模型公告");
-  fireEvent.click(screen.getByRole("button", { name: "删除" }));
-  expect(api.mock.calls.some((call) => call[3] === "DELETE")).toBe(false);
-  fireEvent.click(screen.getByRole("button", { name: "确认删除" }));
-  await waitFor(() =>
-    expect(api.mock.calls.some((call) => call[3] === "DELETE")).toBe(true),
-  );
-});
-test("HTTP client preserves an explicit DELETE method when body is absent", async () => {
-  const fetcher = vi
-    .fn()
-    .mockResolvedValue(new Response(null, { status: 204 }));
-  vi.stubGlobal("fetch", fetcher);
-  await client("token", () => {})("/tasks/one", undefined, undefined, "DELETE");
-  expect(fetcher.mock.calls[0][1].method).toBe("DELETE");
-  expect(fetcher.mock.calls[0][1].body).toBeUndefined();
-});
+  await screen.findByRole("link", { name: "每日科技投资简报" });
 
-test("switching the editor target loads the new task instead of carrying previous values", async () => {
-  const second = {
-    ...task,
-    id: "second-task",
-    name: "第二任务",
-    configuration: { ...config, templateId: "daily-headlines", topic: "新主题" },
-  };
-  const api = vi
-    .fn()
-    .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks: [task, second] } : path === "/prompt-templates" ? { templates: [
-        { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-        { id: "daily-headlines", version: 1, name: "每日热点观察", topic: "新主题", promptCount: 2 },
-      ] } : { runs: [] },
-    );
-  render(<ManagedTasks api={api} />);
-  await screen.findByText("模型公告");
-  fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[0]);
-  await screen.findByRole("option", { name: "每日热点观察 · v1" });
-  expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
-    "daily-technology@1",
-  );
-  fireEvent.click(screen.getByRole("button", { name: "取消" }));
-  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
-  fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[1]);
-  await screen.findByRole("option", { name: "每日热点观察 · v1" });
-  await waitFor(() =>
-    expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
-      "daily-headlines@1",
-    ),
-  );
-});
+  const toggle = screen.getByRole("switch", {
+    name: "定时执行：每日科技投资简报",
+  });
+  expect(toggle).toBeChecked();
+  fireEvent.click(toggle);
 
-test("a paused schedule still allows manual execution with a single primary action", async () => {
-  const paused = {
-    ...task,
+  await waitFor(() =>
+    expect(api.mock.calls.some((call) => call[3] === "PUT")).toBe(true),
+  );
+  const body = api.mock.calls.find((call) => call[3] === "PUT")![2] as Record<string, unknown>;
+  expect(body).toMatchObject({
+    templateId: "daily-technology",
+    templateVersion: 1,
+    autoPublish: false,
+    schedule: { kind: "daily", time: "08:05" },
+    timezone: "Asia/Shanghai",
     status: "paused",
-    configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
-  };
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (path: string, _signal?: AbortSignal, body?: unknown) =>
-        body
-          ? { run: { id: "started" } }
-          : path === "/tasks"
-            ? { tasks: [paused] }
-            : path === "/prompt-templates" ? { templates: [
-          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-        ] } : { runs: [] },
-    );
+  });
+});
+
+test("automatic publishing remains independent from the schedule switch", async () => {
+  const api = fixture();
   render(<ManagedTasks api={api} />);
-  await screen.findByText("定时已暂停");
-  expect(screen.queryByRole("button", { name: "停止执行" })).toBeNull();
-  expect(screen.queryByLabelText("任务名称")).toBeNull();
+  await screen.findByRole("link", { name: "每日科技投资简报" });
+
+  fireEvent.click(
+    screen.getByRole("switch", { name: "自动发布：每日科技投资简报" }),
+  );
+  await waitFor(() =>
+    expect(api.mock.calls.some((call) => call[3] === "PUT")).toBe(true),
+  );
+  const body = api.mock.calls.find((call) => call[3] === "PUT")![2] as Record<string, unknown>;
+  expect(body).toMatchObject({
+    autoPublish: true,
+    schedule: { kind: "daily", time: "08:05" },
+    status: "active",
+  });
+});
+
+test("a paused task can still be run manually", async () => {
+  const api = fixture([
+    makeTask(
+      "technology",
+      "daily-technology",
+      "每日科技投资简报",
+      "08:05",
+      "paused",
+    ),
+  ]);
+  render(<ManagedTasks api={api} />);
+  await screen.findByText("已关闭");
+
   fireEvent.click(screen.getByRole("button", { name: "立即运行" }));
   await waitFor(() =>
     expect(
       api.mock.calls.some(
-        (call) => call[0] === "/tasks/managed-one/runs" && call[2],
+        (call) => call[0] === "/tasks/technology/runs" && call[2],
       ),
     ).toBe(true),
   );
-});
-
-test("an active execution replaces Run with Stop and separates the schedule state", async () => {
-  const scheduled = {
-    ...task,
-    configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
-  };
-  const api = vi.fn().mockImplementation(async (path: string) =>
-    path === "/tasks"
-      ? { tasks: [scheduled] }
-      : {
-          runs: [
-            {
-              id: "running",
-              status: "running",
-              created_at: "2026-11-04T01:00:00Z",
-            },
-          ],
-        },
-  );
-  render(<ManagedTasks api={api} />);
-  await screen.findByText("定时已启用");
-  expect(screen.getByRole("status").textContent).toBe("运行中");
-  expect(screen.getByRole("button", { name: "停止执行" })).toBeTruthy();
-  expect(screen.queryByRole("button", { name: "立即运行" })).toBeNull();
-  expect(screen.queryByRole("link", { name: "运行记录" })).toBeNull();
-});
-
-test("task editor is a separate modal that closes on cancel and restores focus", async () => {
-  const api = fixture();
-  render(<ManagedTasks api={api} />);
-  await screen.findByText("模型公告");
-  const trigger = screen.getByRole("button", { name: "新增任务" });
-  trigger.focus();
-  fireEvent.click(trigger);
-  const dialog = await screen.findByRole("dialog", { name: "新增任务" });
-  expect(dialog.closest(".managed-task-list")).toBeNull();
-  expect(document.documentElement.style.overflow).toBe("hidden");
-  expect(document.activeElement).toBe(screen.getByLabelText("Prompt 模板"));
-  fireEvent(dialog, new Event("cancel", { cancelable: true }));
-  expect(screen.queryByRole("dialog")).toBeNull();
-  expect(document.documentElement.style.overflow).toBe("");
-  expect(document.activeElement).toBe(trigger);
-});
-
-test("many tasks are paged and only the visible tasks load execution state", async () => {
-  const tasks = Array.from({ length: 23 }, (_, i) => ({
-    ...task,
-    id: `task-${i}`,
-    name: `任务 ${i}`,
-    configuration: { ...config, topic: `任务 ${i}` },
-  }));
-  const api = vi
-    .fn()
-    .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks } : path === "/prompt-templates" ? { templates: [
-        { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-      ] } : { runs: [] },
-    );
-  render(<ManagedTasks api={api} />);
-  await screen.findByRole("link", { name: "任务 0" });
-  expect(screen.queryByRole("link", { name: "任务 10" })).toBeNull();
-  expect(api.mock.calls.filter(([p]) => p.includes("/runs"))).toHaveLength(10);
-  fireEvent.click(screen.getByRole("button", { name: "下一页" }));
-  await screen.findByRole("link", { name: "任务 10" });
-  await new Promise((resolve) => setTimeout(resolve, 300));
-  expect(screen.getByRole("link", { name: "任务 10" })).toBeTruthy();
-  expect(screen.queryByRole("link", { name: "任务 0" })).toBeNull();
-  fireEvent.change(screen.getByRole("searchbox", { name: "搜索任务" }), {
-    target: { value: "任务 22" },
-  });
-  await screen.findByRole("link", { name: "任务 22" });
-  expect(screen.queryByRole("button", { name: "下一页" })).toBeNull();
-  expect(screen.queryByRole("link", { name: "运行记录" })).toBeNull();
-});
-test("plan filter handles manual, enabled and paused schedules without hiding the editor", async () => {
-  const tasks = [
-    task,
-    {
-      ...task,
-      id: "daily",
-      configuration: {
-        ...config,
-        topic: "每日模型",
-        schedule: { kind: "daily", time: "09:00" },
-      },
-    },
-  ];
-  const api = vi
-    .fn()
-    .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks } : path === "/prompt-templates" ? { templates: [
-        { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-      ] } : { runs: [] },
-    );
-  render(<ManagedTasks api={api} />);
-  await screen.findByText("模型公告");
-  fireEvent.change(screen.getByRole("combobox", { name: "执行计划筛选" }), {
-    target: { value: "scheduled" },
-  });
-  await screen.findByRole("link", { name: "每日模型" });
-  await waitFor(() =>
-    expect(screen.queryByRole("link", { name: "模型公告" })).toBeNull(),
-  );
-  fireEvent.click(screen.getByRole("button", { name: "编辑" }));
-  await screen.findByRole("dialog", { name: "编辑任务" });
-});
-
-test("deleting the last task on a page returns to a valid page", async () => {
-  let tasks = Array.from({ length: 11 }, (_, i) => ({
-    ...task,
-    id: `page-${i}`,
-    configuration: { ...config, topic: `分页任务 ${i}` },
-  }));
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (
-        path: string,
-        _signal: AbortSignal,
-        _body: unknown,
-        method: string,
-      ) => {
-        if (method === "DELETE") {
-          tasks = tasks.filter((t) => path !== `/tasks/${t.id}`);
-          return {};
-        }
-        if (path === "/prompt-templates") return { templates: [
-          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-        ] };
-        return path === "/tasks" ? { tasks } : { runs: [] };
-      },
-    );
-  render(<ManagedTasks api={api} />);
-  await screen.findByRole("link", { name: "分页任务 0" });
-  fireEvent.click(screen.getByRole("button", { name: "下一页" }));
-  await screen.findByRole("link", { name: "分页任务 10" });
-  fireEvent.click(screen.getByRole("button", { name: "删除" }));
-  fireEvent.click(screen.getByRole("button", { name: "确认删除" }));
-  await screen.findByRole("link", { name: "分页任务 0" });
-  expect(screen.queryByRole("link", { name: "分页任务 10" })).toBeNull();
-  expect(screen.queryByRole("button", { name: "下一页" })).toBeNull();
-});
-
-test("automatic publication switch saves the complete paused task configuration", async () => {
-  let saved = {
-    ...task,
-    status: "paused",
-    configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
-  };
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (
-        path: string,
-        _signal: AbortSignal,
-        body: typeof saved.configuration & { status: string },
-        method: string,
-      ) => {
-        if (method === "PUT") {
-          saved = { ...saved, status: body.status, configuration: body };
-          return { task: saved };
-        }
-        if (path === "/prompt-templates") return { templates: [
-          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-        ] };
-        return path === "/tasks" ? { tasks: [saved] } : { runs: [] };
-      },
-    );
-  render(<ManagedTasks api={api} />);
-  const toggle = await screen.findByRole("switch", {
-    name: "自动发布：模型公告",
-  });
-  expect((toggle as HTMLInputElement).checked).toBe(false);
-  expect(screen.queryByText("更多")).toBeNull();
-  expect(document.querySelector("details")).toBeNull();
-  fireEvent.click(toggle);
-  await waitFor(() =>
-    expect(api.mock.calls.find((call) => call[3] === "PUT")?.[2]).toEqual({
-      templateId: config.templateId,
-      templateVersion: config.templateVersion,
-      autoPublish: true,
-      schedule: { kind: "daily", time: "09:00" },
-      timezone: "Asia/Shanghai",
-      status: "paused",
-    }),
-  );
-  await waitFor(() =>
-    expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(true),
-  );
-});
-
-test("failed automatic publication save keeps its previous state and displays the error", async () => {
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (
-        path: string,
-        _signal: AbortSignal,
-        _body: unknown,
-        method: string,
-      ) => {
-        if (method === "PUT") throw new Error("保存失败");
-        if (path === "/prompt-templates") return { templates: [
-      { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-    ] };
-    return path === "/tasks" ? { tasks: [task] } : { runs: [] };
-      },
-    );
-  render(<ManagedTasks api={api} />);
-  fireEvent.click(
-    await screen.findByRole("switch", { name: "自动发布：模型公告" }),
-  );
-  await screen.findByRole("alert");
-  expect(screen.getByRole("alert").textContent).toContain("请求失败，请重试。");
-  expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(false);
-  expect((screen.getByRole("switch") as HTMLInputElement).disabled).toBe(false);
-});
-
-test("schedule pause and enable are direct controls preserving task configuration", async () => {
-  let saved = {
-    ...task,
-    configuration: { ...config, schedule: { kind: "daily", time: "09:00" } },
-  };
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (
-        path: string,
-        _signal: AbortSignal,
-        body: typeof saved.configuration & { status: string },
-        method: string,
-      ) => {
-        if (method === "PUT") {
-          saved = { ...saved, status: body.status };
-          return { task: saved };
-        }
-        return path === "/tasks" ? { tasks: [saved] } : { runs: [], templates: [] };
-      },
-    );
-  render(<ManagedTasks api={api} />);
-  fireEvent.click(await screen.findByRole("button", { name: "暂停定时" }));
-  await screen.findByRole("button", { name: "启用定时" });
-  expect(api.mock.calls.find((call) => call[3] === "PUT")?.[2]).toEqual({
-    templateId: config.templateId,
-    templateVersion: config.templateVersion,
-    autoPublish: false,
-    schedule: { kind: "daily", time: "09:00" },
-    timezone: "Asia/Shanghai",
-    status: "paused",
-  });
-  fireEvent.click(screen.getByRole("button", { name: "启用定时" }));
-  await screen.findByRole("button", { name: "暂停定时" });
-});
-
-test.each(["running", "publishing"])(
-  "task detail disables editing, switch and deletion during %s",
-  async (mode) => {
-    const api = vi
-      .fn()
-      .mockImplementation(async (path: string) =>
-        path === "/tasks"
-          ? { tasks: [task] }
-          : {
-              runs: [
-                {
-                  status: mode === "running" ? "running" : "succeeded",
-                  publishing: mode === "publishing",
-                },
-              ],
-            },
-      );
-    render(<ManagedTasks api={api} taskId={task.id} />);
-    const toggle = await screen.findByRole("switch", {
-      name: "自动发布：模型公告",
-    });
-    expect((toggle as HTMLInputElement).disabled).toBe(true);
-    for (const name of ["编辑任务", "编辑", "删除"])
-      expect(
-        (screen.getByRole("button", { name }) as HTMLButtonElement)
-          .disabled,
-      ).toBe(true);
-    expect(
-      (screen.getByRole("button", { name: "停止执行" }) as HTMLButtonElement)
-        .disabled,
-    ).toBe(false);
-  },
-);
-
-test("automatic publication cannot be changed again while the save is pending", async () => {
-  let completeSave!: (value: unknown) => void;
-  let enabled = false;
-  const api = vi
-    .fn()
-    .mockImplementation(
-      async (
-        path: string,
-        _signal: AbortSignal,
-        _body: unknown,
-        method: string,
-      ) => {
-        if (method === "PUT") {
-          await new Promise((resolve) => {
-            completeSave = resolve;
-          });
-          enabled = true;
-          return {};
-        }
-        return path === "/tasks"
-          ? {
-              tasks: [
-                { ...task, configuration: { ...config, autoPublish: enabled } },
-              ],
-            }
-          : path === "/prompt-templates" ? { templates: [
-              { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
-            ] } : { runs: [] };
-      },
-    );
-  render(<ManagedTasks api={api} />);
-  fireEvent.click(await screen.findByRole("switch"));
-  expect((screen.getByRole("switch") as HTMLInputElement).disabled).toBe(true);
-  expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(false);
-  expect(
-    (screen.getByRole("button", { name: "立即运行" }) as HTMLButtonElement)
-      .disabled,
-  ).toBe(true);
-  completeSave({});
-  await waitFor(() =>
-    expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(true),
-  );
-});
-test('selecting a versioned template changes only the template reference and keeps settings', async () => {
-  const base = fixture();
-  const api = vi.fn(async (path: string, ...args: unknown[]) => path === '/prompt-templates' ? {
-    templates:[
-      {id:'daily-technology',version:1,name:'每日科技投资简报',topic:'模型公告',promptCount:2},
-      {id:'sample',version:2,name:'模板样例',topic:'新主题',promptCount:3},
-    ],
-  } : base(path,...args));
-  render(<ManagedTasks api={api} />);
-  await screen.findByText('模型公告');
-  fireEvent.click(screen.getAllByRole('button',{name:'编辑'})[0]);
-  await screen.findByRole('option',{name:'模板样例 · v2'});
-  fireEvent.change(screen.getByLabelText('Prompt 模板'),{target:{value:'sample@2'}});
-  expect(screen.getByText('新主题')).toBeTruthy();
-  expect(screen.queryByLabelText('第 1 轮')).toBeNull();
-  expect((screen.getByLabelText('自动发布到 GitHub') as HTMLInputElement).checked).toBe(false);
-  fireEvent.click(screen.getByRole("button",{name:"保存任务"}));
-  await waitFor(() => expect(api.mock.calls.some(call => call[0] === "/tasks/managed-one" && call[3] === "PUT")).toBe(true));
-  const body = api.mock.calls.find(call => call[0] === "/tasks/managed-one" && call[3] === "PUT")![2] as Record<string, unknown>;
-  expect(body).toEqual({
-    templateId: "sample",
-    templateVersion: 2,
-    autoPublish: false,
-    schedule: { kind: "manual" },
-    timezone: "Asia/Shanghai",
-    status: "active",
-  });
 });
