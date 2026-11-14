@@ -113,15 +113,12 @@ export const LEGACY_HEADLINES_DETAILS_SCHEMA={
   },
 };
 
+// New headline runs keep platform discovery and editorial triage internal.
+// Historical reports remain readable through NEWS_DETAILS_SCHEMA / legacy archive schemas.
 export const HEADLINES_DETAILS_SCHEMA={
-  ...NEWS_DETAILS_SCHEMA,
-  required:[...NEWS_DETAILS_SCHEMA.required,'trendTags','discussionTags','trendSignals'],
-  properties:{
-    ...NEWS_DETAILS_SCHEMA.properties,
-    trendTags:uniqueEnumList(TREND_TAGS,5),
-    discussionTags:uniqueEnumList(DISCUSSION_TAGS,2),
-    trendSignals:{type:'array',minItems:1,maxItems:8,items:trendSignalSchema},
-  },
+  type:'object',additionalProperties:false,
+  required:['kind','background','evidence'],
+  properties:legacyNewsProperties,
 };
 
 export function validateNewsDetails(details:NewsDetails):void {

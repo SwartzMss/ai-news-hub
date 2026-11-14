@@ -27,8 +27,6 @@ export function newsSections(details:NewsDetails,analysis?:string|null):DetailSe
   return [
     {id:'news-background',label:'事件概览',show:hasText(details.background)||details.timeline?.length===1},
     {id:'news-facts',label:'关键事实与数据',show:present(details.keyFacts)},
-    {id:'news-trends',label:'平台传播信号',show:present(details.trendSignals)},
-    {id:'news-discussion',label:'公众讨论',show:!!details.publicDiscussion},
     {id:'news-timeline',label:'事件时间线',show:(details.timeline?.length??0)>1},
     {id:'news-positions',label:'各方表态',show:present(details.positions)},
     {id:'news-impacts',label:'影响',show:present(details.impacts)},
@@ -48,10 +46,8 @@ export function NewsDetail({story}:{story:Story}){
       {lead(story).rest&&<p className="news-detail-summary"><InlineText text={lead(story).rest}/></p>}
       <div className="news-detail-tags">
         <span className="news-tag news-tag-topic">{categories[story.category]??story.category}</span>
-        {details.trendTags?.map(tag=><span className="news-tag news-tag-trend" key={tag}>{trendTagLabels[tag]??tag}</span>)}
-        {details.discussionTags?.map(tag=><span className="news-tag news-tag-content" key={tag}>{discussionTagLabels[tag]??tag}</span>)}
       </div>
-      <p className="news-detail-verification">研究资料由 Codex 提供；平台热度和讨论仅代表可观察的公开样本，不等于整体民意；来源链接和格式校验不等于独立事实核验。</p>
+      <p className="news-detail-verification">来源链接和格式校验不等于独立事实核验；请以原始来源为准。</p>
     </header>
     <MobileDetailNav sections={sections}/>
     <div className="news-detail-sections">
