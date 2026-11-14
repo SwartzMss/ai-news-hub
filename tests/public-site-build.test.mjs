@@ -561,6 +561,7 @@ test('news detail renders structured evidence, timeline and a section directory'
    watchpoints:['关注后续调查结论'],
    evidence:[
     {id:'notice',name:'公开回应',url:'https://example.com/notice',supports:'相关主体公开回应'},
+    {id:'discussion',name:'补充来源',url:'https://example.com/discussion',supports:'补充背景材料'},
    ],
   };
   const folder=join(dir,'topics',topicId,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
@@ -586,6 +587,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
   assert.match(doc.querySelector('#news-background').textContent,/2026-11-03.*主管部门公布鉴定结果/s);
   assert.ok(doc.querySelector('.news-detail a[href="https://example.com/notice"]'));
+  assert.ok(doc.querySelector('.news-detail a[href="https://example.com/discussion"]'));
   assert.ok(doc.querySelector('.news-aside a[href="#news-facts"]'));
   assert.equal(doc.querySelectorAll('.news-detail-sections > section h2').length,doc.querySelectorAll('.news-aside [data-detail-target]').length);
   assert.deepEqual([...doc.querySelectorAll('.news-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.news-detail-sections > section')].map(section=>section.id));

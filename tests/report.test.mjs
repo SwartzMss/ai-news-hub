@@ -37,12 +37,14 @@ test('news details survive report construction and Markdown without changing inv
  const investment=proposal();investment.items[0].details=investmentDetails();
  assert.equal(buildReport(JSON.stringify(investment),candidates,metadata).items[0].details.kind,'investment');
 });
-test('legacy social metadata is retained for compatibility but omitted from reader-facing Markdown',()=>{
+test('generic news rendering does not filter evidence based on social metadata',()=>{
  const p=proposal();p.items[0].category='social_event';p.items[0].details=socialNewsDetails();
  const report=buildReport(JSON.stringify(p),candidates,metadata);
  assert.deepEqual(report.items[0].details,p.items[0].details);
  const markdown=reportMarkdown(report);
- assert.doesNotMatch(markdown,/平台传播信号|公众讨论|讨论类型标签|跨平台传播|微博|抖音|公开讨论页/);
+ assert.match(markdown,/公开讨论页/);
+ assert.match(markdown,/微博话题页/);
+ assert.match(markdown,/抖音视频页/);
  assert.doesNotMatch(markdown,/内容创作评估|建议标题|Hook|适合短视频/);
 });
 test('social trend tags must match platform and discussion evidence',()=>{
