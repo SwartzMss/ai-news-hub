@@ -1,7 +1,7 @@
 import { Ajv } from "ajv";
 import addFormats from "ajv-formats";
 import type { FormatsPlugin } from "ajv-formats";
-import { ARCHIVE_SCHEMA, ARCHIVE_V2_SCHEMA, ARCHIVE_V3_SCHEMA, ARCHIVE_V5_SCHEMA, ARCHIVE_V7_SCHEMA } from "./archive-schema.js";
+import { ARCHIVE_SCHEMA } from "./archive-schema.js";
 import { createHash } from "node:crypto";
 import type { DatabaseSync } from "node:sqlite";
 import { isDeepStrictEqual } from "node:util";
@@ -17,10 +17,6 @@ const validator = new Ajv({
 });
 (addFormats as unknown as FormatsPlugin)(validator);
 const validateArchive = validator.compile(ARCHIVE_SCHEMA);
-const validateArchiveV2 = validator.compile(ARCHIVE_V2_SCHEMA);
-const validateArchiveV3 = validator.compile(ARCHIVE_V3_SCHEMA);
-const validateArchiveV5 = validator.compile(ARCHIVE_V5_SCHEMA);
-const validateArchiveV7 = validator.compile(ARCHIVE_V7_SCHEMA);
 export const sha256 = (value: string) =>
   createHash("sha256").update(value).digest("hex");
 export function reviewedReport(db: DatabaseSync, id: string) {
