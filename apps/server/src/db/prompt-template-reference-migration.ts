@@ -1,7 +1,7 @@
 export const promptTemplateReferenceMigration = {
   version: 14,
   name: 'template_referenced_task_configuration',
-  sql: \`
+  sql: `
     UPDATE tasks
       SET configuration_json = json_remove(configuration_json, '$.prompts', '$.topic'),
           prompt = ''
@@ -20,5 +20,5 @@ export const promptTemplateReferenceMigration = {
     UPDATE task_runs
       SET configuration_json = json_remove(configuration_json, '$.prompts')
       WHERE configuration_json IS NOT NULL AND json_valid(configuration_json);
-  \`,
+  `,
 };
