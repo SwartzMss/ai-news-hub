@@ -152,7 +152,7 @@ test('template-bound open-source tasks receive same-task history without leaking
   assert.doesNotMatch(third.input.developerInstructions,/近期同任务日报/);
   const projectDetailsSchema = third.input.outputSchema.properties.items.items.properties.details;
   assert.equal(projectDetailsSchema.properties.kind.const, "project");
-  assert.ok(Array.isArray(projectDetailsSchema.properties.evaluation.items.anyOf));
+  assert.ok(Array.isArray(projectDetailsSchema.properties.evaluation.anyOf[0].items.anyOf));
   assert.equal((await s.request('GET',`/runs/${otherRun}`)).json().run.status,'running');
  }finally{await s.close();}
 });
