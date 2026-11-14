@@ -50,18 +50,11 @@ test('v4 social headline archives remain backward compatible',()=>{
  try{
   f.db.prepare("UPDATE task_runs SET configuration_json=? WHERE id='run'").run(JSON.stringify({templateId:'daily-headlines'}));
   const report=reviewedReport(f.db,'r');
-  assert.equal(report.templateId,'daily-headlines');
   report.document.topic={id:'t-'+'d'.repeat(24),name:'每日热点观察'};
   report.document.items=report.document.items.map(item=>({...item,category:'social_event',details:{
    kind:'news',
-   background:'话题在最近 24 小时于微博出现传播。',
-   trendTags:['single_platform'],
-   discussionTags:['debate'],
-   trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-   evidence:[
-    {id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
-    {id:'source',name:'事件来源',url:'https://example.com/source',supports:'话题背景'},
-   ],
+   background:'主管部门公布了新的鉴定结果。',
+   evidence:[{id:'source',name:'事件来源',url:'https://example.com/source',supports:'事件背景和鉴定结果'}],
   }}));
   const artifact=archiveArtifact(report,'2026-11-13T08:00:00Z');
   const currentDocument=JSON.parse(artifact.content);
@@ -69,8 +62,9 @@ test('v4 social headline archives remain backward compatible',()=>{
   const legacyDocument=structuredClone(currentDocument);
   legacyDocument.schema_version=4;
   for(const item of legacyDocument.items){
-   delete item.details.discussionTags;
+   item.details.trendTags=['single_platform'];
    item.details.contentTags=['short_video'];
+   item.details.trendSignals=[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['source']}];
    item.details.contentSuitability='recommended';
    item.details.contentReason='旧版归档中的历史字段。';
    item.details.contentAngles=[{angle:'历史选题角度',suggestedTitle:'旧版标题',hook:'旧版 Hook',corePoints:['历史内容'],evidenceRefs:['source']}];
@@ -81,7 +75,6 @@ test('v4 social headline archives remain backward compatible',()=>{
   assert.equal(validate({...legacyDocument,schema_version:3}),false);
  }finally{f.close();}
 });
-
 
 test('v6 topic archive publishes reader-facing news without internal research metadata',()=>{
  assert.deepEqual(JSON.parse(readFileSync(new URL('../docs/schema/report-archive-v6.schema.json',import.meta.url),'utf8')),ARCHIVE_V6_SCHEMA);
