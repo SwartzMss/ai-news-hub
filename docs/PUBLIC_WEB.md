@@ -19,9 +19,9 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 
 ## 数据与历史
 
-输入支持历史 [archive v1 Schema](schema/report-archive-v1.schema.json) 的 `YYYY/MM/DD/opensource/vNNNNNN.json`、带 `topic: {id,name}` 的 [archive v2 Schema](schema/report-archive-v2.schema.json)、增加必填 `research_area` 的 [archive v3 Schema](schema/report-archive-v3.schema.json)、[archive v4 Schema](schema/report-archive-v4.schema.json)、[archive v5 Schema](schema/report-archive-v5.schema.json) 和 [archive v6 Schema](schema/report-archive-v6.schema.json) 以及 [archive v7 Schema](schema/report-archive-v7.schema.json)。v4 保留旧版社交热点日报契约；v5 专用于 AI 产业链/光模块/半导体科技投资日报；v6 保留历史社交热点归档中的结构化新闻详情、平台信号和讨论类型标签，不包含内容创作建议字段；v7 用于新的社交热点日报，details 只允许面向读者的新闻事实、进展与证据，不再包含内部平台热度和讨论字段。v1～v6 契约保持不变，历史归档无需迁移。v2/v3/v4/v5/v6/v7 均使用 `topics/<id>/YYYY/MM/DD/vNNNNNN.json`，路径须与内部话题/日期/版本一致。只接受 approved 数据及约定的 source_only/codex_reported 来源模式；拒绝未知字段、非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
+输入只接受统一的 [archive v1 Schema](schema/report-archive-v1.schema.json)。所有话题共用同一数据契约：根对象必须包含 `topic`，每条目必须包含 `details`；`details.kind` 分别为 `project`、`investment` 或 `news`，`research_area` 仅用于开源项目。新归档统一写入 `topics/<topic-id>/YYYY/MM/DD/vNNNNNN.json`，路径须与话题/日期/版本一致。Schema 严格拒绝未知字段，热点新闻不允许平台热度、转载、讨论等内部研究字段进入公开数据。只接受 approved 数据及约定的 source_only/codex_reported 来源模式；拒绝非法来源协议/凭据、重复条目/报告 ID、符号链接、意外文件与 XML 1.0 非法字符。每个 JSON 最多 256 KiB、最多 10000 份报告；超出失败，不截断归档。
 
-同话题/日期/频道展示最高版本；所有版本仍生成独立页面。当前列表与 RSS 只使用各日最新版本，修订移除的条目不会从旧版本混回来；历史版本正文完整保留，详情链接则指向该来源目前保留的最新内容。同话题跨日相同条目 ID 合并为一个来源详情，新来源键为 SHA-256(topic-id + ":" + item-id) 前 32 位。历史 v1 来源保留原有 ID 哈希键及 GUID，映射后同话题的新归档继续复用；其他话题的相同来源 ID 使用不同键。详情/归档明确区分事实摘要、分析推断、精确引文和三类来源时间，人工允许发布不代表独立事实核验。
+同话题/日期展示最高版本；所有版本仍生成独立页面。当前列表与 RSS 只使用各日最新版本，修订移除的条目不会从旧版本混回来；历史版本正文完整保留，详情链接则指向该来源目前保留的最新内容。同话题跨日相同条目 ID 合并为一个来源详情，来源键统一为 SHA-256(topic-id + ":" + item-id) 前 32 位。不同话题的相同来源 ID 使用不同键。详情/归档明确区分事实摘要、分析推断、精确引文和三类来源时间，人工允许发布不代表独立事实核验。
 
 | 路径 | 内容 |
 | --- | --- |
@@ -37,7 +37,7 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 | `/data/index.json` | 仅公开日报/来源的静态索引 |
 | `/sitemap.xml`、`/robots.txt`、`/404.html` | 站点索引与真实不存在页面 |
 
-历史 `/news/<stable-key>/`、`/archive/YYYY-MM-DD/`、`/archive/YYYY-MM-DD/opensource/vNNNNNN/` 继续生成，canonical 指向对应话题页面；旧 `/channel/opensource/` 改为话题目录。可选的 `reports/topics.json` 仅为旧 v1 报告提供 `{schema_version:1, assignments:[{report_id, topic:{id,name}}]}` 归属映射，不改旧文件与哈希；未映射的 v1 归入“历史简报”。映射不得重复、引用不存在的报告或覆盖 v2/v3 归属，非法映射会终止构建。
+保留 `/channel/opensource/` 作为话题目录入口；不再生成旧版无话题归档路径、未映射的 legacy 话题或 `reports/topics.json` 归属映射。
 
 RSS 最多包含 100 个当前来源条目，GUID 为 `urn:ai-news-hub:article:<stable-key>`，修订与重复构建不会更改。pubDate 使用该 ID 最早人工允许发布的时间；来源原始发布时间另列在描述/详情，不用抓取时间冒充。链接指向静态详情，描述另含原文 URL。XML 文本统一转义，非法字符拒绝构建。输出不使用当前构建时钟，因此同一输入内容确定。没有基于全站数据的账户、管理台、收藏同步或复杂搜索。
 
@@ -72,9 +72,9 @@ CI 的 `npm test` 包含公开站构建、路由/两日期/历史版本、Schema
 
 官方参考：[Pages Git integration](https://developers.cloudflare.com/pages/configuration/git-integration/)、[Build configuration](https://developers.cloudflare.com/pages/configuration/build-configuration/)、[Build watch paths](https://developers.cloudflare.com/pages/configuration/build-watch-paths/)。
 
-归档 v1 现支持 verification=codex_reported 与 fetched_at=null，表示来源由 Codex 提供而非 Backend 抓取。公共页面和 RSS 不展示不存在的抓取时间；source_only 历史归档保持兼容。使用独立公共站构建器的部署需同步更新 Schema 与生成器后读取新归档。
+统一归档 v1 支持 verification=codex_reported 与 fetched_at=null，表示来源由 Codex 提供而非 Backend 抓取。公共页面和 RSS 不展示不存在的抓取时间。所有条目必须包含面向读者的结构化 details；前端按 kind 渲染，不过滤或修正内部研究字段。
 
-公共阅读站按任务话题组织：一个任务对应稳定话题，首次归档后出现在首页选择器中；首页只展示当前话题的最新一期，每个话题有独立的日期/版本归档、详情与 RSS。同一天不同话题和相同来源条目互不覆盖。浏览器 localStorage 只保存话题 ID 与明暗偏好，首页有效的 `?topic=<id>` 优先于已保存偏好；禁用脚本或存储时仍可通过链接阅读。旧归档 JSON 不改写，兼容原有日期、版本与来源链接。
+公共阅读站按任务话题组织：一个任务对应稳定话题，首次归档后出现在首页选择器中；首页只展示当前话题的最新一期，每个话题有独立的日期/版本归档、详情与 RSS。同一天不同话题和相同来源条目互不覆盖。浏览器 localStorage 只保存话题 ID 与明暗偏好，首页有效的 `?topic=<id>` 优先于已保存偏好；禁用脚本或存储时仍可通过链接阅读。历史归档已清理，统一 v1 不再保留旧 Schema、旧路径或旧来源键的兼容分支。
 
 首页采用编辑式阅读布局：页面使用暖白/浅灰背景、深色正文和低饱和绿色强调色，桌面、平板和手机端的话题切换均由共享 Shell 提供，作为全局导航呈现；主题导航与日报主内容使用同一版心和左边界，确保日期、列表与导航对齐。首页采用单栏资讯列表，不显示右侧或折叠式本期目录。简报页眉只保留日期和星期，不显示“围绕当前话题整理”等说明或生成时间；资讯总数继续由列表标题显示。所有资讯采用相同的行样式、标题字号、摘要层级和展示面积；开源项目按既有五个研究方向排序，并将方向名称作为文章下方分类标签；空方向仍显示简短提示，其他主题沿用日报条目顺序，不新增重要性排序或排名，也不设置“今日重点”、头条、精选或置顶；分类标签仅表达内容类别。保留既有 RSS Feed 地址和各页面的自动发现链接，不新增可见 RSS 入口。标题仍链接到含分析与引文的详情；完整原文保留在归档和详情中。正文只将显式 HTTP(S) Markdown 链接渲染为安全外链，其余内容按文本转义；不执行 HTML、不加载外部图片。首页切换话题同步更新顶部归档入口；RSS 继续通过既有 Feed 地址和各页面的订阅发现链接提供。五方向开源日报按 AI Agent、Rust、多媒体、性能与安全、去中心化基础设施分组，空方向也明确显示；项目详情按概览、更新、技术要点、适用场景、许可证、评价限制和证据分节阅读。项目详情页采用限宽正文与右侧本文目录/本期其他项目布局；话题导航统一位于页面顶部，窄屏隐藏右侧辅助栏，面包屑保留话题入口；旧归档仅展示已有事实，不补造技术信息。其他资讯维持原详情布局。资讯详情页头的所属日报日期只在面包屑导航中显示，分类单独显示。原文发布时间等来源元数据位于“来源与引文”。
 
