@@ -1,7 +1,6 @@
 import type { TaskConfiguration } from "../../../../packages/shared/src/index.js";
 import { HttpError } from "../errors.js";
 export function taskInput(value: unknown): {
-  name: string;
   status: "active" | "paused";
   configuration: TaskConfiguration;
 } {
@@ -15,36 +14,22 @@ export function taskInput(value: unknown): {
     Object.keys(v).some(
       (k) =>
         ![
-          "name",
-          "status",
-          "topic",
-          "prompts",
+          "templateId",
+          "templateVersion",
           "autoPublish",
           "schedule",
           "timezone",
-          "templateId",
-          "templateVersion",
+          "status",
         ].includes(k),
     )
   )
     return fail();
   if (
-    typeof v.name !== "string" ||
-    !v.name.trim() ||
-    v.name.length > 200 ||
-    typeof v.topic !== "string" ||
-    !v.topic.trim() ||
-    v.topic.length > 200
-  )
-    return fail();
-  if (
-    !Array.isArray(v.prompts) ||
-    v.prompts.length < 1 ||
-    v.prompts.length > 20 ||
-    v.prompts.some((p) => typeof p !== "string" || !p.trim() || p.length > 8000)
-  )
-    return fail();
-  if (
+    typeof v.templateId !== "string" ||
+    !/^[a-z0-9-]+$/.test(v.templateId) ||
+    typeof v.templateVersion !== "number" ||
+    !Number.isSafeInteger(v.templateVersion) ||
+    v.templateVersion < 1 ||
     typeof v.autoPublish !== "boolean" ||
     !v.schedule ||
     typeof v.schedule !== "object" ||
@@ -52,18 +37,6 @@ export function taskInput(value: unknown): {
   )
     return fail();
   if (v.status !== undefined && v.status !== "active" && v.status !== "paused")
-    return fail();
-  const templateId = v.templateId;
-  const templateVersion = v.templateVersion;
-  if (
-    (templateId === undefined) !== (templateVersion === undefined) ||
-    (templateId !== undefined &&
-      (typeof templateId !== "string" ||
-        !/^[a-z0-9-]+$/.test(templateId) ||
-        typeof templateVersion !== "number" ||
-        !Number.isSafeInteger(templateVersion) ||
-        templateVersion < 1))
-  )
     return fail();
   const timezone = v.timezone ?? "Asia/Shanghai";
   if (typeof timezone !== "string") return fail();
@@ -114,14 +87,10 @@ export function taskInput(value: unknown): {
   )
     return fail();
   return {
-    name: v.name.trim(),
     status: (v.status ?? "active") as "active" | "paused",
     configuration: {
-      ...(typeof templateId === "string" && typeof templateVersion === "number"
-        ? { templateId, templateVersion }
-        : {}),
-      topic: v.topic.trim(),
-      prompts: v.prompts as string[],
+      templateId: v.templateId,
+      templateVersion: v.templateVersion,
       autoPublish: v.autoPublish,
       schedule,
       timezone,
@@ -147,7 +116,7 @@ export function dateInTimezone(at: Date, timezone: string): string {
 
 /** Strictly future occurrence; missed slots never accumulate. IANA timezone conversion uses Intl. */
 export function nextOccurrence(
-  configuration: TaskConfiguration,
+  configuration: Pick<TaskConfiguration, "schedule" | "timezone">,
   after: Date,
 ): string | null {
   const s = configuration.schedule;

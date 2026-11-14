@@ -1,4 +1,5 @@
 import type { DatabaseSync } from 'node:sqlite';
+import { findPromptTemplate } from './prompt-templates.js';
 import type { RunListQuery, RunListResponse, RunSummary, RunRecord } from '../../../../packages/shared/src/index.js';
 
 // Scalar lookups select exactly one child row per Run: pagination never multiplies
@@ -27,11 +28,18 @@ export function listRunSummaries(db:DatabaseSync, query:RunListQuery, readRun:(i
   const values=[taskId??null,taskId??null,managedOnly?1:0,state,state];
   const total=Number(db.prepare(`${cte} SELECT count(*) total FROM summaries${filter}`).get(...values)?.total??0);
   const rows=db.prepare(`${cte} SELECT * FROM summaries${filter} ORDER BY created_at DESC,id DESC LIMIT ? OFFSET ?`).all(...values,limit,offset);
-  return {total,limit,offset,runs:rows.map(row=>({
-    run:readRun(String(row.id)),task_name:String(row.task_name),task_deleted:row.task_deleted!==null,
-    state:row.state as RunSummary['state'],
-    latest_turn:row.turn_sequence===null?null:{sequence:Number(row.turn_sequence),mode:row.turn_mode as NonNullable<RunSummary['latest_turn']>['mode'],status:row.turn_status as NonNullable<RunSummary['latest_turn']>['status'],error_code:row.turn_error as string|null},
-    report:row.report_id===null?null:{id:String(row.report_id),status:String(row.report_status),title:String(row.report_title)},
-    publication:row.publication_status===null?null:{status:String(row.publication_status),error_code:row.publication_error as string|null,commit_sha:row.commit_sha as string|null},
-  }))};
+  return {total,limit,offset,runs:rows.map(row=>{
+    const run=readRun(String(row.id));
+    const configuration=run.configuration;
+    const template=configuration?.templateId && Number.isSafeInteger(configuration.templateVersion)
+      ? findPromptTemplate(configuration.templateId,configuration.templateVersion)
+      : undefined;
+    return {
+      run,task_name:template?.name ?? String(row.task_name),task_deleted:row.task_deleted!==null,
+      state:row.state as RunSummary['state'],
+      latest_turn:row.turn_sequence===null?null:{sequence:Number(row.turn_sequence),mode:row.turn_mode as NonNullable<RunSummary['latest_turn']>['mode'],status:row.turn_status as NonNullable<RunSummary['latest_turn']>['status'],error_code:row.turn_error as string|null},
+      report:row.report_id===null?null:{id:String(row.report_id),status:String(row.report_status),title:String(row.report_title)},
+      publication:row.publication_status===null?null:{status:String(row.publication_status),error_code:row.publication_error as string|null,commit_sha:row.commit_sha as string|null},
+    };
+  })};
 }

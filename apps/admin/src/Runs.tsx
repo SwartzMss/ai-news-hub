@@ -208,16 +208,16 @@ export function Runs({
                     {row.latest_turn &&
                     row.run.configuration &&
                     row.latest_turn.sequence <=
-                      row.run.configuration.prompts.length
-                      ? `Prompt ${row.latest_turn.sequence} / ${row.run.configuration.prompts.length}`
+                      (row.run.configuration.promptCount ?? 0)
+                      ? `Prompt ${row.latest_turn.sequence} / ${(row.run.configuration.promptCount ?? 0)}`
                       : row.latest_turn?.mode === "finalize"
                         ? row.run.configuration &&
                           row.latest_turn.sequence >
-                            row.run.configuration.prompts.length + 1
+                            (row.run.configuration.promptCount ?? 0) + 1
                           ? "来源修复"
                           : "日报生成"
                         : row.latest_turn
-                          ? `研究 ${row.latest_turn.sequence}${row.run.configuration ? ` / ${row.run.configuration.prompts.length}` : ""}`
+                          ? `研究 ${row.latest_turn.sequence}${row.run.configuration ? ` / ${(row.run.configuration.promptCount ?? 0)}` : ""}`
                           : "等待执行"}
                   </td>
                   <td>

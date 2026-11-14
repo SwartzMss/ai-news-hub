@@ -1,6 +1,7 @@
 import { reportDeletionMigration } from "./report-deletion-migration.js";
 import { newsletterMigration } from './newsletter-migration.js';
 import { newsletterTimeMigration } from './newsletter-time-migration.js';
+import { promptTemplateReferenceMigration } from './prompt-template-reference-migration.js';
 import { topicArchiveMigration } from './topic-archive-migration.js';
 import {codexReportedMigration} from './codex-reported-migration.js';
 import { runListMigration } from './run-list-migration.js';
@@ -97,7 +98,7 @@ export const migrations: readonly Migration[] = [{
     ) STRICT;
     CREATE INDEX publications_by_report ON publication_records(report_id, created_at);
   `,
-}, taskEngineMigration, newsMigration, publicationMigration, researchMigration, settingsMigration, managedTasksMigration, runListMigration, codexReportedMigration, topicArchiveMigration, reportDeletionMigration, newsletterMigration, newsletterTimeMigration];
+}, taskEngineMigration, newsMigration, publicationMigration, researchMigration, settingsMigration, managedTasksMigration, runListMigration, codexReportedMigration, topicArchiveMigration, reportDeletionMigration, newsletterMigration, newsletterTimeMigration, promptTemplateReferenceMigration];
 
 export function migrate(db: DatabaseSync, registry: readonly Migration[] = migrations): void {
   if (registry.some((entry, index) => entry.version !== index + 1)) throw new AppError('invalid_migration_registry');

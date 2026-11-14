@@ -2398,11 +2398,11 @@ summary {
 .task-editor-body { min-height: 0; overflow-y: auto; overscroll-behavior: contain; flex: 1 1 auto; }
 .task-editor .task-editor-fields { padding: 24px; margin: 0; }
 .task-editor-footer { background: var(--menu-surface); display: flex; justify-content: flex-end; padding: 16px 24px; border-top: 1px solid var(--line); flex-shrink: 0; }
-.task-editor .prompt-sequence > button { justify-self: start; }
 @media (max-width: 480px) { .task-editor { width: calc(100% - 20px); max-height: calc(100dvh - 20px); } .task-editor-header, .task-editor .task-editor-fields, .task-editor-footer { padding: 16px; } }
 
-.prompt-sequence { display: grid; gap: 16px; }
-.prompt-step { border-bottom: 1px solid var(--line); padding-bottom: 16px; }
+.selected-template-summary { display: grid; gap: 6px; padding: 14px 16px; border: 1px solid var(--line); border-radius: 10px; }
+.selected-template-summary span, .selected-template-summary small { color: var(--muted); font-size: 11px; }
+.selected-template-summary strong { font-size: 14px; font-weight: 600; }
 .task-actions { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
 .task-actions button { min-height: 36px; padding: 7px 12px; }
 .managed-task-list { display: grid; gap: 20px; }

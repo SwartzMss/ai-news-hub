@@ -2,27 +2,89 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {mkdtempSync,rmSync} from 'node:fs';
 import {setTimeout as delay} from 'node:timers/promises';
+import {DatabaseSync} from 'node:sqlite';
 import {buildServer} from '../dist/apps/server/src/app.js';
 import {loadConfig} from '../dist/apps/server/src/config.js';
 import {ControlledAdapter} from './fixtures/controlled-adapter.mjs';
 import {nextOccurrence} from '../dist/apps/server/src/tasks/configuration.js';
 import {promptTemplates} from '../dist/apps/server/src/tasks/prompt-templates.js';
 const headers={authorization:'Bearer test_only_0123456789_abcdefghijklmnop'};
-const configuration={name:'AI 日报',topic:'AI',prompts:['搜索原始公告','筛选并核实'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
-const proposal={title:'AI 日报',items:[{url:'https://example.com/model',category:'ai',importance:2,factSummary:'来源宣布模型更新。',analysis:null,evidenceQuote:'Official AI model release announcement',details:{kind:'news',background:'来源发布了模型更新信息。',evidence:[{id:'source',name:'发布说明',url:'https://example.com/model',supports:'模型更新内容'}]}}]};
+const defaultTemplate=promptTemplates().find(t=>t.id==='daily-technology');
+const configuration={templateId:'daily-technology',templateVersion:1,autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
+Object.defineProperties(configuration,{
+ name:{value:defaultTemplate.name},
+ topic:{value:defaultTemplate.topic},
+ prompts:{value:defaultTemplate.prompts},
+});
+const proposal={title:'每日科技投资简报',items:[{url:'https://example.com/model',category:'ai_industry_chain',importance:2,factSummary:'来源宣布 AI 产业链更新。',analysis:null,evidenceQuote:'Official AI model release announcement',details:{kind:'investment',background:'公司公布了 AI 产业链相关进展。',evidence:[{id:'release',name:'官方公告',url:'https://example.com/model',supports:'公司公布的进展'}]}}]};
 function setup(publish){
  const dir=mkdtempSync('/tmp/managed-tasks-'),adapter=new ControlledAdapter();
  const env={AI_NEWS_HUB_DATA_DIR:dir,AI_NEWS_HUB_ADMIN_TOKEN:headers.authorization.slice(7),AI_NEWS_HUB_LOG_LEVEL:'silent',...(publish?{AI_NEWS_HUB_GITHUB_REPOSITORY:'fixture/archive',AI_NEWS_HUB_GITHUB_BRANCH:'reports',AI_NEWS_HUB_GITHUB_TOKEN:'fixture_github_secret_012345678901234'}:{})};
  const app=buildServer(loadConfig(env),{adapter,newsFetcher:async()=>new Response('<html><head><title>Official AI model release announcement</title></head><body><p>Official AI model release announcement</p></body></html>',{headers:{'content-type':'text/html'}}),githubAdapter:publish});
  const request=(method,url,payload)=>app.inject({method,url:'/api'+url,headers,payload});
  async function wait(fn){for(let i=0;i<200;i++){const result=await fn();if(result)return result;await delay(5);}throw Error('timeout');}
- return {app,adapter,request,wait,async close(){await app.close();rmSync(dir,{recursive:true,force:true});}};
+ const db=new DatabaseSync(dir+'/news.db');
+ return {app,adapter,db,request,wait,async close(){await app.close();db.close();rmSync(dir,{recursive:true,force:true});}};
 }
+test('migration removes task prompt copies while preserving historical topic provenance',async()=>{
+ const {migrate,migrations}=await import('../dist/apps/server/src/db/migrations.js');
+ const db=new DatabaseSync(':memory:');
+ migrate(db,migrations.slice(0,13));
+ try{
+  const templateConfig={templateId:'daily-technology',templateVersion:1,topic:'每日科技投资简报',prompts:['第一轮私有 Prompt','第二轮私有 Prompt'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
+  db.prepare('INSERT INTO tasks(id,name,channel,prompt,status,configuration_json) VALUES(?,?,?,?,?,?)')
+    .run('template-task','每日科技投资简报','opensource','第一轮私有 Prompt','active',JSON.stringify(templateConfig));
+  db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,status,configuration_json) VALUES(?,?,?,?,?)')
+    .run('template-run','template-task','run','succeeded',JSON.stringify(templateConfig));
+  const legacyConfig={topic:'旧自定义主题',prompts:['旧版手动 Prompt'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
+  db.prepare('INSERT INTO tasks(id,name,channel,prompt,status,configuration_json) VALUES(?,?,?,?,?,?)')
+    .run('legacy-task','旧任务','opensource','旧版手动 Prompt','active',JSON.stringify(legacyConfig));
+  migrate(db);
+  const task=db.prepare('SELECT prompt,status,configuration_json FROM tasks WHERE id=?').get('template-task');
+  const taskConfig=JSON.parse(task.configuration_json);
+  assert.equal(task.prompt,'');
+  assert.equal(Object.hasOwn(taskConfig,'prompts'),false);
+  assert.equal(Object.hasOwn(taskConfig,'topic'),false);
+  const runConfig=JSON.parse(db.prepare('SELECT configuration_json FROM task_runs WHERE id=?').get('template-run').configuration_json);
+  assert.equal(Object.hasOwn(runConfig,'prompts'),false);
+  assert.equal(runConfig.topic,'每日科技投资简报','historical run topic remains available for archive provenance');
+  const legacy=db.prepare('SELECT prompt,status,configuration_json,next_run_at FROM tasks WHERE id=?').get('legacy-task');
+  const legacyStored=JSON.parse(legacy.configuration_json);
+  assert.equal(legacy.prompt,'');
+  assert.equal(legacy.status,'paused');
+  assert.equal(legacy.next_run_at,null);
+  assert.equal(Object.hasOwn(legacyStored,'prompts'),false);
+  assert.equal(legacyStored.topic,'旧自定义主题');
+ }finally{db.close();}
+});
+test('template endpoint exposes selection metadata but never prompt bodies',async()=>{
+ const s=setup();try{
+  const response=await s.request('GET','/prompt-templates');
+  assert.equal(response.statusCode,200);
+  const templates=response.json().templates;
+  assert.equal(templates.length,3);
+  assert.ok(templates.every(template=>typeof template.promptCount==='number'&&template.promptCount>0));
+  assert.ok(templates.every(template=>!Object.hasOwn(template,'prompts')));
+ }finally{await s.close();}
+});
 test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, and immutable history',async()=>{
  const s=setup();try{
   const created=await s.request('POST','/tasks',configuration);assert.equal(created.statusCode,201);const task=created.json().task;
-  assert.deepEqual(task.configuration.prompts,configuration.prompts);assert.equal(task.next_run_at,null);
+  assert.equal(task.configuration.templateId,'daily-technology');
+  assert.equal(task.configuration.templateVersion,1);
+  assert.equal(task.configuration.promptCount,2);
+  assert.equal(Object.hasOwn(task.configuration,'prompts'),false);
+  assert.equal(task.prompt,'');
+  const storedTask=s.db.prepare('SELECT prompt,configuration_json FROM tasks WHERE id=?').get(task.id);
+  assert.equal(storedTask.prompt,'');
+  const storedTaskConfiguration=JSON.parse(storedTask.configuration_json);
+  assert.deepEqual(Object.keys(storedTaskConfiguration).sort(),['autoPublish','schedule','templateId','templateVersion','timezone']);
+  assert.equal(task.next_run_at,null);
   const started=await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'start'});assert.equal(started.statusCode,202);const id=started.json().run.id;
+  const storedRunConfiguration=JSON.parse(s.db.prepare('SELECT configuration_json FROM task_runs WHERE id=?').get(id).configuration_json);
+  assert.deepEqual(Object.keys(storedRunConfiguration).sort(),['autoPublish','schedule','templateId','templateVersion','timezone']);
+  const listed=(await s.request('GET',`/runs?taskId=${task.id}`)).json();
+  assert.equal(listed.runs[0].task_name,defaultTemplate.name);
   await s.wait(()=>s.adapter.calls[0]);assert.equal(s.adapter.calls[0].input.webSearch,true);
   assert.equal((await s.request('PUT',`/tasks/${task.id}`,configuration)).statusCode,409);
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,409);
@@ -30,30 +92,17 @@ test('managed tasks CRUD, ordered same-thread prompts, automatic finalization, a
   s.adapter.succeed(0,'first');await s.wait(()=>s.adapter.calls[1]);assert.equal(s.adapter.calls[1].input.threadId,'thread-0');assert.ok(s.adapter.calls[1].input.input.includes(configuration.prompts[1]));
   assert.ok(s.adapter.calls[1].input.outputSchema);assert.equal(s.adapter.calls[1].input.input,configuration.prompts[1]);
   assert.ok(s.adapter.calls[1].input.outputSchema.properties.items.items.required.includes('details'));
-  s.adapter.succeed(1,JSON.stringify(proposal));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
+   s.adapter.succeed(1,JSON.stringify(proposal));await s.wait(async()=>{const r=(await s.request('GET',`/runs/${id}`)).json();if(r.run.status==='failed')throw Error(JSON.stringify(r));return r.run.status==='succeeded'&&r.turns.length===2;});
   const report=(await s.request('GET','/news/reports')).json().reports[0];assert.equal(report.status,'validated');
   assert.equal((await s.request('DELETE',`/tasks/${task.id}`)).statusCode,204);
   assert.ok(!(await s.request('GET','/tasks')).json().tasks.some(t=>t.id===task.id));
   assert.equal((await s.request('GET',`/runs/${id}`)).statusCode,200);
  }finally{await s.close();}
 });
-for(const count of [8,10])test(`explicit fixed-${count} marker rejects underfilled reports before persistence`,async()=>{
- const s=setup();try{
-  const task=(await s.request('POST','/tasks',{...configuration,prompts:[`筛选重要新闻。【固定 ${count} 条】`]})).json().task;
-  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'underfilled'})).json().run;
-  const call=await s.wait(()=>s.adapter.calls[0]);
-  assert.equal(call.input.outputSchema.properties.items.minItems,1);
-  assert.equal(call.input.outputSchema.properties.items.maxItems,count);
-  s.adapter.succeed(0,JSON.stringify(proposal));
-  const failed=await s.wait(async()=>{const r=(await s.request('GET',`/runs/${run.id}`)).json().run;return r.status==='failed'&&r;});
-  assert.equal(failed.error_code,'report_item_count_invalid');
-  assert.equal((await s.request('GET','/news/reports')).json().reports.length,0);
- }finally{await s.close();}
-});
 test('two-round flexible technology task accepts a short report and reuses it for deduplication',async()=>{
  const s=setup();try{
   const template=promptTemplates().find(t=>t.id==='daily-technology');
-  const task=(await s.request('POST','/tasks',{...configuration,topic:template.topic,prompts:template.prompts})).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,templateId:template.id,templateVersion:template.version})).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first'})).json().run.id;
   const discovery=await s.wait(()=>s.adapter.calls[0]);
   assert.equal(discovery.input.outputSchema,undefined);
@@ -69,41 +118,47 @@ test('two-round flexible technology task accepts a short report and reuses it fo
   assert.match(second.input.developerInstructions,/https:\/\/example\.com\/model/);
  }finally{await s.close();}
 });
-test('flexible-count tasks receive full same-task history without leaking it to another task',async()=>{
+test('template-bound open-source tasks receive same-task history without leaking it to another task',async()=>{
  const s=setup();try{
-  const prompts=['研究并生成日报'];
-  const task=(await s.request('POST','/tasks',{...configuration,name:'自定义任务名',topic:'用户自定义主题',templateId:'daily-opensource',templateVersion:1,prompts})).json().task;
+  const openSourceConfiguration={...configuration,templateId:'daily-opensource'};
+  const task=(await s.request('POST','/tasks',openSourceConfiguration)).json().task;
   const first=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'first-flexible'})).json().run.id;
-  const firstCall=await s.wait(()=>s.adapter.calls[0]);
+  const discovery=await s.wait(()=>s.adapter.calls[0]);
+  assert.equal(discovery.input.outputSchema,undefined);
+  s.adapter.succeed(0,'候选项目及来源');
+  const firstCall=await s.wait(()=>s.adapter.calls[1]);
   assert.equal(firstCall.input.outputSchema.properties.items.items.properties.details.anyOf,undefined);
   assert.match(firstCall.input.developerInstructions,/fact.*evidenceRefs/);
   assert.match(firstCall.input.developerInstructions,/历史去重状态.*不要写入.*evaluation/);
   const summary='项目发布了重要更新。适合本地文件处理；[项目仓库](https://github.com/example/project)';
   const openSourceProposal={title:'每日开源项目',items:[{...proposal.items[0],category:'opensource',researchArea:'rust',factSummary:summary,url:'https://example.com/releases/v2',details:{kind:'project',overview:'用于本地批量文件处理。',change:{summary:'发布并行处理能力。',evidenceRefs:['release']},evidence:[{id:'release',name:'Release',url:'https://example.com/releases/v2',supports:'并行处理能力'}]}}]};
-  s.adapter.succeed(0,JSON.stringify(openSourceProposal));
+  s.adapter.succeed(1,JSON.stringify(openSourceProposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${first}`)).json().run.status==='succeeded');
   const secondRun=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'second-flexible'})).json().run.id;
-  const second=await s.wait(()=>s.adapter.calls[1]);
+  const secondDiscovery=await s.wait(()=>s.adapter.calls[2]);
+  s.adapter.succeed(2,'再次发现候选项目');
+  const second=await s.wait(()=>s.adapter.calls[3]);
   assert.equal(second.input.outputSchema.properties.items.maxItems,10);
   assert.match(second.input.developerInstructions,/近期同任务日报/);
   assert.ok(second.input.developerInstructions.includes(summary));
   assert.ok(second.input.developerInstructions.includes('https://example.com/releases/v2'));
-  s.adapter.succeed(1,JSON.stringify(openSourceProposal));
+  s.adapter.succeed(3,JSON.stringify(openSourceProposal));
   await s.wait(async()=>(await s.request('GET',`/runs/${secondRun}`)).json().run.status==='succeeded');
-  const other=(await s.request('POST','/tasks',{...configuration,name:'另一个开源任务',topic:'每日开源项目',prompts})).json().task;
-  await s.request('POST',`/tasks/${other.id}/runs`,{idempotencyKey:'other-flexible'});
-  const third=await s.wait(()=>s.adapter.calls[2]);
+  const other=(await s.request('POST','/tasks',openSourceConfiguration)).json().task;
+  const otherRun=(await s.request('POST',`/tasks/${other.id}/runs`,{idempotencyKey:'other-flexible'})).json().run.id;
+  const thirdDiscovery=await s.wait(()=>s.adapter.calls[4]);
+  s.adapter.succeed(4,'另一任务的候选项目');
+  const third=await s.wait(()=>s.adapter.calls[5]);
   assert.doesNotMatch(third.input.developerInstructions,/近期同任务日报/);
-  assert.ok(Array.isArray(third.input.outputSchema.properties.items.items.properties.details.anyOf));
+  const projectDetailsSchema = third.input.outputSchema.properties.items.items.properties.details;
+  assert.equal(projectDetailsSchema.properties.kind.const, "project");
+  assert.ok(Array.isArray(projectDetailsSchema.properties.evaluation.items.anyOf));
+  assert.equal((await s.request('GET',`/runs/${otherRun}`)).json().run.status,'running');
  }finally{await s.close();}
 });
-test('daily technology template routes to focused AI investment schema independently of editable topic',async()=>{
+test('daily technology template binds its fixed topic and investment schema',async()=>{
  const s=setup();try{
-  const prompts=['发现 AI 产业链、光模块与半导体候选事件','核查并生成科技投资日报 JSON'];
-  const created=await s.request('POST','/tasks',{
-   ...configuration,name:'每日科技投资简报',topic:'自定义科技主题',
-   templateId:'daily-technology',templateVersion:1,prompts,
-  });
+  const created=await s.request('POST','/tasks',configuration);
   assert.equal(created.statusCode,201);
   const task=(await s.request('GET','/tasks')).json().tasks.find(item=>item.name==='每日科技投资简报');
   assert.ok(task?.id,'technology task should be persisted');
@@ -145,12 +200,10 @@ test('daily technology template routes to focused AI investment schema independe
   assert.equal(approved.statusCode,200,'technology reports must remain approvable');
  }finally{await s.close();}
 });
-test('daily headlines template routes to reader-facing news schema independently of editable topic',async()=>{
+test('daily headlines template binds its reader-facing news schema',async()=>{
  const s=setup();try{
-  const prompts=['发现最近 24 小时社交平台热点','核查并生成热点日报 JSON'];
   const task=(await s.request('POST','/tasks',{
-   ...configuration,name:'每日热点观察',topic:'我的网络热点日报',
-   templateId:'daily-headlines',templateVersion:1,prompts,
+   ...configuration,templateId:'daily-headlines',templateVersion:1,
   })).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'headlines-schema'})).json().run.id;
   const discovery=await s.wait(()=>s.adapter.calls[0]);
@@ -184,36 +237,20 @@ test('daily headlines template routes to reader-facing news schema independently
   assert.equal(completed.status,'succeeded');
   assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
 
-  const generic=(await s.request('POST','/tasks',{...configuration,name:'普通热点主题',topic:'每日热点观察',prompts:['搜索','整理']})).json().task;
-  const genericRun=(await s.request('POST',`/tasks/${generic.id}/runs`,{idempotencyKey:'generic-headlines-name'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[2]);
-  s.adapter.succeed(2,'普通主题研究结果');
-  const genericFinal=await s.wait(()=>s.adapter.calls[3]);
-  const genericItem=genericFinal.input.outputSchema.properties.items.items;
-  assert.ok(Array.isArray(genericItem.properties.details.anyOf));
-  assert.equal(JSON.stringify(genericItem.properties.details).includes('trendSignals'),false);
-  const partialSocialOutput={title:'普通主题研究',items:[{
-   url:'https://example.com/generic',category:'social_event',importance:3,
-   factSummary:'普通主题结果不应使用热点专属字段。',analysis:null,evidenceQuote:'Generic source evidence',
-   details:{kind:'news',background:'普通主题背景。',trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}]},
-  }]};
-  s.adapter.succeed(3,JSON.stringify(partialSocialOutput));
-  const genericFailed=await s.wait(async()=>{
-   const result=(await s.request('GET',`/runs/${genericRun}`)).json().run;
-   return result.status==='failed'&&result;
-  });
-  assert.equal(genericFailed.error_code,'report_schema_invalid');
-  assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
+  const manualPrompt=await s.request('POST','/tasks',{...configuration,prompts:['用户自定义 Prompt']});
+  assert.equal(manualPrompt.statusCode,400);
+  const manualTopic=await s.request('POST','/tasks',{...configuration,topic:'用户自定义主题'});
+  assert.equal(manualTopic.statusCode,400);
  }finally{await s.close();}
 });
 test('open-source tasks reject more than two projects in a single research area',async()=>{
  const s=setup();try{
-  const task=(await s.request('POST','/tasks',{
-   ...configuration,name:'开源日报',topic:'任意可编辑主题',
-   templateId:'daily-opensource',templateVersion:1,prompts:['研究并生成日报'],
-  })).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,templateId:'daily-opensource'})).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'area-limit'})).json().run.id;
-  const call=await s.wait(()=>s.adapter.calls[0]);
+  const discovery=await s.wait(()=>s.adapter.calls[0]);
+  assert.equal(discovery.input.outputSchema,undefined);
+  s.adapter.succeed(0,'发现三个候选项目。');
+  const call=await s.wait(()=>s.adapter.calls[1]);
   assert.ok(call.input.outputSchema.properties.items.items.required.includes('researchArea'));
   const items=Array.from({length:3},(_,index)=>({
    ...proposal.items[0],
@@ -230,7 +267,7 @@ test('open-source tasks reject more than two projects in a single research area'
     evidence:[{id:'release',name:'Release',url:`https://example.com/releases/${index+1}`,supports:'并行处理能力'}],
    },
   }));
-  s.adapter.succeed(0,JSON.stringify({title:'开源日报',items}));
+  s.adapter.succeed(1,JSON.stringify({title:'开源日报',items}));
   const failed=await s.wait(async()=>{
    const result=(await s.request('GET',`/runs/${run}`)).json().run;
    return result.status==='failed'&&result;
@@ -241,7 +278,7 @@ test('open-source tasks reject more than two projects in a single research area'
 });
 test('stop prevents subsequent rounds; invalid plans are rejected',async()=>{
  const s=setup();try{
-  for(const bad of [{schedule:{kind:'toString'}},{schedule:{kind:'__proto__'}},{schedule:{kind:42}},{prompts:[]},{timezone:'bad/timezone'},{templateId:'daily-opensource'},{templateVersion:1},{templateId:'daily-opensource',templateVersion:0},{templateId:'Daily Open Source',templateVersion:1},{schedule:{kind:'interval',minutes:0}},{schedule:{kind:'weekly',time:'25:00',weekday:8}}])assert.equal((await s.request('POST','/tasks',{...configuration,...bad})).statusCode,400);
+  for(const bad of [{schedule:{kind:'toString'}},{schedule:{kind:'__proto__'}},{schedule:{kind:42}},{prompts:[]},{topic:'手动主题'},{name:'手动任务名'},{timezone:'bad/timezone'},{templateId:undefined},{templateVersion:0},{templateId:'Daily Open Source'},{templateId:'missing-template'},{schedule:{kind:'interval',minutes:0}},{schedule:{kind:'weekly',time:'25:00',weekday:8}}])assert.equal((await s.request('POST','/tasks',{...configuration,...bad})).statusCode,400);
   const task=(await s.request('POST','/tasks',configuration)).json().task;
   const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'stop'})).json().run;
   await s.wait(()=>s.adapter.calls[0]);await s.request('POST',`/tasks/${task.id}/stop`);
@@ -260,9 +297,10 @@ test('schedule computes strictly future UTC instants in task timezone without ca
 for(const fails of [false,true])test(`automatic publishing ${fails?'records failure and allows retry':'pushes only validated report'}`,async()=>{
  let writes=0;const s=setup({async publish(){writes++;if(fails&&writes===1)throw Error('fixture unavailable');return {sha:'a'.repeat(40),committedAt:'2026-11-04T00:00:00Z'};}});
  try{
-  const task=(await s.request('POST','/tasks',{...configuration,prompts:['搜索'],autoPublish:true})).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,autoPublish:true})).json().task;
   const id=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'publish'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[0]);assert.ok(s.adapter.calls[0].input.outputSchema);s.adapter.succeed(0,JSON.stringify(proposal));
+  await s.wait(()=>s.adapter.calls[0]);assert.equal(s.adapter.calls[0].input.outputSchema,undefined);s.adapter.succeed(0,'完成候选发现。');
+  await s.wait(()=>s.adapter.calls[1]);assert.ok(s.adapter.calls[1].input.outputSchema);s.adapter.succeed(1,JSON.stringify(proposal));
   await s.wait(()=>writes===1);
   const report=(await s.request('GET','/news/reports')).json().reports[0];
   const inspection=(await s.request('GET',`/news/reports/${report.id}/publication`)).json();
@@ -294,20 +332,24 @@ test('due schedule starts once, skips overlaps, and restart advances missed inte
  }finally{await engine.close();db.close();rmSync(dir,{recursive:true,force:true});}
 });
 
-test('task routes accept maximum configured prompt payload while retaining per-prompt bounds',async()=>{
+test('task API rejects user-supplied prompt, topic and task-name copies',async()=>{
  const s=setup();try{
-  const payload={...configuration,prompts:Array.from({length:20},()=> '新'.repeat(8000))};
-  const created=await s.request('POST','/tasks',payload);assert.equal(created.statusCode,201);
-  const id=created.json().task.id;assert.equal((await s.request('PUT',`/tasks/${id}`,payload)).statusCode,200);
-  assert.equal((await s.request('POST','/tasks',{...payload,prompts:['x'.repeat(8001)]})).statusCode,400);
+  for(const extra of [{prompts:['manual prompt']},{topic:'manual topic'},{name:'manual name'}])
+    assert.equal((await s.request('POST','/tasks',{...configuration,...extra})).statusCode,400);
+  const created=await s.request('POST','/tasks',configuration);assert.equal(created.statusCode,201);
+  const id=created.json().task.id;
+  assert.equal((await s.request('PUT',`/tasks/${id}`,configuration)).statusCode,200);
+  for(const extra of [{prompts:['manual prompt']},{topic:'manual topic'},{name:'manual name'}])
+    assert.equal((await s.request('PUT',`/tasks/${id}`,{...configuration,...extra})).statusCode,400);
  }finally{await s.close();}
 });
 test('stopping publication does not record success when an adapter ignores abort',async()=>{
  let resolvePublish;const s=setup({publish(){return new Promise(resolve=>{resolvePublish=resolve;});}});
  try{
-  const task=(await s.request('POST','/tasks',{...configuration,prompts:['搜索'],autoPublish:true})).json().task;
+  const task=(await s.request('POST','/tasks',{...configuration,autoPublish:true})).json().task;
   const id=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'publish-stop'})).json().run.id;
-  await s.wait(()=>s.adapter.calls[0]);assert.ok(s.adapter.calls[0].input.outputSchema);s.adapter.succeed(0,JSON.stringify(proposal));
+  await s.wait(()=>s.adapter.calls[0]);assert.equal(s.adapter.calls[0].input.outputSchema,undefined);s.adapter.succeed(0,'候选发现完成。');
+  await s.wait(()=>s.adapter.calls[1]);assert.ok(s.adapter.calls[1].input.outputSchema);s.adapter.succeed(1,JSON.stringify(proposal));
   await s.wait(()=>resolvePublish);assert.equal((await s.request('GET',`/tasks/${task.id}/runs`)).json().runs[0].publishing,true);
   await s.request('POST',`/tasks/${task.id}/stop`);resolvePublish({sha:'a'.repeat(40),committedAt:'2026-11-04T00:00:00Z'});
   await s.wait(async()=>(await s.request('GET',`/runs/${id}`)).json().run.error_code==='publication_interrupted');
@@ -315,25 +357,27 @@ test('stopping publication does not record success when an adapter ignores abort
   const inspection=(await s.request('GET',`/news/reports/${report.id}/publication`)).json();assert.equal(inspection.publications[0].status,'failed');
  }finally{await s.close();}
 });
-for(const count of [1,2,20])test(`${count} configured Prompts execute exactly ${count} original Turns with only the last structured`,async()=>{
+test('each template executes its ordered prompts from the repository definition',async()=>{
  const s=setup();try{
-  const prompts=Array.from({length:count},(_,i)=>`  Configured Prompt ${i+1}\nPreserve literal input  `);
-  const task=(await s.request('POST','/tasks',{...configuration,prompts})).json().task;
-  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'exact-count'})).json().run;
-  for(let index=0;index<count;index++){
-   await s.wait(()=>s.adapter.calls[index]);const input=s.adapter.calls[index].input;
-   assert.equal(input.input,prompts[index]);assert.equal(!!input.outputSchema,index===count-1);
-   assert.equal(input.threadId,index===0?undefined:'thread-0');assert.ok(input.developerInstructions.includes(configuration.topic));
-   s.adapter.succeed(index,index===count-1?JSON.stringify(proposal):`Research ${index+1}`);
+  const task=(await s.request('POST','/tasks',configuration)).json().task;
+  const run=(await s.request('POST',`/tasks/${task.id}/runs`,{idempotencyKey:'template-order'})).json().run;
+  for(let index=0;index<configuration.prompts.length;index++){
+   await s.wait(()=>s.adapter.calls[index]);
+   const input=s.adapter.calls[index].input;
+   assert.equal(input.input,configuration.prompts[index]);
+   assert.equal(!!input.outputSchema,index===configuration.prompts.length-1);
+   assert.equal(input.threadId,index===0?undefined:'thread-0');
+   assert.ok(input.developerInstructions.includes(configuration.topic));
+   s.adapter.succeed(index,index===configuration.prompts.length-1?JSON.stringify(proposal):`Research ${index+1}`);
   }
   const result=await s.wait(async()=>{const detail=(await s.request('GET',`/runs/${run.id}`)).json();return detail.run.status==='succeeded'&&detail;});
-  await delay(10);assert.equal(s.adapter.calls.length,count);assert.equal(result.turns.length,count);
-  assert.deepEqual(result.turns.map(turn=>turn.input_text),prompts);assert.deepEqual(result.turns.map(turn=>turn.mode),prompts.map((_,index)=>index===count-1?'finalize':'research'));
-  assert.equal(result.turns.some(turn=>turn.input_text==='依据前面所有轮次的研究结果，生成完整日报。'),false);
+  assert.equal(result.turns.length,configuration.prompts.length);
+  assert.deepEqual(result.turns.map(turn=>turn.input_text),configuration.prompts);
+  assert.deepEqual(result.turns.map(turn=>turn.mode),configuration.prompts.map((_,index)=>index===configuration.prompts.length-1?'finalize':'research'));
   assert.equal((await s.request('GET','/news/reports')).json().reports.length,1);
  }finally{await s.close();}
 });
-test('more than twenty configured Prompts is rejected and stopping the final Prompt adds no Turn',async()=>{
+test('manual Prompt overrides are rejected and stopping a template final round adds no extra Turn',async()=>{
  const s=setup();try{
   assert.equal((await s.request('POST','/tasks',{...configuration,prompts:Array(21).fill('Search')})).statusCode,400);
   const task=(await s.request('POST','/tasks',configuration)).json().task;
@@ -351,7 +395,7 @@ test('editing publication, names and prompts preserves due slot; scheduling chan
  try{
   const input={...configuration,schedule:{kind:'interval',minutes:5}},task=engine.createTask(input),due='2026-11-04T00:00:00.000Z';
   db.prepare('UPDATE tasks SET next_run_at=? WHERE id=?').run(due,task.id);
-  for(const change of [{autoPublish:true},{name:'Renamed'},{prompts:['New prompt']},{topic:'Another topic'}])assert.equal(engine.updateTask(task.id,{...input,...change}).next_run_at,due);
+  for(const change of [{autoPublish:true},{templateId:'daily-headlines',templateVersion:1}])assert.equal(engine.updateTask(task.id,{...input,...change}).next_run_at,due);
   assert.notEqual(engine.updateTask(task.id,{...input,schedule:{kind:'interval',minutes:10}}).next_run_at,due);
   assert.equal(engine.updateTask(task.id,{...input,status:'paused'}).next_run_at,null);
   assert.ok(Date.parse(engine.updateTask(task.id,input).next_run_at)>Date.now());

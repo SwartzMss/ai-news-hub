@@ -16,7 +16,15 @@ const run = {
   status: "failed",
   error_code: "source_fetch_failed",
   created_at: "2026-11-04T23:24:38Z",
-  configuration: { prompts: ["搜索原文"], autoPublish: false },
+  configuration: {
+    templateId: "daily-technology",
+    templateVersion: 1,
+    topic: "每日科技投资简报",
+    promptCount: 1,
+    autoPublish: false,
+    schedule: { kind: "manual" },
+    timezone: "Asia/Shanghai",
+  },
 };
 test("results list separates finalization from research and supports filters and pagination", async () => {
   const api = vi.fn().mockImplementation(async (path: string) =>

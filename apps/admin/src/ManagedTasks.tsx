@@ -15,19 +15,24 @@ type Plan = {
 export type Configuration = {
   templateId?: string;
   templateVersion?: number;
-  topic: string;
-  prompts: string[];
+  topic?: string;
+  promptCount?: number;
   autoPublish: boolean;
   schedule: Plan;
   timezone: string;
+};
+type TemplateOption = {
+  id: string;
+  version: number;
+  name: string;
+  topic: string;
+  promptCount: number;
 };
 export type ManagedTask = TaskRecord & {
   configuration?: Configuration;
   next_run_at?: string | null;
 };
 const initial: Configuration = {
-  topic: "",
-  prompts: [""],
   autoPublish: false,
   schedule: { kind: "daily", time: "08:00" },
   timezone: "Asia/Shanghai",
@@ -65,7 +70,7 @@ function TaskEditor({
   const [config, setConfig] = useState<Configuration>(() =>
     structuredClone(task?.configuration ?? initial),
   );
-  const [templates, setTemplates] = useState<{id:string;version:number;name:string;topic:string;prompts:string[]}[]>([]);
+  const [templates, setTemplates] = useState<TemplateOption[]>([]);
   useEffect(() => {
     const controller = new AbortController();
     void api<{templates:typeof templates}>("/prompt-templates", controller.signal)
@@ -86,7 +91,7 @@ function TaskEditor({
     document.documentElement.style.overflow = "hidden";
     if (dialog.showModal) dialog.showModal();
     else dialog.setAttribute("open", "");
-    dialog.querySelector<HTMLInputElement>("input")?.focus();
+    dialog.querySelector<HTMLSelectElement>("select")?.focus();
     return () => {
       if (dialog.close) dialog.close();
       document.documentElement.style.overflow = previousOverflow;
@@ -115,9 +120,11 @@ function TaskEditor({
         task ? `/tasks/${encodeURIComponent(task.id)}` : "/tasks",
         AbortSignal.timeout(15000),
         {
-          name: config.topic,
-          ...config,
+          templateId: config.templateId,
+          templateVersion: config.templateVersion,
+          autoPublish: config.autoPublish,
           schedule: cleanSchedule(config.schedule),
+          timezone: config.timezone,
           status: task?.status ?? "active",
         },
         task ? "PUT" : "POST",
@@ -155,101 +162,26 @@ function TaskEditor({
           <fieldset disabled={busy} className="task-editor-fields">
             <label>
               Prompt 模板
-              <select value={config.templateId && config.templateVersion ? `${config.templateId}@${config.templateVersion}` : ""} onChange={event => {
-                const template = templates.find(t => `${t.id}@${t.version}` === event.target.value);
-                if (template) update({templateId:template.id,templateVersion:template.version,topic:template.topic,prompts:[...template.prompts]});
-                else update({templateId:undefined,templateVersion:undefined});
-              }}>
-                <option value="">选择模板以填入主题和全部 Prompt</option>
+              <select
+                required
+                value={config.templateId && config.templateVersion ? `${config.templateId}@${config.templateVersion}` : ""}
+                onChange={event => {
+                  const template = templates.find(t => `${t.id}@${t.version}` === event.target.value);
+                  update(template
+                    ? { templateId: template.id, templateVersion: template.version, topic: template.topic, promptCount: template.promptCount }
+                    : { templateId: undefined, templateVersion: undefined, topic: undefined, promptCount: undefined });
+                }}
+              >
+                <option value="">请选择任务模板</option>
                 {templates.map(t => <option key={`${t.id}@${t.version}`} value={`${t.id}@${t.version}`}>{t.name} · v{t.version}</option>)}
               </select>
             </label>
-            <label>
-              任务主题
-              <input
-                required
-                maxLength={200}
-                value={config.topic}
-                onChange={(e) => update({ topic: e.target.value })}
-              />
-            </label>
-            <div className="prompt-sequence">
-              <h3>多轮 Prompt</h3>
-              {config.prompts.map((prompt, index) => (
-                <div className="prompt-step" key={index}>
-                  <label>
-                    第 {index + 1} 轮
-                    <textarea
-                      required
-                      maxLength={8000}
-                      rows={3}
-                      value={prompt}
-                      onChange={(e) =>
-                        update({
-                          prompts: config.prompts.map((v, i) =>
-                            i === index ? e.target.value : v,
-                          ),
-                        })
-                      }
-                    />
-                  </label>
-                  <div className="task-actions">
-                    <button
-                      type="button"
-                      className="quiet"
-                      disabled={index === 0}
-                      onClick={() => {
-                        const prompts = [...config.prompts];
-                        [prompts[index - 1], prompts[index]] = [
-                          prompts[index],
-                          prompts[index - 1],
-                        ];
-                        update({ prompts });
-                      }}
-                    >
-                      上移
-                    </button>
-                    <button
-                      type="button"
-                      className="quiet"
-                      disabled={index === config.prompts.length - 1}
-                      onClick={() => {
-                        const prompts = [...config.prompts];
-                        [prompts[index + 1], prompts[index]] = [
-                          prompts[index],
-                          prompts[index + 1],
-                        ];
-                        update({ prompts });
-                      }}
-                    >
-                      下移
-                    </button>
-                    <button
-                      type="button"
-                      className="quiet"
-                      disabled={config.prompts.length === 1}
-                      onClick={() =>
-                        update({
-                          prompts: config.prompts.filter((_, i) => i !== index),
-                        })
-                      }
-                    >
-                      删除本轮
-                    </button>
-                  </div>
-                </div>
-              ))}
-              <button
-                type="button"
-                className="quiet"
-                disabled={config.prompts.length >= 20}
-                onClick={() => update({ prompts: [...config.prompts, ""] })}
-              >
-                添加一轮
-              </button>
-              <p className="field-help">
-                按顺序执行你配置的 Prompt，最后一轮生成日报，不再额外追加轮次。
-              </p>
+            <div className="selected-template-summary">
+              <span>任务主题</span>
+              <strong>{templates.find(t => t.id === config.templateId && t.version === config.templateVersion)?.topic ?? config.topic ?? "请选择模板"}</strong>
+              <small>
+                {templates.find(t => t.id === config.templateId && t.version === config.templateVersion)?.promptCount ?? config.promptCount ?? "—"} 轮由系统自动执行
+              </small>
             </div>
             <div className="form-grid">
               <label>
@@ -476,12 +408,14 @@ export function ManagedTasks({
           base,
           controller.signal,
           {
-            name: task.name,
-            ...task.configuration,
+            templateId: task.configuration?.templateId,
+            templateVersion: task.configuration?.templateVersion,
             autoPublish:
               kind === "autoPublish"
                 ? !task.configuration?.autoPublish
                 : task.configuration?.autoPublish,
+            schedule: task.configuration?.schedule,
+            timezone: task.configuration?.timezone,
             status:
               kind === "pause"
                 ? task.status === "active"
@@ -543,7 +477,7 @@ export function ManagedTasks({
           {scheduled && (
             <button
               className="quiet"
-              disabled={!!busy || running}
+              disabled={!!busy || running || !task.configuration?.templateId || !task.configuration?.templateVersion}
               onClick={() => void action(task, "pause")}
             >
               {task.status === "active" ? "暂停定时" : "启用定时"}
@@ -565,7 +499,7 @@ export function ManagedTasks({
             role="switch"
             aria-label={`自动发布：${task.configuration?.topic ?? task.name}`}
             checked={!!task.configuration?.autoPublish}
-            disabled={!!busy || running || !task.configuration}
+            disabled={!!busy || running || !task.configuration?.templateId || !task.configuration?.templateVersion}
             onChange={() => void action(task, "autoPublish")}
           />
           <span aria-hidden="true">
@@ -596,7 +530,7 @@ export function ManagedTasks({
                 {task.configuration?.topic ?? task.name}
               </a>
               <small className="task-table-secondary">
-                {task.configuration?.prompts.length ?? 1} 轮 Prompt
+                {task.configuration?.promptCount ?? "—"} 轮自动执行
               </small>
             </td>
             <td data-label="执行计划">
@@ -696,8 +630,8 @@ export function ManagedTasks({
               </dd>
             </div>
             <div>
-              <dt>研究 Prompt</dt>
-              <dd>{task.configuration?.prompts.length ?? 1} 轮</dd>
+              <dt>模板轮次</dt>
+              <dd>{task.configuration?.promptCount ?? "—"} 轮</dd>
             </div>
             <div>
               <dt>自动发布</dt>
