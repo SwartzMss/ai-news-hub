@@ -13,8 +13,10 @@ afterEach(() => {
   vi.unstubAllGlobals();
 });
 const config = {
+  templateId: "daily-technology",
+  templateVersion: 1,
   topic: "模型公告",
-  prompts: ["搜索原文", "核对日期"],
+  promptCount: 2,
   autoPublish: false,
   schedule: { kind: "manual" },
   timezone: "Asia/Shanghai",
@@ -37,17 +39,26 @@ function fixture() {
       ) => {
         if (method === "DELETE") return { deleted: true };
         if (body) return { task };
-        return path === "/tasks" ? { tasks: [task] } : { runs: [], templates: [] };
+        if (path === "/prompt-templates") return { templates: [
+          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+          { id: "daily-headlines", version: 1, name: "每日热点观察", topic: "每日热点观察", promptCount: 2 },
+        ] };
+        return path === "/tasks" ? { tasks: [task] } : { runs: [] };
       },
     );
   return api;
 }
-test("editor submits ordered prompts and a kind-specific plan with explicit automatic publication", async () => {
+test("editor saves a selected template reference and task options without prompt copies", async () => {
   const api = fixture();
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[0]);
-  fireEvent.click(screen.getAllByRole("button", { name: "上移" })[1]);
+  await screen.findByRole("option", { name: "每日热点观察 · v1" });
+  expect(screen.queryByText("多轮 Prompt")).toBeNull();
+  expect(screen.queryByLabelText("第 1 轮")).toBeNull();
+  fireEvent.change(screen.getByLabelText("Prompt 模板"), {
+    target: { value: "daily-headlines@1" },
+  });
   fireEvent.click(screen.getByLabelText("自动发布到 GitHub"));
   fireEvent.change(screen.getByLabelText("执行计划"), {
     target: { value: "daily" },
@@ -59,14 +70,15 @@ test("editor submits ordered prompts and a kind-specific plan with explicit auto
   await waitFor(() =>
     expect(api.mock.calls.some((call) => call[3] === "PUT")).toBe(true),
   );
-  const body = api.mock.calls.find((call) => call[3] === "PUT")![2] as Record<
-    string,
-    unknown
-  >;
-  expect(body.name).toBe(body.topic);
-  expect(body.prompts).toEqual(["核对日期", "搜索原文"]);
-  expect(body.autoPublish).toBe(true);
-  expect(body.schedule).toEqual({ kind: "daily", time: "10:30" });
+  const body = api.mock.calls.find((call) => call[3] === "PUT")![2] as Record<string, unknown>;
+  expect(body).toEqual({
+    templateId: "daily-headlines",
+    templateVersion: 1,
+    autoPublish: true,
+    schedule: { kind: "daily", time: "10:30" },
+    timezone: "Asia/Shanghai",
+    status: "active",
+  });
 });
 test("deletion requires confirmation and uses DELETE without a request body", async () => {
   const api = fixture();
@@ -94,22 +106,31 @@ test("switching the editor target loads the new task instead of carrying previou
     ...task,
     id: "second-task",
     name: "第二任务",
-    configuration: { ...config, topic: "新主题" },
+    configuration: { ...config, templateId: "daily-headlines", topic: "新主题" },
   };
   const api = vi
     .fn()
     .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks: [task, second] } : { runs: [], templates: [] },
+      path === "/tasks" ? { tasks: [task, second] } : path === "/prompt-templates" ? { templates: [
+        { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+        { id: "daily-headlines", version: 1, name: "每日热点观察", topic: "新主题", promptCount: 2 },
+      ] } : { runs: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[0]);
-  expect((screen.getByLabelText("任务主题") as HTMLInputElement).value).toBe(
-    "模型公告",
+  await screen.findByRole("option", { name: "每日热点观察 · v1" });
+  expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
+    "daily-technology@1",
   );
+  fireEvent.click(screen.getByRole("button", { name: "取消" }));
+  await waitFor(() => expect(screen.queryByRole("dialog")).toBeNull());
   fireEvent.click(screen.getAllByRole("button", { name: "编辑" })[1]);
-  expect((screen.getByLabelText("任务主题") as HTMLInputElement).value).toBe(
-    "新主题",
+  await screen.findByRole("option", { name: "每日热点观察 · v1" });
+  await waitFor(() =>
+    expect((screen.getByLabelText("Prompt 模板") as HTMLSelectElement).value).toBe(
+      "daily-headlines@1",
+    ),
   );
 });
 
@@ -127,7 +148,9 @@ test("a paused schedule still allows manual execution with a single primary acti
           ? { run: { id: "started" } }
           : path === "/tasks"
             ? { tasks: [paused] }
-            : { runs: [], templates: [] },
+            : path === "/prompt-templates" ? { templates: [
+          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+        ] } : { runs: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("定时已暂停");
@@ -179,7 +202,7 @@ test("task editor is a separate modal that closes on cancel and restores focus",
   const dialog = await screen.findByRole("dialog", { name: "新增任务" });
   expect(dialog.closest(".managed-task-list")).toBeNull();
   expect(document.documentElement.style.overflow).toBe("hidden");
-  expect(document.activeElement).toBe(screen.getByLabelText("任务主题"));
+  expect(document.activeElement).toBe(screen.getByLabelText("Prompt 模板"));
   fireEvent(dialog, new Event("cancel", { cancelable: true }));
   expect(screen.queryByRole("dialog")).toBeNull();
   expect(document.documentElement.style.overflow).toBe("");
@@ -196,7 +219,9 @@ test("many tasks are paged and only the visible tasks load execution state", asy
   const api = vi
     .fn()
     .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks } : { runs: [], templates: [] },
+      path === "/tasks" ? { tasks } : path === "/prompt-templates" ? { templates: [
+        { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+      ] } : { runs: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByRole("link", { name: "任务 0" });
@@ -230,7 +255,9 @@ test("plan filter handles manual, enabled and paused schedules without hiding th
   const api = vi
     .fn()
     .mockImplementation(async (path: string) =>
-      path === "/tasks" ? { tasks } : { runs: [], templates: [] },
+      path === "/tasks" ? { tasks } : path === "/prompt-templates" ? { templates: [
+        { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+      ] } : { runs: [] },
     );
   render(<ManagedTasks api={api} />);
   await screen.findByText("模型公告");
@@ -264,7 +291,10 @@ test("deleting the last task on a page returns to a valid page", async () => {
           tasks = tasks.filter((t) => path !== `/tasks/${t.id}`);
           return {};
         }
-        return path === "/tasks" ? { tasks } : { runs: [], templates: [] };
+        if (path === "/prompt-templates") return { templates: [
+          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+        ] };
+        return path === "/tasks" ? { tasks } : { runs: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -297,7 +327,10 @@ test("automatic publication switch saves the complete paused task configuration"
           saved = { ...saved, status: body.status, configuration: body };
           return { task: saved };
         }
-        return path === "/tasks" ? { tasks: [saved] } : { runs: [], templates: [] };
+        if (path === "/prompt-templates") return { templates: [
+          { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+        ] };
+        return path === "/tasks" ? { tasks: [saved] } : { runs: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -310,9 +343,11 @@ test("automatic publication switch saves the complete paused task configuration"
   fireEvent.click(toggle);
   await waitFor(() =>
     expect(api.mock.calls.find((call) => call[3] === "PUT")?.[2]).toEqual({
-      name: task.name,
-      ...saved.configuration,
+      templateId: config.templateId,
+      templateVersion: config.templateVersion,
       autoPublish: true,
+      schedule: { kind: "daily", time: "09:00" },
+      timezone: "Asia/Shanghai",
       status: "paused",
     }),
   );
@@ -332,7 +367,10 @@ test("failed automatic publication save keeps its previous state and displays th
         method: string,
       ) => {
         if (method === "PUT") throw new Error("保存失败");
-        return path === "/tasks" ? { tasks: [task] } : { runs: [], templates: [] };
+        if (path === "/prompt-templates") return { templates: [
+      { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+    ] };
+    return path === "/tasks" ? { tasks: [task] } : { runs: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -370,8 +408,11 @@ test("schedule pause and enable are direct controls preserving task configuratio
   fireEvent.click(await screen.findByRole("button", { name: "暂停定时" }));
   await screen.findByRole("button", { name: "启用定时" });
   expect(api.mock.calls.find((call) => call[3] === "PUT")?.[2]).toEqual({
-    name: task.name,
-    ...saved.configuration,
+    templateId: config.templateId,
+    templateVersion: config.templateVersion,
+    autoPublish: false,
+    schedule: { kind: "daily", time: "09:00" },
+    timezone: "Asia/Shanghai",
     status: "paused",
   });
   fireEvent.click(screen.getByRole("button", { name: "启用定时" }));
@@ -437,7 +478,9 @@ test("automatic publication cannot be changed again while the save is pending", 
                 { ...task, configuration: { ...config, autoPublish: enabled } },
               ],
             }
-          : { runs: [], templates: [] };
+          : path === "/prompt-templates" ? { templates: [
+              { id: "daily-technology", version: 1, name: "每日科技投资简报", topic: "模型公告", promptCount: 2 },
+            ] } : { runs: [] };
       },
     );
   render(<ManagedTasks api={api} />);
@@ -453,25 +496,31 @@ test("automatic publication cannot be changed again while the save is pending", 
     expect((screen.getByRole("switch") as HTMLInputElement).checked).toBe(true),
   );
 });
-test('selecting a versioned template fills all ordered prompts without changing publication settings', async () => {
+test('selecting a versioned template changes only the template reference and keeps settings', async () => {
   const base = fixture();
   const api = vi.fn(async (path: string, ...args: unknown[]) => path === '/prompt-templates' ? {
-    templates:[{id:'sample',version:2,name:'模板样例',topic:'新主题',prompts:['第一轮模板','第二轮模板']}],
+    templates:[
+      {id:'daily-technology',version:1,name:'每日科技投资简报',topic:'模型公告',promptCount:2},
+      {id:'sample',version:2,name:'模板样例',topic:'新主题',promptCount:3},
+    ],
   } : base(path,...args));
   render(<ManagedTasks api={api} />);
   await screen.findByText('模型公告');
   fireEvent.click(screen.getAllByRole('button',{name:'编辑'})[0]);
   await screen.findByRole('option',{name:'模板样例 · v2'});
   fireEvent.change(screen.getByLabelText('Prompt 模板'),{target:{value:'sample@2'}});
-  expect((screen.getByLabelText('任务主题') as HTMLInputElement).value).toBe('新主题');
-  expect((screen.getByLabelText('第 1 轮') as HTMLTextAreaElement).value).toBe('第一轮模板');
-  expect((screen.getByLabelText('第 2 轮') as HTMLTextAreaElement).value).toBe('第二轮模板');
+  expect(screen.getByText('新主题')).toBeTruthy();
+  expect(screen.queryByLabelText('第 1 轮')).toBeNull();
   expect((screen.getByLabelText('自动发布到 GitHub') as HTMLInputElement).checked).toBe(false);
-  fireEvent.change(screen.getByLabelText("任务主题"), {target:{value:"用户自定义主题"}});
   fireEvent.click(screen.getByRole("button",{name:"保存任务"}));
   await waitFor(() => expect(api.mock.calls.some(call => call[0] === "/tasks/managed-one" && call[3] === "PUT")).toBe(true));
   const body = api.mock.calls.find(call => call[0] === "/tasks/managed-one" && call[3] === "PUT")![2] as Record<string, unknown>;
-  expect(body.templateId).toBe("sample");
-  expect(body.templateVersion).toBe(2);
-  expect(body.topic).toBe("用户自定义主题");
+  expect(body).toEqual({
+    templateId: "sample",
+    templateVersion: 2,
+    autoPublish: false,
+    schedule: { kind: "manual" },
+    timezone: "Asia/Shanghai",
+    status: "active",
+  });
 });

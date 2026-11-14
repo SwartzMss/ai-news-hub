@@ -12,7 +12,7 @@ export interface NewsletterDispatch {
   dispatched_at:string|null;workflow_run_id:number|null;run_url:string|null;html_url:string|null;
   last_checked_at:string|null;error_code:string|null;finished_at:string|null;created_at:string;updated_at:string;
 }
-const daily={topic:'newsletter',prompts:['newsletter'],autoPublish:false,timezone:'Asia/Shanghai'};
+const daily={timezone:'Asia/Shanghai'};
 const nextDay=(time:string,after:Date)=>nextOccurrence({...daily,schedule:{kind:'daily',time}},after)!;
 const local=(at:Date)=>new Date(at.getTime()+8*3600000).toISOString();
 const dispatchId=(slot:Date)=>`newsletter-${local(slot).slice(0,10).replaceAll('-','')}-${local(slot).slice(11,16).replace(':','')}`;

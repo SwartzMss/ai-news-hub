@@ -483,7 +483,7 @@ export function RunDetail({
                         {managed &&
                         turn.mode === "finalize" &&
                         turn.sequence >
-                          (data.run.configuration?.prompts.length ?? 0)
+                          (data.run.configuration?.promptCount ?? 0)
                           ? turn.idempotency_key === "source-repair"
                             ? "来源修复（系统步骤）"
                             : "日报生成（系统步骤）"
@@ -661,7 +661,7 @@ export function RunDetail({
               <dt>{managed ? "已执行 Prompt" : "已执行轮次"}</dt>
               <dd>
                 {managed
-                  ? `${data?.turns.filter((turn) => turn.sequence <= (data.run.configuration?.prompts.length ?? 0)).length ?? 0} / ${data?.run.configuration?.prompts.length ?? "—"}`
+                  ? `${data?.turns.filter((turn) => turn.sequence <= (data.run.configuration?.promptCount ?? 0)).length ?? 0} / ${data?.run.configuration?.promptCount ?? "—"}`
                   : `${data?.turns.length ?? "—"} / 20`}
               </dd>
               <dt>创建时间</dt>

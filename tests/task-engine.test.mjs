@@ -150,9 +150,8 @@ test('manual managed research Run stores report_date in its configured timezone'
   const s = setup({ clock: () => new Date('2026-11-11T23:10:00.000Z') });
   try {
     const task = s.engine.createTask({
-      name: 'Daily report',
-      topic: 'Daily report',
-      prompts: ['Search for updates'],
+      templateId: 'daily-technology',
+      templateVersion: 1,
       autoPublish: false,
       schedule: { kind: 'manual' },
       timezone: 'Asia/Shanghai',
@@ -172,9 +171,8 @@ test('scheduled managed research Run uses the scheduled occurrence date', async 
   const s = setup({ clock: () => new Date('2026-11-12T15:00:00.000Z') });
   try {
     const task = s.engine.createTask({
-      name: 'Daily report',
-      topic: 'Daily report',
-      prompts: ['Search for updates'],
+      templateId: 'daily-technology',
+      templateVersion: 1,
       autoPublish: false,
       schedule: { kind: 'daily', time: '07:00' },
       timezone: 'Asia/Shanghai',

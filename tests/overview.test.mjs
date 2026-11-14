@@ -5,13 +5,13 @@ import {DatabaseSync} from 'node:sqlite';
 import {buildServer} from '../dist/apps/server/src/app.js';
 import {loadConfig} from '../dist/apps/server/src/config.js';
 const token='test_only_0123456789_abcdefghijklmnop',headers={authorization:`Bearer ${token}`};
-const configuration={topic:'AI',prompts:['Search'],autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
+const configuration={templateId:'daily-technology',templateVersion:1,autoPublish:false,schedule:{kind:'manual'},timezone:'Asia/Shanghai'};
 function setup(){
  const dir=mkdtempSync('/tmp/overview-');
  const app=buildServer(loadConfig({AI_NEWS_HUB_DATA_DIR:dir,AI_NEWS_HUB_ADMIN_TOKEN:token,AI_NEWS_HUB_LOG_LEVEL:'silent'}),{now:()=>new Date('2026-11-06T03:00:00Z')});
  const db=new DatabaseSync(dir+'/news.db');
  const get=()=>app.inject({url:'/api/overview',headers});
- function task(id,kind='manual',status='active',deleted=null){db.prepare('INSERT INTO tasks(id,name,channel,prompt,configuration_json,status,deleted_at) VALUES (?,?,?,?,?,?,?)').run(id,id,'opensource','Search',JSON.stringify({...configuration,schedule:{kind}}),status,deleted);}
+ function task(id,kind='manual',status='active',deleted=null){db.prepare('INSERT INTO tasks(id,name,channel,prompt,configuration_json,status,deleted_at) VALUES (?,?,?,?,?,?,?)').run(id,id,'opensource','',JSON.stringify({...configuration,schedule:{kind}}),status,deleted);}
  function run(id,status,at,taskId='manual',managed=true){db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,status,created_at,configuration_json) VALUES (?,?,?,?,?,?)').run(id,taskId,id,status,at,managed?JSON.stringify(configuration):null);}
  return {app,db,get,task,run,async close(){await app.close();db.close();rmSync(dir,{recursive:true,force:true});}};
 }

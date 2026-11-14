@@ -16,16 +16,20 @@ export interface TaskSchedule {
   at?: string; minutes?: number; time?: string; weekday?: number;
 }
 export interface TaskConfiguration {
-  /** Stable identity of the selected versioned prompt template; independent of the editable topic label. */
-  templateId?: string; templateVersion?: number;
-  topic: string; prompts: string[]; autoPublish: boolean; schedule: TaskSchedule; timezone: string;
+  /** Stable identity of the selected, code-managed template. */
+  templateId: string; templateVersion: number;
+  autoPublish: boolean; schedule: TaskSchedule; timezone: string;
+}
+/** Read-only template metadata derived by the server; never persisted in task configuration. */
+export interface TaskConfigurationView extends TaskConfiguration {
+  topic?: string; promptCount?: number;
 }
 export interface TaskRecord {
-  configuration?: TaskConfiguration; next_run_at?: string | null; deleted_at?: string | null;
+  configuration?: TaskConfigurationView; next_run_at?: string | null; deleted_at?: string | null;
   id: string; name: string; channel: string; prompt: string; status: TaskStatus;
 }
 export interface RunRecord {
-  configuration?: TaskConfiguration; publishing?: boolean;
+  configuration?: TaskConfigurationView; publishing?: boolean;
   id: string; task_id: string; idempotency_key: string; status: RunStatus;
   thread_id: string | null; turn_id: string | null;
   started_at: string | null; finished_at: string | null;

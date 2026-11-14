@@ -10,6 +10,7 @@ import { AppError, HttpError } from '../errors.js';
 import { AgentError, type AgentAdapter, type AgentEvent } from '../agent/types.js';
 import type { TaskWorkflow } from './workflow.js';
 import { NEWS_TASK_ID } from '../news/source.js';
+import { findPromptTemplate, getPromptTemplate } from './prompt-templates.js';
 
 interface EngineOptions {
   adapter: AgentAdapter; concurrency: number; maxQueue: number; timeoutMs: number;
@@ -67,21 +68,44 @@ export class TaskEngine {
     const row = this.db.prepare('SELECT * FROM tasks WHERE id=?').get(id);
     if (!row) throw new HttpError(404, 'task_not_found');
     const result = row as unknown as TaskRecord;
-    if (row.configuration_json) result.configuration = JSON.parse(String(row.configuration_json)) as TaskConfiguration;
+    if (row.configuration_json) {
+      const configuration = JSON.parse(String(row.configuration_json)) as TaskConfiguration & { topic?: string };
+      if (configuration.templateId && Number.isSafeInteger(configuration.templateVersion)) {
+        const template = findPromptTemplate(configuration.templateId, configuration.templateVersion);
+        if (template) {
+          result.name = template.name;
+          result.configuration = {
+            ...configuration,
+            topic: template.topic,
+            promptCount: template.prompts.length,
+          };
+        } else result.configuration = configuration;
+      } else result.configuration = configuration;
+    }
     delete (result as unknown as Record<string,unknown>).configuration_json;
     return result;
   }
   createTask(value: unknown): TaskRecord {
-    const input=taskInput(value),id=randomUUID();
-    this.db.prepare('INSERT INTO tasks(id,name,channel,prompt,status,configuration_json,next_run_at,timezone) VALUES (?,?,?,?,?,?,?,?)').run(id,input.name,'opensource',input.configuration.prompts[0]!,input.status,JSON.stringify(input.configuration),input.status==='active'?nextOccurrence(input.configuration,new Date()):null,input.configuration.timezone);
+    const input = taskInput(value);
+    const template = getPromptTemplate(input.configuration.templateId, input.configuration.templateVersion);
+    const id = randomUUID();
+    this.db.prepare('INSERT INTO tasks(id,name,channel,prompt,status,configuration_json,next_run_at,timezone) VALUES (?,?,?,?,?,?,?,?)').run(
+      id, template.name, 'opensource', '', input.status, JSON.stringify(input.configuration),
+      input.status === 'active' ? nextOccurrence(input.configuration, new Date()) : null,
+      input.configuration.timezone,
+    );
     return this.task(id);
   }
   updateTask(id:string,value:unknown):TaskRecord {
     const prior=this.task(id);if(!prior.configuration||prior.deleted_at)throw new HttpError(409,'task_not_editable');
     this.capacityForMutation(id);const input=taskInput(value);
     const sameSchedule = prior.status === input.status && prior.configuration.timezone === input.configuration.timezone && isDeepStrictEqual(prior.configuration.schedule,input.configuration.schedule);
-    const nextRunAt = sameSchedule ? prior.next_run_at ?? null : input.status==='active' ? nextOccurrence(input.configuration,new Date()) : null;
-    this.db.prepare('UPDATE tasks SET name=?,prompt=?,status=?,configuration_json=?,next_run_at=?,timezone=?,updated_at=? WHERE id=?').run(input.name,input.configuration.prompts[0]!,input.status,JSON.stringify(input.configuration),nextRunAt,input.configuration.timezone,now(),id);
+    const template = getPromptTemplate(input.configuration.templateId, input.configuration.templateVersion);
+    const nextRunAt = sameSchedule ? prior.next_run_at ?? null : input.status === 'active' ? nextOccurrence(input.configuration, new Date()) : null;
+    this.db.prepare('UPDATE tasks SET name=?,prompt=?,status=?,configuration_json=?,next_run_at=?,timezone=?,updated_at=? WHERE id=?').run(
+      template.name, '', input.status, JSON.stringify(input.configuration), nextRunAt,
+      input.configuration.timezone, now(), id,
+    );
     return this.task(id);
   }
   deleteTask(id:string):void {
@@ -154,9 +178,20 @@ export class TaskEngine {
   start(taskId: string, idempotencyKey: string, request: { topic?: string; input?: string } = {}, triggerKind: 'manual'|'scheduled' = 'manual'): { run: RunRecord; reused: boolean } {
     this.available(); key(idempotencyKey);
     const task = this.task(taskId);
-    const managed=task.configuration;
-    if(task.deleted_at)throw new HttpError(404,'task_not_found');
-    if(managed) request={topic:managed.topic,input:managed.prompts[0]};
+    const managed = task.configuration;
+    if (task.deleted_at) throw new HttpError(404, 'task_not_found');
+    const template = managed?.templateId && Number.isSafeInteger(managed.templateVersion)
+      ? getPromptTemplate(managed.templateId, managed.templateVersion)
+      : undefined;
+    if (managed && !template) throw new HttpError(409, 'task_template_required');
+    const templateConfiguration: TaskConfiguration | undefined = managed && template ? {
+      templateId: managed.templateId,
+      templateVersion: managed.templateVersion,
+      autoPublish: managed.autoPublish,
+      schedule: managed.schedule,
+      timezone: managed.timezone,
+    } : undefined;
+    if (managed && template) request = { topic: template.topic, input: template.prompts[0] };
     const research = taskId === NEWS_TASK_ID || !!managed;
     if (research) {
       if (typeof request.topic !== 'string' || !request.topic.trim() || request.topic.length > 200) throw new HttpError(400, 'invalid_topic');
@@ -175,8 +210,10 @@ export class TaskEngine {
     inputText(input); this.capacity(taskId);
     const runId = randomUUID(), turnId = randomUUID();
     this.transaction(() => {
-      this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,configuration_json,trigger_kind) VALUES (?,?,?,?,?)').run(runId, taskId, idempotencyKey,managed?JSON.stringify(managed):null,triggerKind);
-      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(turnId, runId, idempotencyKey, input, managed?.prompts.length===1 ? 'finalize' : research ? 'research' : 'default');
+      this.db.prepare('INSERT INTO task_runs(id,task_id,idempotency_key,configuration_json,trigger_kind) VALUES (?,?,?,?,?)').run(runId, taskId, idempotencyKey, templateConfiguration ? JSON.stringify(templateConfiguration) : null, triggerKind);
+      this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,1,?,?,?)').run(
+        turnId, runId, idempotencyKey, input, template?.prompts.length === 1 ? 'finalize' : research ? 'research' : 'default',
+      );
       if (research) {
         const timezone = managed?.timezone ?? String((task as TaskRecord & { timezone?: string }).timezone ?? 'UTC');
         // Scheduled reports belong to the calendar date of their planned occurrence,
@@ -274,9 +311,16 @@ export class TaskEngine {
   private run(id: string): RunRecord {
     const row = this.db.prepare('SELECT * FROM task_runs WHERE id=?').get(id);
     if (!row) throw new HttpError(404, 'run_not_found');
-    const result=row as unknown as RunRecord;
-    const snapshot=this.runConfiguration(id);
-    if(snapshot)result.configuration=snapshot;
+    const result = row as unknown as RunRecord;
+    const snapshot = this.runConfiguration(id);
+    if (snapshot) {
+      const template = snapshot.templateId && Number.isSafeInteger(snapshot.templateVersion)
+        ? findPromptTemplate(snapshot.templateId, snapshot.templateVersion)
+        : undefined;
+      result.configuration = template
+        ? { ...snapshot, topic: template.topic, promptCount: template.prompts.length }
+        : snapshot as RunRecord['configuration'];
+    }
     delete (result as unknown as Record<string,unknown>).configuration_json;
     result.publishing=this.active.has(id)&&result.status==='succeeded';
     return result;
@@ -303,11 +347,14 @@ export class TaskEngine {
   }
   private advance(work:Work):void {
     const config=this.runConfiguration(work.runId),run=this.run(work.runId);
-    if(!config||this.stopping||this.fatal)return;
-    if(run.status!=='succeeded')return;
-    const sequence=this.turn(work.turnId).sequence;
-    if(sequence>=config.prompts.length)return;
-    const input=config.prompts[sequence]!,turnId=randomUUID(),mode=sequence+1===config.prompts.length?'finalize':'research';
+    if (!config || this.stopping || this.fatal) return;
+    if (run.status !== 'succeeded') return;
+    const template = getPromptTemplate(config.templateId, config.templateVersion);
+    const sequence = this.turn(work.turnId).sequence;
+    if (sequence >= template.prompts.length) return;
+    const input = template.prompts[sequence]!;
+    const turnId = randomUUID();
+    const mode = sequence + 1 === template.prompts.length ? 'finalize' : 'research';
     this.transaction(()=>{
       this.db.prepare('INSERT INTO run_turns(id,run_id,sequence,idempotency_key,input_text,mode) VALUES (?,?,?,?,?,?)').run(turnId,run.id,sequence+1,'automatic:'+String(sequence+1),input,mode);
       this.db.prepare("UPDATE task_runs SET status='queued',finished_at=NULL,turn_id=NULL,updated_at=? WHERE id=?").run(now(),run.id);

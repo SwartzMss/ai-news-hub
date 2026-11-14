@@ -10,6 +10,7 @@ import { buildReport, type DailyReport } from "../news/report.js";
 import { legacySourceUrl } from "../news/legacy-source.js";
 import { sourceUrl } from "../news/sources.js";
 import type { ArticleCandidate } from "../news/types.js";
+import { findPromptTemplate } from "../tasks/prompt-templates.js";
 const validator = new Ajv({
   strict: true,
   coerceTypes: false,
@@ -65,14 +66,19 @@ export function reviewedReport(db: DatabaseSync, id: string) {
     const configuration = row.configuration_json === null ? {} : JSON.parse(String(row.configuration_json));
     if (!configuration || typeof configuration !== 'object' || Array.isArray(configuration)) throw Error();
     const templateId = typeof configuration.templateId === 'string' ? configuration.templateId : undefined;
+    const templateVersion = Number(configuration.templateVersion);
+    const template = templateId && Number.isSafeInteger(templateVersion)
+      ? findPromptTemplate(templateId, templateVersion)
+      : undefined;
     const storedTopic = row.public_topic_json === null ? undefined : JSON.parse(String(row.public_topic_json));
-    const topicName = typeof configuration.topic === 'string' && configuration.topic.trim()
+    const hasConfiguredTopic = typeof configuration.topic === 'string' && configuration.topic.trim();
+    const topicName = hasConfiguredTopic
       ? configuration.topic
-      : typeof row.snapshot_topic === 'string' && row.snapshot_topic.trim()
+      : template?.topic ?? (typeof row.snapshot_topic === 'string' && row.snapshot_topic.trim()
         ? String(row.snapshot_topic)
-        : undefined;
+        : undefined);
     const topicSeed = topicName === undefined ? undefined
-      : typeof configuration.topic === 'string' && configuration.topic.trim()
+      : hasConfiguredTopic || template
         ? String(row.task_id)
         : JSON.stringify([String(row.task_id), topicName]);
     const expectedTopic = topicName === undefined || topicSeed === undefined ? undefined
@@ -110,7 +116,9 @@ export function reviewedReport(db: DatabaseSync, id: string) {
       reportDate: String(row.report_date),
       collectedAt: String(row.collected_at),
       ...(topic === undefined ? {} : {topic}),
-    }, row.source_mode as 'verified'|'codex_reported', templateId === 'daily-headlines' ? 'headlines' : templateId === 'daily-technology' ? 'technology' : 'general');
+    }, row.source_mode as 'verified'|'codex_reported',
+      template?.schemaId === 'headlines' || templateId === 'daily-headlines' ? 'headlines'
+        : template?.schemaId === 'technology' || templateId === 'daily-technology' ? 'technology' : 'general');
     if (!isDeepStrictEqual(rebuilt, document)) throw Error();
     const links = db
       .prepare(
@@ -133,6 +141,7 @@ export function reviewedReport(db: DatabaseSync, id: string) {
         JSON.stringify({ document, version: row.version, candidates, links, ...(templateId ? {templateId} : {}) }),
       ),
       templateId,
+      schemaId: template?.schemaId,
     };
   } catch {
     throw new HttpError(409, "report_provenance_invalid");
@@ -145,9 +154,9 @@ export function archiveArtifact(
   const d = report.document;
   const hasAnyResearchArea = d.items.some(item => item.researchArea !== undefined);
   const hasAllResearchAreas = d.items.every(item => item.researchArea !== undefined);
-  const isHeadlines = report.templateId === "daily-headlines";
-  const isTechnology = report.templateId === "daily-technology";
-  const isOpenSource = report.templateId === "daily-opensource";
+  const isHeadlines = report.schemaId === "headlines" || report.templateId === "daily-headlines";
+  const isTechnology = report.schemaId === "technology" || report.templateId === "daily-technology";
+  const isOpenSource = report.schemaId === "opensource" || report.templateId === "daily-opensource";
   if (!d.topic || d.items.some(item => !item.details))
     throw new HttpError(409, "archive_schema_invalid");
   if (hasAnyResearchArea && (!hasAllResearchAreas || !isOpenSource))
