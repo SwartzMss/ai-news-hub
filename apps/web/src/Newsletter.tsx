@@ -26,13 +26,13 @@ export function Newsletter() {
       <form action="/api/newsletter/subscribe" method="post" data-newsletter-form>
         <div className="newsletter-fields">
           <label className="newsletter-email">
-            <span>邮箱</span>
             <input
               type="email"
               name="email"
               required
               autoComplete="email"
               maxLength={254}
+              aria-label="邮箱地址"
               aria-describedby="newsletter-note"
               placeholder="you@gmail.com"
             />
