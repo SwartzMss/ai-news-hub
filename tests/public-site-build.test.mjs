@@ -383,7 +383,7 @@ test("reading previews render explicit source links without executing markup or 
   const dir=mkdtempSync('/tmp/public-inline-text-');
   try {
     const report=JSON.parse(readFileSync('tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json','utf8'));
-    report.items=report.items.slice(0,1).map(item=>({...item,fact_summary:'一条完整的标题。参考[官方公告](https://example.com/release)与[不安全地址](javascript:alert(1))、[带凭据地址](https://user:secret@example.com/private)，<img src=x onerror=alert(1)>。'}));
+    report.items=report.items.slice(0,1).map(item=>({...item,fact_summary:'一条完整的标题。参考[官方公告](https://example.com/release)与[不安全地址](javascript:alert(1))、[带凭据地址](https://user:secret@example.com/private)，<img src=x onerror=alert(1)>。',details:{...item.details,overview:'参考[官方公告](https://example.com/release)与[不安全地址](javascript:alert(1))、[带凭据地址](https://user:secret@example.com/private)，<img src=x onerror=alert(1)>。'}}));
     const folder=join(dir,'topics',report.topic.id,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});
     const file=join(folder,'v000001.json'),bytes=JSON.stringify(report);writeFileSync(file,bytes);
     const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
