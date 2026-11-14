@@ -673,3 +673,12 @@ test("five-area open-source reports render article labels and distinguish discov
   assert.equal(edition.querySelectorAll(".issue-research-area").length,5);
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
+
+test("production build validates the checked-in reports directory", async () => {
+  const result = await buildPublic({ siteUrl: "https://news.example" });
+  assert.equal(result.demo, false);
+  assert.ok(Number.isInteger(result.reports));
+  assert.ok(Number.isInteger(result.articles));
+  const html = readFileSync(join(result.output, "index.html"), "utf8");
+  assert.ok(!html.includes("演示 / 测试站点"));
+});
