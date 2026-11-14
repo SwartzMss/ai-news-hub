@@ -149,7 +149,7 @@ export function archiveArtifact(
     throw new HttpError(409, "archive_schema_invalid");
   if (isTechnology && d.items.some(item => item.details?.kind !== "investment"))
     throw new HttpError(409, "archive_schema_invalid");
-  const schemaVersion = isHeadlines ? 6 : isTechnology ? 5 : hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
+  const schemaVersion: 1 | 2 | 3 | 4 | 5 | 6 = isHeadlines ? 6 : isTechnology ? 5 : hasAllResearchAreas && d.topic ? 3 : d.topic ? 2 : 1;
   const document = {
     schema_version: schemaVersion,
     ...(d.topic ? {topic: d.topic} : {}),
