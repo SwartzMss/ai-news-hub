@@ -35,7 +35,7 @@ export function LatestBrief({
           {grouped ? groups.map((group) => (
             <section className="research-area-section" key={group.id}>
               {group.items.length ? group.items.map((story) => (
-                <Row key={story.key} story={story} level={3} id={`brief-${topic.id}-${story.key}`} />
+                <Row key={story.key} story={story} id={`brief-${topic.id}-${story.key}`} />
               )) : (
                 <p className="research-area-empty">
                   <strong>{group.label}</strong>
