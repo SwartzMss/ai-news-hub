@@ -24,6 +24,7 @@ const validators = {
   4: ajv.compile(readSchema("report-archive-v4.schema.json")),
   5: ajv.compile(readSchema("report-archive-v5.schema.json")),
   6: ajv.compile(readSchema("report-archive-v6.schema.json")),
+  7: ajv.compile(readSchema("report-archive-v7.schema.json")),
 };
 const topicSchema = {
   type: "object",
@@ -123,7 +124,7 @@ export function readArchives(
           ? report.schema_version !== 1 ||
             report.report_date !== old.slice(1, 4).join("-") ||
             report.version !== Number(old[4])
-          : ![2, 3, 4, 5, 6].includes(report.schema_version) ||
+          : ![2, 3, 4, 5, 6, 7].includes(report.schema_version) ||
             report.topic.id !== scoped[1] ||
             report.report_date !== scoped.slice(2, 5).join("-") ||
             report.version !== Number(scoped[5])
