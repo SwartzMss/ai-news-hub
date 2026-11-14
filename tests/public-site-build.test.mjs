@@ -99,7 +99,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     "page",
   );
   assert.equal(articleDoc.querySelector(".article-header time"), null);
-  assert.ok(articleDoc.querySelector(".news-detail-tags .news-tag-topic"));
+  assert.ok(articleDoc.querySelector(".detail-page-title"));
   assert.equal(articleDoc.querySelectorAll(".detail-context a").length, 1);
   assert.equal(articleDoc.querySelector(".detail-context a").textContent, "返回归档");
   assert.ok(articleDoc.querySelector(".detail-context a").getAttribute("href").endsWith("/archive/"));
@@ -304,7 +304,7 @@ test("date and revision readers preserve exact archived text and separate curren
 
 test("topic routes, editions, browser selection and RSS isolate shared sources across v1 topics", async () => {
   const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
-  const dir = mkdtempSync("/tmp/public-topic-reading/");
+  const dir = mkdtempSync("/tmp/public-topic-reading-");
   const a = { id: "t-" + "a".repeat(24), name: "模型进展" };
   const b = { id: "t-" + "b".repeat(24), name: "开源工具" };
   const base = JSON.parse(readFileSync("tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json", "utf8"));
