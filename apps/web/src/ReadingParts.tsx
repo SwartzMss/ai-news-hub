@@ -180,7 +180,10 @@ export function Row({
         )}
         <div className="news-meta">
           {story.research_area ? (
-            projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>
+            <span className="news-row-tags">
+              <span className="news-tag news-tag-topic news-tag-research-area">{researchAreaLabels[story.research_area]}</span>
+              {projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>}
+            </span>
           ) : story.details?.kind === "news" && (story.details.trendTags?.length || story.details.contentTags?.length) ? (
             <span className="news-row-tags">
               <span className="news-tag news-tag-topic">{categories[story.category] ?? story.category}</span>

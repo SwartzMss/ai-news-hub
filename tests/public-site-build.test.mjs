@@ -48,13 +48,11 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.match(publicStyles, /\.header-actions \.subscribe-action\s*\{[^}]*background:\s*var\(--paper\)[^}]*color:\s*var\(--ink\)/s, "Subscribe uses the neutral theme surface");
   assert.ok(homeDoc.querySelector(".reader-body > main"));
   assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, data.topics.length);
-  assert.equal(homeDoc.querySelectorAll(".brief-toc").length,data.topics.length);
+  assert.equal(homeDoc.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length, 0, "home feed has no side or collapsible directory");
   for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
     assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
     assert.equal(panel.querySelector(".brief-description"), null, "brief header omits generic topic copy");
-    const links=panel.querySelectorAll(".brief-toc a[data-brief-target]");
-    assert.equal(links.length,panel.querySelectorAll(".news-row").length);
-    for(const link of links) assert.ok(panel.querySelector(`[id="${link.dataset.briefTarget}"]`));
+    assert.equal(panel.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length, 0);
     assert.equal(panel.querySelector(".brief-generation"), null, "brief header omits build timestamp");
     assert.equal(panel.querySelector(".brief-date time").getAttribute("datetime"),data.topics.find(t=>t.id===panel.dataset.topicPanel).latest.report_date);
   }
@@ -365,11 +363,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(visible().length, 1);
     assert.equal(visible()[0].dataset.topicPanel, a.id);
     assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
-    const tocLink = visible()[0].querySelector(".brief-toc a[data-brief-target]");
-    tocLink.dispatchEvent(new browser.window.MouseEvent("click", {bubbles:true,cancelable:true,button:0}));
-    assert.equal(tocLink.getAttribute("aria-current"), "location");
-    assert.equal(visible()[0].querySelector(".brief-toc time"), null);
-    assert.equal(visible()[0].querySelector(".brief-toc .brief-topic"), null);
+    assert.equal(visible()[0].querySelector(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']"), null);
 
     assert.equal(browser.window.document.querySelector("footer"), null);
     assert.equal(browser.window.document.querySelector("[data-topic-archive]").getAttribute("href"), `/topics/${a.id}/archive/`);
@@ -682,7 +676,7 @@ test("news and investment details align to the left without widening medium-widt
 });
 
 
-test("five-area open-source reports render grouped sections and distinguish discovery from updates",async()=>{
+test("five-area open-source reports render article labels and distinguish discovery from updates",async()=>{
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import("node:fs");
  const dir=mkdtempSync("/tmp/public-open-source-areas-");
  const topic={id:"t-"+"e".repeat(24),name:"每日开源项目"};
@@ -696,10 +690,11 @@ test("five-area open-source reports render grouped sections and distinguish disc
   writeFileSync(join(folder,"v000001.json"),JSON.stringify(report));
   const built=await buildPublic({demo:true,siteUrl:"https://demo.invalid",reportsDir:dir});
   const home=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/index.html`),"utf8")).window.document;
-  const headings=[...home.querySelectorAll(".research-area-heading h2")].map(x=>x.textContent);
-  assert.deepEqual(headings,["AI Agent 与自动化执行","Rust 生态与工程工具","AI 视频、音频与多媒体创作","性能分析与软件安全","区块链与去中心化基础设施"]);
+  assert.equal(home.querySelectorAll(".research-area-heading").length,0, "non-empty research areas are not repeated as section headings");
+  const areaLabels=[...home.querySelectorAll(".news-tag-research-area")].map(x=>x.textContent);
+  assert.deepEqual(areaLabels,["AI Agent 与自动化执行","Rust 生态与工程工具"]);
   assert.equal(home.querySelectorAll(".research-area-empty").length,3);
-  assert.equal(home.querySelectorAll(".brief-toc .brief-toc-group").length,5);
+  assert.equal(home.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length,0);
   assert.ok([...home.querySelectorAll(".project-entry-label")].some(x=>x.textContent==="近期进展"));
   assert.ok([...home.querySelectorAll(".project-entry-label")].some(x=>x.textContent==="项目发现"));
   const edition=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/archive/2026-11-03/index.html`),"utf8")).window.document;
