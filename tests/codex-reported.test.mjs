@@ -68,7 +68,7 @@ test('migration preserves existing independently verified Codex reports and thei
   const topic={id:'t-'+createHash('sha256').update('old-task').digest('hex').slice(0,24),name:'Old AI topic'};
   const oldConfiguration=JSON.stringify({topic:topic.name});
   const proposal={title:'Old verified Codex report',items:[{articleId:candidate.id,category:'ai',importance:1,factSummary:'来源宣布更新。',analysis:null,evidenceQuote:candidate.title,details:{kind:'news',background:'来源披露新的进展。',evidence:[{id:'source',name:'原始来源',url:candidate.canonicalUrl,supports:'事件进展'}]}}]};
-  const document=buildReport(JSON.stringify(proposal),[candidate],{reportId:'old-report',runId:'old-run',reportDate:'2026-11-03',collectedAt:fetchedAt,topic},'codex_reported');
+  const document=buildReport(JSON.stringify(proposal),[candidate],{reportId:'old-report',runId:'old-run',reportDate:'2026-11-03',collectedAt:fetchedAt,topic},'verified');
   db.prepare("INSERT INTO tasks(id,name,channel,prompt,configuration_json) VALUES('old-task','Old','opensource','Search',?)").run(oldConfiguration);
   db.prepare("INSERT INTO task_runs(id,task_id,idempotency_key,status,configuration_json) VALUES('old-run','old-task','run','succeeded',?)").run(oldConfiguration);
   db.prepare("INSERT INTO articles(id,original_url,canonical_url,source_name,title,fetched_at) VALUES(?,?,?,?,?,?)").run(candidate.id,candidate.originalUrl,candidate.canonicalUrl,candidate.sourceName,candidate.title,fetchedAt);
