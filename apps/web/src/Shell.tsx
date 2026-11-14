@@ -40,6 +40,18 @@ export function Shell({
           </a>
         </nav>
         <div className="header-actions">
+          {data.newsletterEnabled && (
+            <a
+              className="subscribe-action"
+              href="#newsletter-signup"
+              aria-label="Subscribe to the daily email digest"
+            >
+              <svg viewBox="0 0 16 16" aria-hidden="true">
+                <path d="M2.25 3.5h11.5c.55 0 1 .45 1 1v7c0 .55-.45 1-1 1H2.25c-.55 0-1-.45-1-1v-7c0-.55.45-1 1-1Zm.2 1.1L8 8.7l5.55-4.1H2.45Z" />
+              </svg>
+              <span>Subscribe</span>
+            </a>
+          )}
           <button
             id="theme-toggle"
             aria-label="切换明暗主题"

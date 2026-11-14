@@ -43,9 +43,11 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
   assert.ok(homeDoc.querySelector(".reader-body > main"));
+  assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, data.topics.length);
   assert.equal(homeDoc.querySelectorAll(".brief-toc").length,data.topics.length);
   for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
     assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
+    assert.ok(panel.querySelector(".brief-description"));
     const links=panel.querySelectorAll(".brief-toc a[data-brief-target]");
     assert.equal(links.length,panel.querySelectorAll(".news-row").length);
     for(const link of links) assert.ok(panel.querySelector(`[id="${link.dataset.briefTarget}"]`));
@@ -593,7 +595,9 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
   const dir = mkdtempSync("/tmp/public-newsletter-");
   try {
     const disabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: false });
-    assert.doesNotMatch(readFileSync(join(disabled.output, "index.html"), "utf8"), /newsletter-signup/);
+    const disabledHtml = readFileSync(join(disabled.output, "index.html"), "utf8");
+    assert.doesNotMatch(disabledHtml, /newsletter-signup/);
+    assert.doesNotMatch(disabledHtml, /subscribe-action/);
     assert.match(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src 'none'/);
     const enabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: true });
     const html = readFileSync(join(enabled.output, "index.html"), "utf8");
@@ -607,7 +611,11 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.equal(form.querySelector('[name="email"]').type, "email");
     assert.ok(form.querySelector('[name="email"]').required);
     assert.equal(form.querySelector('[name="website"]').tabIndex, -1);
-    assert.equal(window.document.querySelector(".header-actions a"), null);
+    const subscribe = window.document.querySelector(".header-actions .subscribe-action");
+    assert.ok(subscribe, "enabled build exposes a compact Subscribe entry");
+    assert.equal(subscribe.getAttribute("href"), "#newsletter-signup");
+    assert.equal(subscribe.textContent.trim(), "Subscribe");
+    assert.ok(window.document.querySelector(subscribe.getAttribute("href")), "Subscribe points to the existing signup form");
     assert.equal(window.document.querySelector("footer"), null);
     assert.ok(window.document.querySelector(".site-shell > #newsletter-signup"));
     assert.equal(window.document.querySelector(".topic-picker #newsletter-signup, .brief-toc #newsletter-signup"), null);
