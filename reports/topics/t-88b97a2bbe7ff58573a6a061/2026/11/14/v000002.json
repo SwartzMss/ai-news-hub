@@ -1,0 +1,481 @@
+{
+  "schema_version": 5,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "5d518113-e2ab-471d-b336-b652dcaf55b3",
+  "report_date": "2026-11-14",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日科技投资简报｜2026年11月14日｜截至北京时间08:10，含72小时及7天补充",
+  "collected_at": "2026-11-14T00:21:02.413Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-14T00:21:02.431Z",
+  "reviewed_content_sha256": "e36d4d959e73406baa6c378d60cb457c3ef11517efa2835cc59410f269f31a31",
+  "items": [
+    {
+      "id": "2bec13ff553f53fb5be85a3cf6c14d87633cc18dab8a9274d19a73d151c1bcb8",
+      "category": "semiconductor",
+      "importance": 5,
+      "fact_summary": "Applied Materials宣布FY2026第四季度收入104.09亿美元，同比增长53%，GAAP毛利率50.4%，同比提高2.4个百分点；FY2027第一季度收入指引为111亿美元上下浮动5亿美元。管理层称AI继续推动半导体增量需求，预计自然年2026年Semiconductor Systems业务增长超过40%。",
+      "analysis": "推断：设备需求已体现为收入、毛利率和现金流增长，下一季度指引支持增长延续。自然年业务增长展望与财年实际值需分开比较；尚不能据此认定具体客户新增采购。",
+      "evidence_quote": "Applied Materials Announces Fourth Quarter and Fiscal Year 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "披露时间为北京时间2026-11-13 05:01，属72小时补充窗口；财年及季度截至2026-10-25。",
+        "metrics": [
+          {
+            "name": "集团收入",
+            "value": "104.09",
+            "unit": "亿美元",
+            "period": "FY2026 Q4",
+            "comparison": "同比增长53%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "集团收入指引",
+            "value": "111±5",
+            "unit": "亿美元",
+            "period": "FY2027 Q1",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "非GAAP自由现金流",
+            "value": "26.16",
+            "unit": "亿美元",
+            "period": "FY2026 Q4",
+            "comparison": "同比增长28%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Applied Materials（AMAT，NASDAQ）：半导体制造设备供应商",
+            "direction": "收入及盈利增长",
+            "reason": "公司为业绩披露主体；本条不认定具体晶圆厂或存储厂订单。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：制造设备交付增长→毛利及现金流改善；后续收入指引兑现程度决定盈利预期的持续性。",
+        "watchpoints": [
+          "下一季度收入是否落在106亿至116亿美元区间",
+          "存储与逻辑设备组合、毛利率和现金回收"
+        ],
+        "risks": [
+          "客户资本开支调整或设备验收延迟",
+          "出口许可限制",
+          "比较期业务分类已重述，需保持一致口径"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Applied Materials第四季度及全年业绩公告",
+            "url": "https://www.appliedmaterials.com/us/en/newsroom/press-releases/111226-applied-materials-announces-fourth-qtr-fiscal-year-end-2026-results.html",
+            "supports": "实际业绩、下一季度指引、AI需求表述、发布时间及业务重分类说明"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.appliedmaterials.com",
+        "original_url": "https://www.appliedmaterials.com/us/en/newsroom/press-releases/111226-applied-materials-announces-fourth-qtr-fiscal-year-end-2026-results.html",
+        "canonical_url": "https://www.appliedmaterials.com/us/en/newsroom/press-releases/111226-applied-materials-announces-fourth-qtr-fiscal-year-end-2026-results.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b0699ee1ddea2caefae40b07f4d3abbd6ec98127a410e23be98a5f533f9838eb",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "Cisco宣布将FY2027来自超大规模客户的AI基础设施收入预期提高至90亿美元，超过FY2026的两倍，并上调全年收入及非GAAP EPS指引。FY2027第一季度总收入约185亿美元，同比增长24%；总收入与AI基础设施收入口径不同。",
+      "analysis": "推断：AI网络需求正加快转化为收入，有助于提高盈利可见度；最终利润贡献仍取决于产品毛利率和交付成本。收入预期上调不能等同于全部订单已经交付。",
+      "evidence_quote": "Cisco Reports First Quarter Earnings",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期2026-11-12，未提供发布时分，纳入72小时补充窗口；报告期截至2026-10-24。",
+        "metrics": [
+          {
+            "name": "超大规模客户AI基础设施收入",
+            "value": "90",
+            "unit": "亿美元",
+            "period": "FY2027",
+            "comparison": "公司上调预期；超过FY2026的两倍",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "集团收入",
+            "value": "185",
+            "unit": "亿美元，约",
+            "period": "FY2027 Q1",
+            "comparison": "同比增长24%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Cisco（CSCO，NASDAQ）：AI网络设备供应商",
+            "direction": "AI基础设施收入预期上调",
+            "reason": "公司直接披露超大规模客户业务预期；未将未具名客户对应到具体上市公司。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：网络交付增加→收入扩大→毛利及运营杠杆决定EPS兑现；需以实际AI收入检验预期。",
+        "watchpoints": [
+          "季度AI基础设施收入、订单转收入速度及产品毛利率",
+          "90亿美元预期的交付覆盖程度"
+        ],
+        "risks": [
+          "客户建设或验收延迟",
+          "AI产品组合增长可能伴随毛利率压力"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Cisco第一季度业绩公告",
+            "url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
+            "supports": "AI收入预期上调、季度收入、报告期及NASDAQ代码"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.cisco.com",
+        "original_url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
+        "canonical_url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "70adeb2fe7b7a87fc6e0e8457e4f3d1137198ebd9b26b55892bc0580d27b0f38",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "CoreWeave宣布2026年第三季度收入36.61亿美元，上年同期为13.65亿美元；期末收入合同储备约1,325亿美元。管理层预计未来三个月收到约90亿美元客户预付款及押金。公司同期净利息费用8.46亿美元、净亏损7.09亿美元，显示业务扩张仍伴随较重融资负担。",
+      "analysis": "推断：合同储备及预付款有助于支持基础设施扩张，但盈利和现金流取决于容量交付、合同履行及融资成本。合同储备包含公司估计的未来收入，不能直接等同于会计剩余履约义务或已实现收入。",
+      "evidence_quote": "CoreWeave Reports Strong Third Quarter 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期2026-11-10，未提供发布时分，属7天补充窗口；季度截至2026-09-30。",
+        "metrics": [
+          {
+            "name": "季度收入",
+            "value": "36.61",
+            "unit": "亿美元",
+            "period": "2026 Q3",
+            "comparison": "2025 Q3为13.65亿美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "收入合同储备",
+            "value": "1325",
+            "unit": "亿美元，约",
+            "period": "截至2026-09-30",
+            "comparison": "含剩余履约义务及其他预计未来确认的合同金额",
+            "basis": "estimate",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "预期客户预付款及押金",
+            "value": "90",
+            "unit": "亿美元，约",
+            "period": "披露后未来三个月",
+            "comparison": "尚非已到账金额",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "CoreWeave（CRWV，NASDAQ）：AI云及算力基础设施运营商",
+            "direction": "算力商业化扩大，融资负担仍高",
+            "reason": "公司直接披露收入、合同储备及资金展望。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：合同履行→算力收入及客户回款→支持资本开支；净利息与折旧可能削弱收入增长对股东盈利的贡献。",
+        "watchpoints": [
+          "90亿美元预付款及押金实际到账",
+          "容量交付、合同转收入及净利息费用"
+        ],
+        "risks": [
+          "合同储备受交付与服务可用性条件约束",
+          "资金成本高企或客户建设延迟"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "CoreWeave第三季度业绩公告",
+            "url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/",
+            "supports": "收入、合同储备定义、预付款预期及融资负担"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.coreweave.com",
+        "original_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/",
+        "canonical_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b747676f6cf9edca5d2fd5aabbb1b3ae63594f3aa50561f537cc62eaf1fa204c",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "WhiteFiber宣布NC-1全部40MW合同IT容量已投运，并开始按全部合同容量计费；开关设备调试问题曾使爬坡晚于原预计的8月。公司称自8月业绩会以来新增云服务合同价值超过7亿美元，并签订3亿美元NC-1担保融资额度，首次提款仍附条件。",
+      "analysis": "推断：从建设转入计费可推动收入和项目现金回收；新增云合同提供增长潜力，但设备、客户验收与融资决定兑现速度。此前延期构成直接反证，签订额度也不能等同融资已到账。",
+      "evidence_quote": "WhiteFiber, Inc. Reports Third Quarter 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "发布于北京时间2026-11-10 20:00，属7天补充窗口；全部容量具体投运日期未披露。",
+        "metrics": [
+          {
+            "name": "NC-1已投运合同IT容量",
+            "value": "40",
+            "unit": "MW",
+            "period": "截至2026-11-10披露",
+            "comparison": "全部合同容量开始计费",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "已签云服务组合完全部署后年化收入",
+            "value": "3.65",
+            "unit": "亿美元，约",
+            "period": "目标2027年中",
+            "comparison": "公司目标，受交付、验收、场地及融资条件约束",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "WhiteFiber（WYFI，NASDAQ）：AI云及数据中心运营商",
+            "direction": "合同容量转入计费",
+            "reason": "公司直接确认NC-1投运及计费；未推定未具名客户身份。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：可计费容量增加→收入与回款提高→回收项目投入；能否改善盈利仍须观察运营成本和融资支出。",
+        "watchpoints": [
+          "NC-1后续季度收入及回款",
+          "融资首次提款与新增云合同部署",
+          "剔除终止费后的云服务增长"
+        ],
+        "risks": [
+          "Q3云服务收入含约340万美元终止费，可能夸大持续性收入",
+          "调试延期可能再次发生",
+          "年化收入目标依赖外部融资与客户验收"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "WhiteFiber第三季度公司公告",
+            "url": "https://www.prnewswire.com/news-releases/whitefiber-inc-reports-third-quarter-2026-results-302934441.html",
+            "supports": "容量投运、计费、新合同、收入目标及融资限制"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.prnewswire.com",
+        "original_url": "https://www.prnewswire.com/news-releases/whitefiber-inc-reports-third-quarter-2026-results-302934441.html",
+        "canonical_url": "https://www.prnewswire.com/news-releases/whitefiber-inc-reports-third-quarter-2026-results-302934441.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0d0dd64b58cc28686b562b596bb91e34c3f62ed4d74052c4267ceea3bff55dff",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Nebius宣布2026年第三季度集团收入9.808亿美元，同比增长571%；调整后EBITDA为4.658亿美元，调整后净利润9,090万美元，上年同期分别亏损520万美元及1.004亿美元。持续经营业务GAAP净亏损仍为3,750万美元。上述为集团口径，包含AI云以外业务。",
+      "analysis": "推断：收入增长快于经营费用，显示运营杠杆改善；但调整后盈利尚不能替代GAAP利润与自由现金流验证。集团数据不足以单独证明AI云利用率、单位算力价格或资本回报改善。",
+      "evidence_quote": "Nebius reports third quarter 2026 financial results",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期2026-11-12，未提供发布时分，属72小时补充窗口；季度截至2026-09-30。",
+        "metrics": [
+          {
+            "name": "集团收入",
+            "value": "9.808",
+            "unit": "亿美元",
+            "period": "2026 Q3",
+            "comparison": "同比增长571%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "折旧与摊销",
+            "value": "3.547",
+            "unit": "亿美元",
+            "period": "2026 Q3",
+            "comparison": "同比增长258%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Nebius（NBIS，NASDAQ）：AI云及算力基础设施运营商",
+            "direction": "商业化收入及调整后盈利改善",
+            "reason": "公司披露集团财务结果；未据此确认具体硬件供应商订单。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：收入扩张→固定费用摊薄→盈利改善；资本密集业务仍需用折旧、资金投入和经营回款检验回报。",
+        "watchpoints": [
+          "AI云分部收入、利用率及可交付容量",
+          "资本开支、经营现金流与GAAP盈利差距"
+        ],
+        "risks": [
+          "集团包含其他业务，不能将全部收入归于AI云",
+          "新增折旧和融资成本可能抵消运营杠杆",
+          "未取得可读取股东信，不采用其容量或合同说法"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Nebius第三季度财务结果",
+            "url": "https://assets.nebius.com/assets/508584f1-b73d-484f-b64f-f96a5bc3b515/Nebius%20Q3%202026%20Financial%20Results%20Press%20Release.pdf",
+            "supports": "集团收入、调整后盈利、GAAP亏损、折旧及合并范围"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "assets.nebius.com",
+        "original_url": "https://assets.nebius.com/assets/508584f1-b73d-484f-b64f-f96a5bc3b515/Nebius%20Q3%202026%20Financial%20Results%20Press%20Release.pdf",
+        "canonical_url": "https://assets.nebius.com/assets/508584f1-b73d-484f-b64f-f96a5bc3b515/Nebius%20Q3%202026%20Financial%20Results%20Press%20Release.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d91a383d8dc9c4854c1ff10e90de01118762c4cac8c97e5a32c5a225d4448a36",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "台积电宣布2026年10月合并收入约新台币5,868.9亿元，环比增长14.7%、同比增长59.7%；1—10月累计收入新台币44,856.2亿元，同比增长43.3%。本次月报未拆分AI、工艺节点、封装或客户贡献。",
+      "analysis": "推断：最新月度数据支持晶圆代工收入继续扩张，但单月营收不能直接证明AI订单、ASP、利用率或毛利率同步改善。需结合后续月报及季度指引检验持续性。",
+      "evidence_quote": "TSMC October 2026 Revenue Report",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期2026-11-10，原文未显示发布时分，属7天补充窗口；经营期间为2026年10月。",
+        "metrics": [
+          {
+            "name": "月度合并收入",
+            "value": "5868.9",
+            "unit": "亿元新台币",
+            "period": "2026年10月",
+            "comparison": "环比增长14.7%；同比增长59.7%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "累计合并收入",
+            "value": "44856.2",
+            "unit": "亿元新台币",
+            "period": "2026年1—10月",
+            "comparison": "同比增长43.3%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "台积电（TSM，NYSE）：晶圆代工关键供应商",
+            "direction": "合并收入同比及环比增长",
+            "reason": "公司直接披露月度收入；本条不认定具体AI客户采购贡献。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：晶圆制造收入增加有利于盈利规模，但产品组合、汇率及成本决定利润与现金流转化。",
+        "watchpoints": [
+          "11—12月收入与季度指引衔接",
+          "后续披露的先进节点、封装及毛利率"
+        ],
+        "risks": [
+          "单月交付节奏和汇率可能影响增长",
+          "缺少AI收入拆分，不能将整体增长归于AI需求"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "台积电2026年10月营收公告",
+            "url": "https://pr.tsmc.com/japanese/news/3349",
+            "supports": "月度与累计收入、同比环比口径及NYSE代码"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "pr.tsmc.com",
+        "original_url": "https://pr.tsmc.com/japanese/news/3349",
+        "canonical_url": "https://pr.tsmc.com/japanese/news/3349",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
