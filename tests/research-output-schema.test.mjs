@@ -71,6 +71,25 @@ test('daily open-source schema requires one of five research areas and structure
  assert.equal(validateArchive(wrongArea),false);
 });
 
+test('project factual evaluation requires evidence in both Codex and archive schemas',()=>{
+ const project={kind:'project',overview:'本地文件处理工具。',change:null,technical:null,useCases:null,license:null,
+  evaluation:[{description:'官方文档确认支持批量处理。',nature:'fact',evidenceRefs:null}],
+  evidence:[{id:'docs',name:'官方文档',url:'https://example.com/docs',supports:'批量处理'}]};
+ const output={title:'每日开源项目',items:[{url:'https://example.com/docs',researchArea:'rust',category:'opensource',importance:3,
+  factSummary:'工具支持批量处理。',analysis:null,evidenceQuote:'Supports batch processing',details:project}]};
+ const ajv=new Ajv({strict:true});
+ const codex=ajv.compile(CODEX_OPEN_SOURCE_RESEARCH_SCHEMA);
+ const archive=ajv.compile(OPEN_SOURCE_RESEARCH_SCHEMA);
+ assert.equal(codex(output),false,'Codex must reject a factual evaluation with no evidence');
+ assert.equal(archive(normalizeResearchOutput(output,OPEN_SOURCE_RESEARCH_SCHEMA)),false);
+ output.items[0].details.evaluation[0].evidenceRefs=['docs'];
+ assert.equal(codex(output),true,JSON.stringify(codex.errors));
+ assert.equal(archive(normalizeResearchOutput(output,OPEN_SOURCE_RESEARCH_SCHEMA)),true,JSON.stringify(archive.errors));
+ output.items[0].details.evaluation[0]={description:'适合先评估小规模场景。',nature:'analysis',evidenceRefs:null};
+ assert.equal(codex(output),true,JSON.stringify(codex.errors));
+ assert.equal(archive(normalizeResearchOutput(output,OPEN_SOURCE_RESEARCH_SCHEMA)),true,JSON.stringify(archive.errors));
+});
+
 test('daily technology v1 requires focused categories and evidence-backed investment details',()=>{
  const ajv=new Ajv({strict:true});
  checkStrict(CODEX_TECHNOLOGY_RESEARCH_SCHEMA);

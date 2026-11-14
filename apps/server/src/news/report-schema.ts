@@ -1,6 +1,6 @@
 import { INVESTMENT_DETAILS_SCHEMA, TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA, type InvestmentDetails } from './investment-details.js';
 import { HEADLINES_DETAILS_SCHEMA, HEADLINE_CATEGORIES, LEGACY_NEWS_DETAILS_SCHEMA, NEWS_DETAILS_SCHEMA, type NewsDetails } from './news-details.js';
-import { PROJECT_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
+import { PROJECT_DETAILS_SCHEMA, PROJECT_RESEARCH_DETAILS_SCHEMA, type ProjectDetails } from './project-details.js';
 const text = (maxLength: number) => ({ type: 'string', minLength: 1, maxLength });
 const nullableTime = { anyOf: [{ type: 'string', format: 'date-time' }, { type: 'null' }] };
 export const TECHNOLOGY_CATEGORIES = ['ai_industry_chain', 'optical_communications', 'semiconductor'] as const;
@@ -60,7 +60,7 @@ export const OPEN_SOURCE_RESEARCH_SCHEMA = {
       items: {
         ...researchItemSchema,
         required: [...researchItemSchema.required, 'researchArea', 'details'],
-        properties: { ...researchItemSchema.properties, researchArea: researchAreaProperty, details: PROJECT_DETAILS_SCHEMA },
+        properties: { ...researchItemSchema.properties, researchArea: researchAreaProperty, details: PROJECT_RESEARCH_DETAILS_SCHEMA },
       },
     },
   },

@@ -413,6 +413,8 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 若三类日报的最终轮都在数秒内以 `agent_failed` 结束，需更新并重启包含严格输出兼容 Schema 的 Backend；旧版可能因可选 `details` 被 Codex 拒绝为 HTTP 400。修复后手动重新运行失败任务，旧 Run 不会自动重跑。业务校验仍使用完整 Schema。
 
+若开源项目日报以 `report_schema_invalid` 结束，检查最终 JSON 的 `details.evaluation`：`nature=fact` 必须引用本条 `details.evidence` 中的 ID。更新 Backend 后该约束也会发送给 Codex；已保存任务的 Prompt 无需修改，但失败的托管 Run 仍需手动启动新 Run。
+
 来源不可访问、引文不匹配、认证过期或搜索不支持时，检查 Run 错误并修正来源/prompt，不添加假内容。可按研究量调整单 Turn 总超时 后台“模型与执行”的每轮超时（默认 10 分钟），页面按分钟配置。生成的 validated 仍待人工审核，不自动归档。历史 RSS 验证不能替代当前研究验证，见 [当前记录](validation/CODEX_RESEARCH.md)。原生服务账户/systemd/长期认证仍由 #2 验收。
 
 ## 12. Issue #6 本地管理后台

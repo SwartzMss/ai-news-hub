@@ -28,6 +28,8 @@ Codex 严格结构化输出要求所有属性必填，且不接受业务 Schema 
 
 每日开源项目 v1 保持 id/version 不变，采用候选发现、原始来源核实与 JSON 生成两轮；范围固定为 AI Agent 与自动化执行、Rust 工程工具、AI 视频/音频与多媒体创作、性能分析与软件安全、区块链与去中心化基础设施五个方向。每个方向独立精选 0～2 个，不设全局目标数量，质量不足时允许留空。明确区分近期实质更新与值得认识的项目发现，不把社区热度当作项目进展。第二轮输出必需的 `researchArea` 和 `kind=project` 结构化详情，技术要点、适用场景、许可证与评价均须有相应证据；无证据内容省略。公共归档使用 v3 Schema，旧 v1/v2 归档保持兼容。模板更新需重新选择并保存任务后生效，旧归档不自动补齐。每日科技投资简报 v1 保持 id/version 不变，聚焦 AI 产业链、光模块与光通信、半导体三个方向；Nasdaq 为核心市场，NYSE 次之，仅在产业链直接相关时纳入 A 股/港股。两轮流程先发现候选，再核查来源与投资影响；优先最近 24 小时，必要时补充至 72 小时、最多 7 天。最终按事实增量、业绩影响和证据强度精选 5～8 条、最多 10 条，不设方向配额、不凑数。同一事件只归入一个主方向。第二轮使用专用 `TECHNOLOGY_RESEARCH_SCHEMA`，仅允许 `ai_industry_chain`、`optical_communications`、`semiconductor`，每条必须包含 `kind=investment` 和至少一个原始证据；详情使用既有投资结构（metrics、supplyChain、investmentLogic、watchpoints、risks、valuation），不改变旧投资详情字段。模板通过 `templateId=daily-technology` 路由，科技投资归档使用 v5；v1～v4 契约保持不变。已保存任务需重新选择并保存模板后生效，历史 Run/归档不重写。同任务最近 7 天最多 60 条完整摘要、来源 canonical URL 与可提取的项目仓库链接作为不可信去重数据提供给所有托管主题日报，包含弹性条数任务；固定条数标记只控制数量校验。模板修改不自动更新已保存任务或历史 Run。
 
+开源项目 `details.evaluation` 中的 `nature=fact` 必须带非空且指向本条 `evidence` 的 `evidenceRefs`；`nature=analysis` 可无引用。新生成日报的 Codex 输入 Schema 与 Backend 保存校验均限制事实评价的引用形式，冻结的历史归档 Schema 不变。没有同任务历史日报时，研究上下文会明确告知；历史去重状态不写入单个项目评价。
+
 新闻 Thread 只允许 hosted web search：逐个禁用继承的 MCP，禁用 Shell、应用和委派，审批仍一律拒绝。Backend 管理/发布凭据不传给 Codex；没有外部 RSS 采集入口，公共站输出 RSS 保留。
 
 当前用户配置任务严格执行 N 条 Prompt = N 次 Codex Turn。最后一条原始 Prompt 直接返回日报结构，Backend 只在开发者格式指令中提供主题/时间/Schema，不改写持久化的用户 Prompt，也不再追加“依据前面所有轮次的研究结果，生成完整日报。”。旧执行记录的额外系统轮仅作为历史保留。
