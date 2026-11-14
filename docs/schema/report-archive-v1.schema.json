@@ -125,10 +125,6 @@
               "developer_tools",
               "security",
               "industry",
-              "other",
-              "ai_industry_chain",
-              "optical_communications",
-              "semiconductor",
               "social_event",
               "entertainment",
               "tech_digital",
@@ -138,7 +134,11 @@
               "finance_consumption",
               "internet_culture",
               "lifestyle_emotion",
-              "international_topic"
+              "international_topic",
+              "ai_industry_chain",
+              "optical_communications",
+              "semiconductor",
+              "other"
             ]
           },
           "importance": {
