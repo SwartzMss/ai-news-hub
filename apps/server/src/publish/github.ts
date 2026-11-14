@@ -18,10 +18,7 @@ export class GitHubArchive implements GitHubAdapter {
   }
   async publish(artifact: ArchiveArtifact, signal: AbortSignal) {
     if (
-      !(
-        /^reports\/\d{4}\/\d{2}\/\d{2}\/opensource\/v\d{6}\.json$/.test(artifact.path) ||
-        /^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path)
-      ) ||
+      !/^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path) ||
       Buffer.byteLength(artifact.content) > 256 * 1024
     )
       throw new AppError("archive_invalid");
@@ -113,8 +110,7 @@ export class GitHubArchive implements GitHubAdapter {
     return request;
   }
   async remove(artifact: ArchiveRemoval, target: PublishTarget, signal: AbortSignal): Promise<void> {
-    if (!(/^reports\/\d{4}\/\d{2}\/\d{2}\/opensource\/v\d{6}\.json$/.test(artifact.path) ||
-      /^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path)))
+    if (!/^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path))
       throw new AppError("archive_invalid");
     if (target.repository !== this.target.repository || target.branch !== this.target.branch) throw new AppError("archive_target_unknown");
     const request = this.request(signal);
@@ -132,14 +128,6 @@ export class GitHubArchive implements GitHubAdapter {
       throw new AppError("archive_conflict");
     const tree: {path:string;mode:string;type:string;sha?:null;content?:string}[] = [];
     if (content !== undefined) tree.push({path:artifact.path,mode:"100644",type:"blob",sha:null});
-    const mapping = await read("reports/topics.json");
-    if (mapping !== undefined) {
-      const value = JSON.parse(mapping.toString("utf8")) as {schema_version:number;assignments:{report_id:string}[]};
-      if (value.schema_version !== 1 || !Array.isArray(value.assignments)) throw new AppError("archive_invalid");
-      const assignments = value.assignments.filter(item => item.report_id !== artifact.reportId);
-      if (assignments.length !== value.assignments.length)
-        tree.push({path:"reports/topics.json",mode:"100644",type:"blob",content:JSON.stringify({...value,assignments},null,2)+"\n"});
-    }
     if (!tree.length) return;
     const commit = await request("git/commits/"+head) as {tree?:{sha?:string}};
     if (!validSha(commit.tree?.sha)) throw new AppError("github_invalid_response");
