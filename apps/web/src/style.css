@@ -136,6 +136,34 @@ h3 {
   font-size: 12px;
   white-space: nowrap;
 }
+.header-actions .subscribe-action {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 7px;
+  min-height: 36px;
+  padding: 0 13px;
+  border: 1px solid #1877e8;
+  border-radius: 7px;
+  background: #1877e8;
+  color: #fff;
+  font-size: 12px;
+  font-weight: 650;
+  text-decoration: none;
+  transition: background-color 160ms ease, border-color 160ms ease;
+}
+.header-actions .subscribe-action:hover {
+  border-color: #1267cc;
+  background: #1267cc;
+  color: #fff;
+  text-decoration: none;
+}
+.header-actions .subscribe-action svg {
+  width: 14px;
+  height: 14px;
+  flex: 0 0 auto;
+  fill: currentColor;
+}
 .header-actions button {
   display: grid;
   place-items: center;
