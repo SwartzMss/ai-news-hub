@@ -78,6 +78,20 @@ function detailsMarkdown(details:InvestmentDetails):string {
 function newsDetailsMarkdown(details:NewsDetails):string {
   const lines=[`### 新闻详情\n\n事件背景：${markdownText(details.background)}`];
   const withRefs=(refs?:string[])=>refs?.length?`（证据 ${refs.map(markdownText).join('、')}）`:'';
+  const internalRefs=new Set([
+    ...(details.trendSignals??[]).flatMap(signal=>signal.evidenceRefs),
+    ...(details.publicDiscussion?.evidenceRefs??[]),
+    ...(details.publicDiscussion?.viewpoints??[]).flatMap(item=>item.evidenceRefs),
+    ...(details.publicDiscussion?.controversies??[]).flatMap(item=>item.evidenceRefs),
+    ...(details.publicDiscussion?.representativeComments??[]).flatMap(item=>item.evidenceRefs),
+  ]);
+  const factualRefs=new Set([
+    ...(details.keyFacts??[]).flatMap(item=>item.evidenceRefs),
+    ...(details.timeline??[]).flatMap(item=>item.evidenceRefs),
+    ...(details.positions??[]).flatMap(item=>item.evidenceRefs),
+    ...(details.impacts??[]).flatMap(item=>item.evidenceRefs??[]),
+  ]);
+  const readerEvidence=(details.evidence??[]).filter(source=>!internalRefs.has(source.id)||factualRefs.has(source.id));
   if(details.keyFacts?.length)lines.push(`关键事实：\n${details.keyFacts.map(f=>`- ${markdownText(f.name)}：${markdownText(f.value)}${f.unit?` ${markdownText(f.unit)}`:''}${f.period?`；${markdownText(f.period)}`:''}；${markdownText(f.nature)}${withRefs(f.evidenceRefs)}`).join('\n')}`);
   if(details.timeline?.length)lines.push(`事件时间线：\n${details.timeline.map(e=>`- ${markdownText(e.time)}：${markdownText(e.event)}${withRefs(e.evidenceRefs)}`).join('\n')}`);
   if(details.positions?.length)lines.push(`各方表态：\n${details.positions.map(p=>`- ${markdownText(p.actor)}（${p.form==='quote'?'原话':'转述'}）：${markdownText(p.statement)}${withRefs(p.evidenceRefs)}`).join('\n')}`);
