@@ -135,10 +135,10 @@
               "internet_culture",
               "lifestyle_emotion",
               "international_topic",
+              "other",
               "ai_industry_chain",
               "optical_communications",
-              "semiconductor",
-              "other"
+              "semiconductor"
             ]
           },
           "importance": {
