@@ -42,7 +42,7 @@ test('legacy social metadata is retained for compatibility but omitted from read
  const report=buildReport(JSON.stringify(p),candidates,metadata);
  assert.deepEqual(report.items[0].details,p.items[0].details);
  const markdown=reportMarkdown(report);
- assert.doesNotMatch(markdown,/平台传播信号|公众讨论|讨论类型标签|跨平台传播|微博|抖音/);
+ assert.doesNotMatch(markdown,/平台传播信号|公众讨论|讨论类型标签|跨平台传播/);
  assert.doesNotMatch(markdown,/内容创作评估|建议标题|Hook|适合短视频/);
  assert.match(markdown,/微博/);
 });

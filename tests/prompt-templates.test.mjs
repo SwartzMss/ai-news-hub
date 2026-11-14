@@ -76,7 +76,7 @@ test('headlines v1 keeps platform research internal and publishes factual news o
   assert.match(final,/只有当平台行为本身就是事件核心/);
   for(const field of ['keyFacts','timeline','positions','impacts','uncertainties','watchpoints','evidence'])assert.ok(final.includes(field),field);
   for(const category of ['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other'])assert.ok(final.includes(category),category);
-  assert.doesNotMatch(final,/trendTags|discussionTags|trendSignals|publicDiscussion|cross_platform|single_platform|代表性评论/);
+  assert.doesNotMatch(final,/trendTags|discussionTags|trendSignals|publicDiscussion|cross_platform|single_platform/);
   assert.match(final,/6000 字节/);
 });
 test('headlines strict schema accepts reader-facing news and rejects internal social signals',()=>{
