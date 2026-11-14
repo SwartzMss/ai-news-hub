@@ -1,20 +1,11 @@
-import type { NewsDetails, SocialPlatform, Story } from './types';
+import type { NewsDetails, Story } from './types';
 import { InlineText } from './InlineText';
-import { categories, discussionTagLabels, Source, lead, trendTagLabels } from './ReadingParts';
+import { categories, Source, lead } from './ReadingParts';
 import { DetailAsideNav, MobileDetailNav, hasText, type DetailSection } from './DetailNavigation';
 
 const natureLabel:Record<NonNullable<NewsDetails['keyFacts']>[number]['nature'],string>={
   confirmed:'已证实',statement:'当事方表述',reported:'媒体报道',estimate:'估算',inference:'推断',
 };
-const platformLabels:Record<SocialPlatform,string>={
-  weibo:'微博',douyin:'抖音',bilibili:'B站',xiaohongshu:'小红书',zhihu:'知乎',x:'X',reddit:'Reddit',other:'其他平台',
-};
-const metricLabels:Record<string,string>={rank:'榜单排名',views:'播放/浏览',likes:'点赞',comments:'评论',shares:'转发',posts:'帖子数量',discussion:'讨论热度',other:'其他指标'};
-const contentTypeLabels:Record<string,string>={hashtag:'话题',post:'帖子',video:'视频',thread:'讨论串',topic_page:'话题页',other:'其他内容'};
-const sentimentLabels:Record<string,string>={supportive:'支持',critical:'批评',concerned:'担忧',mixed:'观点混合',humorous:'调侃',neutral:'中性'};
-function timeLabel(value:string){
-  return new Date(value).toLocaleString('zh-CN',{timeZone:'Asia/Shanghai',month:'2-digit',day:'2-digit',hour:'2-digit',minute:'2-digit',hour12:false});
-}
 function EvidenceLinks({ids,details}:{ids?:string[];details:NewsDetails}){
   if(!ids?.length)return null;
   return <span className="news-references">{ids.map(id=>{
@@ -53,12 +44,6 @@ export function NewsDetail({story}:{story:Story}){
     <div className="news-detail-sections">
       {show("news-background")&&<section id="news-background"><h2>事件概览</h2>{hasText(details.background)&&<p><InlineText text={details.background}/></p>}{details.timeline?.length===1&&<p><span id="news-timeline"/><time>{details.timeline[0].time}</time>：<InlineText text={details.timeline[0].event}/><EvidenceLinks ids={details.timeline[0].evidenceRefs} details={details}/></p>}</section>}
       {show("news-facts")&&<section id="news-facts"><h2>关键事实与数据</h2><div className="news-facts-scroll"><table><thead><tr><th scope="col">事项</th><th scope="col">内容</th><th scope="col">时间与性质</th><th scope="col">证据</th></tr></thead><tbody>{details.keyFacts?.map((fact,index)=><tr key={`${fact.name}-${index}`}><th scope="row">{fact.name}</th><td>{fact.value}{fact.unit&&` ${fact.unit}`}</td><td>{fact.period&&<span>{fact.period}</span>}<span className="news-fact-nature">{natureLabel[fact.nature]}</span></td><td><EvidenceLinks ids={fact.evidenceRefs} details={details}/></td></tr>)}</tbody></table></div></section>}
-      {show("news-trends")&&<section id="news-trends"><h2>平台传播信号</h2><p className="news-section-note">以下为可追溯的公开平台信号；数值和排名以来源页面及观察时间为准，不代表跨平台统一热度。</p><ul className="news-trend-signals">{details.trendSignals?.map((signal,index)=><li key={`${signal.platform}-${signal.observedAt}-${index}`}><div className="news-trend-heading"><strong>{platformLabels[signal.platform]}</strong><span>{contentTypeLabels[signal.contentType]}</span><span>{signal.evidenceType==='direct'?'直接观察':'来源转述'}</span></div><p>{metricLabels[signal.metric]}：{signal.value}</p><time dateTime={signal.observedAt}>观察时间：{timeLabel(signal.observedAt)}（北京时间）</time><EvidenceLinks ids={signal.evidenceRefs} details={details}/></li>)}</ul></section>}
-      {show("news-discussion")&&details.publicDiscussion&&<section id="news-discussion"><h2>公众讨论</h2><p><InlineText text={details.publicDiscussion.summary}/><EvidenceLinks ids={details.publicDiscussion.evidenceRefs} details={details}/></p>
-        {!!details.publicDiscussion.viewpoints?.length&&<><h3>主要观点</h3><ul className="news-discussion-list">{details.publicDiscussion.viewpoints.map((view,index)=><li key={index}><div><strong>{view.label}</strong><span>{sentimentLabels[view.sentiment]}</span></div><p><InlineText text={view.summary}/></p><EvidenceLinks ids={view.evidenceRefs} details={details}/></li>)}</ul></>}
-        {!!details.publicDiscussion.controversies?.length&&<><h3>争议焦点</h3><ul className="news-discussion-list">{details.publicDiscussion.controversies.map((item,index)=><li key={index}><strong>{item.topic}</strong><ul>{item.sides.map((side,i)=><li key={i}><InlineText text={side}/></li>)}</ul><EvidenceLinks ids={item.evidenceRefs} details={details}/></li>)}</ul></>}
-        {!!details.publicDiscussion.representativeComments?.length&&<><h3>代表性评论</h3><ul className="news-comments">{details.publicDiscussion.representativeComments.map((comment,index)=><li key={index}><blockquote><InlineText text={comment.quote}/></blockquote><span>{platformLabels[comment.platform]}</span><EvidenceLinks ids={comment.evidenceRefs} details={details}/></li>)}</ul></>}
-      </section>}
       {show("news-timeline")&&<section id="news-timeline"><h2>事件时间线</h2><ol className="news-timeline">{details.timeline?.map((entry,index)=><li key={`${entry.time}-${index}`}><time>{entry.time}</time><p><InlineText text={entry.event}/></p><EvidenceLinks ids={entry.evidenceRefs} details={details}/></li>)}</ol></section>}
       {show("news-positions")&&<section id="news-positions"><h2>各方表态</h2><ul className="news-positions">{details.positions?.map((position,index)=><li key={`${position.actor}-${index}`}><div><strong>{position.actor}</strong><span>{position.form==='quote'?'原话':'转述'}</span></div><p><InlineText text={position.statement}/></p><EvidenceLinks ids={position.evidenceRefs} details={details}/></li>)}</ul></section>}
       {show("news-impacts")&&<section id="news-impacts"><h2>影响</h2><ul className="news-impacts">{details.impacts?.map((impact,index)=><li key={index}><span>{impact.status==='observed'?'已观察':'分析推断'}</span><p><InlineText text={impact.description}/></p><EvidenceLinks ids={impact.evidenceRefs} details={details}/></li>)}</ul></section>}

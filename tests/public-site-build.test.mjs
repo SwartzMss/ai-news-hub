@@ -591,8 +591,8 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal(doc.querySelector('#news-content'),null);
   assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/内容创作建议|建议标题|开头 Hook|适合短视频/);
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
-  assert.equal(topicDoc.querySelector('.news-row-tags').textContent.trim(),'社会事件');
-  assert.doesNotMatch(topicDoc.querySelector('.news-row-tags').textContent,/跨平台|观点讨论/);
+  assert.equal(topicDoc.querySelector('.category-label').textContent.trim(),'社会事件');
+  assert.doesNotMatch(topicDoc.querySelector('.category-label').textContent,/跨平台|观点讨论/);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
   assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
