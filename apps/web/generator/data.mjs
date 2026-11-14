@@ -124,8 +124,6 @@ export function readArchives(
     if (ids.has(r.report_id)) throw Error("duplicate report id");
     ids.add(r.report_id);
   }
-  for (const id of assignments.keys())
-    if (!ids.has(id)) throw Error("unknown topic assignment");
   reports.sort(
     (a, b) =>
       compare(b.report_date, a.report_date) ||
