@@ -676,11 +676,11 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.match(publicStyles, /\.newsletter-dialog\s*\{[^}]*width:\s*min\(440px, calc\(100vw - 32px\)\);[^}]*padding:\s*20px;/s, "newsletter dialog uses a compact card proportion");
     assert.match(publicStyles, /\.newsletter-fields\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\);[^}]*gap:\s*10px;/s, "newsletter fields stack vertically with compact spacing");
     assert.match(publicStyles, /\.newsletter-email input\[type="email"\]\s*\{[^}]*min-height:\s*44px;[^}]*padding:\s*0 12px;/s, "email input receives compact dialog styling");
-    assert.match(publicStyles, /\.newsletter-fields button\s*\{[^}]*width:\s*160px;[^}]*min-height:\s*42px;/s, "desktop subscribe button has a compact balanced size");
+    assert.match(publicStyles, /\.newsletter-fields button\s*\{[^}]*justify-self:\s*end;[^}]*width:\s*160px;[^}]*min-height:\s*42px;/s, "desktop subscribe button aligns to the right edge of the email input");
     assert.match(publicStyles, /\.newsletter-close\s*\{[^}]*width:\s*32px;[^}]*height:\s*32px;[^}]*border-radius:\s*8px;/s, "close control is compact and aligned to the dialog inset");
     assert.equal(window.document.querySelector("#newsletter-dialog .newsletter-email span"), null, "newsletter email label is not displayed");
     assert.equal(window.document.querySelector("#newsletter-dialog input[name='email']")?.getAttribute("aria-label"), "邮箱地址", "email input retains an accessible name");
-    assert.match(publicStyles, /@media \(max-width: 700px\)[\s\S]*?\.newsletter-fields button\s*\{[^}]*width:\s*100%;/s, "subscribe button fills the mobile dialog width");
+    assert.match(publicStyles, /@media \(max-width: 700px\)[\s\S]*?\.newsletter-fields button\s*\{[^}]*justify-self:\s*stretch;[^}]*width:\s*100%;/s, "subscribe button fills the mobile dialog width");
     assert.match(publicStyles, /\.header-link,\s*\.header-actions \.subscribe-action\s*\{[^}]*min-height:\s*40px;[^}]*padding:\s*0 14px;[^}]*border-radius:\s*10px;[^}]*background:\s*var\(--paper\);/s, "GitHub, Contact and Subscribe share the same outline-button treatment");
     assert.match(publicStyles, /\.header-links\s*\{[^}]*gap:\s*8px;[^}]*\}/s, "header action buttons use a compact consistent gap");
     assert.match(publicStyles, /\.header-actions #theme-toggle\s*\{[^}]*width:\s*40px;[^}]*height:\s*40px;[^}]*border-radius:\s*10px;/s, "theme toggle aligns with the header action buttons");

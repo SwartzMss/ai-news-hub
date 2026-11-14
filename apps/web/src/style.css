@@ -1052,7 +1052,7 @@ main {
   opacity: 0.75;
 }
 .newsletter-fields button {
-  justify-self: start;
+  justify-self: end;
   width: 160px;
   min-height: 42px;
   padding: 0 16px;
