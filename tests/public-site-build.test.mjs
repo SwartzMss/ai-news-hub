@@ -540,7 +540,7 @@ test('news detail renders structured evidence, timeline and a section directory'
  try{
   const report=JSON.parse(readFileSync('tests/fixtures/web-reports/2026/11/03/opensource/v000001.json','utf8'));
   const topicId='t-'+'b'.repeat(24);
-  report.schema_version=4;
+  report.schema_version=6;
   report.topic={id:topicId,name:'每日热点观察'};
   report.items=report.items.slice(0,1);
   report.items[0].category='social_event';
@@ -549,7 +549,7 @@ test('news detail renders structured evidence, timeline and a section directory'
    keyFacts:[{name:'话题状态',value:'多个平台出现讨论',nature:'reported',evidenceRefs:['weibo']}],
    timeline:[{time:'2026-11-03',precision:'date',event:'话题开始传播',evidenceRefs:['weibo']}],
    trendTags:['cross_platform','controversial','viral_video'],
-   contentTags:['short_video','debate'],
+   discussionTags:['debate'],
    trendSignals:[
     {platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 3 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['weibo']},
     {platform:'douyin',contentType:'video',metric:'views',value:'热门视频，未披露完整播放量',observedAt:'2026-11-13T06:30:00+08:00',evidenceType:'reported',evidenceRefs:['douyin']},
@@ -561,9 +561,6 @@ test('news detail renders structured evidence, timeline and a section directory'
     controversies:[{topic:'责任归属',sides:['观点 A','观点 B'],evidenceRefs:['discussion']}],
     representativeComments:[{platform:'weibo',quote:'这是一条可追溯的公开评论。',evidenceRefs:['discussion']}],
    },
-   contentSuitability:'recommended',
-   contentReason:'事件有清晰争议和可解释的背景。',
-   contentAngles:[{angle:'解释争议焦点',suggestedTitle:'大家为什么讨论这个话题？',hook:'真正的分歧在哪里？',corePoints:['还原已确认事实'],evidenceRefs:['discussion']}],
    positions:[{actor:'相关主体',statement:'公开回应相关争议',form:'paraphrase',evidenceRefs:['notice']}],
    impacts:[{description:'讨论持续扩散',status:'analysis'}],
    uncertainties:['部分传播数据未公开'],
@@ -581,13 +578,14 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.ok(doc.querySelector('.news-detail'));
   assert.equal(doc.querySelector('.news-detail .section-kicker'),null);
   assert.match(doc.querySelector('.news-detail-tags').textContent,/社会事件.*跨平台传播.*观点讨论/s);
-  assert.doesNotMatch(doc.querySelector('.news-detail-tags').textContent,/适合短视频/);
+  assert.match(doc.querySelector('.news-detail-tags').textContent,/观点讨论/);
   assert.match(doc.querySelector('#news-trends').textContent,/微博.*热榜第 3 位.*观察时间/s);
   assert.match(doc.querySelector('#news-discussion').textContent,/责任归属.*可追溯的公开评论/s);
-  assert.match(doc.querySelector('#news-content').textContent,/大家为什么讨论这个话题.*真正的分歧在哪里/s);
+  assert.equal(doc.querySelector('#news-content'),null);
+  assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/内容创作建议|建议标题|开头 Hook|适合短视频/);
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
   assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*观点讨论/s);
-  assert.doesNotMatch(topicDoc.querySelector('.news-row-tags').textContent,/适合短视频/);
+  assert.match(topicDoc.querySelector('.news-row-tags').textContent,/观点讨论/);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
   assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');

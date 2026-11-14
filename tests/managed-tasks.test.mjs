@@ -161,17 +161,17 @@ test('daily headlines template routes to strict social trend schema independentl
   assert.ok(itemSchema.required.includes('details'));
   assert.deepEqual(itemSchema.properties.category.enum,['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other']);
   assert.equal(itemSchema.properties.details.properties.trendSignals.minItems,1);
-  assert.ok(itemSchema.properties.details.required.includes('contentSuitability'));
+  assert.ok(itemSchema.properties.details.required.includes('discussionTags'));
+  assert.equal(itemSchema.properties.details.properties.contentSuitability,undefined);
+  assert.equal(itemSchema.properties.details.properties.contentAngles,undefined);
   const output={title:'2026-11-13 北京时间网络热点',items:[{
    url:'https://example.com/event',category:'social_event',importance:4,
    factSummary:'一个社会话题在微博平台进入热榜并引发讨论。',
    analysis:null,evidenceQuote:'Public platform trend signal',
    details:{
     kind:'news',background:'该话题在最近 24 小时进入微博热榜。',
-    trendTags:['single_platform'],contentTags:['short_video'],
+    trendTags:['single_platform'],discussionTags:['debate'],
     trendSignals:[{platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 2 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['trend']}],
-    contentSuitability:'recommended',contentReason:'话题有明确事实和可解释的讨论焦点。',
-    contentAngles:[{angle:'解释争议焦点',suggestedTitle:'大家为什么讨论这个话题？',hook:'争议到底在哪里？',corePoints:['还原公开事实'],evidenceRefs:['source']}],
     evidence:[
      {id:'trend',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
      {id:'source',name:'事件来源',url:'https://example.com/source',supports:'话题背景和事实'},

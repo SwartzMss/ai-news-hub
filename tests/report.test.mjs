@@ -11,7 +11,7 @@ const socialNewsDetails = () => ({
  kind:'news',
  background:'该话题在最近 24 小时内于多个社交平台出现讨论。',
  trendTags:['cross_platform','controversial','viral_video'],
- contentTags:['short_video','debate'],
+ discussionTags:['debate'],
  trendSignals:[
   {platform:'weibo',contentType:'hashtag',metric:'rank',value:'热榜第 3 位',observedAt:'2026-11-13T06:00:00+08:00',evidenceType:'direct',evidenceRefs:['weibo']},
   {platform:'douyin',contentType:'video',metric:'views',value:'热门视频，未披露完整播放量',observedAt:'2026-11-13T06:30:00+08:00',evidenceType:'reported',evidenceRefs:['douyin']},
@@ -23,9 +23,6 @@ const socialNewsDetails = () => ({
   controversies:[{topic:'责任归属',sides:['观点 A','观点 B'],evidenceRefs:['discussion']}],
   representativeComments:[{platform:'weibo',quote:'这是一条有公开来源的代表性评论。',evidenceRefs:['discussion']}],
  },
- contentSuitability:'recommended',
- contentReason:'事件有可核实事实、清晰争议和解释空间。',
- contentAngles:[{angle:'从争议焦点切入',suggestedTitle:'为什么这个话题引发讨论？',hook:'真正的分歧在哪里？',corePoints:['还原已确认事实','梳理不同观点'],evidenceRefs:['discussion']}],
  evidence:[
   {id:'weibo',name:'微博话题页',url:'https://example.com/weibo',supports:'微博热榜排名'},
   {id:'douyin',name:'抖音视频页',url:'https://example.com/douyin',supports:'视频传播情况'},
@@ -40,14 +37,15 @@ test('news details survive report construction and Markdown without changing inv
  const investment=proposal();investment.items[0].details=investmentDetails();
  assert.equal(buildReport(JSON.stringify(investment),candidates,metadata).items[0].details.kind,'investment');
 });
-test('social headline details retain evidence-backed signals, discussion tags and content angles',()=>{
+test('social headline details retain evidence-backed signals and discussion tags',()=>{
  const p=proposal();p.items[0].category='social_event';p.items[0].details=socialNewsDetails();
  const report=buildReport(JSON.stringify(p),candidates,metadata);
  assert.deepEqual(report.items[0].details,p.items[0].details);
  const markdown=reportMarkdown(report);
  assert.match(markdown,/平台传播信号/);
  assert.match(markdown,/公众讨论/);
- assert.match(markdown,/内容创作评估/);
+ assert.match(markdown,/讨论类型标签/);
+ assert.doesNotMatch(markdown,/内容创作评估|建议标题|Hook|适合短视频/);
  assert.match(markdown,/微博/);
 });
 test('social trend tags must match platform and discussion evidence',()=>{
@@ -56,8 +54,7 @@ test('social trend tags must match platform and discussion evidence',()=>{
   d=>{d.publicDiscussion.controversies=[];},
   d=>{d.trendTags.push('sustained_discussion');},
   d=>{d.trendSignals[0].evidenceRefs=['missing'];},
-  d=>{d.contentAngles[0].evidenceRefs=['missing'];},
-  d=>{d.contentSuitability='not_recommended';},
+  d=>{d.discussionTags=['short_video'];},
  ]){
   const p=proposal();p.items[0].category='social_event';p.items[0].details=socialNewsDetails();mutate(p.items[0].details);
   assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
