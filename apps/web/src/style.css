@@ -2080,20 +2080,40 @@ body {
 }
 
 
-/* Keep the detail reading unit centered in the full reader viewport, not a reserved side column. */
-@media (min-width: 1200px) {
+/* Article detail pages use the full reader width; topic navigation stays above the article. */
+@media (min-width: 1001px) {
   .reader-body:has(> .reading-layout.detail-layout) {
     display: block;
     width: 100%;
     max-width: none;
     margin-inline: 0;
   }
-  .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout.has-aside {
+  .reader-body:has(> .reading-layout.detail-layout) > .topic-picker {
+    position: static;
+    display: flex;
+    flex-direction: row;
+    flex-wrap: wrap;
     width: 100%;
+    max-width: none;
+    max-height: none;
+    overflow: visible;
+    margin: 0;
+    padding: 14px 0 0;
+    border-right: 0;
+    border-bottom: 1px solid var(--line);
+  }
+  .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout {
+    width: 100%;
+    max-width: 900px;
+    margin: 18px 0 64px;
+  }
+}
+@media (min-width: 1200px) {
+  .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout.has-aside {
     max-width: 1176px;
     grid-template-columns: minmax(0, 900px) 220px;
     gap: 56px;
-    margin: 18px auto 64px;
-    justify-content: center;
+    margin: 18px 0 64px;
+    justify-content: start;
   }
 }
