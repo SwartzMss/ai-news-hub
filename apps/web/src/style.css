@@ -1535,10 +1535,10 @@ body {
   color: var(--ink);
 }
 .site-shell {
-  width: min(100%, 1680px);
-  max-width: 1680px;
-  padding-inline: clamp(18px, 4vw, 64px);
-  margin-inline: auto;
+  width: 100%;
+  max-width: none;
+  padding-inline: clamp(20px, 2vw, 40px);
+  margin-inline: 0;
 }
 .masthead {
   width: 100%;
@@ -1572,8 +1572,8 @@ body {
 }
 .reader-body {
   width: 100%;
-  max-width: 1420px;
-  margin-inline: auto;
+  max-width: none;
+  margin-inline: 0;
 }
 .reader-body.has-topics {
   display: block;

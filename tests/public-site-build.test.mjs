@@ -43,6 +43,8 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".reader-body.has-topics > .topic-picker"));
   const publicStyles = readFileSync(new URL("../apps/web/src/style.css", import.meta.url), "utf8");
+  assert.match(publicStyles, /\.site-shell\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/s, "public shell spans the full viewport width");
+  assert.match(publicStyles, /\.reader-body\s*\{[^}]*width:\s*100%;[^}]*max-width:\s*none;/s, "reader body is not capped by a fixed maximum width");
   assert.match(publicStyles, /\.brief-layout\s*\{[^}]*max-width:\s*none;/s, "brief content uses the full shared reader width");
   assert.match(publicStyles, /@media\s*\(max-width:\s*1100px\)\s*\{\s*\.brief-layout\s*\{\s*display:\s*block;\s*max-width:\s*none;/s, "tablet brief content remains aligned");
   assert.match(publicStyles, /\.header-actions \.subscribe-action\s*\{[^}]*background:\s*var\(--paper\)[^}]*color:\s*var\(--ink\)/s, "Subscribe uses the neutral theme surface");
