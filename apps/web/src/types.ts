@@ -19,7 +19,7 @@ export interface InvestmentDetails {
 }
 export type SocialPlatform = "weibo"|"douyin"|"bilibili"|"xiaohongshu"|"zhihu"|"x"|"reddit"|"other";
 export type TrendTag = "cross_platform"|"single_platform"|"controversial"|"viral_video"|"sustained_discussion";
-export type ContentTag = "short_video"|"debate"|"story_reversal"|"explainer"|"emotional_resonance"|"entertainment"|"not_suitable";
+export type DiscussionTag = "debate"|"explainer";
 export interface NewsDetails {
   kind: "news";
   background: string;
@@ -30,7 +30,7 @@ export interface NewsDetails {
   uncertainties?: string[];
   watchpoints?: string[];
   trendTags?: TrendTag[];
-  contentTags?: ContentTag[];
+  discussionTags?: DiscussionTag[];
   trendSignals?: {platform:SocialPlatform;contentType:"hashtag"|"post"|"video"|"thread"|"topic_page"|"other";metric:"rank"|"views"|"likes"|"comments"|"shares"|"posts"|"discussion"|"other";value:string;observedAt:string;evidenceType:"direct"|"reported";evidenceRefs:string[]}[];
   publicDiscussion?: {
     summary:string;
@@ -39,9 +39,6 @@ export interface NewsDetails {
     controversies?:{topic:string;sides:string[];evidenceRefs:string[]}[];
     representativeComments?:{platform:SocialPlatform;quote:string;evidenceRefs:string[]}[];
   };
-  contentSuitability?:"recommended"|"not_recommended";
-  contentReason?:string;
-  contentAngles?:{angle:string;suggestedTitle:string;hook:string;corePoints:string[];evidenceRefs:string[]}[];
   evidence?: {id:string;name:string;url:string;supports:string}[];
 }
 export interface ProjectDetails {
@@ -79,7 +76,7 @@ export interface Story {
   first_approved_at: string;
 }
 export interface Report {
-  schema_version: 1 | 2 | 3 | 4 | 5;
+  schema_version: 1 | 2 | 3 | 4 | 5 | 6;
   topic: Topic;
   report_id: string;
   report_date: string;

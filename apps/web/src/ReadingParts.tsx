@@ -56,14 +56,9 @@ export const trendTagLabels: Record<string,string> = {
   viral_video: "热门视频",
   sustained_discussion: "持续讨论",
 };
-export const contentTagLabels: Record<string,string> = {
-  short_video: "适合短视频",
+export const discussionTagLabels: Record<string,string> = {
   debate: "观点讨论",
-  story_reversal: "故事反转",
   explainer: "知识解读",
-  emotional_resonance: "情绪共鸣",
-  entertainment: "娱乐传播",
-  not_suitable: "不建议创作",
 };
 export const dateLabel = (value: string) =>
   new Intl.DateTimeFormat("zh-CN", {
@@ -184,11 +179,11 @@ export function Row({
               <span className="news-tag news-tag-topic news-tag-research-area">{researchAreaLabels[story.research_area]}</span>
               {projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>}
             </span>
-          ) : story.details?.kind === "news" && (story.details.trendTags?.length || story.details.contentTags?.length) ? (
+          ) : story.details?.kind === "news" && (story.details.trendTags?.length || story.details.discussionTags?.length) ? (
             <span className="news-row-tags">
               <span className="news-tag news-tag-topic">{categories[story.category] ?? story.category}</span>
               {story.details.trendTags?.slice(0, 1).map(tag => <span className="news-tag news-tag-trend" key={tag}>{trendTagLabels[tag] ?? tag}</span>)}
-              {story.details.contentTags?.filter(tag => tag !== "short_video").slice(0, 1).map(tag => <span className="news-tag news-tag-content" key={tag}>{contentTagLabels[tag] ?? tag}</span>)}
+              {story.details.discussionTags?.slice(0, 1).map(tag => <span className="news-tag news-tag-content" key={tag}>{discussionTagLabels[tag] ?? tag}</span>)}
             </span>
           ) : (
             <span className="category-label">{categories[story.category] ?? story.category}</span>
