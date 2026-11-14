@@ -2071,3 +2071,22 @@ body {
     margin: 18px auto 40px;
   }
 }
+
+
+/* Keep the detail reading unit centered in the full reader viewport, not a reserved side column. */
+@media (min-width: 1200px) {
+  .reader-body:has(> .reading-layout.detail-layout) {
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+  .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout.has-aside {
+    width: 100%;
+    max-width: 1176px;
+    grid-template-columns: minmax(0, 900px) 220px;
+    gap: 56px;
+    margin: 18px auto 64px;
+    justify-content: center;
+  }
+}

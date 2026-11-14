@@ -443,18 +443,22 @@ test("project detail presents verified fields as readable sections", async () =>
 });
 test("article detail pages center the body and TOC as one reading unit", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
-  assert.match(css, /\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;/s);
+  assert.match(css, /\\.reading-layout\\.detail-layout\\s*\\{[^}]*max-width:\\s*760px;/s);
   assert.match(
     css,
-    /@media \(min-width: 1200px\)\s*\{\s*\.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width:\s*1040px;[^}]*grid-template-columns:\s*minmax\(0, 760px\) 220px;[^}]*gap:\s*56px;[^}]*margin-inline:\s*auto;/s,
+    /\\.reader-body:has\\(> \\.reading-layout\\.detail-layout\\)\\s*\\{[^}]*display: block;[^}]*width: 100%;[^}]*max-width: none;/s,
   );
   assert.match(
     css,
-    /@media \(max-width: 1199px\)\s*\{\s*\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;[^}]*margin-inline:\s*auto;/s,
+    /\\.reader-body:has\\(> \\.reading-layout\\.detail-layout\\) > \\.reading-layout\\.detail-layout\\.has-aside\\s*\\{[^}]*max-width: 1176px;[^}]*grid-template-columns: minmax\\(0, 900px\\) 220px;[^}]*gap: 56px;[^}]*margin: 18px auto 64px;/s,
   );
   assert.match(
     css,
-    /@media \(min-width: 1200px\) \{ \.project-detail \.detail-mobile-nav \{ display: none; \} \}/,
+    /@media \\(max-width: 1199px\\)\\s*\\{\\s*\\.reading-layout\\.detail-layout\\s*\\{[^}]*max-width:\\s*760px;[^}]*margin-inline:\\s*auto;/s,
+  );
+  assert.match(
+    css,
+    /@media \\(min-width: 1200px\\) \\{ \\.project-detail \\.detail-mobile-nav \\{ display: none; \\} \\}/,
   );
 });
 
