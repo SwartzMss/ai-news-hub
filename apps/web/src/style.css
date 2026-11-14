@@ -2005,3 +2005,95 @@ body {
   color: var(--accent);
   font-weight: 700;
 }
+
+
+/* Article detail pages: center the reading column and its section navigation as one unit. */
+.detail-context {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  margin: 26px 0 0;
+  color: var(--muted);
+  font-size: 12px;
+  line-height: 1.5;
+}
+.detail-context a {
+  color: var(--accent);
+  font-size: 15px;
+  font-weight: 750;
+  letter-spacing: -0.15px;
+  text-decoration: none;
+}
+.detail-context a:hover {
+  color: var(--accent);
+  opacity: 0.82;
+}
+.detail-context a:focus-visible {
+  color: var(--accent);
+  outline: 2px solid var(--accent);
+  outline-offset: 4px;
+  border-radius: 2px;
+}
+.detail-context time {
+  padding-left: 14px;
+  border-left: 1px solid var(--line);
+  font-variant-numeric: tabular-nums;
+}
+.reading-layout.detail-layout {
+  display: block;
+  width: 100%;
+  max-width: 760px;
+  margin: 18px auto 64px;
+}
+@media (min-width: 1200px) {
+  .reading-layout.detail-layout.has-aside {
+    display: grid;
+    width: 100%;
+    max-width: 1040px;
+    grid-template-columns: minmax(0, 760px) 220px;
+    gap: 56px;
+    margin-inline: auto;
+    justify-content: center;
+    align-items: start;
+  }
+}
+@media (max-width: 1199px) {
+  .reading-layout.detail-layout {
+    display: block;
+    max-width: 760px;
+    margin-inline: auto;
+  }
+  .reading-layout.detail-layout .project-aside,
+  .reading-layout.detail-layout .news-aside,
+  .reading-layout.detail-layout .investment-aside {
+    display: none;
+  }
+}
+@media (max-width: 700px) {
+  .detail-context {
+    margin-top: 18px;
+    font-size: 11px;
+  }
+  .reading-layout.detail-layout {
+    margin: 18px auto 40px;
+  }
+}
+
+
+/* Keep the detail reading unit centered in the full reader viewport, not a reserved side column. */
+@media (min-width: 1200px) {
+  .reader-body:has(> .reading-layout.detail-layout) {
+    display: block;
+    width: 100%;
+    max-width: none;
+    margin-inline: 0;
+  }
+  .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout.has-aside {
+    width: 100%;
+    max-width: 1176px;
+    grid-template-columns: minmax(0, 900px) 220px;
+    gap: 56px;
+    margin: 18px auto 64px;
+    justify-content: center;
+  }
+}

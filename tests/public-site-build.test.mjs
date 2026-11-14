@@ -90,8 +90,11 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   );
   assert.equal(articleDoc.querySelector(".article-header time"), null);
   assert.ok(articleDoc.querySelector(".article-header .category-label"));
-  assert.equal(articleDoc.querySelectorAll(".breadcrumb a").length, 2);
-  assert.ok(articleDoc.querySelector(".breadcrumb a:last-child").getAttribute("href").includes(data.current[0].report_date));
+  assert.equal(articleDoc.querySelectorAll(".detail-context a").length, 1);
+  assert.equal(articleDoc.querySelector(".detail-context a").textContent, "返回归档");
+  assert.ok(articleDoc.querySelector(".detail-context a").getAttribute("href").endsWith("/archive/"));
+  assert.equal(articleDoc.querySelector(".detail-context time")?.getAttribute("datetime"), data.current[0].report_date);
+  assert.equal(articleDoc.querySelector(".breadcrumb"), null);
   const feed = readFileSync(join(root, "rss/all.xml"), "utf8");
   assert.equal(feed, rss(data, "https://demo.invalid"));
   const ids = [];
@@ -422,12 +425,15 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.equal(doc.querySelector(".project-detail .project-subtitle").textContent, "Mesh LLM 发布分布式推理系统");
     assert.equal(doc.querySelector(".project-detail .project-repository").getAttribute("href"), "https://github.com/example/mesh-llm");
     assert.equal(doc.querySelector(".reading-aside"), null);
-    assert.ok(doc.querySelector(".reading-layout.project-layout > main > .project-detail"));
+    assert.ok(doc.querySelector(".reading-layout.project-layout.detail-layout.has-aside > main > .project-detail"));
+    assert.equal(doc.querySelector(".detail-context a").textContent, "返回归档");
+    assert.equal(doc.querySelector(".detail-context time").getAttribute("datetime"), report.report_date);
     assert.ok(doc.querySelector(".reader-body.has-topics > .topic-picker"));
     assert.ok(doc.querySelector(".project-aside nav[aria-label='本文目录'] a[href='#project-fact-0']"));
     assert.ok(doc.querySelector("#project-fact-0"));
     assert.equal(doc.querySelectorAll(".project-related a").length, 1);
-    assert.equal(doc.querySelector(".breadcrumb a:first-child").textContent, "历史简报");
+    assert.equal(doc.querySelector(".detail-context a").textContent, "返回归档");
+    assert.equal(doc.querySelector(".detail-context time").getAttribute("datetime"), report.report_date);
     for (const heading of ["核心用途", "技术要点", "近期关注原因", "适用场景", "许可证", "推荐理由", "限制"])
       assert.ok([...doc.querySelectorAll(".project-detail h2")].some((h) => h.textContent === heading), heading);
     assert.equal(doc.querySelectorAll(".project-detail .project-technical li").length, 2);
@@ -435,21 +441,25 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".project-detail .source-details"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test("project detail TOC switches to the desktop sidebar at the shared breakpoint", () => {
+test("article detail pages center the body and TOC as one reading unit", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
+  assert.match(css, /\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;/s);
   assert.match(
     css,
-    /@media \(min-width: 1200px\) \{\s+\.reading-layout\.project-layout \{/,
+    /\.reader-body:has\(> \.reading-layout\.detail-layout\)\s*\{[^}]*display: block;[^}]*width: 100%;[^}]*max-width: none;/s,
   );
   assert.match(
     css,
-    /grid-template-columns: minmax\(0, min\(760px, calc\(100% - 260px\)\)\) 220px/,
+    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width: 1176px;[^}]*grid-template-columns: minmax\(0, 900px\) 220px;[^}]*gap: 56px;[^}]*margin: 18px auto 64px;/s,
+  );
+  assert.match(
+    css,
+    /@media \(max-width: 1199px\)\s*\{\s*\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;[^}]*margin-inline:\s*auto;/s,
   );
   assert.match(
     css,
     /@media \(min-width: 1200px\) \{ \.project-detail \.detail-mobile-nav \{ display: none; \} \}/,
   );
-  assert.doesNotMatch(css, /@media \(min-width: 1401px\)/);
 });
 
 test('structured project detail renders sourced sections without an event timeline',async()=>{
@@ -465,6 +475,9 @@ test('structured project detail renders sourced sections without an event timeli
   assert.ok(doc.querySelector('.project-detail #project-overview'));
   assert.equal(doc.querySelector('.project-detail .project-number'),null);
   assert.ok(doc.querySelector('.project-detail h1.detail-page-title'));
+  assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
+  assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
+  assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
   assert.match(doc.querySelector('#project-change').textContent,/新增增量索引.*2026-11-03/s);
   assert.ok(doc.querySelector('#project-technical a[href="#project-evidence-release"]'));
   assert.match(doc.querySelector('#project-evaluation').textContent,/编辑判断/);
@@ -493,6 +506,9 @@ test('investment detail renders evidence-linked metrics and a section directory'
   assert.equal(topicDoc.querySelector('.category-label')?.textContent,'半导体');
   assert.equal(doc.querySelector('.investment-topic'),null);
   assert.ok(doc.querySelector('.investment-detail h1.detail-page-title'));
+  assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
+  assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
+  assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
   assert.match(doc.querySelector('.investment-detail table').textContent,/季度收入.*12.4.*实际值/s);
   assert.match(doc.querySelector('.investment-detail').textContent,/潜在影响|潜在关系/);
   assert.ok(doc.querySelector('.investment-detail a[href="https://example.com/filing"]'));
@@ -556,6 +572,9 @@ test('news detail renders structured evidence, timeline and a section directory'
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
   assert.match(topicDoc.querySelector('.news-row-tags').textContent,/社会事件.*跨平台传播.*适合短视频/s);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
+  assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
+  assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
+  assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
   assert.match(doc.querySelector('.news-detail table').textContent,/话题状态.*多个平台出现讨论.*媒体报道/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');
   assert.equal(doc.querySelector('.news-aside a[href="#news-timeline"]'),null);
@@ -661,22 +680,14 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("news and investment details align to the left without widening medium-width articles", () => {
+test("news and investment details use the shared centered article layout", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
-  assert.match(
-    css,
-    /@media \(min-width: 1001px\) \{\s+\.reading-layout\.investment-layout,\s+\.reading-layout\.news-layout \{\s+margin-inline: 0;\s+\}\s+\}/,
-  );
-  assert.match(
-    css,
-    /@media \(min-width: 1200px\) \{\s+\.reading-layout\.investment-layout,\s+\.reading-layout\.news-layout \{\s+max-width: none;\s+\}\s+\}/,
-  );
-  assert.match(
-    css,
-    /@media \(max-width: 1199px\) \{\s+\.reading-layout\.investment-layout \{ display: block; max-width: 760px; \}\s+\.investment-aside \{ display: none; \}\s+\.reading-layout\.news-layout \{ display: block; max-width: 760px; \}\s+\.news-aside \{ display: none; \}\s+\}/,
-  );
+  assert.match(css, /\.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width:\s*1040px;[^}]*grid-template-columns:\s*minmax\(0, 760px\) 220px;/s);
+  assert.match(css, /\.detail-context\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/s);
+  assert.match(css, /\.detail-context a\s*\{[^}]*color:\s*var\(--accent\);[^}]*font-size:\s*15px;[^}]*font-weight:\s*750;/s);
+  assert.match(css, /\.detail-context time\s*\{[^}]*border-left:\s*1px solid var\(--line\);/s);
+  assert.match(css, /@media \(max-width: 1199px\)\s*\{[^}]*\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;/s);
 });
-
 
 test("five-area open-source reports render article labels and distinguish discovery from updates",async()=>{
  const {mkdtempSync,mkdirSync,writeFileSync,rmSync}=await import("node:fs");
