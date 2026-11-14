@@ -441,7 +441,7 @@ test("project detail presents verified fields as readable sections", async () =>
     assert.ok(doc.querySelector(".project-detail .source-details"));
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
-test("article detail pages align with the reader edge and keep topic navigation above the article", () => {
+test("article detail pages use full-width desktop columns with topic navigation above", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
   assert.match(css, /\.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*760px;/s);
   assert.match(
@@ -458,7 +458,11 @@ test("article detail pages align with the reader edge and keep topic navigation 
   );
   assert.match(
     css,
-    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width: 1176px;[^}]*grid-template-columns: minmax\(0, 900px\) 220px;[^}]*gap: 56px;[^}]*margin: 18px 0 64px;[^}]*justify-content: start;/s,
+    /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\.has-aside\s*\{[^}]*display: grid;[^}]*width: 100%;[^}]*max-width: none;[^}]*grid-template-columns: minmax\(0, 1fr\) 220px;[^}]*gap: clamp\(32px, 4vw, 64px\);[^}]*margin: 18px 0 64px;[^}]*justify-content: stretch;/s,
+  );
+  assert.match(
+    css,
+    /\.reading-layout\.detail-layout > #content > \.project-detail,[\s\S]*?\.reading-layout\.detail-layout > #content > \.article-body\s*\{[^}]*max-width: 900px;/s,
   );
   assert.match(
     css,
@@ -688,9 +692,10 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("news and investment details use the shared centered article layout", () => {
+test("news and investment details keep the article left and the TOC at the reader right edge", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
-  assert.match(css, /\.reading-layout\.detail-layout\.has-aside\s*\{[^}]*max-width:\s*1040px;[^}]*grid-template-columns:\s*minmax\(0, 760px\) 220px;/s);
+  assert.match(css, /\.reading-layout\.detail-layout\.has-aside\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 220px;[^}]*gap:\s*clamp\(32px, 4vw, 64px\);[^}]*justify-content:\s*stretch;/s);
+  assert.match(css, /\.reading-layout\.detail-layout > #content > \.investment-detail,[\s\S]*?\.reading-layout\.detail-layout > #content > \.article-body\s*\{[^}]*max-width:\s*900px;/s);
   assert.match(css, /\.detail-context\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/s);
   assert.match(css, /\.detail-context a\s*\{[^}]*color:\s*var\(--accent\);[^}]*font-size:\s*15px;[^}]*font-weight:\s*750;/s);
   assert.match(css, /\.detail-context time\s*\{[^}]*border-left:\s*1px solid var\(--line\);/s);

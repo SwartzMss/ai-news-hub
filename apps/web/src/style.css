@@ -2045,18 +2045,6 @@ body {
   max-width: 760px;
   margin: 18px auto 64px;
 }
-@media (min-width: 1200px) {
-  .reading-layout.detail-layout.has-aside {
-    display: grid;
-    width: 100%;
-    max-width: 1040px;
-    grid-template-columns: minmax(0, 760px) 220px;
-    gap: 56px;
-    margin-inline: auto;
-    justify-content: center;
-    align-items: start;
-  }
-}
 @media (max-width: 1199px) {
   .reading-layout.detail-layout {
     display: block;
@@ -2108,12 +2096,25 @@ body {
     margin: 18px 0 64px;
   }
 }
+/* Desktop detail pages span the reader width: article on the left, TOC on the far right. */
+.reading-layout.detail-layout > #content > .detail-context,
+.reading-layout.detail-layout > #content > .project-detail,
+.reading-layout.detail-layout > #content > .investment-detail,
+.reading-layout.detail-layout > #content > .news-detail,
+.reading-layout.detail-layout > #content > .article-header,
+.reading-layout.detail-layout > #content > .article-body {
+  width: 100%;
+  max-width: 900px;
+}
 @media (min-width: 1200px) {
   .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout.has-aside {
-    max-width: 1176px;
-    grid-template-columns: minmax(0, 900px) 220px;
-    gap: 56px;
+    display: grid;
+    width: 100%;
+    max-width: none;
+    grid-template-columns: minmax(0, 1fr) 220px;
+    gap: clamp(32px, 4vw, 64px);
     margin: 18px 0 64px;
-    justify-content: start;
+    justify-content: stretch;
+    align-items: start;
   }
 }
