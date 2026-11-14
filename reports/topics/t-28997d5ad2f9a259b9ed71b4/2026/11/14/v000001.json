@@ -1,0 +1,452 @@
+{
+  "schema_version": 4,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "f0d42006-e344-452e-a6c5-ef1f241a0d09",
+  "report_date": "2026-11-14",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月14日｜截至北京时间08:05的24小时",
+  "collected_at": "2026-11-14T00:16:16.887Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-14T00:16:16.934Z",
+  "reviewed_content_sha256": "32596af66fecfa1344e3a086cd6d1e0b4331d974b09e51c02c3e1a5d9f3ae7a8",
+  "items": [
+    {
+      "id": "0f90c9c47e54941c4b2b0b57a720940b1689fc906a10c4f44fa40fd0485a5cc4",
+      "category": "social_event",
+      "importance": 4,
+      "fact_summary": "澎湃号转载的调查通报称，上海11月13日公布交大医学院基因编辑研究事件处置结果，认定研究及伦理审查存在问题，对相关人员和机构作出处理。同日Reddit中文社区出现转载与评论。",
+      "analysis": "编辑推断：调查结果提供了新的公共讨论依据，适合解释伦理审查与风险告知；当前直接核实的平台样本较小，不能称为全网热议。",
+      "evidence_quote": "上海公布“交大医学院基因编辑研究事件”调查结果",
+      "details": {
+        "kind": "news",
+        "background": "事件此前已经曝光，本次入选依据是11月13日公布调查结果及窗口内的新转载讨论，而非重复报道早前患儿死亡消息。",
+        "keyFacts": [
+          {
+            "name": "调查认定",
+            "value": "通报称存在安全信息披露、伦理审查及知情同意等问题",
+            "period": "2026-11-13",
+            "nature": "statement",
+            "evidenceRefs": [
+              "gene1"
+            ]
+          },
+          {
+            "name": "人员处置",
+            "value": "仇某某、杨某被给予开除处分",
+            "period": "2026-11-13",
+            "nature": "statement",
+            "evidenceRefs": [
+              "gene1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "已读取媒体转载全文，未取得政府官网原始发布页。",
+          "直接平台证据限于一个Reddit社区，互动量未披露。",
+          "不能把评论中的道德评价扩展为未经认定的法律责任。"
+        ],
+        "watchpoints": [
+          "相关机构整改及论文后续处理。"
+        ],
+        "evidence": [
+          {
+            "id": "gene1",
+            "name": "澎湃号转载调查通报，注明据央视新闻客户端",
+            "url": "https://www.thepaper.cn/newsDetail_forward_34468347",
+            "supports": "11月13日调查结果、问题认定及处置内容。"
+          },
+          {
+            "id": "gene2",
+            "name": "Reddit r/PosadismClub转载及讨论",
+            "url": "https://www.reddit.com/r/PosadismClub/comments/1xv3zai/%E4%B8%8A%E6%B5%B7%E9%80%9A%E6%8A%A5%E5%9F%BA%E5%9B%A0%E7%BC%96%E8%BE%91%E7%A0%94%E7%A9%B6%E4%BA%8B%E4%BB%B6%E4%BB%87%E5%AD%90%E9%BE%99%E6%9D%A8%E4%BE%83%E8%A2%AB%E5%BC%80%E9%99%A4/",
+            "supports": "窗口内平台转载和对处置结果、科研伦理的评论样本。"
+          }
+        ],
+        "trendTags": [
+          "single_platform"
+        ],
+        "contentTags": [
+          "short_video",
+          "explainer"
+        ],
+        "trendSignals": [
+          {
+            "platform": "reddit",
+            "contentType": "thread",
+            "metric": "discussion",
+            "value": "原帖及回复可读；票数、评论总量未披露",
+            "observedAt": "2026-11-14T08:13:27+08:00",
+            "evidenceType": "direct",
+            "evidenceRefs": [
+              "gene2"
+            ]
+          }
+        ],
+        "publicDiscussion": {
+          "summary": "少量可读回复评价处置结果，并质疑科研人员的伦理底线。样本不足以概括公众态度，不采用搜索索引中的票数。",
+          "evidenceRefs": [
+            "gene2"
+          ],
+          "viewpoints": [
+            {
+              "label": "关注处置与伦理责任",
+              "summary": "回复讨论处理方式是否符合预期，以及知识水平与伦理责任之间的关系。",
+              "sentiment": "critical",
+              "evidenceRefs": [
+                "gene2"
+              ]
+            }
+          ]
+        },
+        "contentSuitability": "recommended",
+        "contentReason": "新通报具有公共信息增量，适合严格按来源归属进行解释。",
+        "contentAngles": [
+          {
+            "angle": "梳理通报认定的问题",
+            "suggestedTitle": "基因编辑研究调查公布：通报指出了哪些问题？",
+            "hook": "风险信息如何披露、伦理审查如何把关，是本次通报的重要内容。",
+            "corePoints": [
+              "说明本次新增的是调查处置结果。",
+              "解释通报中的风险告知和审查问题。",
+              "明确通报同时称未发现数据造假行为，避免混淆不同认定。"
+            ],
+            "evidenceRefs": [
+              "gene1"
+            ]
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.thepaper.cn",
+        "original_url": "https://www.thepaper.cn/newsDetail_forward_34468347",
+        "canonical_url": "https://www.thepaper.cn/newsDetail_forward_34468347",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "881b60ef81dafee284c7283452f41c0c8f6f6d8c04523466efb0526646752c42",
+      "category": "international_topic",
+      "importance": 4,
+      "fact_summary": "ABC News报道，美国FAA因空管通信问题发布全国性地面停飞指令；北京时间11月14日凌晨，Reddit多个航空社区出现集中讨论，涉及出行受阻、通知含义和恢复时间。故障根因仍在调查。",
+      "analysis": "编辑推断：突发停飞与旅客即时讨论形成清晰故事线，适合解释地面停飞的含义；评论中的技术归因不能作为调查结论。",
+      "evidence_quote": "FAA issues rare nationwide ground stop; no indication of 'nefarious attack'",
+      "details": {
+        "kind": "news",
+        "background": "统计窗口为北京时间2026年11月13日08:05至14日08:05。Reddit帖子转录通知的生效时间为UTC 11月13日20:54，即北京时间14日04:54。原帖票数未能直接复现，不采用搜索索引票数。",
+        "keyFacts": [
+          {
+            "name": "停飞原因",
+            "value": "ABC News报道为影响空管的通信问题，根因仍在调查",
+            "period": "2026-11-13美国当地时间",
+            "nature": "reported",
+            "evidenceRefs": [
+              "faa1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "未直接读取到FAA实时状态通告正文。",
+          "无法确认截至统计截止时刻的完整恢复范围。",
+          "评论者身份及个人出行经历未经独立核实。"
+        ],
+        "watchpoints": [
+          "FAA后续根因说明及恢复通告。"
+        ],
+        "evidence": [
+          {
+            "id": "faa1",
+            "name": "ABC News：全国性地面停飞报道",
+            "url": "https://abcnews.com/US/nationwide-ground-stop-ordered-airports-faa/story?id=138121848",
+            "supports": "停飞事件、空管通信问题及调查状态。"
+          },
+          {
+            "id": "faa2",
+            "name": "Reddit r/delta停飞讨论原帖",
+            "url": "https://www.reddit.com/r/delta/comments/1xvjlzt/faa_issues_nationwide_ground_stop_for_all_flights/",
+            "supports": "平台传播、转录通知时间及旅客讨论样本。"
+          },
+          {
+            "id": "faa3",
+            "name": "Reddit r/aviation停飞讨论原帖",
+            "url": "https://www.reddit.com/r/aviation/comments/1xvjswy/extraordinary_circumstances_national_ground_stop/",
+            "supports": "同一平台另一航空社区对通知含义与恢复时间的讨论。"
+          },
+          {
+            "id": "faa4",
+            "name": "Reddit r/delta评论永久链接",
+            "url": "https://www.reddit.com/r/delta/comments/1xvjlzt/comment/19slblnl5kuyo/",
+            "supports": "一位用户表达飞行焦虑的原文；互动量未披露。"
+          }
+        ],
+        "trendTags": [
+          "single_platform"
+        ],
+        "contentTags": [
+          "short_video",
+          "explainer"
+        ],
+        "trendSignals": [
+          {
+            "platform": "reddit",
+            "contentType": "thread",
+            "metric": "discussion",
+            "value": "r/delta与r/aviation均有原帖及回复；互动量未披露",
+            "observedAt": "2026-11-14T08:14:26+08:00",
+            "evidenceType": "direct",
+            "evidenceRefs": [
+              "faa2",
+              "faa3"
+            ]
+          }
+        ],
+        "publicDiscussion": {
+          "summary": "可读样本包括飞行焦虑、出行受阻叙述和对通知有效性的追问。样本来自航空社区，不能代表全部旅客；评论票数不可读。",
+          "evidenceRefs": [
+            "faa2",
+            "faa3",
+            "faa4"
+          ],
+          "viewpoints": [
+            {
+              "label": "担忧行程和飞行安全",
+              "summary": "部分用户描述身处航班中或即将出发，对停飞消息表达焦虑。",
+              "sentiment": "concerned",
+              "evidenceRefs": [
+                "faa2",
+                "faa4"
+              ]
+            },
+            {
+              "label": "追问通知含义",
+              "summary": "用户询问停飞持续多久，以及通告从网站消失是否意味着恢复。",
+              "sentiment": "neutral",
+              "evidenceRefs": [
+                "faa3"
+              ]
+            }
+          ],
+          "representativeComments": [
+            {
+              "platform": "reddit",
+              "quote": "Nothing settles my nerves about flying like being in the air otw to Atlanta and finding out every other flight has been grounded",
+              "evidenceRefs": [
+                "faa4"
+              ]
+            }
+          ]
+        },
+        "contentSuitability": "recommended",
+        "contentReason": "突发事件有独立报道和直接平台讨论，具备解释空间。",
+        "contentAngles": [
+          {
+            "angle": "解释地面停飞与调查进度",
+            "suggestedTitle": "美国全国性地面停飞：哪些事实已经确认？",
+            "hook": "空管通信出现问题后，旅客最关心的是通知意味着什么、何时恢复。",
+            "corePoints": [
+              "交代ABC News确认的通信问题。",
+              "展示航空社区的有限讨论样本。",
+              "将已确认事实与故障原因猜测分开。"
+            ],
+            "evidenceRefs": [
+              "faa1",
+              "faa2",
+              "faa3"
+            ]
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "abcnews.com",
+        "original_url": "https://abcnews.com/US/nationwide-ground-stop-ordered-airports-faa/story?id=138121848",
+        "canonical_url": "https://abcnews.com/US/nationwide-ground-stop-ordered-airports-faa/story?id=138121848",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "522f933950066cb4e4137ef7ad7fae9dc6b87a11ce4b0f403f1db86ab00496b4",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "新京报11月13日报道，金毛犬“17”被盗卖宰杀后，犬主称警方已完成价值鉴定，总计1200元，并称案件将移交检察院。微博出现转述该进展的带话题帖子；此前已立案，本次新增信息是鉴定结果。",
+      "analysis": "编辑推断：鉴定金额与犬主情感价值之间的差距具备解释和情绪共鸣空间，但目前没有足够评论证据认定这已形成普遍争议。",
+      "evidence_quote": "金毛犬“17”被牵走宰杀，已完成价值鉴定，达到刑事立案标准",
+      "details": {
+        "kind": "news",
+        "background": "犬只于11月6日被牵走，案件此前已被报道。入选依据为11月13日鉴定结果的新报道及微博传播帖，不将本次进展表述为首次立案。",
+        "keyFacts": [
+          {
+            "name": "鉴定金额",
+            "value": "1200",
+            "unit": "元",
+            "period": "2026-11-13报道",
+            "nature": "reported",
+            "evidenceRefs": [
+              "dog1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "犬主王先生",
+            "statement": "不认可鉴定价值，希望尽快有结果，并表示不会谅解、拟提起民事诉讼。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "dog1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "鉴定文书及案件移送文件未取得；相关进度来自媒体对犬主的采访。",
+          "微博互动量未披露，不能确认传播规模或公众观点比例。",
+          "尚无裁判结果。"
+        ],
+        "watchpoints": [
+          "案件实际移送进度及后续司法处理。"
+        ],
+        "evidence": [
+          {
+            "id": "dog1",
+            "name": "新京报：价值鉴定最新进展",
+            "url": "https://www.bjnews.com.cn/detail/1794561243169163.html",
+            "supports": "11月13日新进展、鉴定金额及犬主表述。"
+          },
+          {
+            "id": "dog2",
+            "name": "微博暖视频在线传播帖",
+            "url": "https://weibo.com/2/detail/5364849274261277",
+            "supports": "微博带话题转述最新进展，正文可读，互动量未披露。"
+          }
+        ],
+        "trendTags": [
+          "single_platform"
+        ],
+        "contentTags": [
+          "short_video",
+          "explainer",
+          "emotional_resonance"
+        ],
+        "trendSignals": [
+          {
+            "platform": "weibo",
+            "contentType": "post",
+            "metric": "discussion",
+            "value": "带有相关话题标签的传播帖可读；互动量、官方热榜排名未披露",
+            "observedAt": "2026-11-14T08:14:26+08:00",
+            "evidenceType": "direct",
+            "evidenceRefs": [
+              "dog2"
+            ]
+          }
+        ],
+        "contentSuitability": "recommended",
+        "contentReason": "有可追溯传播帖和媒体新采访，适合解释案件新进展及价值认定边界。",
+        "contentAngles": [
+          {
+            "angle": "澄清鉴定与立案的时间关系",
+            "suggestedTitle": "金毛犬“17”案新进展：1200元鉴定意味着什么？",
+            "hook": "案件此前已经立案，这次新披露的是价值鉴定结果。",
+            "corePoints": [
+              "按新京报采访归属介绍鉴定金额。",
+              "呈现犬主对价值认定的态度。",
+              "说明移送进度尚待文书确认，不能提前作出定罪结论。"
+            ],
+            "evidenceRefs": [
+              "dog1",
+              "dog2"
+            ]
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.bjnews.com.cn",
+        "original_url": "https://www.bjnews.com.cn/detail/1794561243169163.html",
+        "canonical_url": "https://www.bjnews.com.cn/detail/1794561243169163.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5f073a66bd16ec6ea06882eb75052d78c9d2091f475e5e4e435d09c4b2d7bad5",
+      "category": "internet_culture",
+      "importance": 2,
+      "fact_summary": "游民星空11月13日转述封面新闻称，影视飓风Tim开通B站个人账号后，首条变装视频上线16小时获36.6万点赞、账号涨粉26万。窗口内新增的是互动数据与反差内容讨论，视频原页未能直接读取。",
+      "analysis": "编辑推断：内容反差有娱乐传播价值，但目前信息增量主要是账号开通及互动数据，独立讨论材料不足，暂不建议进一步制作。",
+      "evidence_quote": "影视飓风Tim开通个人B站账号！首条视频爆改男模帅哥",
+      "details": {
+        "kind": "news",
+        "background": "报道将账号开通日期记为11月12日；11月13日11:33发布的报道提供上线16小时互动数据。不同平台账号的数据不合并计算。此项为媒体转述的平台传播信号，未独立复现原视频数值。",
+        "keyFacts": [
+          {
+            "name": "视频点赞",
+            "value": "36.6万",
+            "unit": "次",
+            "period": "报道所述上线16小时",
+            "nature": "reported",
+            "evidenceRefs": [
+              "tim1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "未直接打开B站视频原页，无法核实最新互动数据。",
+          "未取得足够原视频评论，不能概括粉丝态度。",
+          "没有证据判断推广投入、自然传播或刷量情况。"
+        ],
+        "watchpoints": [
+          "原视频链接及个人账号后续内容。"
+        ],
+        "evidence": [
+          {
+            "id": "tim1",
+            "name": "游民星空转述封面新闻：Tim个人B站账号",
+            "url": "https://www.gamersky.com/news/202611/2245887.shtml",
+            "supports": "账号与首条视频形式，以及报道时点的B站点赞、涨粉数据。"
+          }
+        ],
+        "trendTags": [
+          "single_platform",
+          "viral_video"
+        ],
+        "contentTags": [
+          "not_suitable"
+        ],
+        "trendSignals": [
+          {
+            "platform": "bilibili",
+            "contentType": "video",
+            "metric": "likes",
+            "value": "36.6万；来源称为视频上线16小时数据，非截止时刻实时数值",
+            "observedAt": "2026-11-13T11:33:21+08:00",
+            "evidenceType": "reported",
+            "evidenceRefs": [
+              "tim1"
+            ]
+          }
+        ],
+        "contentSuitability": "not_recommended",
+        "contentReason": "传播数据有媒体出处，但原视频及评论未直接复现，当前故事和讨论增量有限。",
+        "contentAngles": []
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.gamersky.com",
+        "original_url": "https://www.gamersky.com/news/202611/2245887.shtml",
+        "canonical_url": "https://www.gamersky.com/news/202611/2245887.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
