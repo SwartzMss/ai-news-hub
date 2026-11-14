@@ -923,7 +923,8 @@
                           "maxLength": 240
                         }
                       }
-                    }
+                    },
+                    "minItems": 1
                   }
                 }
               }
