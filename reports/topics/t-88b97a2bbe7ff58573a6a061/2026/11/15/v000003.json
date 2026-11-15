@@ -1,0 +1,387 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "34614e74-3ba1-45ff-8f05-05926d30d9a3",
+  "report_date": "2026-11-15",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月15日（北京时间）",
+  "collected_at": "2026-11-15T00:52:47.415Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-15T00:52:47.454Z",
+  "reviewed_content_sha256": "889ea1cc11ef273ce140824e4b685cb589698db8c9eaace2d60bf6c59d003001",
+  "items": [
+    {
+      "id": "b0699ee1ddea2caefae40b07f4d3abbd6ec98127a410e23be98a5f533f9838eb",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "Cisco于11月12日公布Q1 FY27业绩，将FY27来自超大规模云厂商的AI基础设施收入预期上调至90亿美元，超过FY26总额两倍。Q1收入185亿美元、同比增长24%；网络产品收入同比增长43%。90亿美元为公司预期，不是已实现收入。",
+      "analysis": "云厂商AI网络需求可能继续支撑Cisco订单和收入预期；但公司未披露该收入的产品构成、客户集中度与交付节奏，指引兑现仍取决于超大规模云厂商的部署进度。",
+      "evidence_quote": "Cisco Reports First Quarter Earnings",
+      "details": {
+        "kind": "investment",
+        "background": "披露于2026-11-12，属于截止时间前72小时窗口。Cisco称FY27超大规模云厂商AI基础设施收入预期升至90亿美元；同季网络产品收入增长显示网络业务动能，但公司未提供AI收入拆分。",
+        "metrics": [
+          {
+            "name": "超大规模云厂商AI基础设施收入",
+            "value": "9",
+            "unit": "十亿美元",
+            "period": "FY27",
+            "comparison": "超过FY26总额两倍",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "cisco"
+            ]
+          },
+          {
+            "name": "Cisco总收入",
+            "value": "18.5",
+            "unit": "十亿美元",
+            "period": "Q1 FY27",
+            "comparison": "同比增长24%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "cisco"
+            ]
+          },
+          {
+            "name": "网络产品收入增幅",
+            "value": "43",
+            "unit": "%",
+            "period": "Q1 FY27",
+            "comparison": "同比",
+            "basis": "actual",
+            "evidenceRefs": [
+              "cisco"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "AI数据中心网络设备",
+            "direction": "利好",
+            "reason": "Cisco披露AI基础设施收入预期及网络产品增长；未给出具体客户、订单或产品对应关系。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "cisco"
+            ]
+          }
+        ],
+        "investmentLogic": "若超大规模云厂商按计划扩建AI基础设施，Cisco网络设备需求可转化为订单、收入与经营现金流；FY27收入及EPS指引提供兑现观察框架。能否改善利润还取决于AI产品组合、毛利率及大客户采购节奏。",
+        "watchpoints": [
+          "FY27超大规模云厂商AI基础设施收入实际确认进度",
+          "Networking收入、产品毛利率与云厂商订单变化"
+        ],
+        "risks": [
+          "90亿美元为公司预期，部署延期或客户集中采购波动会影响兑现节奏",
+          "总网络收入增长不能单独证明AI业务订单或利润增幅"
+        ],
+        "evidence": [
+          {
+            "id": "cisco",
+            "name": "Cisco Q1 FY27业绩公告",
+            "url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
+            "supports": "FY27超大规模云厂商AI基础设施收入预期、Q1总收入和网络产品同比增幅。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.cisco.com",
+        "original_url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
+        "canonical_url": "https://newsroom.cisco.com/c/r/newsroom/en/us/a/y2026/m11/cisco-reports-first-quarter-earnings.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0d8598144342e6d97ba77b98e2f7e0cb4c93523a1516369b2957ae8b59e974e4",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "鸿海于11月12日公布Q3业绩，并预计Q4 AI机柜出货环比高双位数增长、FY27 AI机柜出货高双位数增长。Q3收入新台币3.02万亿元、同比增长46%，归母净利新台币775.2亿元、同比增长34%；公司称关键零组件需求超过供应。出货增幅为公司展望。",
+      "analysis": "AI机柜出货展望强化鸿海云网业务增长预期，零组件供给紧张则可能制约交付或增加成本；具体盈利贡献仍需观察出货兑现和毛利率变化。",
+      "evidence_quote": "Hon Hai Technology Group (Foxconn) Announces Third Quarter 2026 Financial Results",
+      "details": {
+        "kind": "investment",
+        "background": "披露日期2026-11-12，属于截止时间前72小时窗口。公司称Q3云网产品受AI服务器需求推动，并在投资者材料中给出AI机柜出货展望；未披露具体客户订单金额。",
+        "metrics": [
+          {
+            "name": "Q4 AI机柜出货",
+            "value": "高双位数环比增长",
+            "unit": "%",
+            "period": "Q4 2026",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "foxconn"
+            ]
+          },
+          {
+            "name": "FY27 AI机柜出货",
+            "value": "高双位数增长",
+            "unit": "%",
+            "period": "FY27",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "foxconn"
+            ]
+          },
+          {
+            "name": "鸿海总收入",
+            "value": "3.02",
+            "unit": "万亿新台币",
+            "period": "Q3 2026",
+            "comparison": "同比增长46%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "foxconn"
+            ]
+          },
+          {
+            "name": "归母净利",
+            "value": "775.2",
+            "unit": "亿新台币",
+            "period": "Q3 2026",
+            "comparison": "同比增长34%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "foxconn"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "AI服务器与机柜制造",
+            "direction": "利好",
+            "reason": "鸿海直接披露AI服务器为重要增长引擎及机柜出货展望。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "foxconn"
+            ]
+          }
+        ],
+        "investmentLogic": "AI机柜出货增长若兑现，可提升鸿海云网产品收入和产能利用率，并通过规模与产品组合影响利润及现金流；成立条件是新一代机柜按期量产、关键零组件供应跟上且毛利率不被成本挤压。",
+        "watchpoints": [
+          "Q4 AI机柜环比出货实际增幅及收入确认",
+          "关键零组件交期、云网产品收入和毛利率",
+          "FY27机柜出货展望后续是否调整"
+        ],
+        "risks": [
+          "公司提示关键零组件需求超过供应，可能限制出货",
+          "高双位数为定性指引，缺少具体基数与客户订单数据"
+        ],
+        "evidence": [
+          {
+            "id": "foxconn",
+            "name": "鸿海Q3 2026业绩公告及投资者材料",
+            "url": "https://www.foxconn.com/en-us/press-center/press-releases/latest-news/2154",
+            "supports": "Q3经营数据、AI业务定位及零组件供需提示；公告链接提供公司正式披露。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.foxconn.com",
+        "original_url": "https://www.foxconn.com/en-us/press-center/press-releases/latest-news/2154",
+        "canonical_url": "https://www.foxconn.com/en-us/press-center/press-releases/latest-news/2154",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "f46c8470754022176df88ac768f847c37cd75b7f75a9b6bf6218b4d665609d8d",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "Applied Materials于11月12日公布FY26业绩：Q4收入104.09亿美元、同比增长53%，GAAP毛利率50.4%；公司称半导体系统业务预计2026日历年增长超过40%，并指出AI持续带来半导体增量需求。业绩为实际值，增长目标为公司展望。",
+      "analysis": "设备业务强劲增长和全年展望支持晶圆制造设备需求仍有韧性的判断；但公司未量化AI贡献，设备订单与客户资本开支兑现仍是关键不确定性。",
+      "evidence_quote": "Applied Materials Announces Fourth Quarter and Fiscal Year 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "公告发布时间为2026-11-12 16:01（美国东部时间），属于截止前72小时窗口。Applied Materials是晶圆制造设备商；公司将AI需求与半导体需求增量相联系，但没有披露AI相关收入占比。",
+        "metrics": [
+          {
+            "name": "Q4收入",
+            "value": "10.409",
+            "unit": "十亿美元",
+            "period": "Q4 FY26",
+            "comparison": "同比增长53%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "amat"
+            ]
+          },
+          {
+            "name": "GAAP毛利率",
+            "value": "50.4",
+            "unit": "%",
+            "period": "Q4 FY26",
+            "comparison": "同比提高2.4个百分点",
+            "basis": "actual",
+            "evidenceRefs": [
+              "amat"
+            ]
+          },
+          {
+            "name": "半导体系统业务增长",
+            "value": "超过40",
+            "unit": "%",
+            "period": "2026日历年",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "amat"
+            ]
+          },
+          {
+            "name": "经营活动现金流",
+            "value": "3.30",
+            "unit": "十亿美元",
+            "period": "Q4 FY26",
+            "comparison": "季度纪录",
+            "basis": "actual",
+            "evidenceRefs": [
+              "amat"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "晶圆制造设备",
+            "direction": "利好",
+            "reason": "公司披露设备业务实际增长及半导体系统业务展望；与AI需求的联系为公司整体表述，未分拆具体客户或设备。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "amat"
+            ]
+          }
+        ],
+        "investmentLogic": "半导体系统业务增长若由晶圆厂持续扩产与技术升级支撑，将带动设备收入、利润和经营现金流；AI需求只有在转化为客户资本开支及设备交付时才构成盈利贡献。",
+        "watchpoints": [
+          "半导体系统业务增长是否达到公司展望",
+          "设备订单、交付和客户晶圆厂资本开支",
+          "AI相关需求转化为收入的披露或管理层更新"
+        ],
+        "risks": [
+          "增长展望未明确AI贡献比例，不能据此推算AI设备收入",
+          "客户资本开支、交付时间及产品组合变化可能影响收入和毛利率"
+        ],
+        "evidence": [
+          {
+            "id": "amat",
+            "name": "Applied Materials FY26业绩公告",
+            "url": "https://ir.appliedmaterials.com/news-releases/news-release-details/applied-materials-announces-fourth-quarter-and-fiscal-year-2026",
+            "supports": "Q4实际业绩、现金流以及半导体系统业务增长展望和AI需求表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.appliedmaterials.com",
+        "original_url": "https://ir.appliedmaterials.com/news-releases/news-release-details/applied-materials-announces-fourth-quarter-and-fiscal-year-2026",
+        "canonical_url": "https://ir.appliedmaterials.com/news-releases/news-release-details/applied-materials-announces-fourth-quarter-and-fiscal-year-2026",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b077fddc8a1ea8c6bd05cb225b3fad3ea87dfcd77dcaf2a113c24c811bd4a631",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "中芯国际于11月12日公布未经审计的Q3业绩：收入31.90亿美元，环比增长6.1%、同比增长33.9%；公司称增长主要来自晶圆出货增加。Q3毛利率29.9%，环比提升4.6个百分点。公司指引Q4收入环比增长4%至6%、毛利率26%至28%。",
+      "analysis": "晶圆出货增长与利用率提升带动Q3收入和毛利率改善，但Q4毛利率指引回落，显示增长质量和产品组合仍需观察；公告没有量化AI相关收入。",
+      "evidence_quote": "SMIC REPORTS UNAUDITED RESULTS FOR THE THREE MONTHS ENDED SEPTEMBER 30, 2026",
+      "details": {
+        "kind": "investment",
+        "background": "业绩披露日期2026-11-12，属于截止前72小时窗口。中芯国际提供8英寸和12英寸晶圆代工服务；公司称Q3收入增长主要由晶圆出货增加推动，毛利率提升与利用率及产品组合变化有关。",
+        "metrics": [
+          {
+            "name": "收入",
+            "value": "3.190",
+            "unit": "十亿美元",
+            "period": "Q3 2026",
+            "comparison": "环比增长6.1%，同比增长33.9%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "smic"
+            ]
+          },
+          {
+            "name": "毛利率",
+            "value": "29.9",
+            "unit": "%",
+            "period": "Q3 2026",
+            "comparison": "环比提升4.6个百分点；Q3 2025为22.0%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "smic"
+            ]
+          },
+          {
+            "name": "收入增幅指引",
+            "value": "4至6",
+            "unit": "%",
+            "period": "Q4 2026",
+            "comparison": "环比",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "smic"
+            ]
+          },
+          {
+            "name": "毛利率指引",
+            "value": "26至28",
+            "unit": "%",
+            "period": "Q4 2026",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "smic"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "晶圆代工",
+            "direction": "利好收入、毛利率指引偏谨慎",
+            "reason": "中芯国际披露晶圆出货推动Q3收入增长，并给出Q4收入和毛利率指引；AI业务贡献未被量化。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "smic"
+            ]
+          }
+        ],
+        "investmentLogic": "晶圆出货和利用率上升可改善代工收入与固定成本吸收，影响毛利和现金流；但Q4毛利率指引低于Q3实际水平，若产品组合或成本压力持续，收入增长未必带来利润率同步提升。",
+        "watchpoints": [
+          "Q4晶圆出货及收入环比变化",
+          "产能利用率、产品组合与毛利率实际值",
+          "公司后续对AI相关客户需求的披露"
+        ],
+        "risks": [
+          "未经审计数据及公司前瞻指引存在不确定性",
+          "Q4指引毛利率较Q3回落；设备、材料供给及市场竞争可能影响利润率",
+          "AI相关收入和客户关系未在公告中明确"
+        ],
+        "evidence": [
+          {
+            "id": "smic",
+            "name": "中芯国际Q3未经审计业绩公告",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1112/2026111200682.pdf",
+            "supports": "Q3收入、出货与利用率解释，以及Q4收入和毛利率指引。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www1.hkexnews.hk",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1112/2026111200682.pdf",
+        "canonical_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1112/2026111200682.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
