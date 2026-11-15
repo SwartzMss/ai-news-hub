@@ -30,7 +30,7 @@ export function mountSiteSearch() {
       .then(async (response) => {
         if (!response.ok) throw new Error("search index request failed");
         const value = await response.json() as Partial<SearchIndex>;
-        if (!Array.isArray(value.articles)) throw new Error("invalid search index");
+        if (value.schema_version !== 1 || !Array.isArray(value.articles)) throw new Error("invalid search index");
         return value as SearchIndex;
       });
     return indexPromise;
@@ -114,6 +114,7 @@ export function mountSiteSearch() {
       render(matched);
     } catch {
       if (version !== requestVersion) return;
+      indexPromise = undefined;
       status.textContent = "搜索索引暂时无法加载，请稍后重试。";
       results.replaceChildren();
     }
