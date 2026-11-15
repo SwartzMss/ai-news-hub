@@ -46,7 +46,7 @@ export const TECHNOLOGY_INVESTMENT_DETAILS_SCHEMA = {
 };
 
 export function validateInvestmentDetails(details:InvestmentDetails):void {
-  if(Buffer.byteLength(JSON.stringify(details))>2500)throw new AppError('report_schema_invalid');
+  if(Buffer.byteLength(JSON.stringify(details))>3000)throw new AppError('report_schema_invalid');
   const ids=new Set<string>();
   for(const source of details.evidence??[]){
     if(ids.has(source.id))throw new AppError('report_schema_invalid');

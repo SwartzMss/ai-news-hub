@@ -433,7 +433,9 @@ test('investment detail renders evidence-linked metrics and a section directory'
   report.schema_version=1;report.topic=topic;
   report.items=report.items.slice(0,1);
   report.items[0].category='semiconductor';
-  report.items[0].details={kind:'investment',background:'公司发布季度业绩。',metrics:[{name:'季度收入',value:'12.4',unit:'亿美元',period:'2026 Q3',comparison:'同比增长 8%',basis:'actual',evidenceRefs:['filing']}],supplyChain:[{segment:'服务器内存',direction:'需求可能增加',reason:'单机配置提高',relationship:'potential'}],investmentLogic:'订单兑现后可能影响收入。',watchpoints:['订单交付'],risks:['客户认证推迟'],evidence:[{id:'filing',name:'季度财报',url:'https://example.com/filing',supports:'季度收入实际值'}]};
+  report.items[0].source.canonical_url='https://example.com/filing';
+  report.items[0].source.original_url='https://example.com/filing';
+  report.items[0].details={kind:'investment',background:'公司发布季度业绩。',metrics:[{name:'季度收入',value:'12.4',unit:'亿美元',period:'2026 Q3',comparison:'同比增长 8%',basis:'actual',evidenceRefs:['filing-copy']}],supplyChain:[{segment:'服务器内存',direction:'需求可能增加',reason:'单机配置提高',relationship:'potential',evidenceRefs:['secondary-copy']}],investmentLogic:'订单兑现后可能影响收入。',watchpoints:['订单交付'],risks:['客户认证推迟'],valuation:'   ',evidence:[{id:'filing',name:'季度财报',url:'https://example.com/filing',supports:'季度收入实际值'},{id:'filing-copy',name:'季度财报副本',url:'https://example.com/filing?utm_source=site',supports:'同比口径'},{id:'secondary',name:'补充公告',url:'https://example.com/secondary',supports:'客户信息'},{id:'secondary-copy',name:'补充公告副本',url:'https://example.com/secondary#details',supports:'产能说明'}]};
   const folder=join(dir,'topics',topic.id,...report.report_date.split('-'));mkdirSync(folder,{recursive:true});writeFileSync(join(folder,'v000001.json'),JSON.stringify(report));
   const built=await buildPublic({demo:true,siteUrl:'https://demo.invalid',reportsDir:dir});
   const doc=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/news/${articleKey(report.items[0].id,topic.id)}/index.html`),'utf8')).window.document;
@@ -448,6 +450,11 @@ test('investment detail renders evidence-linked metrics and a section directory'
   assert.match(doc.querySelector('.investment-detail table').textContent,/季度收入.*12.4.*实际值/s);
   assert.match(doc.querySelector('.investment-detail').textContent,/潜在影响|潜在关系/);
   assert.ok(doc.querySelector('.investment-detail a[href="https://example.com/filing"]'));
+  assert.equal(doc.querySelectorAll('.investment-detail a[href="https://example.com/filing"]').length,1);
+  assert.equal(doc.querySelectorAll('.investment-detail a[href="https://example.com/secondary"]').length,1);
+  assert.ok(doc.querySelector('.investment-detail a[href="#investment-primary-source"]'));
+  assert.ok(doc.querySelector('.investment-detail a[href="#investment-evidence-secondary"]'));
+  assert.equal(doc.querySelector('#investment-valuation'),null);
   assert.ok(doc.querySelector('.investment-aside a[href="#investment-metrics"]'));
   assert.deepEqual([...doc.querySelectorAll('.investment-aside [data-detail-target]')].map(a=>a.hash.slice(1)),[...doc.querySelectorAll('.investment-sections > section')].map(section=>section.id));
   assert.ok(doc.querySelector('.investment-aside a[href="#investment-analysis"]'));
