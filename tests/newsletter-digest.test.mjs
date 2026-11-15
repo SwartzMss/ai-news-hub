@@ -65,8 +65,16 @@ test('immutable retry payload and provider key survive lost responses and site/c
 test('concurrent invocations claim each recipient once and reserve at most eight',async()=>{
   const f=fixture();try{
     for(let i=0;i<9;i++)subscribe(f);let sends=0;
-    const fetcher=async url=>{if(url.endsWith('/data/index.json'))return Response.json(index());sends++;await new Promise(resolve=>setTimeout(resolve,2));return Response.json({id:'ok-'+sends});};
-    const results=await Promise.all([sendDigest(context(f,fetcher)),sendDigest(context(f,fetcher))]);
+    let firstStarted,releaseFirst;
+    const inProvider=new Promise(resolve=>{firstStarted=resolve;});
+    const holdFirst=new Promise(resolve=>{releaseFirst=resolve;});
+    const fetcher=async url=>{if(url.endsWith('/data/index.json'))return Response.json(index());sends++;if(sends===1){firstStarted();await holdFirst;}return Response.json({id:'ok-'+sends});};
+    const first=sendDigest(context(f,fetcher));
+    await inProvider;
+    let second;
+    try{second=await sendDigest(context(f,fetcher));}finally{releaseFirst();}
+    assert.deepEqual(await stats(second),{sent:0,failed:0,pending:9,uncertain:0});
+    const results=[await first,second];
     for(const response of results)assert.equal(response.status,200);
     assert.equal(sends,8);assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM newsletter_deliveries').get().n,8);
     assert.equal((await stats(await sendDigest(context(f,fetcher)))).sent,1);assert.equal(sends,9);
@@ -122,8 +130,8 @@ test('a full cold-start batch fits the Cloudflare Free query and subrequest limi
     const fetcher=async url=>{requests++;return Response.json(url.endsWith('/data/index.json')?index():{id:'provider-'+requests});};
     const body=await stats(await sendDigest(context(f,fetcher)));
     assert.equal(body.sent,8);assert.equal(body.pending,1);
-    assert.ok(f.queryCount<=50,'D1 query limit');
-    assert.ok(f.queryCount+requests<=50,'combined subrequest budget');
+    assert.ok(f.queryCount<=50,`D1 query limit: ${f.queryCount}`);
+    assert.ok(f.queryCount+requests<=50,`combined subrequest budget: ${f.queryCount} queries + ${requests} fetches`);
   }finally{f.close();}
 });
 

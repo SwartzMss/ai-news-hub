@@ -19,6 +19,8 @@ npx wrangler login
 npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 ```
 
+升级已有邮件服务时，先应用 `newsletter/migrations/0002.sql`，再部署包含新发送逻辑的 Pages Functions。该迁移增加按日期的发送批次租约；若新代码先部署而 D1 尚未迁移，发送接口会返回 `newsletter_unavailable`，需要完成迁移后重试。Linux Backend 的 SQLite 不受影响。
+
 在当前 Pages 项目的生产环境绑定该 D1 数据库，绑定名为 **`NEWSLETTER_DB`**。只放入订阅数据，不上传 Linux 后台的数据库。不要将生产 D1 或邮件密钥绑定到预览环境。
 
 ## 3. 设置 Pages 生产环境
@@ -55,7 +57,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 发送前会等待所有目标话题都有当天的已发布日报。任何话题尚未更新时先等待，不把昨天的日报当今天发送。暂停某个话题后，如仍需发送其他话题，请相应调整 `NEWSLETTER_TOPIC_IDS`。当前三个话题 ID 可以从网站话题链接读取。
 
-同一读者每天只创建一份汇总发送记录，重试使用原内容与原发送标识，不跟随当天后续修订重复发邮件。每次请求最多发送 8 封，工作流每次最多尝试 200 个收件人；更大规模需增加受控批次并匹配邮件服务额度。
+同一读者每天只创建一份汇总发送记录，重试使用原内容与原发送标识，不跟随当天后续修订重复发邮件。D1 按日期持有短时批次租约，使并发请求也只运行一个发送批次；异常中断后租约最多保留 5 分钟。每次请求最多发送 8 封，工作流每次最多尝试 200 个收件人；更大规模需增加受控批次并匹配邮件服务额度。
 
 ## 5. 验证
 

@@ -179,7 +179,7 @@ bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 - **RSS 订阅**：点击网站上的「RSS 订阅」，将链接添加到 RSS 阅读器，获取话题更新。
 - **邮件订阅**：通过 Resend 发送。启用后，读者填写邮箱并确认，即可每天收到一封汇总全部话题的邮件，也可随时通过邮件退订。
 
-邮件订阅默认关闭，需要自有发件域名。每日发送计划由 Linux Backend 的「邮件发送」设置控制，默认北京时间 09:00；Backend 到达计划时间后调用 GitHub Actions `workflow_dispatch`，工作流执行发送脚本。GitHub Actions 页面保留应急手动运行入口，但不是日常定时调度器。若生产配置缺失，工作流不会发信。启用、调度切换及 GitHub 设置核对步骤见 [邮件订阅设置](docs/NEWSLETTER.md)。
+邮件订阅默认关闭，需要自有发件域名。每日发送计划由 Linux Backend 的「邮件发送」设置控制，默认北京时间 09:00；Backend 到达计划时间后调用 GitHub Actions `workflow_dispatch`，工作流执行发送脚本。GitHub Actions 页面保留应急手动运行入口，但不是日常定时调度器。若生产配置缺失，工作流不会发信。邮件发送批次由 D1 按日期串行化；升级 Pages Functions 前需应用 D1 migration 0002。启用、调度切换及 GitHub 设置核对步骤见 [邮件订阅设置](docs/NEWSLETTER.md)。
 
 ## 日常使用
 
