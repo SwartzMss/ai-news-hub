@@ -1,6 +1,6 @@
 # 公共新闻阅读站
 
-独立 React/Vite 构建时静态渲染首页、频道、来源详情、日期/版本归档，以及 RSS 2.0。输出仅为 `dist/web`，不依赖在线 Backend，不包含 Admin 或 SQLite。页面无需 JavaScript 即可阅读，小型浏览器脚本只切换明暗主题。
+独立 React/Vite 构建时静态渲染首页、频道、来源详情、日期/版本归档，以及 RSS 2.0。输出仅为 `dist/web`，不依赖在线 Backend，不包含 Admin 或 SQLite。页面正文无需 JavaScript 即可阅读；搜索交互和明暗主题由轻量浏览器脚本增强。
 
 ```bash
 # 正式构建：使用当前 Git checkout 的 reports/；无日报时展示真实空状态

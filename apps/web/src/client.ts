@@ -1,4 +1,7 @@
 import "./style.css";
+import { mountSiteSearch } from "./search-client";
+
+mountSiteSearch();
 
 const stickyHeader = document.querySelector<HTMLElement>("[data-sticky-header]");
 if (stickyHeader) {

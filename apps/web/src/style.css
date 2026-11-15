@@ -2217,3 +2217,35 @@ html {
   .header-links { gap: 8px; padding-right: 0; border-right: 0; }
   .header-link { font-size: 12px; }
 }
+
+/* Public cross-topic article search */
+.search-page { max-width: 900px; margin: 44px auto 64px; }
+.search-heading { padding-bottom: 24px; margin-bottom: 28px; border-bottom: 1px solid var(--line); }
+.search-heading h1 { margin: 4px 0 10px; font-size: clamp(28px, 3vw, 36px); line-height: 1.35; }
+.search-heading > p:last-child { color: var(--muted); font-size: 14px; }
+.site-search-form > label { display: block; margin-bottom: 8px; color: var(--ink); font-size: 13px; font-weight: 650; }
+.site-search-control { display: flex; gap: 10px; }
+.site-search-control input { flex: 1; min-width: 0; height: 48px; padding: 0 15px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }
+.site-search-control button { min-width: 88px; height: 48px; padding: 0 20px; border: 1px solid var(--accent); border-radius: 8px; background: var(--accent); color: var(--paper); font-size: 13px; font-weight: 650; }
+.site-search-control button:hover { filter: brightness(.96); }
+.search-hint { margin-top: 9px; color: var(--muted); font-size: 12px; }
+.search-status { margin: 28px 0 4px; color: var(--muted); font-size: 13px; }
+.search-results { margin: 0; padding: 0; list-style: none; }
+.search-result { padding: 22px 0; border-bottom: 1px solid var(--line); }
+.search-result h2 { font-size: 18px; line-height: 1.65; font-weight: 650; }
+.search-result h2 a { color: var(--ink); }
+.search-result h2 a:hover { color: var(--accent); }
+.search-result-summary { margin-top: 7px; color: var(--muted); font-size: 14px; line-height: 1.85; }
+.search-result-meta { display: flex; flex-wrap: wrap; align-items: center; gap: 8px 14px; margin-top: 11px; color: var(--muted); font-size: 12px; }
+.search-result-topic { color: var(--ink); font-weight: 600; }
+.search-result-category { color: var(--accent); }
+.search-empty, .search-noscript { padding: 22px 0; color: var(--muted); font-size: 13px; }
+@media (max-width: 700px) {
+  .search-page { margin: 30px auto 44px; }
+  .search-heading { margin-bottom: 22px; padding-bottom: 18px; }
+  .site-search-control { gap: 8px; }
+  .site-search-control input { height: 44px; padding-inline: 11px; font-size: 13px; }
+  .site-search-control button { min-width: 68px; height: 44px; padding-inline: 12px; }
+  .search-result { padding: 18px 0; }
+  .search-result h2 { font-size: 16px; }
+}

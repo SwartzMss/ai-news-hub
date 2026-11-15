@@ -11,7 +11,7 @@ export function Shell({
 }: {
   data: PublicData;
   topic?: TopicSummary;
-  active?: "topics" | "archive";
+  active?: "topics" | "archive" | "search";
   page?: string;
   children: ReactNode;
 }) {
@@ -38,6 +38,9 @@ export function Shell({
             aria-current={active === "archive" ? "page" : undefined}
           >
             往期归档
+          </a>
+          <a href="/search/" aria-current={active === "search" ? "page" : undefined}>
+            搜索
           </a>
         </nav>
         <div className="header-actions">
