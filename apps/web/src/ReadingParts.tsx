@@ -19,10 +19,12 @@ export function hasResearchAreas(items: Story[]) {
   return items.some((item) => item.research_area !== undefined);
 }
 export function groupResearchAreas(items: Story[]) {
-  return researchAreaOrder.map((area) => ({
-    ...area,
-    items: items.filter((item) => item.research_area === area.id),
-  }));
+  return researchAreaOrder
+    .map((area) => ({
+      ...area,
+      items: items.filter((item) => item.research_area === area.id),
+    }))
+    .filter((group) => group.items.length > 0);
 }
 export function projectEntryLabel(story: Story) {
   if (!story.research_area || story.details?.kind !== 'project') return undefined;

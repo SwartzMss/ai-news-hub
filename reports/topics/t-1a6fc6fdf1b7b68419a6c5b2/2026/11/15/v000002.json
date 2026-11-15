@@ -1,0 +1,295 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "094e55dc-e2c5-415b-8ba6-f68206bd2294",
+  "report_date": "2026-11-15",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-15｜统计窗口：2026-11-14 08:08—2026-11-15 08:08（北京时间）；补充近90天维护项目",
+  "collected_at": "2026-11-15T00:18:21.511Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-15T00:18:21.521Z",
+  "reviewed_content_sha256": "83f8a89ed0ce1722eaac0ec064667cef5de1fcebb116728dc6fdccdd1d7017c6",
+  "items": [
+    {
+      "id": "7ae4a566fb2214a27292e59789102a3ffaee50853dbc3fde300fb96eda5a11c9",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "MakeMyClip Editor 是可由 Claude Code 或 MCP 客户端驱动的本地视频编辑器；v0.4.2 修复了 UI API 对跨站与 DNS 重绑定请求的防护问题。项目将剪辑操作封装为 CLI、MCP 工具和浏览器时间线，使用 FFmpeg 与本地 whisper.cpp 处理素材，并采用 MIT 许可证。[项目仓库](https://github.com/MakeMyClip/editor)",
+      "analysis": "这次更新直接针对本地编辑器 API 的请求安全，适合关注 Agent 驱动媒体工具的开发者。项目仍处早期版本；实际部署前应评估本机 UI API 的暴露方式及 Node、FFmpeg 等运行依赖。",
+      "evidence_quote": "ui: reject cross-site and DNS-rebinding requests to the clip ui API",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "MakeMyClip Editor 将转录、时间线编辑和渲染能力封装成 Agent 可调用的本地视频编辑工作流。v0.4.2 发布说明记录了 UI API 的跨站与 DNS 重绑定防护修复。",
+        "change": {
+          "summary": "v0.4.2 修复 UI API 对跨站及 DNS 重绑定请求的防护问题。",
+          "version": "v0.4.2",
+          "type": "release",
+          "publishedAt": "2026-11-13",
+          "evidenceRefs": [
+            "mm-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "提供 CLI、MCP 服务和浏览器时间线，共用剪辑工具接口。",
+            "evidenceRefs": [
+              "mm-repo"
+            ]
+          },
+          {
+            "description": "以 FFmpeg 处理媒体并通过本地 whisper.cpp 转录。",
+            "evidenceRefs": [
+              "mm-repo"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "让 Agent 或用户对录制视频进行转录、去静音、字幕添加和时间线剪辑。",
+            "evidenceRefs": [
+              "mm-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "mm-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v0.4.2 发布说明记录了 UI API 的跨站与 DNS 重绑定请求防护修复。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "mm-release"
+            ]
+          },
+          {
+            "description": "适合评估本地、可脚本化剪辑流程；项目版本较早，生产使用前宜检查自身部署的网络暴露与依赖条件。",
+            "nature": "analysis"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "mm-release",
+            "name": "MakeMyClip v0.4.2 Release",
+            "url": "https://github.com/MakeMyClip/editor/releases",
+            "supports": "版本、发布日期及 UI API 安全修复"
+          },
+          {
+            "id": "mm-repo",
+            "name": "MakeMyClip Editor 官方仓库",
+            "url": "https://github.com/MakeMyClip/editor",
+            "supports": "项目能力、CLI/MCP/浏览器接口及媒体处理机制"
+          },
+          {
+            "id": "mm-license",
+            "name": "MakeMyClip Editor LICENSE",
+            "url": "https://github.com/MakeMyClip/editor/blob/main/LICENSE",
+            "supports": "仓库代码采用 MIT 许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/MakeMyClip/editor/releases",
+        "canonical_url": "https://github.com/MakeMyClip/editor/releases",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0f56a0bdde5fea8478064b12f939f6612c558e51e3fb0faea6d65848523523ef",
+      "category": "security",
+      "importance": 3,
+      "fact_summary": "Socket Patch 为项目依赖提供安全修复，可在不等待上游发布或升级依赖版本的情况下更新依赖文件；v5.1.0 记录了 VEX 读取 Python lock 文件时避免复制的改进。它支持多种包生态，并可输出 OpenVEX，仓库许可证为 MIT。[项目仓库](https://github.com/SocketDev/socket-patch)",
+      "analysis": "适合需要在上游版本升级前应用可审查补丁、并将漏洞修复纳入现有依赖流程的团队。补丁可用性受支持生态与服务模式限制；项目文档也提醒，没有可用补丁并不代表依赖没有漏洞。",
+      "evidence_quote": "Apply security fixes to the dependency versions your project already uses, without waiting for an upstream release or upgrading the dependency.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "Socket Patch 面向依赖供应链修复场景，扫描项目依赖文件并为已有依赖版本应用安全补丁。v5.1.0 还改进了 VEX 对 Python lock 文件的读取方式。",
+        "change": {
+          "summary": "v5.1.0 调整 VEX 中 Python lock 文件读取，避免复制 lock 内容。",
+          "version": "v5.1.0",
+          "type": "release",
+          "evidenceRefs": [
+            "sp-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "扫描并更新依赖清单或 lock 文件，可预览变更；支持 hosted、vendored 和 agent 补丁模式。",
+            "evidenceRefs": [
+              "sp-repo"
+            ]
+          },
+          {
+            "description": "支持生成 OpenVEX，文档列出 Cargo、Go、npm、PyPI 等依赖生态。",
+            "evidenceRefs": [
+              "sp-repo"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在升级依赖版本前，为受影响的依赖应用补丁并审阅、提交依赖文件变更。",
+            "evidenceRefs": [
+              "sp-repo"
+            ]
+          },
+          {
+            "description": "将补丁信息导出为 OpenVEX，供漏洞扫描器读取。",
+            "evidenceRefs": [
+              "sp-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "sp-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v5.1.0 发布记录包含对 VEX Python lock 文件读取的改进。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "sp-release"
+            ]
+          },
+          {
+            "description": "适合希望把修复与依赖清单审查流程结合的团队；可用补丁取决于生态、补丁来源及部署模式，扫描无补丁不等于无漏洞。",
+            "nature": "analysis"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "sp-release",
+            "name": "Socket Patch Releases",
+            "url": "https://github.com/SocketDev/socket-patch/releases",
+            "supports": "v5.1.0 发布记录及版本变化"
+          },
+          {
+            "id": "sp-repo",
+            "name": "Socket Patch 官方仓库",
+            "url": "https://github.com/SocketDev/socket-patch",
+            "supports": "补丁机制、模式、生态支持和 OpenVEX 能力"
+          },
+          {
+            "id": "sp-license",
+            "name": "Socket Patch LICENSE",
+            "url": "https://github.com/SocketDev/socket-patch/blob/main/LICENSE",
+            "supports": "仓库代码采用 MIT 许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/SocketDev/socket-patch/releases",
+        "canonical_url": "https://github.com/SocketDev/socket-patch/releases",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d4e432b2bddfa3537cf6db6447fd2550efb01ac33e7d0bfc0cdccfc6db3b9b80",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "go-libp2p 是 Go 语言实现的 P2P 网络栈；v0.50.0 包含 HTTP 认证对过大 opaque 值的拒绝处理，以及 QUIC 和 WebTransport 依赖升级。它为构建点对点连接与应用层协议提供网络基础能力，仓库采用 MIT 许可证。[项目仓库](https://github.com/libp2p/go-libp2p)",
+      "analysis": "该版本将认证输入处理修复与传输层依赖更新纳入同一发布，适合基于 libp2p 构建节点或 P2P 应用的团队评估。版本发布距今已数周，落地前需核对当前依赖版本及自身协议组合。",
+      "evidence_quote": "fix(http/auth): reject oversized opaque",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "go-libp2p 为 Go 项目提供 P2P 网络栈。v0.50.0 包含 HTTP 认证输入处理修复与传输依赖更新。",
+        "change": {
+          "summary": "v0.50.0 修复 HTTP 认证对超大 opaque 值的处理，并升级 quic-go 和 webtransport-go。",
+          "version": "v0.50.0",
+          "type": "release",
+          "evidenceRefs": [
+            "lp-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "发布记录包含 HTTP 认证拒绝过大 opaque 值的修复。",
+            "evidenceRefs": [
+              "lp-release"
+            ]
+          },
+          {
+            "description": "同一版本升级 quic-go 至 v0.62.0、webtransport-go 至 v0.13.0。",
+            "evidenceRefs": [
+              "lp-release"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "用作构建 P2P 节点、网络服务和自定义点对点协议的 Go 网络栈。",
+            "evidenceRefs": [
+              "lp-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "lp-repo"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v0.50.0 发布记录列出 HTTP 认证修复及传输组件升级。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "lp-release"
+            ]
+          },
+          {
+            "description": "适合已采用 libp2p 的 Go 网络项目检查版本差异；发布说明不能替代对目标协议组合的兼容性验证。",
+            "nature": "analysis"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "lp-release",
+            "name": "go-libp2p v0.50.0 Release",
+            "url": "https://github.com/libp2p/go-libp2p/releases/tag/v0.50.0",
+            "supports": "版本变化与发布时间"
+          },
+          {
+            "id": "lp-repo",
+            "name": "go-libp2p 官方仓库",
+            "url": "https://github.com/libp2p/go-libp2p",
+            "supports": "项目用途及仓库 MIT 许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/libp2p/go-libp2p/releases/tag/v0.50.0",
+        "canonical_url": "https://github.com/libp2p/go-libp2p/releases/tag/v0.50.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
