@@ -38,7 +38,6 @@ export function NewsDetail({story}:{story:Story}){
       <div className="news-detail-tags">
         <span className="news-tag news-tag-topic">{categories[story.category]??story.category}</span>
       </div>
-      <p className="news-detail-verification">来源链接和格式校验不等于独立事实核验；请以原始来源为准。</p>
     </header>
     <MobileDetailNav sections={sections}/>
     <div className="news-detail-sections">
