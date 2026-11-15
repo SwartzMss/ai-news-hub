@@ -110,32 +110,64 @@ export class GitHubArchive implements GitHubAdapter {
     return request;
   }
   async remove(artifact: ArchiveRemoval, target: PublishTarget, signal: AbortSignal): Promise<void> {
-    if (!/^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path))
-      throw new AppError("archive_invalid");
-    if (target.repository !== this.target.repository || target.branch !== this.target.branch) throw new AppError("archive_target_unknown");
+    await this.removeMany([artifact], target, signal);
+  }
+  async removeMany(artifacts: ArchiveRemoval[], target: PublishTarget, signal: AbortSignal): Promise<void> {
+    if (target.repository !== this.target.repository || target.branch !== this.target.branch)
+      throw new AppError("archive_target_unknown");
+    const unique = new Map<string, ArchiveRemoval>();
+    for (const artifact of artifacts) {
+      if (!/^reports\/topics\/t-[a-f0-9]{24}\/\d{4}\/\d{2}\/\d{2}\/v\d{6}\.json$/.test(artifact.path) ||
+          !/^[a-f0-9]{64}$/.test(artifact.hash))
+        throw new AppError("archive_invalid");
+      const prior = unique.get(artifact.path);
+      if (prior && prior.hash !== artifact.hash) throw new AppError("archive_conflict");
+      if (!prior) unique.set(artifact.path, artifact);
+    }
+    const items = [...unique.values()];
+    if (!items.length) return;
     const request = this.request(signal);
-    const ref = await request("git/ref/heads/" + encodeURIComponent(this.target.branch)) as {object?:{sha?:string;type?:string}};
-    if (ref.object?.type !== "commit" || !validSha(ref.object.sha)) throw new AppError("github_invalid_response");
+    const ref = await request("git/ref/heads/" + encodeURIComponent(this.target.branch)) as { object?: { sha?: string; type?: string } };
+    if (ref.object?.type !== "commit" || !validSha(ref.object.sha))
+      throw new AppError("github_invalid_response");
     const head = ref.object.sha;
-    const read = async (path: string) => {
-      const file = await request("contents/" + path + "?ref=" + head,"GET",undefined,true) as {type?:string;encoding?:string;content?:string}|undefined;
-      if (!file) return undefined;
-      if (file.type !== "file" || file.encoding !== "base64" || typeof file.content !== "string") throw new AppError("github_invalid_response");
-      return Buffer.from(file.content,"base64");
+    const read = async (artifact: ArchiveRemoval): Promise<boolean> => {
+      const file = await request("contents/" + artifact.path + "?ref=" + head, "GET", undefined, true) as
+        | { type?: string; encoding?: string; content?: string }
+        | undefined;
+      if (!file) return false;
+      if (file.type !== "file" || file.encoding !== "base64" || typeof file.content !== "string")
+        throw new AppError("github_invalid_response");
+      const content = Buffer.from(file.content, "base64");
+      if (createHash("sha256").update(content).digest("hex") !== artifact.hash)
+        throw new AppError("archive_conflict");
+      return true;
     };
-    const content = await read(artifact.path);
-    if (content !== undefined && createHash("sha256").update(content).digest("hex") !== artifact.hash)
-      throw new AppError("archive_conflict");
-    const tree: {path:string;mode:string;type:string;sha?:null;content?:string}[] = [];
-    if (content !== undefined) tree.push({path:artifact.path,mode:"100644",type:"blob",sha:null});
+    const present = new Array<boolean>(items.length);
+    let cursor = 0;
+    await Promise.all(Array.from({ length: Math.min(8, items.length) }, async () => {
+      while (true) {
+        const index = cursor++;
+        if (index >= items.length) return;
+        present[index] = await read(items[index]!);
+      }
+    }));
+    signal.throwIfAborted();
+    const tree = items.flatMap((artifact, index) => present[index]
+      ? [{ path: artifact.path, mode: "100644", type: "blob", sha: null as null }]
+      : []);
     if (!tree.length) return;
-    const commit = await request("git/commits/"+head) as {tree?:{sha?:string}};
+    const commit = await request("git/commits/" + head) as { tree?: { sha?: string } };
     if (!validSha(commit.tree?.sha)) throw new AppError("github_invalid_response");
-    const nextTree = await request("git/trees","POST",{base_tree:commit.tree.sha,tree}) as {sha?:string};
+    const nextTree = await request("git/trees", "POST", { base_tree: commit.tree.sha, tree }) as { sha?: string };
     if (!validSha(nextTree.sha)) throw new AppError("github_invalid_response");
-    const nextCommit = await request("git/commits","POST",{message:`remove report: ${artifact.reportId}`,tree:nextTree.sha,parents:[head]}) as {sha?:string};
+    const nextCommit = await request("git/commits", "POST", {
+      message: "remove expired reports (" + tree.length + ")",
+      tree: nextTree.sha,
+      parents: [head],
+    }) as { sha?: string };
     if (!validSha(nextCommit.sha)) throw new AppError("github_invalid_response");
-    await request("git/refs/heads/"+encodeURIComponent(this.target.branch),"PATCH",{sha:nextCommit.sha,force:false});
+    await request("git/refs/heads/" + encodeURIComponent(this.target.branch), "PATCH", { sha: nextCommit.sha, force: false });
   }
   async close() {
     await this.http.close();
