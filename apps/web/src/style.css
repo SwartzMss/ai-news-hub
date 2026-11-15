@@ -828,7 +828,6 @@ main {
 }
 .investment-detail { min-width: 0; padding-bottom: 48px; }
 .investment-summary { font-size: 16px; line-height: 1.9; margin-top: 16px; }
-.investment-verification { color: var(--muted); font-size: 12px; line-height: 1.6; margin-top: 14px; }
 .investment-sections > section { padding: 28px 0; border-bottom: 1px solid var(--line); scroll-margin-top: 24px; }
 .investment-sections h2 { font-size: 19px; margin-bottom: 14px; }
 .investment-sections p, .investment-sections li { font-size: 15px; line-height: 1.9; }

@@ -60,7 +60,6 @@ export function InvestmentDetail({story}:{story:Story}){
     <header className="investment-header detail-page-header">
       <h1 className="detail-page-title">{lead(story).title}</h1>
       {lead(story).rest&&<p className="investment-summary"><InlineText text={lead(story).rest}/></p>}
-      <p className="investment-verification">研究资料由 Codex 提供；来源链接和格式校验不等于独立事实核验。</p>
     </header>
     <MobileDetailNav sections={sections}/>
     <div className="investment-sections">
