@@ -1,6 +1,6 @@
 import test from "node:test";
 import assert from "node:assert/strict";
-import { readFileSync, readdirSync, lstatSync } from "node:fs";
+import { readFileSync, readdirSync, lstatSync, existsSync } from "node:fs";
 import { join } from "node:path";
 import sax from "sax";
 import { JSDOM } from "jsdom";
@@ -18,7 +18,6 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   for (const p of [
     "index.html",
     "channel/opensource/index.html",
-    "archive/index.html",
     "search/index.html",
     `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-02/index.html`,
     `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/index.html`,
@@ -29,9 +28,8 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   const data = readArchives("tests/fixtures/web-reports", { allowDemo: true });
   const homeDoc = new JSDOM(readFileSync(join(root, "index.html"), "utf8"))
     .window.document;
-  const historyDoc = new JSDOM(
-    readFileSync(join(root, "archive/index.html"), "utf8"),
-  ).window.document;
+  assert.equal(existsSync(join(root, "archive/index.html")), false);
+  assert.equal(existsSync(join(root, `topics/${data.topics[0].id}/archive/index.html`)), false);
   const searchDoc = new JSDOM(
     readFileSync(join(root, "search/index.html"), "utf8"),
   ).window.document;
@@ -51,8 +49,8 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     homeDoc.querySelector("main h1").textContent,
     new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
   );
-  assert.equal(historyDoc.querySelector("main h1").textContent, "话题归档");
-  assert.equal(historyDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
+  assert.deepEqual([...homeDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
+  assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
   assert.equal(homeDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
@@ -98,12 +96,6 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     "来源发布 未知",
   ])
     assert.ok(!text.includes(removed), removed);
-  assert.ok(
-    !historyDoc
-      .querySelector("main")
-      .textContent.includes(data.current[0].fact_summary),
-    "archive lists editions instead of repeating article bodies",
-  );
   const articleDoc = new JSDOM(
     readFileSync(join(root, `news/${data.current[0].key}/index.html`), "utf8"),
   ).window.document;
@@ -117,8 +109,8 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.equal(articleDoc.querySelector(".article-header time"), null);
   assert.ok(articleDoc.querySelector(".detail-page-title"));
   assert.equal(articleDoc.querySelectorAll(".detail-context a").length, 1);
-  assert.equal(articleDoc.querySelector(".detail-context a").textContent, "返回归档");
-  assert.ok(articleDoc.querySelector(".detail-context a").getAttribute("href").endsWith("/archive/"));
+  assert.equal(articleDoc.querySelector(".detail-context a").textContent, "返回话题");
+  assert.equal(articleDoc.querySelector(".detail-context a").getAttribute("href"), `/topics/${data.current[0].topic.id}/`);
   assert.equal(articleDoc.querySelector(".detail-context time")?.getAttribute("datetime"), data.current[0].report_date);
   assert.equal(articleDoc.querySelector(".breadcrumb"), null);
   const feed = readFileSync(join(root, "rss/all.xml"), "utf8");
@@ -301,7 +293,7 @@ test("date and revision readers preserve exact archived text and separate curren
     ).window.document;
     assert.equal(
       withdrawnDoc.querySelector(".detail-context a").getAttribute("href"),
-      `/topics/${base.topic.id}/archive/`,
+      `/topics/${base.topic.id}/`,
     );
     const current = main(`topics/${base.topic.id}/index.html`);
     assert.equal(current.querySelector(".brief-topic"), null);
@@ -342,7 +334,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(home.querySelectorAll("[data-topic-panel]:not([hidden])").length, 1);
     for (const topic of [a, b]) {
       assert.ok(home.querySelector(`a[data-topic-choice="${topic.id}"][href="/topics/${topic.id}/"]`));
-      assert.ok(documentAt("archive/index.html").querySelector(`main a[href="/topics/${topic.id}/archive/"]`));
+      assert.equal(existsSync(join(built.output, `topics/${topic.id}/archive/index.html`)), false);
       assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
       assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
     }
@@ -383,7 +375,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
     assert.equal(visible()[0].querySelector(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']"), null);
     assert.equal(browser.window.document.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
-    assert.equal(browser.window.document.querySelector("[data-topic-archive]").getAttribute("href"), `/topics/${a.id}/archive/`);
+    assert.equal(browser.window.document.querySelector("[data-topic-archive]"), null);
     browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
     browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
     assert.equal(visible()[0].dataset.topicPanel, b.id);
@@ -428,7 +420,7 @@ test('structured project detail renders sourced sections without an event timeli
   assert.equal(doc.querySelector('.project-detail .project-number'),null);
   assert.ok(doc.querySelector('.project-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
-  assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
+  assert.equal(doc.querySelector('.detail-context a').textContent, '返回话题');
   assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
   assert.match(doc.querySelector('#project-change').textContent,/新增增量索引.*2026-11-03/s);
   assert.ok(doc.querySelector('#project-technical a[href="#project-evidence-release"]'));
@@ -461,7 +453,7 @@ test('investment detail renders evidence-linked metrics and a section directory'
   assert.equal(doc.querySelector('.investment-topic'),null);
   assert.ok(doc.querySelector('.investment-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
-  assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
+  assert.equal(doc.querySelector('.detail-context a').textContent, '返回话题');
   assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
   assert.match(doc.querySelector('.investment-detail table').textContent,/季度收入.*12.4.*实际值/s);
   assert.match(doc.querySelector('.investment-detail').textContent,/潜在影响|潜在关系/);
@@ -517,7 +509,7 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.doesNotMatch(topicDoc.querySelector('.category-label').textContent,/跨平台|观点讨论/);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
-  assert.equal(doc.querySelector('.detail-context a').textContent, '返回归档');
+  assert.equal(doc.querySelector('.detail-context a').textContent, '返回话题');
   assert.equal(doc.querySelector('.detail-context time').getAttribute('datetime'), report.report_date);
   assert.match(doc.querySelector('.news-detail table').textContent,/鉴定结果.*已公布.*已证实/s);
   assert.equal(doc.querySelector('#news-timeline')?.tagName,'SPAN');

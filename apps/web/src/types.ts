@@ -90,8 +90,6 @@ export interface Page {
     | "topic"
     | "channel"
     | "article"
-    | "archive"
-    | "topicArchive"
     | "date"
     | "report"
     | "404";

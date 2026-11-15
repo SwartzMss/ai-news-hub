@@ -481,93 +481,11 @@ main {
   color: var(--muted);
   font-size: 13px;
 }
-.section-kicker {
-  flex-basis: 100%;
-  font-size: 11px;
-  color: var(--muted);
-}
-.archive-month {
-  margin: 0 0 38px;
-}
-.archive-month > h2 {
-  font-size: 17px;
-  font-weight: 600;
-  margin-bottom: 16px;
-}
-.archive-month ol,
 .edition-links,
 .reading-aside ol {
   margin: 0;
   padding: 0;
   list-style: none;
-}
-.archive-edition {
-  border: 1px solid var(--line);
-  border-radius: 8px;
-  margin-bottom: 14px;
-  background: var(--paper);
-}
-.archive-edition > a {
-  display: flex;
-  align-items: center;
-  gap: 24px;
-  padding: 24px;
-  color: var(--ink);
-}
-.archive-edition > a:hover {
-  background: var(--tint);
-  text-decoration: none;
-}
-.archive-date {
-  min-width: 68px;
-  align-self: stretch;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  padding-right: 24px;
-  border-right: 1px solid var(--line);
-  font-variant-numeric: tabular-nums;
-}
-.archive-date strong {
-  font-size: 36px;
-  font-weight: 550;
-  line-height: 1.2;
-}
-.archive-date span {
-  font-size: 10px;
-  color: var(--muted);
-  margin-top: 6px;
-  white-space: nowrap;
-}
-.archive-labels {
-  display: flex;
-  gap: 12px;
-  align-items: center;
-  font-size: 11px;
-  color: var(--muted);
-  margin-bottom: 8px;
-}
-.archive-edition h3 {
-  font-size: 19px;
-  line-height: 1.7;
-  font-weight: 600;
-}
-.archive-edition-content {
-  min-width: 0;
-}
-.archive-categories {
-  display: flex;
-  gap: 14px;
-  flex-wrap: wrap;
-  margin-top: 12px;
-  color: var(--muted);
-  font-size: 11px;
-}
-.edition-open {
-  margin-left: auto;
-  flex-shrink: 0;
-  color: var(--accent);
 }
 .reading-aside {
   max-height: calc(100dvh - var(--sticky-header-height, 0px) - 24px);
@@ -1231,30 +1149,6 @@ main {
   .page-heading h1 {
     font-size: 27px;
   }
-  .archive-month > h2 {
-    font-size: 16px;
-  }
-  .archive-edition > a {
-    padding: 18px 14px;
-    gap: 14px;
-  }
-  .archive-date {
-    min-width: 48px;
-    padding-right: 14px;
-  }
-  .archive-date strong {
-    font-size: 29px;
-  }
-  .archive-edition h3 {
-    font-size: 16px;
-  }
-  .archive-categories {
-    font-size: 10px;
-    gap: 10px;
-  }
-  .edition-open {
-    display: none;
-  }
   .story-heading {
     gap: 12px;
   }
@@ -1571,8 +1465,7 @@ main {
     padding-left: 16px;
   }
 }
-.reading-layout.latest-layout,
-.reading-layout.archive-layout {
+.reading-layout.latest-layout {
   max-width: none;
 }
 .brief-layout .news-summary,
