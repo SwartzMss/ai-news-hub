@@ -184,3 +184,66 @@ test('removal of a missing report is idempotent and changed content is refused',
     await adapter.close();
   }
 });
+
+
+test('batch removal verifies every archived file and removes them in one Git commit', async () => {
+  const { createHash } = await import('node:crypto');
+  const artifacts = [
+    { reportId: 'old-1', path: 'reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/10/01/v000001.json', hash: createHash('sha256').update('one').digest('hex') },
+    { reportId: 'old-2', path: 'reports/topics/t-bbbbbbbbbbbbbbbbbbbbbbbb/2026/10/02/v000002.json', hash: createHash('sha256').update('two').digest('hex') },
+  ];
+  const contents = new Map([[artifacts[0].path, 'one'], [artifacts[1].path, 'two']]);
+  const calls = [];
+  const adapter = new GitHubArchive(target, 'SECRET', async (url, init) => {
+    calls.push({ url, init });
+    const path = new URL(url).pathname;
+    if (path.includes('/git/ref/')) return Response.json({ object: { type: 'commit', sha } });
+    if (path.includes('/contents/') && init.method === 'GET') {
+      const archivePath = path.split('/contents/')[1];
+      const content = contents.get(archivePath);
+      return content === undefined
+        ? new Response('{}', { status: 404 })
+        : Response.json({ type: 'file', encoding: 'base64', content: Buffer.from(content).toString('base64') });
+    }
+    if (path.endsWith('/git/commits/' + sha)) return Response.json({ tree: { sha: blob } });
+    if (path.endsWith('/git/trees') || path.endsWith('/git/commits')) return Response.json({ sha: blob });
+    if (init.method === 'PATCH') return Response.json({ object: { sha: blob } });
+    throw Error('unexpected request');
+  });
+  try {
+    await adapter.removeMany(artifacts, target, new AbortController().signal);
+    const treeCall = calls.find((call) => call.url.endsWith('/git/trees'));
+    const tree = JSON.parse(treeCall.init.body);
+    assert.equal(tree.base_tree, blob);
+    assert.deepEqual(tree.tree.map((entry) => entry.path).sort(), artifacts.map((entry) => entry.path).sort());
+    assert.ok(tree.tree.every((entry) => entry.sha === null));
+    assert.equal(calls.filter((call) => call.url.endsWith('/git/commits') && call.init.method === 'POST').length, 1);
+    assert.equal(calls.filter((call) => call.init.method === 'PATCH').length, 1);
+    assert.ok(calls.every((call) => call.init.redirect === 'error'));
+  } finally {
+    await adapter.close();
+  }
+});
+
+test('batch removal refuses a changed file before creating a commit', async () => {
+  const { createHash } = await import('node:crypto');
+  const artifacts = [
+    { reportId: 'old-1', path: 'reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/10/01/v000001.json', hash: createHash('sha256').update('expected').digest('hex') },
+    { reportId: 'old-2', path: 'reports/topics/t-bbbbbbbbbbbbbbbbbbbbbbbb/2026/10/02/v000002.json', hash: createHash('sha256').update('expected-2').digest('hex') },
+  ];
+  const calls = [];
+  const adapter = new GitHubArchive(target, 'SECRET', async (url, init) => {
+    calls.push({ url, init });
+    const path = new URL(url).pathname;
+    if (path.includes('/git/ref/')) return Response.json({ object: { type: 'commit', sha } });
+    if (path.includes('/contents/')) return Response.json({ type: 'file', encoding: 'base64', content: Buffer.from('changed').toString('base64') });
+    throw Error('unexpected request');
+  });
+  try {
+    await assert.rejects(adapter.removeMany(artifacts, target, new AbortController().signal), /archive_conflict/);
+    assert.equal(calls.some((call) => call.url.endsWith('/git/trees')), false);
+    assert.equal(calls.some((call) => call.init.method === 'PATCH'), false);
+  } finally {
+    await adapter.close();
+  }
+});

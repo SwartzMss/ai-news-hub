@@ -22,6 +22,7 @@ import {AuthStore} from './auth/store.js';
 import {registerAuthRoutes} from './auth/routes.js';
 import {NewsletterScheduler} from './newsletter/scheduler.js';
 import {GitHubNewsletterGateway,type NewsletterGateway} from './newsletter/github.js';
+import {ReportRetentionScheduler} from './publish/retention.js';
 
 export function buildServer(config: Config, options: { adapter?: AgentAdapter; onFatal?: () => void; newsFetcher?: SourceFetch; now?: () => Date; githubAdapter?: GitHubAdapter; newsletterGateway?:NewsletterGateway; onNewsletterScheduler?:(scheduler:NewsletterScheduler)=>void } = {}) {
   const db = openDatabase(config.dataDir);
@@ -69,12 +70,16 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
   const github:GitHubAdapter=options.githubAdapter??{async remove(artifact,target,signal){
     const configured=settings.publication();if(!configured)throw new AppError('publication_disabled');
     const client=new GitHubArchive(target,configured.token);try{await client.remove(artifact,target,signal);}finally{await client.close();}
+  },async removeMany(artifacts,target,signal){
+    const configured=settings.publication();if(!configured)throw new AppError('publication_disabled');
+    const client=new GitHubArchive(target,configured.token);try{await client.removeMany(artifacts,target,signal);}finally{await client.close();}
   },async publish(artifact,signal){
     const target=settings.publication();if(!target)throw new AppError('publication_disabled');
     const client=new GitHubArchive(target,target.token);try{return await client.publish(artifact,signal);}finally{await client.close();}
   }};
   const publications=new PublicationService(db,settings.publication(),settings.publication()?github:undefined);
   const newsletter=new NewsletterScheduler(db,options.newsletterGateway??new GitHubNewsletterGateway(()=>settings.publication()?.token),options.now);
+  const retention=new ReportRetentionScheduler(publications,options.now);
   options.onNewsletterScheduler?.(newsletter);
   engine.setAutomaticPublisher(async(reportId,signal)=>{
     if(signal.aborted)throw new AppError('publication_interrupted');
@@ -88,7 +93,9 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     finally {signal.removeEventListener('abort',interrupt);}
   });
   engine.resetSchedules();
-  const scheduleTimer=setInterval(()=>{try{if(authentication.status().initialized){engine.tick();void newsletter.tick(options.now?.()??new Date()).catch(()=>app.log.error({code:'newsletter_scheduler_failed'},'newsletter_scheduler_failed'));}}catch{app.log.error({code:'scheduler_failed'},'scheduler_failed');}},1000);
+  const runRetention=()=>{void retention.tick(options.now?.()??new Date()).then(deleted=>{if(deleted)app.log.info({deleted},'report_retention_completed');}).catch(()=>app.log.error({code:'report_retention_failed'},'report_retention_failed'));};
+  runRetention();
+  const scheduleTimer=setInterval(()=>{try{if(authentication.status().initialized){engine.tick();void newsletter.tick(options.now?.()??new Date()).catch(()=>app.log.error({code:'newsletter_scheduler_failed'},'newsletter_scheduler_failed'));}}catch{app.log.error({code:'scheduler_failed'},'scheduler_failed');}runRetention();},1000);
   scheduleTimer.unref();
   const applySettings=()=>{
     const runtime=settings.runtime(),target=settings.publication();
@@ -97,7 +104,7 @@ export function buildServer(config: Config, options: { adapter?: AgentAdapter; o
     app.log.level="info";
   };
   registerAdmin(app);
-  app.addHook('preClose', async () => { clearInterval(scheduleTimer); publications.interrupt(); await newsletter.close(); await engine.close(); await publications.close(); await http.close(); });
+  app.addHook('preClose', async () => { clearInterval(scheduleTimer); retention.stop(); publications.interrupt(); await newsletter.close(); await engine.close(); await retention.close(); await publications.close(); await http.close(); });
   app.addHook('onClose', async () => { try { release(); } finally { db.close(); } });
   app.register(async scope=>{registerAuthRoutes(scope,authentication);},{prefix:'/api'});
   app.register(async (scope) => { await registerTaskRoutes(scope, engine, authentication, db, publications,settings,applySettings,options.now,newsletter); }, { prefix: '/api' });
