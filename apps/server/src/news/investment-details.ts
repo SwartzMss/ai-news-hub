@@ -31,7 +31,7 @@ export const INVESTMENT_DETAILS_SCHEMA={
     risks:{type:'array',maxItems:6,items:text(180)},valuation:text(500),
     evidence:{type:'array',maxItems:10,items:{type:'object',additionalProperties:false,
       required:['id','name','url','supports'],properties:{
-        id:{type:'string',pattern:'^[a-z][a-z0-9-]{0,31}$'},name:text(100),url:text(2048),supports:text(240),
+        id:{type:'string',pattern:'^[a-z][a-z0-9-]{0,31}$'},name:text(160),url:text(2048),supports:text(240),
       }}},
   },
 };
