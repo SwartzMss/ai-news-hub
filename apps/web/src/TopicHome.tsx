@@ -1,4 +1,4 @@
-import type { PublicData } from "./types";
+import type { PublicData, Story } from "./types";
 import { Shell } from "./Shell";
 import { Row, Empty, dateLabel, groupResearchAreas, hasResearchAreas } from "./ReadingParts";
 import { topicPath } from "./paths";
@@ -8,20 +8,31 @@ export function LatestBrief({
   topic: PublicData["topics"][number];
 }) {
   const report = topic.latest;
-  const grouped = hasResearchAreas(report.items);
-  const groups = groupResearchAreas(report.items);
+  return <Brief date={report.report_date} stories={report.items} groupProjects />;
+}
+function Brief({
+  date,
+  stories,
+  groupProjects = false,
+}: {
+  date: string;
+  stories: Story[];
+  groupProjects?: boolean;
+}) {
+  const grouped = groupProjects && hasResearchAreas(stories);
+  const groups = grouped ? groupResearchAreas(stories) : [];
   const weekday = new Intl.DateTimeFormat("zh-CN", {
     weekday: "long",
     timeZone: "UTC",
-  }).format(new Date(report.report_date + "T00:00:00Z"));
+  }).format(new Date(date + "T00:00:00Z"));
   return (
     <div className="brief-layout">
       <div className="brief-main">
         <header className="brief-heading">
           <div className="brief-date">
             <h1>
-              <time dateTime={report.report_date}>
-                {dateLabel(report.report_date)}
+              <time dateTime={date}>
+                {dateLabel(date)}
               </time>
             </h1>
             <span>{weekday}</span>
@@ -31,11 +42,11 @@ export function LatestBrief({
           {grouped ? groups.map((group) => (
             <section className="research-area-section" key={group.id}>
               {group.items.map((story) => (
-                <Row key={story.key} story={story} id={`brief-${topic.id}-${story.key}`} />
+                <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} />
               ))}
             </section>
-          )) : report.items.map((story) => (
-            <Row key={story.key} story={story} id={`brief-${topic.id}-${story.key}`} />
+          )) : stories.map((story) => (
+            <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} />
           ))}
         </div>
       </div>
@@ -43,22 +54,22 @@ export function LatestBrief({
   );
 }
 export function TopicHome({ data }: { data: PublicData }) {
+  const byDate = new Map<string, Story[]>();
+  for (const topic of data.topics) {
+    const date = topic.latest.report_date;
+    const stories = byDate.get(date) ?? [];
+    stories.push(...topic.latest.items);
+    byDate.set(date, stories);
+  }
   return (
-    <Shell data={data} topic={data.topics[0]} page="home">
+    <Shell data={data} page="home">
       <main id="content" className="topic-home">
-        {!data.topics.length ? (
+        {!byDate.size ? (
           <Empty />
         ) : (
-          data.topics.map((topic, i) => (
-            <section
-              key={topic.id}
-              data-topic-panel={topic.id}
-              hidden={i !== 0}
-              aria-label={topic.name}
-            >
-              <LatestBrief topic={topic} />
-            </section>
-          ))
+          [...byDate.entries()]
+            .sort(([a], [b]) => b.localeCompare(a))
+            .map(([date, stories]) => <Brief key={date} date={date} stories={stories} />)
         )}
       </main>
     </Shell>
@@ -81,7 +92,6 @@ export function TopicDirectory({ data }: { data: PublicData }) {
                 className="topic-card"
                 key={topic.id}
                 href={topicPath(topic.id)}
-                data-topic-choice={topic.id}
               >
                 <h2>{topic.name}</h2>
                 <span>

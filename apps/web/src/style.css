@@ -1193,35 +1193,9 @@ main {
   overflow-wrap: anywhere;
 }
 
-/* One topic selection, one edition heading, then the stories. */
+/* Edition headings and stories. */
 [hidden] {
   display: none !important;
-}
-.topic-picker {
-  display: flex;
-  flex-wrap: wrap;
-  column-gap: 28px;
-  row-gap: 0;
-  max-width: 900px;
-  margin: 0 auto;
-  padding-top: 14px;
-  border-bottom: 1px solid var(--line);
-}
-.topic-picker a {
-  padding: 12px 0 14px;
-  border-bottom: 2px solid transparent;
-  color: var(--muted);
-  font-size: 14px;
-  min-height: 48px;
-}
-.topic-picker a:hover {
-  text-decoration: none;
-  color: var(--ink);
-}
-.topic-picker a[aria-current="page"] {
-  color: var(--accent);
-  border-color: var(--accent);
-  font-weight: 650;
 }
 .topic-home {
   max-width: 900px;
@@ -1370,14 +1344,6 @@ main {
   line-height: 1.7;
 }
 @media (max-width: 700px) {
-  .topic-picker {
-    column-gap: 22px;
-    padding-top: 6px;
-  }
-  .topic-picker a {
-    padding: 10px 0 12px;
-    font-size: 13px;
-  }
   .topic-home {
     margin: 22px auto 40px;
   }
@@ -1402,40 +1368,10 @@ main {
   }
 }
 
-/* Keep topic navigation beside the reading column on desktop. */
+/* Keep the reading column wide on desktop. */
 @media (min-width: 1001px) {
   .site-shell {
     max-width: none;
-  }
-  .reader-body.has-topics {
-    display: grid;
-    grid-template-columns: 190px minmax(0, 1fr);
-    gap: 40px;
-    align-items: start;
-  }
-  .sticky-header > .topic-picker {
-    position: sticky;
-    top: 28px;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    align-self: start;
-    max-height: calc(100dvh - 56px);
-    overflow-y: auto;
-    margin: 28px 0;
-    padding: 0 18px 0 0;
-    border-bottom: 0;
-    border-right: 1px solid var(--line);
-  }
-  .sticky-header > .topic-picker a {
-    padding: 11px 12px;
-    border-bottom: 0;
-    border-left: 2px solid transparent;
-    min-height: 44px;
-  }
-  .sticky-header > .topic-picker a[aria-current="page"] {
-    border-left-color: var(--accent);
-    background: var(--tint);
   }
   .reader-body > .topic-home,
   .reader-body > .reading-layout {
@@ -1453,10 +1389,6 @@ main {
 }
 
 @media (min-width: 1001px) and (max-width: 1200px) {
-  .reader-body.has-topics {
-    grid-template-columns: 160px minmax(0, 1fr);
-    gap: 28px;
-  }
   .brief-layout {
     grid-template-columns: minmax(0, 1fr) 190px;
     gap: 24px;
@@ -1574,60 +1506,6 @@ html {
   width: 100%;
   max-width: none;
   margin-inline: 0;
-}
-.reader-body.has-topics {
-  display: block;
-  grid-template-columns: none;
-  gap: 0;
-}
-.sticky-header > .topic-picker {
-  position: static;
-  top: auto;
-  display: flex;
-  flex-direction: row;
-  flex-wrap: nowrap;
-  align-items: center;
-  gap: 8px;
-  width: 100%;
-  max-width: none;
-  max-height: none;
-  overflow-x: auto;
-  overflow-y: hidden;
-  margin: 22px 0 0;
-  padding: 0 0 12px;
-  border: 0;
-  border-bottom: 1px solid var(--line);
-  scrollbar-width: none;
-}
-.sticky-header > .topic-picker::-webkit-scrollbar {
-  display: none;
-}
-.sticky-header > .topic-picker a {
-  display: inline-flex;
-  flex: 0 0 auto;
-  align-items: center;
-  min-height: 44px;
-  padding: 9px 16px;
-  border: 1px solid transparent;
-  border-radius: 10px;
-  border-bottom: 1px solid transparent;
-  background: transparent;
-  color: var(--muted);
-  font-size: 14px;
-  font-weight: 600;
-  white-space: nowrap;
-}
-.sticky-header > .topic-picker a:hover {
-  background: var(--paper);
-  color: var(--ink);
-  text-decoration: none;
-}
-.sticky-header > .topic-picker a[aria-current="page"] {
-  border-color: color-mix(in srgb, var(--accent) 22%, var(--line));
-  border-bottom-color: color-mix(in srgb, var(--accent) 22%, var(--line));
-  background: var(--tint);
-  color: var(--accent);
-  font-weight: 750;
 }
 .topic-home {
   width: 100%;
@@ -1812,6 +1690,11 @@ html {
   font-size: 11px;
   font-weight: 700;
 }
+.news-row .news-meta .category-label-topic {
+  border: 1px solid var(--line);
+  background: var(--paper);
+  color: var(--ink);
+}
 .news-row .news-meta a {
   color: var(--muted);
 }
@@ -1900,18 +1783,6 @@ html {
   .header-actions .subscribe-action svg {
     width: 18px;
     height: 18px;
-  }
-  .sticky-header > .topic-picker {
-    gap: 6px;
-    margin-top: 12px;
-    padding-bottom: 9px;
-    scroll-snap-type: x proximity;
-  }
-  .sticky-header > .topic-picker a {
-    min-height: 42px;
-    padding: 8px 13px;
-    font-size: 13px;
-    scroll-snap-align: start;
   }
   .topic-home {
     margin: 27px auto 44px;
@@ -2052,27 +1923,13 @@ html {
 }
 
 
-/* Article detail pages use the full reader width; topic navigation stays above the article. */
+/* Article detail pages use the full reader width. */
 @media (min-width: 1001px) {
   .reader-body:has(> .reading-layout.detail-layout) {
     display: block;
     width: 100%;
     max-width: none;
     margin-inline: 0;
-  }
-  .site-shell:has(.reading-layout.detail-layout) > .sticky-header > .topic-picker {
-    position: static;
-    display: flex;
-    flex-direction: row;
-    flex-wrap: wrap;
-    width: 100%;
-    max-width: none;
-    max-height: none;
-    overflow: visible;
-    margin: 0;
-    padding: 14px 0 0;
-    border-right: 0;
-    border-bottom: 1px solid var(--line);
   }
   .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout {
     width: 100%;
@@ -2137,4 +1994,11 @@ html {
   .site-search-control button { min-width: 68px; height: 44px; padding-inline: 12px; }
   .search-result { padding: 18px 0; }
   .search-result h2 { font-size: 16px; }
+}
+
+.topic-home .brief-layout {
+  display: block;
+}
+.topic-home .brief-layout + .brief-layout {
+  margin-top: 48px;
 }
