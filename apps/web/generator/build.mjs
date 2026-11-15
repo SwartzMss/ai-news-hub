@@ -4,6 +4,7 @@ import { resolve, join, dirname } from "node:path";
 import { fileURLToPath, pathToFileURL } from "node:url";
 import { readArchives } from "./data.mjs";
 import { rss, xml } from "./rss.mjs";
+import { buildSearchIndex } from "./search-index.mjs";
 const repo = resolve(fileURLToPath(new URL("../../../", import.meta.url))),
   root = join(repo, "apps/web");
 export async function buildPublic({
@@ -32,6 +33,7 @@ export async function buildPublic({
     allowMissing: !reportsDir && !demo,
   });
   data.newsletterEnabled = newsletterEnabled === true && !demo;
+  const searchIndex = buildSearchIndex(data.current);
   const output = join(repo, "dist/web"),
     ssr = join(repo, "dist/web-render");
   const config = join(root, "vite.config.ts");
@@ -65,6 +67,7 @@ export async function buildPublic({
   const routes = [
     { kind: "home", path: "/" },
     { kind: "archive", path: "/archive/" },
+    { kind: "search", path: "/search/" },
     { kind: "channel", path: "/channel/opensource/", canonicalPath: "/" },
   ];
   const topicRoot = (id) => `/topics/${id}/`;
@@ -125,6 +128,7 @@ export async function buildPublic({
           " · 往期简报",
         channel: "全部话题",
         archive: "话题归档",
+        search: "搜索文章",
         date: page.date,
         report: page.date + " 历史版本",
         article: data.articles
@@ -136,7 +140,7 @@ export async function buildPublic({
       '<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' +
       xml(title) +
       '</title><meta name="description" content="AI、开源项目与产业资讯，按日期整理的新闻简报。">' +
-      (data.demo || page.kind === "404"
+      (data.demo || page.kind === "404" || page.kind === "search"
         ? '<meta name="robots" content="noindex,nofollow">'
         : "") +
       '<link rel="canonical" href="' +
@@ -176,10 +180,14 @@ export async function buildPublic({
     }) + "\n",
   );
   write(
+    "data/search-index.json",
+    JSON.stringify(searchIndex) + "\n",
+  );
+  write(
     "sitemap.xml",
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
       routes
-        .filter((p) => !p.canonicalPath)
+        .filter((p) => !p.canonicalPath && p.kind !== "search")
         .map(
           (p) => "<url><loc>" + xml(new URL(p.path, url).href) + "</loc></url>",
         )
@@ -196,7 +204,7 @@ export async function buildPublic({
   );
   write(
     "_headers",
-    `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${data.newsletterEnabled ? "strict-origin" : "no-referrer"}\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src '${data.newsletterEnabled ? "self" : "none"}'; form-action 'self'\n/rss/*\n  Content-Type: application/rss+xml; charset=utf-8\n/data/*\n  Content-Type: application/json; charset=utf-8\n`,
+    `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${data.newsletterEnabled ? "strict-origin" : "no-referrer"}\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src 'self'; form-action 'self'\n/rss/*\n  Content-Type: application/rss+xml; charset=utf-8\n/data/*\n  Content-Type: application/json; charset=utf-8\n`,
   );
   rmSync(join(output, ".vite"), { recursive: true, force: true });
   return {
@@ -204,6 +212,7 @@ export async function buildPublic({
     routes: routes.length,
     reports: data.reports.length,
     articles: data.current.length,
+    searchArticles: searchIndex.articles.length,
     demo,
   };
 }

@@ -19,6 +19,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     "index.html",
     "channel/opensource/index.html",
     "archive/index.html",
+    "search/index.html",
     `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-02/index.html`,
     `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/index.html`,
     `topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/archive/2026-11-03/v000001/index.html`,
@@ -31,6 +32,21 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   const historyDoc = new JSDOM(
     readFileSync(join(root, "archive/index.html"), "utf8"),
   ).window.document;
+  const searchDoc = new JSDOM(
+    readFileSync(join(root, "search/index.html"), "utf8"),
+  ).window.document;
+  const searchIndex = JSON.parse(readFileSync(join(root, "data/search-index.json"), "utf8"));
+  assert.ok(searchDoc.querySelector('form[role="search"][data-site-search-form]'));
+  assert.equal(searchDoc.querySelector(".topic-picker"), null);
+  assert.equal(searchDoc.querySelector(".search-heading"), null);
+  assert.equal(searchDoc.querySelector(".site-search-form > label"), null);
+  assert.equal(searchDoc.querySelector(".search-hint"), null);
+  assert.equal(searchDoc.querySelector('meta[name="robots"]')?.getAttribute("content"), "noindex,nofollow");
+  assert.equal(searchDoc.querySelector('.site-nav a[href="/search/"]')?.getAttribute("aria-current"), "page");
+  assert.equal(searchIndex.schema_version, 1);
+  assert.ok(Array.isArray(searchIndex.articles));
+  assert.ok(searchIndex.articles.every((item) => item.href.startsWith("/topics/") && item.href.endsWith("/")));
+  assert.doesNotMatch(readFileSync(join(root, "sitemap.xml"), "utf8"), /https:\/\/demo\.invalid\/search\//);
   assert.equal(
     homeDoc.querySelector("main h1").textContent,
     new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
@@ -546,7 +562,7 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     const disabledHtml = readFileSync(join(disabled.output, "index.html"), "utf8");
     assert.doesNotMatch(disabledHtml, /newsletter-dialog/);
     assert.doesNotMatch(disabledHtml, /subscribe-action/);
-    assert.match(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src 'none'/);
+    assert.match(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src 'self'/);
     const enabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: true });
     const html = readFileSync(join(enabled.output, "index.html"), "utf8");
     const browser = new JSDOM(html, { url: "https://news.example/", runScripts: "outside-only" });

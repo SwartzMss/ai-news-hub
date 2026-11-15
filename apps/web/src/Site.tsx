@@ -17,8 +17,10 @@ import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
 import { StructuredProjectAside, StructuredProjectDetail } from "./StructuredProjectDetail";
 import { InvestmentAside, InvestmentDetail } from "./InvestmentDetail";
 import { NewsAside, NewsDetail } from "./NewsDetail";
+import { SearchPage } from "./Search";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
+  if (page.kind === "search") return <SearchPage data={data} />;
   if (page.kind === "channel" || page.kind === "archive")
     return <TopicDirectory data={data} archive={page.kind === "archive"} />;
   const fullData = data;

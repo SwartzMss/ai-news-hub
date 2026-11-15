@@ -29,17 +29,23 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 | `/topics/<id>/` | 该话题的最新一期 |
 | `/topics/<id>/news/<stable-key>/` | 该话题的来源详情 |
 | `/archive/` | 话题归档目录 |
+| `/search/` | 跨话题文章搜索（最近 30 个北京时间自然日） |
 | `/topics/<id>/archive/` | 该话题按月份排列的期次 |
 | `/topics/<id>/archive/YYYY-MM-DD/` | 该话题当日最新版本 |
 | `/topics/<id>/archive/YYYY-MM-DD/vNNNNNN/` | 该话题完整历史版本 |
 | `/rss/topics/<id>.xml` | 该话题独立 RSS |
 | `/rss/all.xml`、`/rss/opensource.xml` | 兼容全站订阅 |
 | `/data/index.json` | 仅公开日报/来源的静态索引 |
+| `/data/search-index.json` | 最近 30 个北京时间自然日的轻量文章搜索索引 |
 | `/sitemap.xml`、`/robots.txt`、`/404.html` | 站点索引与真实不存在页面 |
 
 保留 `/channel/opensource/` 作为话题目录入口；不再生成旧版无话题归档路径、未映射的 legacy 话题或 `reports/topics.json` 归属映射。
 
-RSS 最多包含 100 个当前来源条目，GUID 为 `urn:ai-news-hub:article:<stable-key>`，修订与重复构建不会更改。pubDate 使用该 ID 最早人工允许发布的时间；来源原始发布时间另列在描述/详情，不用抓取时间冒充。链接指向静态详情，描述另含原文 URL。XML 文本统一转义，非法字符拒绝构建。输出不使用当前构建时钟，因此同一输入内容确定。没有基于全站数据的账户、管理台、收藏同步或复杂搜索。
+RSS 最多包含 100 个当前来源条目，GUID 为 `urn:ai-news-hub:article:<stable-key>`，修订与重复构建不会更改。pubDate 使用该 ID 最早人工允许发布的时间；来源原始发布时间另列在描述/详情，不用抓取时间冒充。链接指向静态详情，描述另含原文 URL。XML 文本统一转义，非法字符拒绝构建。输出不使用当前构建时钟，因此同一输入内容确定。不提供账户、管理台、收藏同步或语义搜索；站内搜索只匹配最近 30 个北京时间自然日内的文章标题、事实摘要、话题名称、分类和开源研究方向。
+
+## 站内搜索
+
+构建阶段从当前公开归档生成独立的轻量搜索索引，范围为最近 30 个北京时间自然日（含截止日），并按稳定文章 key 去重；同一文章跨报告或修订重复出现时，使用当前可访问的最新内容。搜索索引只包含标题、事实摘要、话题、日期、分类/研究方向和站内详情链接，不复制完整详情、来源证据或内部研究数据。浏览器仅在打开搜索页并输入关键词时读取该静态 JSON，多个空格分隔的关键词按 AND 匹配，结果按报告日期倒序。索引随正常 Pages 构建更新；过期报告经既有 30 天清理后不会再进入索引，构建本身也会按北京时间窗口过滤，避免清理延迟导致旧内容进入搜索。搜索页不加入 sitemap 并设置 noindex。该功能不连接 Backend，不新增数据库、外部搜索服务、Prompt 或报告 Schema。
 
 ## Cloudflare Pages Git 集成
 

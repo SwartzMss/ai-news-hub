@@ -86,6 +86,7 @@ export interface PublicData {
 export interface Page {
   kind:
     | "home"
+    | "search"
     | "topic"
     | "channel"
     | "article"

@@ -11,7 +11,7 @@ export function Shell({
 }: {
   data: PublicData;
   topic?: TopicSummary;
-  active?: "topics" | "archive";
+  active?: "topics" | "archive" | "search";
   page?: string;
   children: ReactNode;
 }) {
@@ -38,6 +38,9 @@ export function Shell({
             aria-current={active === "archive" ? "page" : undefined}
           >
             往期归档
+          </a>
+          <a href="/search/" aria-current={active === "search" ? "page" : undefined}>
+            搜索
           </a>
         </nav>
         <div className="header-actions">
@@ -78,7 +81,7 @@ export function Shell({
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
-        {data.topics.length > 0 && (
+        {data.topics.length > 0 && page !== "search" && (
           <nav className="topic-picker" aria-label="话题选择">
             {data.topics.map((t) => (
               <a
@@ -102,7 +105,7 @@ export function Shell({
           </nav>
         )}
       </div>
-      <div className={`reader-body${data.topics.length ? " has-topics" : ""}`}>
+      <div className={`reader-body${data.topics.length > 0 && page !== "search" ? " has-topics" : ""}`}>
         {children}
       </div>
       <footer className="site-footer">
