@@ -222,7 +222,7 @@ export function Overview({ api }: { api: Client }) {
         }
         action={
           <a className="overview-manage" href="#/tasks">
-            管理任务 <Icon name="arrow" size={15} />
+            管理任务
           </a>
         }
       />
