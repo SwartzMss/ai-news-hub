@@ -3,12 +3,17 @@ import type { MailPayload, NewsletterConfig, NewsletterContext } from './runtime
 
 const RETRY_WINDOW = 23 * 60 * 60 * 1000;
 const LEASE = 60 * 1000;
+const PAGE_LEASE = 5 * 60 * 1000;
 const topicId = (id: string) => /^(?:t-[a-f0-9]{24}|legacy)$/.test(id);
 type Obj = Record<string, unknown>;
 interface Item { key: string; summary: string; analysis: string; quote: string; source: string; published: string; event: string; fetched: string }
 interface Edition { id: string; name: string; day: string; approved: string; collected: string; items: Item[] }
 interface Snapshot { day: string; editions: Edition[] }
 interface Delivery { id: string; subscriber_id: string; payload_json: string; created_at: number; attempts: number }
+async function deliveryCounts(db: NewsletterConfig['db'], day: string) {
+  const counts=await db.prepare("SELECT (SELECT COUNT(*) FROM newsletter_subscribers s WHERE s.status='active' AND NOT EXISTS (SELECT 1 FROM newsletter_deliveries d WHERE d.subscriber_id=s.id AND d.day=? AND d.status IN ('sent','uncertain'))) AS pending, (SELECT COUNT(*) FROM newsletter_deliveries WHERE day=? AND status='uncertain') AS uncertain").bind(day,day).first<{pending:number;uncertain:number}>();
+  return {pending:counts?.pending??0,uncertain:counts?.uncertain??0};
+}
 const object = (value: unknown): Obj => { if (!value || typeof value !== 'object' || Array.isArray(value)) throw new NewsletterError('invalid_public_data',502); return value as Obj; };
 const string = (value: unknown, max = 20000): string => { if (typeof value !== 'string' || !value || value.length > max) throw new NewsletterError('invalid_public_data',502); return value; };
 const timestamp = (value: unknown, nullable = false): string => { if (nullable && value === null) return ''; const text = string(value,64); if (!/^\d{4}-\d{2}-\d{2}T/.test(text) || !Number.isFinite(Date.parse(text))) throw new NewsletterError('invalid_public_data',502); return text; };
@@ -100,6 +105,10 @@ export async function sendDigest(ctx: NewsletterContext): Promise<Response> {
     }
     if(!stored)throw new NewsletterError('storage_unavailable',503);
     const snapshot=JSON.parse(stored.snapshot_json) as Snapshot;
+    const owner=crypto.randomUUID();
+    const pageClaim=await db.prepare("INSERT INTO newsletter_digest_page_leases(day,owner,lease_until) VALUES(?,?,?) ON CONFLICT(day) DO UPDATE SET owner=excluded.owner,lease_until=excluded.lease_until WHERE newsletter_digest_page_leases.lease_until<=?").bind(day,owner,now+PAGE_LEASE,now).run();
+    if(!pageClaim.meta.changes)return json({sent:0,failed:0,...await deliveryCounts(db,day)});
+    try {
     // Reserve only a bounded page and only for currently confirmed readers.
     const subscribers=await db.prepare("SELECT id,email FROM newsletter_subscribers s WHERE status='active' AND NOT EXISTS (SELECT 1 FROM newsletter_deliveries d WHERE d.subscriber_id=s.id AND d.day=?) ORDER BY s.id LIMIT 8").bind(day).all<{id:string;email:string}>();
     for(const subscriber of subscribers.results){
@@ -127,8 +136,9 @@ export async function sendDigest(ctx: NewsletterContext): Promise<Response> {
         if(code==='mail_http_429')break;
       }
     }
-    const pending=await db.prepare("SELECT COUNT(*) AS count FROM newsletter_subscribers s WHERE s.status='active' AND NOT EXISTS (SELECT 1 FROM newsletter_deliveries d WHERE d.subscriber_id=s.id AND d.day=? AND d.status IN ('sent','uncertain'))").bind(day).first<{count:number}>();
-    const uncertain=await db.prepare("SELECT COUNT(*) AS count FROM newsletter_deliveries WHERE day=? AND status='uncertain'").bind(day).first<{count:number}>();
-    return json({sent,failed,pending:pending?.count??0,uncertain:uncertain?.count??0});
+    return json({sent,failed,...await deliveryCounts(db,day)});
+    } finally {
+      await db.prepare('DELETE FROM newsletter_digest_page_leases WHERE day=? AND owner=?').bind(day,owner).run();
+    }
   }catch(error){return json({error:error instanceof NewsletterError?error.code:'newsletter_unavailable'},error instanceof NewsletterError?error.status:503);}
 }

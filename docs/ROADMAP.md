@@ -181,6 +181,8 @@ Issue #77：热点新闻可选结构化详情已接入研究输出、报告校�
 
 Issue #80：Newsletter 调度入口从 GitHub `schedule` 移至 Linux Backend，独立 SQLite 计划/dispatch 记录、可配置的北京时间每日开始时间、GitHub Run 回查及手动触发 API 已实现；管理后台页面仅提供时间设置和启停开关。计划默认暂停，真实发送和时间准确性仍需部署后验收。邮件业务继续由 Cloudflare Functions、D1 和 Resend 执行。
 
+Newsletter 并发批次修复：D1 migration 0002 增加按日期的 5 分钟发送租约，阻止重叠请求合计超出每批 8 封的上限；生产部署前先迁移 D1，再更新 Pages Functions。真实发送仍需生产环境验收。
+
 Issue #88：开源项目结构化详情链路已在代码中加入 `kind=project` 合同、证据引用校验、模板要求与公共站专属详情；上线仍需部署、重选已保存任务模板并检查真实生成结果及 Cloudflare 页面。
 
 Issue #89：公共站详情章节、来源区和响应式目录在代码中统一；部署后仍须在真实桌面、平板与手机视口验收滚动高亮、触控跳转及 Cloudflare 构建。

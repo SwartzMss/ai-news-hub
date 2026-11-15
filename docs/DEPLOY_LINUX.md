@@ -522,6 +522,8 @@ Issue #77 升级后重新构建 Backend 与公共站即可读取和展示新归�
 
 Newsletter Scheduler 升级自动应用 migration 12 和新增的 migration 13；每日开始时间在管理后台「邮件发送」设置，默认北京时间 09:00，升级已有计划时保留其下一次触发。新计划默认暂停，不会自动触发邮件。升级前备份完整私有数据目录（包括 SQLite 与 `settings.key`）；确认 GitHub Token 对 `SwartzMss/ai-news-hub` 具备 Actions: write，并在 GitHub Actions 验证手动 Run 后启用计划。后台页面仅保留时间设置和启停开关。工作流已移除 GitHub `schedule`，避免新旧入口并行；详细切换、误触发恢复与故障排查见 [Newsletter](NEWSLETTER.md)。
 
+Pages Functions 的 Newsletter 并发批次修复依赖独立的 D1 migration 0002；在部署新 Functions 之前执行 `npx wrangler d1 migrations apply ai-news-hub-newsletter --remote`。此迁移与 Linux Backend 的 SQLite migration 12/13 分开，详见 [Newsletter](NEWSLETTER.md)。
+
 开源项目五方向研究升级：部署 Backend 与公开站构建代码后，在后台编辑已有「每日开源项目」任务，重新选择 `daily-opensource` v1 模板并保存，再手动运行和审核新日报。模板版本仍为 v1；新运行输出五方向分类与 `kind=project` 详情，新发布话题归档采用统一 v1 Schema。旧任务 Prompt 和历史 Run 不会自动改写；公开站只读取统一 v1 topic-scoped 归档，并按 details.kind 显示项目详情。
 
 详情页阅读导航升级仅涉及公共站构建与部署，不修改日报归档或任务 Prompt。部署时重新执行公共站构建，验收 news、investment、project 及历史项目页面的目录、证据锚点和移动端折叠导航。

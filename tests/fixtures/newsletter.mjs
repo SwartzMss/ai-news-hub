@@ -1,7 +1,8 @@
 import {DatabaseSync} from 'node:sqlite';
 import {readFileSync} from 'node:fs';
 export function fixture() {
-  const db=new DatabaseSync(':memory:');db.exec('PRAGMA foreign_keys=ON');db.exec(readFileSync(new URL('../../newsletter/migrations/0001.sql',import.meta.url),'utf8'));
+  const db=new DatabaseSync(':memory:');db.exec('PRAGMA foreign_keys=ON');
+  for(const name of ['0001.sql','0002.sql'])db.exec(readFileSync(new URL('../../newsletter/migrations/'+name,import.meta.url),'utf8'));
   let queries=0;
   class Statement {
     constructor(sql,params=[]){this.sql=sql;this.params=params;}
