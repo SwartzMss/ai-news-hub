@@ -164,7 +164,7 @@ export function Row({
         )}
         <div className="news-meta">
           <span className="news-row-tags">
-            <span className="category-label category-label-topic">{topicLabel(story.topic.name)}</span>
+            <span className="category-label">{topicLabel(story.topic.name)}</span>
             {story.research_area ? (
               <>
                 <span className="news-tag news-tag-topic news-tag-research-area">{researchAreaLabels[story.research_area]}</span>
