@@ -52,11 +52,11 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.deepEqual([...homeDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
   assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
-  assert.equal(homeDoc.querySelectorAll(".brief-heading").length, data.topics.length);
+  assert.equal(homeDoc.querySelectorAll(".brief-heading").length, 1);
   assert.equal(homeDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".sticky-header > .masthead"), "masthead is inside the sticky header");
-  assert.ok(homeDoc.querySelector(".sticky-header > .topic-picker"), "topic tabs stay inside the sticky header");
+  assert.equal(homeDoc.querySelector(".topic-picker"), null, "home has no topic switcher");
   assert.ok(homeDoc.querySelector(".reader-body > main"), "only the reading content scrolls below the sticky header");
   const publicStyles = readFileSync(new URL("../apps/web/src/style.css", import.meta.url), "utf8");
   const publicClient = readFileSync(new URL("../apps/web/src/client.ts", import.meta.url), "utf8");
@@ -70,18 +70,12 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.match(publicStyles, /@media\s*\(max-width:\s*1100px\)\s*\{\s*\.brief-layout\s*\{\s*display:\s*block;\s*max-width:\s*none;/s, "tablet brief content remains aligned");
   assert.match(publicStyles, /\.header-actions \.subscribe-action\s*\{[^}]*background:\s*var\(--paper\)[^}]*color:\s*var\(--ink\)/s, "Subscribe uses the neutral theme surface");
   assert.ok(homeDoc.querySelector(".reader-body > main"));
-  assert.equal(homeDoc.querySelectorAll("[data-topic-panel]").length, data.topics.length, "all three topic feeds are rendered");
+  assert.equal(homeDoc.querySelectorAll("[data-topic-panel]").length, 0, "home has one combined feed");
   assert.equal(homeDoc.querySelectorAll(".brief-list-heading").length, 0, "all topic feeds omit the generic all-news heading");
   assert.ok(!homeDoc.body.textContent.includes("全部资讯"), "the all-news heading is removed from every topic");
   assert.equal(homeDoc.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length, 0, "home feed has no side or collapsible directory");
-  for(const panel of homeDoc.querySelectorAll("[data-topic-panel]")){
-    assert.ok(panel.querySelector(".brief-heading > .brief-date:first-child"));
-    assert.equal(panel.querySelector(".brief-list-heading"), null, "each topic feed omits the generic all-news heading");
-    assert.equal(panel.querySelector(".brief-description"), null, "brief header omits generic topic copy");
-    assert.equal(panel.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length, 0);
-    assert.equal(panel.querySelector(".brief-generation"), null, "brief header omits build timestamp");
-    assert.equal(panel.querySelector(".brief-date time").getAttribute("datetime"),data.topics.find(t=>t.id===panel.dataset.topicPanel).latest.report_date);
-  }
+  assert.equal(homeDoc.querySelector(".brief-date time").getAttribute("datetime"), data.topics[0].latest.report_date);
+  assert.equal(homeDoc.querySelector(".brief-description, .brief-generation"), null);
   assert.ok(homeDoc.querySelector(".news-row h2 a[href*='/news/']"));
   assert.ok(homeDoc.querySelector(".news-row .news-meta a[target='_blank']"));
   assert.ok(!homeDoc.querySelector("main").textContent.includes("进入话题"));
@@ -307,11 +301,12 @@ test("date and revision readers preserve exact archived text and separate curren
   }
 });
 
-test("topic routes, editions, browser selection and RSS isolate shared sources across v1 topics", async () => {
+test("combined home, topic routes, editions and RSS isolate shared sources across v1 topics", async () => {
   const { mkdtempSync, mkdirSync, writeFileSync, rmSync } = await import("node:fs");
   const dir = mkdtempSync("/tmp/public-topic-reading-");
-  const a = { id: "t-" + "a".repeat(24), name: "模型进展" };
-  const b = { id: "t-" + "b".repeat(24), name: "开源工具" };
+  const a = { id: "t-" + "a".repeat(24), name: "每日模型进展" };
+  const b = { id: "t-" + "b".repeat(24), name: "每日开源工具" };
+  const c = { id: "t-" + "c".repeat(24), name: "每日热点观察" };
   const base = JSON.parse(readFileSync("tests/fixtures/web-reports/topics/t-aaaaaaaaaaaaaaaaaaaaaaaa/2026/11/03/v000001.json", "utf8"));
   const save = (doc) => {
     const path = join(dir, "topics", doc.topic.id, ...doc.report_date.split("-"));
@@ -323,20 +318,31 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
       items: base.items.map((item) => ({ ...item, fact_summary: "甲话题原始事实；原始正文。" })) });
     save({ ...base, report_id: "a-revised", topic: a, version: 2, title: "甲话题修订版",
       items: base.items.map((item) => ({ ...item, fact_summary: "甲话题最新事实；甲专属正文。" })) });
-    save({ ...base, report_id: "b-current", topic: b, title: "乙话题日报",
+    save({ ...base, report_id: "b-current", report_date: "2026-11-02", topic: b, title: "乙话题日报",
       items: base.items.map((item) => ({ ...item, fact_summary: "乙话题最新事实；乙专属正文。" })) });
+    save({ ...base, report_id: "c-current", topic: c, title: "丙话题日报",
+      items: base.items.map((item) => ({ ...item, fact_summary: "丙话题最新事实；丙专属正文。" })) });
     const built = await buildPublic({ demo: true, siteUrl: "https://demo.invalid", reportsDir: dir });
     const read = (path) => readFileSync(join(built.output, path), "utf8");
     const documentAt = (path) => new JSDOM(read(path)).window.document;
     const mainAt = (path) => documentAt(path).querySelector("main");
     const home = documentAt("index.html");
-    assert.equal(home.querySelectorAll("[data-topic-panel]").length, 2);
-    assert.equal(home.querySelectorAll("[data-topic-panel]:not([hidden])").length, 1);
-    for (const topic of [a, b]) {
-      assert.ok(home.querySelector(`a[data-topic-choice="${topic.id}"][href="/topics/${topic.id}/"]`));
+    assert.equal(home.querySelector(".topic-picker, [data-topic-panel]"), null);
+    assert.deepEqual([...home.querySelectorAll(".brief-date time")].map((time) => time.dateTime), ["2026-11-03", "2026-11-02"]);
+    assert.equal(home.querySelectorAll(".news-row").length, 3);
+    assert.match(home.querySelector("main").textContent, /甲话题最新事实/);
+    assert.match(home.querySelector("main").textContent, /乙话题最新事实/);
+    assert.match(home.querySelector("main").textContent, /丙话题最新事实/);
+    assert.deepEqual(
+      [...home.querySelectorAll(".news-row")].map((row) => [...row.querySelectorAll(".news-meta .category-label")].map((tag) => tag.textContent.trim())),
+      [["模型进展", "开源项目"], ["热点观察", "开源项目"], ["开源工具", "开源项目"]],
+    );
+    for (const topic of [a, b, c]) {
       assert.equal(existsSync(join(built.output, `topics/${topic.id}/archive/index.html`)), false);
-      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
-      assert.equal(documentAt(`topics/${topic.id}/index.html`).querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
+      const topicDoc = documentAt(`topics/${topic.id}/index.html`);
+      assert.equal(topicDoc.querySelector(".topic-picker"), null);
+      assert.equal(topicDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
+      assert.equal(topicDoc.querySelector('link[rel="alternate"]').getAttribute("href"), `/rss/topics/${topic.id}.xml`);
     }
     const aMain = mainAt(`topics/${a.id}/archive/2026-11-03/index.html`);
     assert.match(aMain.textContent, /甲话题最新事实/);
@@ -346,7 +352,7 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     assert.match(old.textContent, /甲话题原始事实/);
     assert.doesNotMatch(old.textContent, /甲话题最新事实|乙话题最新事实/);
     assert.match(mainAt(`topics/${a.id}/archive/2026-11-03/v000002/index.html`).textContent, /甲话题最新事实/);
-    const bMain = mainAt(`topics/${b.id}/archive/2026-11-03/v000001/index.html`);
+    const bMain = mainAt(`topics/${b.id}/archive/2026-11-02/v000001/index.html`);
     assert.match(bMain.textContent, /乙话题最新事实/);
     assert.doesNotMatch(bMain.textContent, /甲话题|修订记录/);
     const key = articleKey(base.items[0].id, a.id);
@@ -367,18 +373,11 @@ test("topic routes, editions, browser selection and RSS isolate shared sources a
     browser.window.matchMedia = () => ({ matches: false });
     const client = read(browser.window.document.querySelector('script[type="module"]').getAttribute("src").slice(1));
     browser.window.eval(client);
-    const visible = () => [...browser.window.document.querySelectorAll("[data-topic-panel]")].filter((x) => !x.hidden);
-    assert.equal(visible()[0].dataset.topicPanel, b.id);
-    browser.window.history.replaceState(null, "", `/?topic=${a.id}`);
-    browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
-    assert.equal(visible()[0].dataset.topicPanel, a.id);
-    assert.equal(new URL(browser.window.location.href).searchParams.get("topic"), a.id);
-    assert.equal(visible()[0].querySelector(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']"), null);
+    assert.equal(browser.window.document.querySelectorAll(".news-row").length, 3, "old topic query cannot hide stories");
+    assert.equal(browser.window.localStorage.getItem("news-hub-topic"), null);
+    assert.equal(browser.window.document.querySelector(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']"), null);
     assert.equal(browser.window.document.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
     assert.equal(browser.window.document.querySelector("[data-topic-archive]"), null);
-    browser.window.history.replaceState(null, "", `/?topic=${b.id}`);
-    browser.window.dispatchEvent(new browser.window.PopStateEvent("popstate"));
-    assert.equal(visible()[0].dataset.topicPanel, b.id);
     browser.window.close();
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
@@ -449,7 +448,7 @@ test('investment detail renders evidence-linked metrics and a section directory'
   const doc=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/news/${articleKey(report.items[0].id,topic.id)}/index.html`),'utf8')).window.document;
   assert.ok(doc.querySelector('.investment-detail'));
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/index.html`),'utf8')).window.document;
-  assert.equal(topicDoc.querySelector('.category-label')?.textContent,'半导体');
+  assert.deepEqual([...topicDoc.querySelectorAll('.news-row .category-label')].map(tag=>tag.textContent),['科技投资简报','半导体']);
   assert.equal(doc.querySelector('.investment-topic'),null);
   assert.ok(doc.querySelector('.investment-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
@@ -505,8 +504,8 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.equal(doc.querySelector('#news-content'),null);
   assert.doesNotMatch(doc.querySelector('.news-detail').textContent,/内容创作建议|建议标题|开头 Hook|适合短视频/);
   const topicDoc=new JSDOM(readFileSync(join(built.output,`topics/${topicId}/index.html`),'utf8')).window.document;
-  assert.equal(topicDoc.querySelector('.category-label').textContent.trim(),'社会事件');
-  assert.doesNotMatch(topicDoc.querySelector('.category-label').textContent,/跨平台|观点讨论/);
+  assert.deepEqual([...topicDoc.querySelectorAll('.news-row .category-label')].map(tag=>tag.textContent.trim()),['热点观察','社会事件']);
+  assert.doesNotMatch(topicDoc.querySelector('.news-row .news-meta').textContent,/跨平台|观点讨论/);
   assert.ok(doc.querySelector('.news-detail h1.detail-page-title'));
   assert.ok(doc.querySelector('.reading-layout.detail-layout.has-aside'));
   assert.equal(doc.querySelector('.detail-context a').textContent, '返回话题');

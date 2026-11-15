@@ -51,6 +51,7 @@ export const categories: Record<string, string> = {
   international_topic: "国际话题",
   other: "其他",
 };
+export const topicLabel = (name: string) => name.replace(/^每日/u, "").trim() || name;
 export const dateLabel = (value: string) =>
   new Intl.DateTimeFormat("zh-CN", {
     timeZone: "UTC",
@@ -162,14 +163,17 @@ export function Row({
           </p>
         )}
         <div className="news-meta">
-          {story.research_area ? (
-            <span className="news-row-tags">
-              <span className="news-tag news-tag-topic news-tag-research-area">{researchAreaLabels[story.research_area]}</span>
-              {projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>}
-            </span>
-          ) : (
-            <span className="category-label">{categories[story.category] ?? story.category}</span>
-          )}
+          <span className="news-row-tags">
+            <span className="category-label category-label-topic">{topicLabel(story.topic.name)}</span>
+            {story.research_area ? (
+              <>
+                <span className="news-tag news-tag-topic news-tag-research-area">{researchAreaLabels[story.research_area]}</span>
+                {projectEntryLabel(story) && <span className="project-entry-label">{projectEntryLabel(story)}</span>}
+              </>
+            ) : (
+              <span className="category-label">{categories[story.category] ?? story.category}</span>
+            )}
+          </span>
           <a
             href={story.source.canonical_url}
             target="_blank"

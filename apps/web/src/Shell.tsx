@@ -1,22 +1,19 @@
 import type { ReactNode } from "react";
-import type { PublicData, TopicSummary } from "./types";
-import { topicPath } from "./paths";
+import type { PublicData } from "./types";
 import { Newsletter } from "./Newsletter";
 export function Shell({
   data,
-  topic,
   active = "topics",
   page = "reader",
   children,
 }: {
   data: PublicData;
-  topic?: TopicSummary;
   active?: "topics" | "search";
   page?: string;
   children: ReactNode;
 }) {
   return (
-    <div className="site-shell" data-page={page} data-topic-id={topic?.id}>
+    <div className="site-shell" data-page={page}>
       <a className="skip-link" href="#content">
         跳到正文
       </a>
@@ -74,27 +71,8 @@ export function Shell({
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
-        {data.topics.length > 0 && page !== "search" && (
-          <nav className="topic-picker" aria-label="话题选择">
-            {data.topics.map((t) => (
-              <a
-                key={t.id}
-                href={topicPath(t.id)}
-                data-topic-choice={t.id}
-                aria-current={
-                  (topic?.id ??
-                    (page === "home" ? data.topics[0]?.id : undefined)) === t.id
-                    ? "page"
-                    : undefined
-                }
-              >
-                {t.name}
-              </a>
-            ))}
-          </nav>
-        )}
       </div>
-      <div className={`reader-body${data.topics.length > 0 && page !== "search" ? " has-topics" : ""}`}>
+      <div className="reader-body">
         {children}
       </div>
       <footer className="site-footer">

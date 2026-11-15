@@ -103,7 +103,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
   return (
     <Shell
       data={fullData}
-      topic={topic}
       active="topics"
       page="reader"
     >

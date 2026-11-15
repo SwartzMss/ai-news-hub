@@ -1,4 +1,4 @@
-import { categories, researchAreaLabels } from "./ReadingParts";
+import { categories, researchAreaLabels, topicLabel } from "./ReadingParts";
 
 type SearchArticle = {
   key: string; topic_id: string; topic_name: string; report_date: string;
@@ -61,7 +61,7 @@ export function mountSiteSearch() {
       meta.className = "search-result-meta";
       const topic = document.createElement("span");
       topic.className = "search-result-topic";
-      topic.textContent = article.topic_name;
+      topic.textContent = topicLabel(article.topic_name);
       const date = document.createElement("time");
       date.dateTime = article.report_date;
       date.textContent = dateLabel(article.report_date);
