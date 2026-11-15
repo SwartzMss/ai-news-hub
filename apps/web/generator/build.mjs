@@ -33,7 +33,7 @@ export async function buildPublic({
     allowMissing: !reportsDir && !demo,
   });
   data.newsletterEnabled = newsletterEnabled === true && !demo;
-  const searchIndex = buildSearchIndex(data.articles);
+  const searchIndex = buildSearchIndex(data.current);
   const output = join(repo, "dist/web"),
     ssr = join(repo, "dist/web-render");
   const config = join(root, "vite.config.ts");
