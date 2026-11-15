@@ -107,7 +107,7 @@ test('daily technology v1 requires focused categories and evidence-backed invest
    watchpoints:['客户认证结果','量产时间与出货规模'],
    risks:['认证进度延后','竞争导致 ASP 下滑'],
    valuation:null,
-   evidence:[{id:'filing',name:'公司投资者关系公告',url:'https://example.com/filing',supports:'1.6T 产品验证进度'}],
+   evidence:[{id:'filing',name:'NVIDIA, Rebellions and SK Telecom Announce Collaboration to Advance Sovereign AI Infrastructure With NVIDIA NVLink Fusion',url:'https://example.com/filing',supports:'1.6T 产品验证进度'}],
   },
  }]};
  const validateCodex=ajv.compile(CODEX_TECHNOLOGY_RESEARCH_SCHEMA);

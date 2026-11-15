@@ -415,7 +415,7 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 若开源项目日报以 `report_schema_invalid` 结束，检查最终 JSON 的 `details.evaluation`：`nature=fact` 必须引用本条 `details.evidence` 中的 ID。更新 Backend 后该约束也会发送给 Codex；已保存任务的 Prompt 无需修改，但失败的托管 Run 仍需手动启动新 Run。
 
-科技投资日报若出现 `report_schema_invalid`，检查每条 `details` 的 UTF-8 JSON 字节数；当前后台硬上限为 3000 字节，模板指导模型以约 2200 字节为目标并省略重复或空泛章节。更新 Backend 和模板后重启服务，再手动触发新 Run；历史失败记录不自动重跑。
+科技投资日报若出现 `report_schema_invalid`，检查每条 `details` 的 UTF-8 JSON 字节数；当前后台硬上限为 3000 字节，模板指导模型以约 2200 字节为目标并省略重复或空泛章节。补充来源的 `evidence.name` 最长 160 字符；过长标题应在生成时缩写。更新 Backend 和模板后重启服务，再手动触发新 Run；历史失败记录不自动重跑。
 
 来源不可访问、引文不匹配、认证过期或搜索不支持时，检查 Run 错误并修正来源/prompt，不添加假内容。可按研究量调整单 Turn 总超时 后台“模型与执行”的每轮超时（默认 10 分钟），页面按分钟配置。生成的 validated 仍待人工审核，不自动归档。历史 RSS 验证不能替代当前研究验证，见 [当前记录](validation/CODEX_RESEARCH.md)。原生服务账户/systemd/长期认证仍由 #2 验收。
 

@@ -662,7 +662,7 @@
                         "name": {
                           "type": "string",
                           "minLength": 1,
-                          "maxLength": 100
+                          "maxLength": 160
                         },
                         "url": {
                           "type": "string",
