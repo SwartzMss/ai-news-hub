@@ -237,9 +237,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                       <h2>{group.label}</h2>
                       <span>{group.items.length} 个项目</span>
                     </header>
-                    {group.items.length
-                      ? group.items.map((item) => renderIssueStory(item, selectedStories?.indexOf(item) ?? 0))
-                      : <p className="research-area-empty">本期无符合条件的项目</p>}
+                    {group.items.map((item) => renderIssueStory(item, selectedStories?.indexOf(item) ?? 0))}
                   </section>
                 )) : selectedStories?.map(renderIssueStory)}
               </div>
