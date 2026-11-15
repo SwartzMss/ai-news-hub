@@ -48,9 +48,14 @@ test('investment details reject unlinked metrics and unsafe evidence URLs',()=>{
   assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
  }
 });
-test('investment details stay within the fixed-turn output budget',()=>{
- const p=proposal();p.items[0].details=investmentDetails();p.items[0].details.background='背景'.repeat(390);
- assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
+test('useful investment details just above 2500 bytes fit while larger details still fail',()=>{
+ const p=proposal();p.items[0].details=investmentDetails();
+ while(Buffer.byteLength(JSON.stringify(p.items[0].details))<2700)p.items[0].details.background+='背';
+ assert.ok(p.items[0].details.background.length<=800);
+ assert.ok(Buffer.byteLength(JSON.stringify(p.items[0].details))<3000);
+ assert.equal(buildReport(JSON.stringify(p),candidates,metadata).items[0].details.kind,'investment');
+ while(Buffer.byteLength(JSON.stringify(p.items[0].details))<=3000)p.items[0].details.investmentLogic+='逻';
+ assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata),{code:'report_schema_invalid'});
 });
 test('authoritative URLs/times are added by Backend and analysis stays separate', () => {
   const report = buildReport(JSON.stringify(proposal()), candidates, metadata);

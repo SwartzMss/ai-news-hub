@@ -49,7 +49,11 @@ test('versioned prompt templates preserve all three topics and ordered rounds',(
   assert.match(analysis,/事件变化 → 产业环节 → 公司 → 经营指标 → 盈利\/现金流 → 估值与市场预期/);
   assert.match(analysis,/每条必须提供 details/);
   assert.match(analysis,/evidenceRefs/);
-  assert.match(analysis,/2500 字节/);
+  assert.match(analysis,/3000 字节/);
+  assert.match(analysis,/2200 字节/);
+  assert.match(analysis,/analysis.*investmentLogic/s);
+  assert.match(analysis,/同一.*来源.*一次/);
+  assert.match(analysis,/可选.*独立新增内容.*填写/);
   assert.match(prompt,/24 小时/);
   assert.match(prompt,/72 小时/);
   assert.match(prompt,/7 天/);
