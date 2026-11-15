@@ -665,12 +665,16 @@ test("five-area open-source reports render article labels and distinguish discov
   assert.equal(home.querySelectorAll(".research-area-heading").length,0, "non-empty research areas are not repeated as section headings");
   const areaLabels=[...home.querySelectorAll(".news-tag-research-area")].map(x=>x.textContent);
   assert.deepEqual(areaLabels,["AI Agent 与自动化执行","Rust 生态与工程工具"]);
-  assert.equal(home.querySelectorAll(".research-area-empty").length,3);
+  assert.equal(home.querySelectorAll(".research-area-section").length,2, "only research areas with projects are rendered");
+  assert.equal(home.querySelectorAll(".research-area-empty").length,0, "empty research areas are hidden instead of showing placeholders");
+  assert.ok(!home.body.textContent.includes("本期无符合条件的项目"), "empty-area placeholder copy is never rendered");
   assert.equal(home.querySelectorAll(".brief-toc, .brief-mobile-toc, nav[aria-label='本期目录']").length,0);
   assert.ok([...home.querySelectorAll(".project-entry-label")].some(x=>x.textContent==="近期进展"));
   assert.ok([...home.querySelectorAll(".project-entry-label")].some(x=>x.textContent==="项目发现"));
   const edition=new JSDOM(readFileSync(join(built.output,`topics/${topic.id}/archive/2026-11-03/index.html`),"utf8")).window.document;
-  assert.equal(edition.querySelectorAll(".issue-research-area").length,5);
+  assert.equal(edition.querySelectorAll(".issue-research-area").length,2, "archive pages also omit empty research areas");
+  assert.equal(edition.querySelectorAll(".research-area-empty").length,0);
+  assert.ok(!edition.body.textContent.includes("本期无符合条件的项目"));
  }finally{rmSync(dir,{recursive:true,force:true});}
 });
 

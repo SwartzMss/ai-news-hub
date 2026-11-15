@@ -30,14 +30,9 @@ export function LatestBrief({
         <div className="news-list">
           {grouped ? groups.map((group) => (
             <section className="research-area-section" key={group.id}>
-              {group.items.length ? group.items.map((story) => (
+              {group.items.map((story) => (
                 <Row key={story.key} story={story} id={`brief-${topic.id}-${story.key}`} />
-              )) : (
-                <p className="research-area-empty">
-                  <strong>{group.label}</strong>
-                  <span>本期无符合条件的项目</span>
-                </p>
-              )}
+              ))}
             </section>
           )) : report.items.map((story) => (
             <Row key={story.key} story={story} id={`brief-${topic.id}-${story.key}`} />
