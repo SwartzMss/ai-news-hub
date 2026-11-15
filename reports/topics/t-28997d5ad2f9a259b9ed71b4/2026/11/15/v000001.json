@@ -1,0 +1,526 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "dba9e272-6d05-4996-bc09-389df9000e9d",
+  "report_date": "2026-11-15",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察（2026年11月15日）",
+  "collected_at": "2026-11-15T00:15:41.667Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-15T00:15:41.707Z",
+  "reviewed_content_sha256": "adf2912e687a6d6307840e267ef835266b8388411e0ff9d7da017324b24e2165",
+  "items": [
+    {
+      "id": "efc6f4b83e368a9a626ba90a64ac2778917c0a38f400a61d9c1b994821c3d2a5",
+      "category": "international_topic",
+      "importance": 5,
+      "fact_summary": "美国联邦航空管理局（FAA）11月13日因多个空管中心通信问题，对全美机场发布地面停飞令。美国交通部11月14日称停飞令已解除，空域恢复开放；部门表示，当时迅速停飞了逾3500个航班，停飞令解除后当晚恢复逾8000个航班运行。航班延误和取消仍在持续。",
+      "analysis": "航空运行恢复后，航班和机组重新调度仍可能影响后续行程；旅客应以航空公司和机场的实时通知为准。",
+      "evidence_quote": "The FAA issued a nationwide ground stop for all U.S. airports following communication issues impacting multiple Air Route Traffic Control Centers.",
+      "details": {
+        "kind": "news",
+        "background": "FAA的地面停飞令暂停航班起飞，官方称采取该措施是出于通信稳定性和飞行安全考虑。",
+        "keyFacts": [
+          {
+            "name": "受影响航班",
+            "value": "逾3500",
+            "unit": "个航班",
+            "period": "停飞令实施时",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "恢复运行",
+            "value": "逾8000",
+            "unit": "次航班运行",
+            "period": "停飞令解除当晚",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-13",
+            "precision": "date",
+            "event": "FAA因多个空管中心通信问题发布全美机场地面停飞令。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-14",
+            "precision": "date",
+            "event": "美国交通部表示停飞令已解除，空域重新开放，但航班仍可能延误或取消。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "美国交通部与FAA",
+            "statement": "部门称通信问题影响空管使用的通信和雷达系统稳定性，停飞令是出于谨慎和安全考虑。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "impacts": [
+          {
+            "description": "停飞令解除后，交通部仍提醒旅客可能遇到延误和取消。",
+            "status": "observed",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "现有官方材料将故障归因于通信问题，但具体设备故障机制仍需以后续调查信息为准。"
+        ],
+        "watchpoints": [
+          "关注FAA对通信故障原因的后续说明及航班运行恢复情况。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "美国联邦航空管理局：全国地面停飞声明",
+            "url": "https://www.faa.gov/newsroom/faa-statement-nationwide-ground-stop",
+            "supports": "停飞令的日期、范围及FAA公布的通信问题原因。"
+          },
+          {
+            "id": "e2",
+            "name": "美国交通部：全国停飞令解除后的空域恢复情况",
+            "url": "https://www.transportation.gov/briefing-room/icymi-us-transportation-secretary-sean-p-duffy-provides-update-restoration-airspace",
+            "supports": "停飞航班和恢复运行数量、停飞令解除及仍可能出现延误取消的情况。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.faa.gov",
+        "original_url": "https://www.faa.gov/newsroom/faa-statement-nationwide-ground-stop",
+        "canonical_url": "https://www.faa.gov/newsroom/faa-statement-nationwide-ground-stop",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "62094ee184b1c7d7b5f46d0158df69576096082aca93ce9a915cbbd4277f72a5",
+      "category": "tech_digital",
+      "importance": 4,
+      "fact_summary": "SpaceX星舰第15次试飞中，超重型助推器未能按计划返回发射塔捕获，并在墨西哥湾坠毁；飞船部分完成轨道飞行后，于11月14日返回发射场并首次被塔架机械臂捕获。美联社报道，这次任务实现了星舰上面级首次从太空返回后被捕获，但未完成原定的助推器与飞船“双捕获”。",
+      "analysis": "这次试飞验证了星舰上面级返回和捕获环节，同时也显示助推器回收仍未达成；不能据此推断系统已具备常态化重复飞行能力。",
+      "evidence_quote": "SpaceX’s Starship returns from orbit and is captured by launch pad arms in a dramatic first",
+      "details": {
+        "kind": "news",
+        "background": "星舰第15次试飞计划尝试回收助推器与飞船上面级，以推进大型运载火箭的完整重复使用。",
+        "keyFacts": [
+          {
+            "name": "飞船上面级捕获",
+            "value": "首次实现从轨道返回后由发射塔机械臂捕获",
+            "period": "第15次试飞",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "助推器回收",
+            "value": "未完成捕获，坠入墨西哥湾",
+            "period": "第15次试飞",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-13",
+            "precision": "date",
+            "event": "星舰第15次试飞从得克萨斯州发射；助推器回收尝试失败。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-14",
+            "precision": "date",
+            "event": "飞船上面级返回发射场并被塔架机械臂捕获。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "impacts": [
+          {
+            "description": "飞船上面级首次从太空返回后被发射塔捕获；助推器仍未回收成功。",
+            "status": "observed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "助推器未能完成捕获的具体技术原因仍需SpaceX后续说明。"
+        ],
+        "watchpoints": [
+          "关注SpaceX公布的试飞数据、助推器故障分析及下一次回收测试安排。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "美联社：星舰返回并首次被发射塔机械臂捕获",
+            "url": "https://apnews.com/article/df394c1b5a0f85e11194f9ff7db9ee6b",
+            "supports": "飞船上面级的首次捕获、助推器回收失败及未完成双捕获的事实。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "apnews.com",
+        "original_url": "https://apnews.com/article/df394c1b5a0f85e11194f9ff7db9ee6b",
+        "canonical_url": "https://apnews.com/article/df394c1b5a0f85e11194f9ff7db9ee6b",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "63465351a53d7323f93008cc1d89c62017f14d5f22433dbf8350e34d798e9fe3",
+      "category": "gaming",
+      "importance": 4,
+      "fact_summary": "2026年KPL年度总决赛于11月14日晚在成都结束，北京WB鏖战七局，以4:3战胜北京JDG，获得年度总冠军。赛事官方公布北京WB选手梓墨获决赛FMVP。",
+      "analysis": "决赛打满七局，冠军归属和FMVP评选是本场赛事的主要结果信息；关于其他选手是否更应获奖的判断属于主观评价。",
+      "evidence_quote": "北京WB队获王者荣耀职业联赛年度总冠军",
+      "details": {
+        "kind": "news",
+        "background": "KPL年度总决赛是《王者荣耀》职业联赛年度冠军赛事。",
+        "keyFacts": [
+          {
+            "name": "决赛比分",
+            "value": "北京WB 4:3 北京JDG",
+            "period": "2026年11月14日",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "决赛FMVP",
+            "value": "梓墨（吴喆杰）",
+            "period": "2026年年度总决赛",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-14",
+            "precision": "date",
+            "event": "北京WB以4:3战胜北京JDG，获得年度总冠军；梓墨获FMVP。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "KPL官方",
+            "statement": "宣布梓墨获得年度总决赛FMVP。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新华社：北京WB队获王者荣耀职业联赛年度总冠军",
+            "url": "https://news.ifeng.com/c/8y3aW763PJV",
+            "supports": "决赛日期、对阵结果及北京WB获得年度总冠军。"
+          },
+          {
+            "id": "e2",
+            "name": "KPL官方微博内容转载：梓墨获年度总决赛FMVP",
+            "url": "https://sina.cn/news/detail/5365283894068563.html",
+            "supports": "赛事官方对FMVP归属的宣布。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8y3aW763PJV",
+        "canonical_url": "https://news.ifeng.com/c/8y3aW763PJV",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8fa15de1d1061da80e6f67dbf358a4c935db30e6d6d2e5ff3ac52b1e44273c8d",
+      "category": "sports",
+      "importance": 3,
+      "fact_summary": "中国男足11月14日晚在肇庆举行的国际足球邀请赛中以2:0战胜马来西亚，王钰栋和张玉宁先后进球。新华社报道，这场胜利结束了中国队此前的三连败。",
+      "analysis": "这场比赛带来了一场胜利和连续失利终止的即时结果；它本身不足以说明球队长期竞技状态已经改变。",
+      "evidence_quote": "国足2比0胜马来西亚，结束三连败",
+      "details": {
+        "kind": "news",
+        "background": "比赛属于2026CFA中国之队·肇庆国际足球邀请赛。",
+        "keyFacts": [
+          {
+            "name": "比赛结果",
+            "value": "中国队2:0马来西亚",
+            "period": "2026年11月14日",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          },
+          {
+            "name": "此前连败",
+            "value": "三连败结束",
+            "period": "截至本场比赛",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-14",
+            "precision": "date",
+            "event": "中国男足在肇庆以2:0战胜马来西亚。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "中国队下一场国际比赛的表现及阵容情况。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新华社报道转载：国足2:0战胜马来西亚",
+            "url": "https://news.ifeng.com/c/8y3W9swEnXX",
+            "supports": "比赛结果及结束此前三连败的事实。"
+          },
+          {
+            "id": "e2",
+            "name": "央视网：国际足球邀请赛中国对马来西亚",
+            "url": "https://sports.cctv.cn/2026/11/14/VIDEi992kEL8weEosVVASOR5261114.shtml",
+            "supports": "比赛日期和2:0赛果。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8y3W9swEnXX",
+        "canonical_url": "https://news.ifeng.com/c/8y3W9swEnXX",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "bf84760054081f2a10f56385e343cf7bcc92d9848702415b49025812d94b7265",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "一名求职者称，11月13日在江苏昆山跨城参加面试时，收到HR要求代买两杯饮料、费用不报销的消息；她拒绝后，面试被取消。BOSS直聘11月14日回应称，相关招聘者存在不合理要求、违反平台规则，已暂停该招聘账号权限。涉事企业尚未在报道中回应记者联系。",
+      "analysis": "平台暂停招聘账号权限是已报道的处置进展；求职者与企业之间关于面试经过的描述，现有报道主要依据求职者陈述，仍应与企业回应区分。",
+      "evidence_quote": "BOSS直聘回应称：“相关招聘者存在不合理要求，未对求职者给予平等尊重，违反BOSS直聘规则公约。”",
+      "details": {
+        "kind": "news",
+        "background": "该事件涉及求职面试中的招聘方行为及招聘平台对违规账号的处置。",
+        "keyFacts": [
+          {
+            "name": "求职者所述经过",
+            "value": "被要求代买饮料且称费用不报销；拒绝后面试被取消",
+            "period": "2026年11月13日",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "平台处置",
+            "value": "暂停相关招聘账号权限",
+            "period": "2026年11月14日",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-13",
+            "precision": "date",
+            "event": "求职者称赴面试时被要求代买饮料，拒绝后面试被取消。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-14",
+            "precision": "date",
+            "event": "BOSS直聘回应称相关招聘者违反平台规则，并暂停其招聘账号权限。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "BOSS直聘",
+            "statement": "平台称相关招聘者有不合理要求、未平等尊重求职者并违反规则，已暂停其账号权限。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "impacts": [
+          {
+            "description": "涉事招聘账号权限被平台暂停。",
+            "status": "observed",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "涉事企业未在报道中回应记者联系；面试过程的具体情况主要依据求职者陈述。"
+        ],
+        "watchpoints": [
+          "关注涉事企业是否回应，以及平台后续是否公布进一步处理结果。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "点时新闻报道转载：求职者称拒绝买咖啡后面试被取消",
+            "url": "https://news.ifeng.com/c/8y32xwrCQDj",
+            "supports": "求职者对面试经过的陈述及记者联系涉事企业的情况。"
+          },
+          {
+            "id": "e2",
+            "name": "紫牛新闻报道转载：BOSS直聘称已暂停招聘账号权限",
+            "url": "https://finance.sina.cn/2026-11-15/detail-iniytsqs6964840.d.html?vt=4",
+            "supports": "BOSS直聘的回应及账号处置进展。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.sina.cn",
+        "original_url": "https://finance.sina.cn/2026-11-15/detail-iniytsqs6964840.d.html?vt=4",
+        "canonical_url": "https://finance.sina.cn/2026-11-15/detail-iniytsqs6964840.d.html?vt=4",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4402f60c4864ba4545f27b7ed3155b4f51fef6be453ac7c4f43e85ad43014e51",
+      "category": "lifestyle_emotion",
+      "importance": 2,
+      "fact_summary": "潮新闻11月14日报道，一名杭州家长称，其三年级孩子在一道“饭后是否打包剩菜”的口语交际题中写出认为打包丢脸的回答后被打叉扣分。报道引述一线教师观点称，这类题应看表达是否适切；另有教师认为题目意在引导节俭，建议了解孩子作答背后的想法。现有报道未提供学校或批改教师的回应。",
+      "analysis": "事件涉及开放式题目的评分边界：表达是否符合语境与题目价值导向如何兼顾，需结合完整题目和评分标准判断。",
+      "evidence_quote": "吃饭打包丢脸吗？小学语文题被老师打叉引热议",
+      "details": {
+        "kind": "news",
+        "background": "题目以家庭在餐馆用餐后是否打包剩菜为情境，要求学生进行口语表达。",
+        "keyFacts": [
+          {
+            "name": "家长所述作答结果",
+            "value": "孩子的回答被打叉并扣分",
+            "period": "报道于2026年11月14日",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "教师观点",
+            "value": "报道引述教师称应考查语境中的表达是否适切；另有教师强调题目引导节俭",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-14",
+            "precision": "date",
+            "event": "媒体报道家长对孩子语文题被扣分提出疑问，并引述教师对评分和题目导向的不同解释。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "受访一线教师",
+            "statement": "口语交际题应在特定语境中考查表达是否适切。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "actor": "报道中另一位教师",
+            "statement": "题目旨在引导学生理解节俭，建议教师先了解孩子认为打包丢脸的原因。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "学校、任课教师及完整评分标准未见于该报道。"
+        ],
+        "watchpoints": [
+          "关注学校是否公布题目完整语境、评分依据或处理说明。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "潮新闻：小学语文题被老师打叉引热议",
+            "url": "https://tidenews.com.cn/news.html?from_channel=5d8b4d25cf8dfd0001a4143c&id=3614674&top_id=3614700",
+            "supports": "家长所述题目、作答和扣分情况，以及报道所引教师观点。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "tidenews.com.cn",
+        "original_url": "https://tidenews.com.cn/news.html?from_channel=5d8b4d25cf8dfd0001a4143c&id=3614674&top_id=3614700",
+        "canonical_url": "https://tidenews.com.cn/news.html?from_channel=5d8b4d25cf8dfd0001a4143c&id=3614674&top_id=3614700",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
