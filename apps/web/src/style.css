@@ -704,10 +704,6 @@ main {
   margin: 0;
   overflow-wrap: anywhere;
 }
-.source-attribution {
-  font-size: 11px;
-  margin-top: 12px;
-}
 .revision-list {
   margin-bottom: 24px;
   font-size: 12px;

@@ -134,9 +134,6 @@ export function Source({ story, expanded = false }: { story: Story; expanded?: b
           )}
         </dl>
       )}
-      {story.verification === "codex_reported" && (
-        <p className="source-attribution">来源由 Codex 提供</p>
-      )}
     </details>
   );
 }
