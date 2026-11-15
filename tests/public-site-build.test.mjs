@@ -37,6 +37,10 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   ).window.document;
   const searchIndex = JSON.parse(readFileSync(join(root, "data/search-index.json"), "utf8"));
   assert.ok(searchDoc.querySelector('form[role="search"][data-site-search-form]'));
+  assert.equal(searchDoc.querySelector(".topic-picker"), null);
+  assert.equal(searchDoc.querySelector(".search-heading"), null);
+  assert.equal(searchDoc.querySelector(".site-search-form > label"), null);
+  assert.equal(searchDoc.querySelector(".search-hint"), null);
   assert.equal(searchDoc.querySelector('meta[name="robots"]')?.getAttribute("content"), "noindex,nofollow");
   assert.equal(searchDoc.querySelector('.site-nav a[href="/search/"]')?.getAttribute("aria-current"), "page");
   assert.equal(searchIndex.schema_version, 1);
