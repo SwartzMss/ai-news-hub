@@ -1,6 +1,6 @@
 import type { ReactNode } from "react";
 import type { PublicData, TopicSummary } from "./types";
-import { topicPath, topicArchivePath } from "./paths";
+import { topicPath } from "./paths";
 import { Newsletter } from "./Newsletter";
 export function Shell({
   data,
@@ -11,7 +11,7 @@ export function Shell({
 }: {
   data: PublicData;
   topic?: TopicSummary;
-  active?: "topics" | "archive" | "search";
+  active?: "topics" | "search";
   page?: string;
   children: ReactNode;
 }) {
@@ -31,13 +31,6 @@ export function Shell({
         <nav className="site-nav" aria-label="主导航">
           <a href="/" aria-current={active === "topics" ? "page" : undefined}>
             首页
-          </a>
-          <a
-            href={topic ? topicArchivePath(topic.id) : "/archive/"}
-            data-topic-archive
-            aria-current={active === "archive" ? "page" : undefined}
-          >
-            往期归档
           </a>
           <a href="/search/" aria-current={active === "search" ? "page" : undefined}>
             搜索
@@ -86,11 +79,7 @@ export function Shell({
             {data.topics.map((t) => (
               <a
                 key={t.id}
-                href={
-                  active === "archive"
-                    ? topicArchivePath(t.id)
-                    : topicPath(t.id)
-                }
+                href={topicPath(t.id)}
                 data-topic-choice={t.id}
                 aria-current={
                   (topic?.id ??

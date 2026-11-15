@@ -66,23 +66,14 @@ export async function buildPublic({
   if (!entry) throw Error("missing public client entry");
   const routes = [
     { kind: "home", path: "/" },
-    { kind: "archive", path: "/archive/" },
     { kind: "search", path: "/search/" },
     { kind: "channel", path: "/channel/opensource/", canonicalPath: "/" },
   ];
   const topicRoot = (id) => `/topics/${id}/`;
   const editionPath = (r, version = false) =>
     `${topicRoot(r.topic.id)}archive/${r.report_date}/${version ? `v${String(r.version).padStart(6, "0")}/` : ""}`;
-  for (const topic of data.topics) {
-    routes.push(
-      { kind: "topic", path: topicRoot(topic.id), topicId: topic.id },
-      {
-        kind: "topicArchive",
-        path: topicRoot(topic.id) + "archive/",
-        topicId: topic.id,
-      },
-    );
-  }
+  for (const topic of data.topics)
+    routes.push({ kind: "topic", path: topicRoot(topic.id), topicId: topic.id });
   for (const r of data.latest)
     routes.push({
       kind: "date",
@@ -123,11 +114,7 @@ export async function buildPublic({
       ({
         home: "话题简报",
         topic: data.topics.find((t) => t.id === page.topicId)?.name,
-        topicArchive:
-          (data.topics.find((t) => t.id === page.topicId)?.name ?? "") +
-          " · 往期简报",
         channel: "全部话题",
-        archive: "话题归档",
         search: "搜索文章",
         date: page.date,
         report: page.date + " 历史版本",

@@ -1,7 +1,7 @@
 import type { PublicData } from "./types";
 import { Shell } from "./Shell";
 import { Row, Empty, dateLabel, groupResearchAreas, hasResearchAreas } from "./ReadingParts";
-import { topicPath, topicArchivePath } from "./paths";
+import { topicPath } from "./paths";
 export function LatestBrief({
   topic,
 }: {
@@ -64,18 +64,12 @@ export function TopicHome({ data }: { data: PublicData }) {
     </Shell>
   );
 }
-export function TopicDirectory({
-  data,
-  archive = false,
-}: {
-  data: PublicData;
-  archive?: boolean;
-}) {
+export function TopicDirectory({ data }: { data: PublicData }) {
   return (
-    <Shell data={data} active={archive ? "archive" : "topics"} page="directory">
+    <Shell data={data} active="topics" page="directory">
       <main id="content" className="topic-home">
         <header className="page-heading">
-          <h1>{archive ? "话题归档" : "全部话题"}</h1>
+          <h1>全部话题</h1>
           <span>{data.topics.length} 个话题</span>
         </header>
         {!data.topics.length ? (
@@ -86,9 +80,7 @@ export function TopicDirectory({
               <a
                 className="topic-card"
                 key={topic.id}
-                href={
-                  archive ? topicArchivePath(topic.id) : topicPath(topic.id)
-                }
+                href={topicPath(topic.id)}
                 data-topic-choice={topic.id}
               >
                 <h2>{topic.name}</h2>
@@ -97,7 +89,7 @@ export function TopicDirectory({
                   {dateLabel(topic.latest.report_date)}
                 </span>
                 <p>{topic.latest.title}</p>
-                <strong>{archive ? "查看往期" : "进入话题"} →</strong>
+                <strong>进入话题 →</strong>
               </a>
             ))}
           </div>

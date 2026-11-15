@@ -4,14 +4,13 @@ import {
   categories,
   dateLabel,
   lead,
-  counts,
   Source,
   Empty,
   groupResearchAreas,
   hasResearchAreas,
   projectEntryLabel,
 } from "./ReadingParts";
-import { issuePath, topicArchivePath } from "./paths";
+import { issuePath, topicPath } from "./paths";
 import { Shell } from "./Shell";
 import { TopicHome, TopicDirectory, LatestBrief } from "./TopicHome";
 import { StructuredProjectAside, StructuredProjectDetail } from "./StructuredProjectDetail";
@@ -21,8 +20,7 @@ import { SearchPage } from "./Search";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "search") return <SearchPage data={data} />;
-  if (page.kind === "channel" || page.kind === "archive")
-    return <TopicDirectory data={data} archive={page.kind === "archive"} />;
+  if (page.kind === "channel") return <TopicDirectory data={data} />;
   const fullData = data;
   const topic = fullData.topics.find((t) => t.id === page.topicId);
   data = {
@@ -75,15 +73,6 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
   const investment = story?.details.kind === "investment" ? story.details : null;
   const news = story?.details.kind === "news" ? story.details : null;
   const structuredProject = story?.details.kind === "project" ? story.details : null;
-  const nav =
-    page.kind === "topic" ||
-    ((page.kind === "article" || page.kind === "date") &&
-      (story?.report_date ?? selected?.report_date) === latestDate)
-      ? "latest"
-      : "archive";
-  const months = [
-    ...new Set(data.latest.map((r) => r.report_date.slice(0, 7))),
-  ];
   const versions = selected
     ? data.reports.filter((r) => r.report_date === selected.report_date)
     : [];
@@ -115,80 +104,20 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
     <Shell
       data={fullData}
       topic={topic}
-      active={nav === "latest" ? "topics" : "archive"}
+      active="topics"
       page="reader"
     >
       <div
-        className={`reading-layout${hasAside ? " has-aside" : ""}${page.kind === "article" ? " detail-layout" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "topicArchive" ? " archive-layout" : ""}${page.kind === "article" && structuredProject ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}${page.kind === "article" && news ? " news-layout" : ""}`}
+        className={`reading-layout${hasAside ? " has-aside" : ""}${page.kind === "article" ? " detail-layout" : ""}${page.kind === "topic" ? " latest-layout" : ""}${page.kind === "article" && structuredProject ? " project-layout" : ""}${page.kind === "article" && investment ? " investment-layout" : ""}${page.kind === "article" && news ? " news-layout" : ""}`}
       >
         <main id="content">
           {page.kind === "topic" &&
             (topic ? <LatestBrief topic={topic} /> : <Empty />)}
-          {page.kind === "topicArchive" && (
-            <>
-              <header className="page-heading">
-                <p className="section-kicker">按日期归档</p>
-                <h1>往期简报</h1>
-                <span>{data.latest.length} 期</span>
-              </header>
-              {!data.latest.length ? (
-                <Empty />
-              ) : (
-                months.map((month) => (
-                  <section className="archive-month" key={month}>
-                    <h2>{month.replace("-", " 年 ")} 月</h2>
-                    <ol>
-                      {data.latest
-                        .filter((r) => r.report_date.startsWith(month))
-                        .map((r) => (
-                          <li className="archive-edition" key={r.report_id}>
-                            <a href={issuePath(r)}>
-                              <div className="archive-date">
-                                <strong>{r.report_date.slice(8)}</strong>
-                                <span>
-                                  {new Intl.DateTimeFormat("zh-CN", {
-                                    timeZone: "UTC",
-                                    weekday: "long",
-                                  }).format(
-                                    new Date(r.report_date + "T00:00:00Z"),
-                                  )}
-                                </span>
-                              </div>
-                              <div className="archive-edition-content">
-                                <div className="archive-labels">
-                                  {r.report_date === latestDate && (
-                                    <span className="issue-label">
-                                      最新一期
-                                    </span>
-                                  )}
-                                  <span>{r.items.length} 条资讯</span>
-                                </div>
-                                <h3>{r.title}</h3>
-                                <div className="archive-categories">
-                                  {counts(r.items).map(([key, n]) => (
-                                    <span key={key}>
-                                      {categories[key] ?? key} {n}
-                                    </span>
-                                  ))}
-                                </div>
-                              </div>
-                              <span className="edition-open" aria-hidden="true">
-                                →
-                              </span>
-                            </a>
-                          </li>
-                        ))}
-                    </ol>
-                  </section>
-                ))
-              )}
-            </>
-          )}
           {["date", "report"].includes(page.kind) && selected && (
             <>
               <nav className="breadcrumb" aria-label="面包屑">
-                <a href={topicArchivePath(selected.topic.id)}>
-                  往期归档
+                <a href={topicPath(selected.topic.id)}>
+                  返回话题
                 </a>
                 <span>/</span>
                 <time dateTime={selected.report_date}>
@@ -248,7 +177,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {page.kind === "article" && story && (
             <>
               <nav className="detail-context" aria-label="文章导航">
-                <a href={topicArchivePath(story.topic.id)}>返回归档</a>
+                <a href={topicPath(story.topic.id)}>返回话题</a>
                 <time dateTime={story.report_date}>{dateLabel(story.report_date)}</time>
               </nav>
               {structuredProject ? (
