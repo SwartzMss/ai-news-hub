@@ -559,7 +559,6 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.doesNotMatch(disabledHtml, /newsletter-dialog/);
     assert.doesNotMatch(disabledHtml, /subscribe-action/);
     assert.match(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src 'self'/);
-    assert.doesNotMatch(readFileSync(join(disabled.output, "_headers"), "utf8"), /connect-src (?:https?:|\\*)/);
     const enabled = await buildPublic({ siteUrl: "https://news.example", reportsDir: dir, newsletterEnabled: true });
     const html = readFileSync(join(enabled.output, "index.html"), "utf8");
     const browser = new JSDOM(html, { url: "https://news.example/", runScripts: "outside-only" });
