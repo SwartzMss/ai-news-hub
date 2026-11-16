@@ -1,0 +1,531 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "0e028dae-9bf9-43cb-8bcd-1a401cb02c62",
+  "report_date": "2026-11-16",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-16｜统计：北京时间2026-11-15 08:08—11-16 08:08；更新回溯至11-13 08:08，含近90天维护项目发现",
+  "collected_at": "2026-11-16T00:17:31.114Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-16T00:17:31.128Z",
+  "reviewed_content_sha256": "2d74c58ec2de661d70f5710faaad9c73f423f01aa270258a0783fc19ed07cba6",
+  "items": [
+    {
+      "id": "a29acd31b6f7e5c24d60e19aed3aa9436360452530d9364035ca58b566b0836a",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Evergreen 的官方仓库称，它通过 Agent 修复 CI 失败、同步基础分支，让选定 PR 保持可合并。执行前会检查标签、租约和提交 SHA，并验证允许的写入结果；本次作为项目发现收录，首次公开日期未确认。[项目仓库](https://github.com/githubnext/evergreen)",
+      "analysis": "适合希望自动维护待合并 PR 的团队，也可作为 Agent 写入权限与并发控制的实现参考。接入仍需配置仓库规则，外部 PR 的代码执行需要可信审批。",
+      "evidence_quote": "Evergreen: Your PR Gardener",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "自动修复指定 PR 的 CI 问题，并同步基础分支。",
+        "technical": [
+          {
+            "description": "确定性预检检查标签、CI 门槛、活动租约和当前提交 SHA。",
+            "evidenceRefs": [
+              "ev1"
+            ]
+          },
+          {
+            "description": "允许的写入包括 PR 分支提交、标签和评论，完成后重新读取验证。",
+            "evidenceRefs": [
+              "ev1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "维护显式添加 evergreen 标签的待合并 PR。",
+            "evidenceRefs": [
+              "ev1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件及随附文档",
+          "evidenceRefs": [
+            "ev2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "项目发现：官方介绍日期为2026-11-15，不等同首次发布日期。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "ev3"
+            ]
+          },
+          {
+            "description": "不直接合并 PR 或写入基础分支；已有自动合并配置仍可能在检查通过后生效。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "ev1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ev1",
+            "name": "Evergreen 官方仓库",
+            "url": "https://github.com/githubnext/evergreen",
+            "supports": "能力、预检、写入验证和运行边界"
+          },
+          {
+            "id": "ev2",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/githubnext/evergreen/main/LICENSE",
+            "supports": "代码许可证"
+          },
+          {
+            "id": "ev3",
+            "name": "官方项目介绍",
+            "url": "https://github.github.com/gh-aw/blog/2026-11-15-ecosystem-spotlight/",
+            "supports": "介绍日期及项目定位"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/githubnext/evergreen",
+        "canonical_url": "https://github.com/githubnext/evergreen",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b3f752f173bd98122b6c5284a42a33b26a6d3699ffee30ecdf3d9631b23ea634",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "NetWatch 官方 v0.40.1 发布说明宣布新增实验性进程连接流日志、面向 ISP 工单的 Markdown 报告和第二个互联网探测目标。这个 Rust 终端网络诊断工具可查看流量及连接，帮助整理故障证据；发布页标注11月14日。[项目仓库](https://github.com/matthart1983/netwatch)",
+      "analysis": "值得关注的是把进程连接记录与可提交的故障报告放进同一工具，适合排查间歇性网络异常。流日志仍属实验功能，抓包需要相应权限，各平台能力也需分别确认。",
+      "evidence_quote": "feat(daemon): flow log of which process connected where (experimental)",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "在终端关联流量、连接和诊断信息，辅助定位本机网络故障。",
+        "change": {
+          "summary": "正式发布 v0.40.1：新增实验性流日志、ISP 工单报告及第二个互联网探测目标；页面标注11月14日22:21，未取得完整时区时间戳。",
+          "version": "v0.40.1",
+          "type": "release",
+          "evidenceRefs": [
+            "nw1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "新增记录哪个进程连接到何处的实验性 daemon 流日志。",
+            "evidenceRefs": [
+              "nw1"
+            ]
+          },
+          {
+            "description": "提供实时抓包、L7 解码及可用平台上的进程归属信息。",
+            "evidenceRefs": [
+              "nw2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "生成 Markdown 网络故障报告，作为 ISP 工单附件。",
+            "evidenceRefs": [
+              "nw1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件",
+          "evidenceRefs": [
+            "nw3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "抓包需要提升权限；以 root 运行时沙箱隔离能力有限。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "nw2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "nw1",
+            "name": "v0.40.1 发布说明",
+            "url": "https://github.com/matthart1983/netwatch/releases/tag/v0.40.1",
+            "supports": "正式版本、页面日期及新增功能"
+          },
+          {
+            "id": "nw2",
+            "name": "官方 README",
+            "url": "https://raw.githubusercontent.com/matthart1983/netwatch/main/README.md",
+            "supports": "诊断能力和权限限制"
+          },
+          {
+            "id": "nw3",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/matthart1983/netwatch/main/LICENSE",
+            "supports": "代码许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/matthart1983/netwatch/releases/tag/v0.40.1",
+        "canonical_url": "https://github.com/matthart1983/netwatch/releases/tag/v0.40.1",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8d397f7a7077f1abc0d4a3cf56d0427fd8ca111d3895398a65221596b37631ac",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "sherpa-onnx 官方仓库称，它基于 ONNX Runtime 提供离线语音识别、合成、说话人分离和语音增强，并支持多种语言接口。作为持续维护的成熟项目发现收录，其 v2.0.1 已加入 VoxLock 目标说话人语音隔离，可用于本地录音处理。[项目仓库](https://github.com/k2-fsa/sherpa-onnx)",
+      "analysis": "适合需要本地语音处理、跨语言集成的应用团队，可减少分别接入多个语音组件的工作。代码许可证不能替代模型权重授权，选型仍需逐个核对模型和部署需求。",
+      "evidence_quote": "Speech-to-text, text-to-speech, speaker diarization, speech enhancement, source separation, and VAD",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "为应用提供离线识别、合成、说话人处理等语音能力。",
+        "technical": [
+          {
+            "description": "基于 ONNX Runtime，提供多种语言接口及 WebAssembly 支持。",
+            "evidenceRefs": [
+              "so1"
+            ]
+          },
+          {
+            "description": "v2.0.1 已包含 VoxLock 目标说话人隔离及相应语言 API。",
+            "evidenceRefs": [
+              "so2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在本地应用中集成语音转写、说话人分离和语音增强。",
+            "evidenceRefs": [
+              "so1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码；不据此推定模型权重及数据集授权",
+          "evidenceRefs": [
+            "so3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "项目发现：v2.0.1 页面标注10月26日，且显示发布后仍有提交；不作为本日更新。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "so2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "so1",
+            "name": "官方仓库及能力说明",
+            "url": "https://github.com/k2-fsa/sherpa-onnx",
+            "supports": "离线语音能力、接口和平台说明"
+          },
+          {
+            "id": "so2",
+            "name": "v2.0.1 发布说明",
+            "url": "https://github.com/k2-fsa/sherpa-onnx/releases/tag/v2.0.1",
+            "supports": "已发布的 VoxLock 能力及维护情况"
+          },
+          {
+            "id": "so3",
+            "name": "Apache 授权文件",
+            "url": "https://raw.githubusercontent.com/k2-fsa/sherpa-onnx/master/LICENSE",
+            "supports": "代码许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/k2-fsa/sherpa-onnx",
+        "canonical_url": "https://github.com/k2-fsa/sherpa-onnx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7c28a6536610b11a2735e930da42806441dc48257654a7dd705443d7fb9e9067",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "SongRec 官方 0.8.2 发布说明记录了输出管道断开导致的崩溃修复、Windows 旧版本迁移修复及非 UTF-8 路径支持。它提供音频文件和麦克风歌曲识别，兼有图形界面与命令行；发布页标注11月14日。[项目仓库](https://github.com/marin-m/SongRec)",
+      "analysis": "适合需要从录音或麦克风识别歌曲的用户，管道与路径修复也改善了脚本集成的可靠性。识别依赖 Shazam 服务端，不适合要求完全离线处理的场景。",
+      "evidence_quote": "QA and fixes",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "通过图形界面或命令行，从音频文件、麦克风等输入识别歌曲。",
+        "change": {
+          "summary": "正式发布0.8.2：修复断开输出管道时的 panic、Windows 迁移及历史文件处理，支持非 UTF-8 路径；页面标注11月14日04:46。",
+          "version": "0.8.2",
+          "type": "release",
+          "evidenceRefs": [
+            "sr1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "客户端生成音频指纹并发送至服务端匹配。",
+            "evidenceRefs": [
+              "sr2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "识别录音中的歌曲，并将识别历史导出为 CSV。",
+            "evidenceRefs": [
+              "sr2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "GPL-3.0",
+          "scope": "仓库代码；不代表外部识别服务授权",
+          "evidenceRefs": [
+            "sr3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "Flatpak 的文件系统沙箱可能限制部分命令行功能。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "sr2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "sr1",
+            "name": "0.8.2 发布说明",
+            "url": "https://github.com/marin-m/SongRec/releases/tag/0.8.2",
+            "supports": "版本、页面日期及可靠性修复"
+          },
+          {
+            "id": "sr2",
+            "name": "官方 README",
+            "url": "https://raw.githubusercontent.com/marin-m/SongRec/master/README.md",
+            "supports": "输入方式、指纹机制、导出及限制"
+          },
+          {
+            "id": "sr3",
+            "name": "GPL 授权文件",
+            "url": "https://raw.githubusercontent.com/marin-m/SongRec/master/LICENSE",
+            "supports": "代码许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/marin-m/SongRec/releases/tag/0.8.2",
+        "canonical_url": "https://github.com/marin-m/SongRec/releases/tag/0.8.2",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2303616314696cdd541cab71fef7ef0b1af31db858cce4d7f03a53cd72b96331",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Trivy 官方仓库称，它可扫描容器镜像、文件系统和代码仓库，发现已知漏洞、配置错误、秘密信息及软件许可证，并处理 SBOM。本次作为成熟项目发现收录；11月5日的 v0.76.2 发布页记录了工具发行容器自身的依赖安全修复。[项目仓库](https://github.com/aquasecurity/trivy)",
+      "analysis": "适合将依赖漏洞、配置和秘密信息检查纳入交付流程，也提醒团队维护扫描器自身。扫描范围受生态覆盖和规则影响，结果适合作为后续人工核查的入口。",
+      "evidence_quote": "Find vulnerabilities, misconfigurations, secrets, SBOM in containers, Kubernetes, code repositories, clouds and more",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "集中检查软件依赖、配置、秘密信息和许可证，辅助供应链风险排查。",
+        "technical": [
+          {
+            "description": "将扫描目标与扫描器分开，可选择漏洞、秘密信息、配置和许可证检查。",
+            "evidenceRefs": [
+              "tv1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在构建交付前检查容器镜像及项目文件系统。",
+            "evidenceRefs": [
+              "tv1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "tv3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "项目发现：v0.76.2 页面标注11月5日，并记录发行容器依赖安全修复，超出72小时更新窗口。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "tv2"
+            ]
+          },
+          {
+            "description": "官方明确提示 canary 构建可能包含严重错误，不建议用于生产。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "tv1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "tv1",
+            "name": "官方仓库",
+            "url": "https://github.com/aquasecurity/trivy",
+            "supports": "扫描目标、检查能力及 canary 限制"
+          },
+          {
+            "id": "tv2",
+            "name": "v0.76.2 发布说明",
+            "url": "https://github.com/aquasecurity/trivy/releases/tag/v0.76.2",
+            "supports": "近期维护与发行容器安全修复"
+          },
+          {
+            "id": "tv3",
+            "name": "Apache 授权文件",
+            "url": "https://raw.githubusercontent.com/aquasecurity/trivy/main/LICENSE",
+            "supports": "代码许可证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/aquasecurity/trivy",
+        "canonical_url": "https://github.com/aquasecurity/trivy",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "547c31bd8ecb32e715da95d9b506d5cd6848331fa2a7cbaa60f9ea30e4c78ada",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "iroh 官方仓库称，它允许应用按公钥连接节点，使用 QUIC 建立加密通信，并尝试打洞，失败时回退至中继。作为近期维护的成熟项目发现收录，它还可组合内容寻址传输、发布订阅和最终一致键值存储协议。[项目仓库](https://github.com/n0-computer/iroh)",
+      "analysis": "适合需要跨网络连接设备的文件传输和协作应用，公钥寻址可减少应用自行处理地址变化的负担。打洞失败仍需中继，部署时应评估相关服务的可用性与成本。",
+      "evidence_quote": "A library that adds QUIC + NAT Traversal to your apps.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "提供按公钥建立节点连接的网络库，处理直连尝试和中继回退。",
+        "technical": [
+          {
+            "description": "基于 QUIC 提供认证加密、并发流和数据报传输。",
+            "evidenceRefs": [
+              "ir1"
+            ]
+          },
+          {
+            "description": "尝试打洞建立直连，失败时可回退至公共中继。",
+            "evidenceRefs": [
+              "ir1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "组合 iroh-blobs 构建基于内容寻址的文件传输。",
+            "evidenceRefs": [
+              "ir1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Apache-2.0",
+          "scope": "仓库代码，可任选其一",
+          "evidenceRefs": [
+            "ir1",
+            "ir3",
+            "ir4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "项目发现：v1.4.1 发布页标注10月22日，不作为本日更新。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "ir2"
+            ]
+          },
+          {
+            "description": "适合希望复用连接管理机制、将精力放在应用协议上的团队。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "ir1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ir1",
+            "name": "官方仓库",
+            "url": "https://github.com/n0-computer/iroh",
+            "supports": "公钥寻址、QUIC、中继回退、协议组合及双许可证"
+          },
+          {
+            "id": "ir2",
+            "name": "v1.4.1 发布说明",
+            "url": "https://github.com/n0-computer/iroh/releases/tag/v1.4.1",
+            "supports": "近期发布及维护线索"
+          },
+          {
+            "id": "ir3",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/n0-computer/iroh/main/LICENSE-MIT",
+            "supports": "MIT 授权条款"
+          },
+          {
+            "id": "ir4",
+            "name": "Apache 授权文件",
+            "url": "https://raw.githubusercontent.com/n0-computer/iroh/main/LICENSE-APACHE",
+            "supports": "Apache-2.0 授权条款"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/n0-computer/iroh",
+        "canonical_url": "https://github.com/n0-computer/iroh",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
