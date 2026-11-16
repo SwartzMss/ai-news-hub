@@ -14,10 +14,12 @@ function Brief({
   date,
   stories,
   groupProjects = false,
+  fromHome = false,
 }: {
   date: string;
   stories: Story[];
   groupProjects?: boolean;
+  fromHome?: boolean;
 }) {
   const grouped = groupProjects && hasResearchAreas(stories);
   const groups = grouped ? groupResearchAreas(stories) : [];
@@ -42,11 +44,11 @@ function Brief({
           {grouped ? groups.map((group) => (
             <section className="research-area-section" key={group.id}>
               {group.items.map((story) => (
-                <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} />
+                <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} fromHome={fromHome} />
               ))}
             </section>
           )) : stories.map((story) => (
-            <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} />
+            <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} fromHome={fromHome} />
           ))}
         </div>
       </div>
@@ -69,7 +71,7 @@ export function TopicHome({ data }: { data: PublicData }) {
         ) : (
           [...byDate.entries()]
             .sort(([a], [b]) => b.localeCompare(a))
-            .map(([date, stories]) => <Brief key={date} date={date} stories={stories} />)
+            .map(([date, stories]) => <Brief key={date} date={date} stories={stories} fromHome />)
         )}
       </main>
     </Shell>

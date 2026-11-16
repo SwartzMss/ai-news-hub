@@ -142,10 +142,12 @@ export function Row({
   story,
   id,
   level = 2,
+  fromHome = false,
 }: {
   story: Story;
   id?: string;
   level?: 2 | 3;
+  fromHome?: boolean;
 }) {
   const Heading = level === 3 ? "h3" : "h2",
     text = lead(story);
@@ -153,7 +155,7 @@ export function Row({
     <article className="news-row" id={id} data-brief-story={id}>
       <div className="news-content">
         <Heading>
-          <a href={storyPath(story)} title={text.title}>
+          <a href={storyPath(story, fromHome)} title={text.title}>
             {text.title}
           </a>
         </Heading>

@@ -53,6 +53,7 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, 1);
+  assert.ok(homeDoc.querySelector('.news-row h2 a[href*="?from=home"]'), "merged home-feed article links preserve the home return context");
   assert.equal(homeDoc.querySelector("footer")?.textContent.trim(), "© 2026 AI News Hub. All rights reserved.");
   assert.equal(homeDoc.querySelectorAll(".brief-edition-top, .brief-topic").length, 0);
   assert.ok(homeDoc.querySelector(".sticky-header > .masthead"), "masthead is inside the sticky header");
@@ -526,10 +527,11 @@ test('news detail renders structured evidence, timeline and a section directory'
   assert.ok(doc.querySelector('#news-primary-source .source-details')===null);
   assert.ok(doc.querySelector('#news-evidence .source-details[open]'));
   const html=readFileSync(join(built.output,`topics/${topicId}/news/${articleKey(report.items[0].id,topicId)}/index.html`),'utf8');
-  const browser=new JSDOM(html,{url:'https://demo.invalid/article/',runScripts:'outside-only'});
+  const browser=new JSDOM(html,{url:'https://demo.invalid/article/?from=home',runScripts:'outside-only'});
   browser.window.matchMedia=()=>({matches:false});
   const script=browser.window.document.querySelector('script[type="module"]').getAttribute('src').slice(1);
   browser.window.eval(readFileSync(join(built.output,script),'utf8'));
+  assert.equal(browser.window.document.querySelector("[data-return-home]").getAttribute("href"), "/", "articles opened from the merged home feed return to the home feed");
   const mobile=browser.window.document.querySelector('.detail-mobile-nav');mobile.open=true;
   const mobileLink=mobile.querySelector('a[href="#news-facts"]');
   mobileLink.dispatchEvent(new browser.window.MouseEvent('click',{bubbles:true,cancelable:true,button:0}));
