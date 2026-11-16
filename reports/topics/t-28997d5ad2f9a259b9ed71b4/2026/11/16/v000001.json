@@ -1,0 +1,154 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "9424a8d3-3031-4064-84cf-416421df344f",
+  "report_date": "2026-11-16",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月16日",
+  "collected_at": "2026-11-16T00:14:58.917Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-16T00:14:58.953Z",
+  "reviewed_content_sha256": "dfeb77591533210eed15b3cfc08b9b3fb9560a9efdaca10738af118bd5b5d0da",
+  "items": [
+    {
+      "id": "7d0922cde4909081d746e015a2809d2ba2a8819883a8d7f7ee16bdc50a6f7dc3",
+      "category": "gaming",
+      "importance": 3,
+      "fact_summary": "据华夏时报报道，BLG在11月15日结束的英雄联盟全球总决赛中以3:1击败Gen.G，获得冠军。B站随后开放免费领取7天大会员活动，领取时段为11月15日12:00至16日12:00。报道记录，活动开启约10分钟后，领取页面出现“粉丝们热情太高，请稍后再试”的提示。",
+      "analysis": null,
+      "evidence_quote": "此外，哔哩哔哩平台也宣布送出免费“7天大会员”福利，11月15日12时至16日12时，站内搜索“大会员”即可免费领取。",
+      "details": {
+        "kind": "news",
+        "background": "BLG是哔哩哔哩旗下电竞战队，B站此次以限时赠送会员的方式庆祝战队夺得全球总决赛冠军。",
+        "keyFacts": [
+          {
+            "name": "全球总决赛结果",
+            "value": "BLG以3:1击败Gen.G夺冠",
+            "period": "2026年11月15日",
+            "nature": "reported",
+            "evidenceRefs": [
+              "blg1"
+            ]
+          },
+          {
+            "name": "会员福利",
+            "value": "免费领取7天大会员，每位用户限领一次",
+            "period": "2026年11月15日12:00至11月16日12:00（北京时间）",
+            "nature": "reported",
+            "evidenceRefs": [
+              "blg2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-15T12:00:00+08:00",
+            "precision": "datetime",
+            "event": "B站开放免费领取7天大会员活动。",
+            "evidenceRefs": [
+              "blg1",
+              "blg2"
+            ]
+          },
+          {
+            "time": "2026年11月15日12:10许（北京时间）",
+            "precision": "approximate",
+            "event": "华夏时报记录领取页面出现请稍后再试的提示。",
+            "evidenceRefs": [
+              "blg1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道未说明领取异常的具体技术原因及持续时间。"
+        ],
+        "evidence": [
+          {
+            "id": "blg1",
+            "name": "华夏时报：BLG夺冠！B站免费送大会员（东方财富网刊载）",
+            "url": "https://finance.eastmoney.com/a/202611153931482584.html",
+            "supports": "决赛结果、会员领取安排及11月15日12:10许的页面异常提示。"
+          },
+          {
+            "id": "blg2",
+            "name": "每日经济新闻：旗下战队BLG夺冠，B站宣布大会员免费送（东方财富网刊载）",
+            "url": "https://finance.eastmoney.com/a/202611163931548889.html",
+            "supports": "7天大会员福利、领取时间及每位用户限领一次的安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.eastmoney.com",
+        "original_url": "https://finance.eastmoney.com/a/202611153931482584.html",
+        "canonical_url": "https://finance.eastmoney.com/a/202611153931482584.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "bb4401904109a2946014b474370f6a9f7b9fc8f3d263c8e2cffe22de6c391298",
+      "category": "sports",
+      "importance": 3,
+      "fact_summary": "新华社11月15日报道，34岁的方博代表哈萨克斯坦队，在WTT常规挑战赛伊斯坦布尔站男单决赛中以4:1击败韩国选手姜东秀，获得复出后的首个冠军。五局比分为11:9、8:11、11:8、11:6、11:9。",
+      "analysis": null,
+      "evidence_quote": "乒乓球前国手方博夺得复出后首冠",
+      "details": {
+        "kind": "news",
+        "background": "方博于2021年退役，2026年4月宣布复出并代表哈萨克斯坦队参赛，同时表示不会参加奥运会、世乒赛和世界杯。",
+        "keyFacts": [
+          {
+            "name": "男单决赛结果",
+            "value": "方博4:1姜东秀",
+            "period": "2026年WTT常规挑战赛伊斯坦布尔站",
+            "nature": "reported",
+            "evidenceRefs": [
+              "fang1"
+            ]
+          },
+          {
+            "name": "冠军意义",
+            "value": "方博复出后的首个冠军",
+            "period": "2026年11月15日",
+            "nature": "reported",
+            "evidenceRefs": [
+              "fang1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-15",
+            "precision": "date",
+            "event": "方博在伊斯坦布尔站男单决赛中获胜夺冠。",
+            "evidenceRefs": [
+              "fang1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "fang1",
+            "name": "新华社：乒乓球前国手方博夺得复出后首冠（中新网刊载）",
+            "url": "https://www.chinanews.com/ty/2026/11-15/10732529.shtml",
+            "supports": "赛事日期、参赛身份、决赛结果、逐局比分及复出背景。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.chinanews.com",
+        "original_url": "https://www.chinanews.com/ty/2026/11-15/10732529.shtml",
+        "canonical_url": "https://www.chinanews.com/ty/2026/11-15/10732529.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
