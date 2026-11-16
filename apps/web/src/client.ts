@@ -3,6 +3,12 @@ import { mountSiteSearch } from "./search-client";
 
 mountSiteSearch();
 
+// Articles opened from the merged home feed should return to that feed.
+// Topic-specific article links keep their existing topic destination.
+if (new URLSearchParams(location.search).get("from") === "home") {
+  document.querySelector<HTMLAnchorElement>("[data-return-home]")?.setAttribute("href", "/");
+}
+
 const stickyHeader = document.querySelector<HTMLElement>("[data-sticky-header]");
 if (stickyHeader) {
   const syncStickyHeaderHeight = () => {
