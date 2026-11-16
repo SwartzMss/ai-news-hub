@@ -1,0 +1,504 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "84d08e1f-5420-4224-aa7b-4f788bb869ca",
+  "report_date": "2026-11-16",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月16日｜截至北京时间08:10，含近7天补充",
+  "collected_at": "2026-11-16T00:20:10.303Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-16T00:20:10.315Z",
+  "reviewed_content_sha256": "4762b1dc4a655930c3e7f578b3407e198f57e60119b47cb0bc63e36a14129c04",
+  "items": [
+    {
+      "id": "26f7664759312f88de9d96401293e6d758aff8aab99ef8995be51e3ba1942382",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "Nebius于11月12日披露，部分第三方容量延期至2027年上半年，新泽西面向Microsoft的剩余容量批次现计划于2027年第二季度交付。公司将2026年收入预期调整至原30亿～34亿美元区间下沿，同时将资本开支指引由200亿～250亿美元提高至约270亿美元。上述为公司展望，纳入近7天补充窗口。",
+      "analysis": "推断：交付延迟与投资加速并存，可能扩大收入兑现前的资金占用；投资判断更依赖容量交付和预付款兑现，而非签约规模。",
+      "evidence_quote": "some third-party capacity we expected to come online this year is now scheduled for the first half of 2027.",
+      "details": {
+        "kind": "investment",
+        "background": "披露日期为2026年11月12日，具体发布时刻未确认。SEC股东信附件说明，临时发电退出及永久供电切换改变了新泽西后续交付安排。",
+        "metrics": [
+          {
+            "name": "资本开支",
+            "value": "约270",
+            "unit": "亿美元",
+            "period": "2026全年",
+            "comparison": "此前指引200亿～250亿美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "全年收入预期",
+            "value": "30～34区间下沿",
+            "unit": "亿美元",
+            "period": "2026全年",
+            "comparison": "原指引区间30亿～34亿美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "ARR目标",
+            "value": "超过70",
+            "unit": "亿美元年化收入",
+            "period": "2027年2月",
+            "comparison": "此前目标为2026年12月达到70亿～90亿美元；ARR为单月收入年化",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Nebius（NBIS，NASDAQ）：AI云运营商",
+            "direction": "交付延期、建设投入增加",
+            "reason": "公司披露第三方机房延期并提高资本开支。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Microsoft（MSFT，NASDAQ）：算力客户",
+            "direction": "剩余容量交付后移",
+            "reason": "股东信明确确认新泽西容量合同及剩余批次交付安排。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：供电切换延后容量验收，压后可计费收入；自有站点建设增加现金支出。若客户预付款与合同融资及时到账，可缓解资金缺口，之后仍需靠利用率和回款覆盖折旧及利息。",
+        "watchpoints": [
+          "新泽西剩余容量是否于2027年第二季度交付。",
+          "预付款到账、资本开支支付与经常性云收入增长。"
+        ],
+        "risks": [
+          "第三方站点继续延期；2027年融资覆盖比例属于预测。",
+          "Q3约3.25亿美元非经常性收入及设备折旧年限由四年延长至五年，影响盈利可比性。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Nebius Q3 2026股东信｜SEC附件99.2",
+            "url": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926126008/tm2629571d1_ex99-2.htm",
+            "supports": "容量延期、Microsoft合同、收入与资本开支指引、收入质量及折旧口径。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926126008/tm2629571d1_ex99-2.htm",
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/1513845/000110465926126008/tm2629571d1_ex99-2.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "70adeb2fe7b7a87fc6e0e8457e4f3d1137198ebd9b26b55892bc0580d27b0f38",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "CoreWeave于11月10日宣布，因预计基础设施提前交付，将2026年资本开支指引下限由350亿美元提高至370亿美元，上限维持390亿美元。Q3新增超过200 MW已上线电力，总量超过1.7 GW；签约电力超过4.6 GW，不能等同已交付容量。纳入近7天补充窗口。",
+      "analysis": "推断：提前交付有利于订单转收入，但融资成本可能吸收经营利润改善，扩张价值仍取决于资本回报与现金回收。",
+      "evidence_quote": "CoreWeave Reports Strong Third Quarter 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期为2026年11月10日，具体发布时刻未确认。Q3收入36.61亿美元，上年同期13.65亿美元；GAAP净亏损7.09亿美元。",
+        "metrics": [
+          {
+            "name": "全年资本开支",
+            "value": "370～390",
+            "unit": "亿美元",
+            "period": "2026全年",
+            "comparison": "此前350亿～390亿美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "已上线电力",
+            "value": "超过1.7",
+            "unit": "GW",
+            "period": "2026年Q3披露口径",
+            "comparison": "季度新增超过200 MW",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "利息费用",
+            "value": "10.5～11.5",
+            "unit": "亿美元",
+            "period": "2026年Q4",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "CoreWeave（CRWV，NASDAQ）：AI云及基础设施采购方",
+            "direction": "建设和客户交付加速",
+            "reason": "公司将资本开支上调归因于基础设施提前部署交付，未披露新增预算的供应商分配。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：新增已上线容量扩大计费基础，推动收入及经营现金流；资本开支先行与债务利息增加资金需求。只有利用率、合同回款和融资期限匹配，收入增长才能转化为股东现金回报。",
+        "watchpoints": [
+          "年末超过1.85 GW已上线电力目标及全年130亿～133亿美元收入指引兑现。",
+          "未来三个月预计约90亿美元客户预付款与保证金是否到账。"
+        ],
+        "risks": [
+          "签约电力仍需建设、并网和客户验收。",
+          "预付款不等于收入；融资成本、债务和股权摊薄可能抵消规模收益。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "CoreWeave Q3 2026业绩公告",
+            "url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/",
+            "supports": "实际业绩、电力容量、资本开支与收入指引、利息及预付款预期。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.coreweave.com",
+        "original_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/",
+        "canonical_url": "https://investors.coreweave.com/news/news-details/2026/CoreWeave-Reports-Strong-Third-Quarter-2026-Results/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6517f9d505d33c30f7b415b711475c194541de3fb1654a3be217d61fd96e8bf5",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "台积电于11月10日宣布，2026年10月合并营收约新台币5,868.9亿元，环比增长14.7%、同比增长59.7%；1～10月累计约新台币4.48562万亿元，同比增长43.3%。这些是公司披露实际值，月报未拆分AI、先进制程或封装贡献。纳入近7天补充窗口。",
+      "analysis": "推断：月度收入增长为晶圆制造需求兑现提供支持，但不能据此确定AI占比、先进制程利用率或毛利率变化。",
+      "evidence_quote": "TSMC October 2026 Revenue Report",
+      "details": {
+        "kind": "investment",
+        "background": "原文日期为北京时间2026年11月10日，PDF未标发布时刻。月报提供合并收入，不提供出货量、ASP或产品结构。",
+        "metrics": [
+          {
+            "name": "合并营收",
+            "value": "5868.9",
+            "unit": "亿元新台币",
+            "period": "2026年10月",
+            "comparison": "环比增长14.7%；同比增长59.7%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "累计合并营收",
+            "value": "44856.2",
+            "unit": "亿元新台币",
+            "period": "2026年1～10月",
+            "comparison": "同比增长43.3%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "台积电（TSM，NYSE）：晶圆代工",
+            "direction": "合并收入增长",
+            "reason": "公司月报直接披露；未将增长归属于具体客户或AI产品。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：收入增长若来自高利用率及有利产品组合，可通过固定成本摊薄改善盈利；若主要来自汇率或季节性，利润增幅可能低于收入增幅。现金流仍需结合资本开支和应收账款验证。",
+        "watchpoints": [
+          "11～12月收入、季度美元收入及毛利率。",
+          "先进制程和封装占比、产能利用率及资本开支。"
+        ],
+        "risks": [
+          "单月收入无法区分数量、价格、汇率和产品组合。",
+          "AI需求及客户份额推断缺少本月报直接证据。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "台积电2026年10月营收报告",
+            "url": "https://pr.tsmc.com/system/files/newspdf/attachment/382be7eb993b44afd73aa6fbcf92ac792433c7d1/October%202026%20(E)_final_wmn.pdf",
+            "supports": "10月及前十个月营收、币种与同比环比口径。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "pr.tsmc.com",
+        "original_url": "https://pr.tsmc.com/system/files/newspdf/attachment/382be7eb993b44afd73aa6fbcf92ac792433c7d1/October%202026%20(E)_final_wmn.pdf",
+        "canonical_url": "https://pr.tsmc.com/system/files/newspdf/attachment/382be7eb993b44afd73aa6fbcf92ac792433c7d1/October%202026%20(E)_final_wmn.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c0dbb507cbf12dae07d6cf96a8772247e2342b221af142c5346bc56c27d6d516",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "Cerebras于11月12日公布Q3业绩：GAAP收入2.108亿美元、同比增长55%，并披露新增超大规模云客户及制造扩产。公司预计2026年末制造能力超过年初10倍，Q4 Core非GAAP收入3.10亿～3.30亿美元。已签约700 MW数据中心总容量计划于2027年底前交付，不是当前在线容量。纳入近7天补充窗口。",
+      "analysis": "推断：客户拓展和制造扩产支持加速器商业化，但非GAAP盈利改善能否转化为现金回报，仍取决于量产、客户验收与成本兑现。",
+      "evidence_quote": "Cerebras Systems Delivers Record Revenue in Third Quarter 2026, Raises Full-Year Outlook",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期为2026年11月12日，具体发布时刻未确认。按主要受影响环节归入AI加速器设计，同次财报中的云与容量进展合并收录。",
+        "metrics": [
+          {
+            "name": "GAAP收入",
+            "value": "2.108",
+            "unit": "亿美元",
+            "period": "2026年Q3，截至9月30日",
+            "comparison": "同比增长55%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "Core非GAAP收入",
+            "value": "3.10～3.30",
+            "unit": "亿美元",
+            "period": "2026年Q4",
+            "comparison": "Q3实际2.309亿美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "制造能力",
+            "value": "超过10",
+            "unit": "倍",
+            "period": "2026年末",
+            "comparison": "相对2026年初；未披露绝对产能基数",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Cerebras（CBRS，NASDAQ）：AI加速器设计及推理平台",
+            "direction": "扩产并拓展客户",
+            "reason": "公司披露制造扩张及新增云客户。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Oracle（ORCL，NYSE）：云平台集成伙伴",
+            "direction": "新增商业化渠道",
+            "reason": "公告明确OCI正在集成Cerebras推理，预计2027年提供；未披露采购金额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：制造吞吐量提高后，若产品良率和客户验收同步达标，可增加系统交付及推理收入，并摊薄固定成本；新增渠道只有形成实际采购和使用量才会贡献回款。",
+        "watchpoints": [
+          "制造能力绝对基数、良率及季度系统交付。",
+          "OCI上线、已签容量交付及Core毛利率指引兑现。"
+        ],
+        "risks": [
+          "Q3 GAAP毛利率20%，Core非GAAP为41%；调整项目包括客户认股权摊销、股权激励等。",
+          "未具名超大规模客户身份、订单规模及最低采购义务不明确。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Cerebras Q3 2026业绩与业务更新",
+            "url": "https://cerebras.gcs-web.com/news-releases/news-release-details/cerebras-systems-delivers-record-revenue-third-quarter-2026",
+            "supports": "实际业绩、Core口径、制造扩产、容量合同及Oracle集成安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "cerebras.gcs-web.com",
+        "original_url": "https://cerebras.gcs-web.com/news-releases/news-release-details/cerebras-systems-delivers-record-revenue-third-quarter-2026",
+        "canonical_url": "https://cerebras.gcs-web.com/news-releases/news-release-details/cerebras-systems-delivers-record-revenue-third-quarter-2026",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "686feb723f35f4125be213b65b01c5c6eb333a68f7f2b7e5727fb965dc1cbd78",
+      "category": "optical_communications",
+      "importance": 3,
+      "fact_summary": "TE Connectivity于11月12日宣布，投资超过6,000万美元建设纽约州光连接研发制造设施，生产面向AI数据中心及CPO的高密度光纤阵列单元。公司预计2027年春季启用、制造爬坡持续至2031年；未披露新增产能、订单金额或具名客户。纳入近7天补充窗口。",
+      "analysis": "推断：投资体现CPO光纤连接制造能力向商业化扩张，但收入贡献节奏取决于客户认证、良率和设计订单转量产。",
+      "evidence_quote": "TE Connectivity invests in New York State R&D and manufacturing facility to develop next-generation optical connectivity products",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期为2026年11月12日，具体发布时刻未确认。项目围绕从RAM Photonics收购的高密度FAU技术，涉及CPO光纤连接的密度与制造扩展。",
+        "metrics": [
+          {
+            "name": "设施投资计划",
+            "value": "超过6000",
+            "unit": "万美元",
+            "period": "本次项目；支出分期未披露",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "设施面积",
+            "value": "135000",
+            "unit": "平方英尺",
+            "period": "本次规划设施",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "TE Connectivity（TEL，NYSE）：FAU及光电连接供应商",
+            "direction": "扩建CPO配套研发制造能力",
+            "reason": "公司明确说明项目产品和目标应用，未披露客户采购数量。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：新增工程与制造能力支持客户设计导入；认证后若批量订单及良率达到要求，可提升FAU出货和光连接收入。爬坡前期资本支出、人员与折旧先于收入发生。",
+        "watchpoints": [
+          "2027年春季启用、客户认证及量产订单。",
+          "新增产能、良率、ASP和光连接业务收入披露。"
+        ],
+        "risks": [
+          "爬坡延续至2031年，近期盈利贡献未量化。",
+          "客户兴趣和设计导入不等于不可撤销订单；CPO架构选择可能影响需求。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "TE纽约光连接研发制造设施投资公告",
+            "url": "https://investors.te.com/news-releases/press-release-details/2026/TE-Connectivity-invests-in-New-York-State-RD-and-manufacturing-facility-to-develop-next-generation-optical-connectivity-products/default.aspx",
+            "supports": "投资额、FAU与CPO应用、设施面积及启用爬坡时间。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.te.com",
+        "original_url": "https://investors.te.com/news-releases/press-release-details/2026/TE-Connectivity-invests-in-New-York-State-RD-and-manufacturing-facility-to-develop-next-generation-optical-connectivity-products/default.aspx",
+        "canonical_url": "https://investors.te.com/news-releases/press-release-details/2026/TE-Connectivity-invests-in-New-York-State-RD-and-manufacturing-facility-to-develop-next-generation-optical-connectivity-products/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c2bb47427f187bb1fa39720d53fd199a1a2c99233e493f4dc1eed0ff4f71c221",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "GlobalFoundries于11月13日宣布，纽约Malta首座美日合作新300 mm晶圆厂开工，较此前投资框架进入实际施工阶段。公司预计首厂2029年上线、满产后新增年产约90万片300 mm晶圆能力，初始投资约100亿美元。项目面向汽车、工业及连接基础设施，不能等同AI GPU或HBM扩产。纳入近72小时窗口。",
+      "analysis": "推断：开工提高中长期产能规划的可见度，但对近期盈利贡献有限，项目价值取决于客户承诺、资金安排及投产后的利用率。",
+      "evidence_quote": "GlobalFoundries breaks ground on first new semiconductor fab under landmark U.S.-Japan initiative",
+      "details": {
+        "kind": "investment",
+        "background": "事件当地日期2026年11月13日；公司原文同日发布。首厂预计2029年上线，属于基础型半导体代工产能建设。",
+        "metrics": [
+          {
+            "name": "首厂初始投资",
+            "value": "约100",
+            "unit": "亿美元",
+            "period": "首厂建设项目",
+            "comparison": "美日框架两厂资金上限210亿美元，非GF当期现金支出",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "首厂新增年产能",
+            "value": "约90万",
+            "unit": "片300 mm晶圆/年",
+            "period": "首厂全面运营后",
+            "comparison": "公司预计第二厂增加约同等产能",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "GlobalFoundries（GFS，NASDAQ）：晶圆代工及项目运营方",
+            "direction": "扩大美国制造能力",
+            "reason": "公告确认日本提供投资，GF提供技术、制造与运营能力；不能将项目总额视为GF出资。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：施工推进增加未来可交付晶圆能力，形成收入机会；只有订单覆盖、工艺爬坡及利用率达到要求，新增收入才能覆盖运营成本与折旧。GF出资和收益分配仍需合同文件验证。",
+        "watchpoints": [
+          "2029年上线进度、资金拨付及GF出资义务。",
+          "客户长期采购承诺、工艺组合、良率和利用率。"
+        ],
+        "risks": [
+          "建设成本超支、投产延期及需求周期变化。",
+          "未披露项目完整收益分配，不能把全部新增产能直接折算为GF利润。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "GlobalFoundries Malta新晶圆厂开工公告",
+            "url": "https://gf.gcs-web.com/node/11406/pdf",
+            "supports": "开工、初始投资、2029年上线、满产年产能及项目分工。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "gf.gcs-web.com",
+        "original_url": "https://gf.gcs-web.com/node/11406/pdf",
+        "canonical_url": "https://gf.gcs-web.com/node/11406/pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
