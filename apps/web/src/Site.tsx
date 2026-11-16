@@ -176,7 +176,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
           {page.kind === "article" && story && (
             <>
               <nav className="detail-context" aria-label="文章导航">
-                <a href={topicPath(story.topic.id)}>返回话题</a>
+                <a href={topicPath(story.topic.id)} data-return-home>返回话题</a>
                 <time dateTime={story.report_date}>{dateLabel(story.report_date)}</time>
               </nav>
               {structuredProject ? (
