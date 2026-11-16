@@ -48,7 +48,7 @@ function Brief({
               ))}
             </section>
           )) : stories.map((story) => (
-            <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} />
+            <Row key={story.key} story={story} id={`brief-${story.topic.id}-${story.key}`} fromHome={fromHome} />
           ))}
         </div>
       </div>
