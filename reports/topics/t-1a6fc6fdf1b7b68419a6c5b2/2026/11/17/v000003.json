@@ -1,0 +1,637 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "320dccb6-3ece-4f13-8896-01413357fdea",
+  "report_date": "2026-11-17",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日开源项目｜2026-11-17｜统计：北京时间2026-11-16 09:26—2026-11-17 09:26（更新回溯至11月14日09:26，另含项目发现）",
+  "collected_at": "2026-11-17T01:33:51.629Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-17T01:33:51.693Z",
+  "reviewed_content_sha256": "9ac181d8966c9c2007cc768110bdb1d759fc0623c5697700db2d916365f03703",
+  "items": [
+    {
+      "id": "2067963505d298b24c417c927a1bc60da96dfae9aac9747d9f2fe90b112e9227",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Laya Guard 官方宣布，v0.8.0 将执行前检查扩展至浏览器工具、Playwright 和 Chrome DevTools MCP，以及 macOS 桌面操作。浏览器检查依据工具字段和规则，桌面操作可启用模型第二意见；发布页标注11月16日。[项目仓库](https://github.com/scs0209/laya-guard)",
+      "analysis": "值得关注的是检查对象从命令和文件扩展到了页面与桌面动作，适合研究自动化执行的权限控制。但无描述浏览器点击默认允许，桌面模型也默认关闭，接入时需要逐项确认覆盖范围。",
+      "evidence_quote": "Browser tools and desktop computer use are judged too, and the model (revision 2) also judges desktop clicks.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "在 Agent 工具调用执行前判断放行、复核或阻断。",
+        "change": {
+          "summary": "正式发布，新增浏览器工具检查和 macOS 桌面操作检查。",
+          "version": "v0.8.0",
+          "type": "release",
+          "publishedAt": "2026-11-16",
+          "evidenceRefs": [
+            "laya-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "浏览器按字段执行规则检查；桌面通过 Accessibility 辅读取点击目标。",
+            "evidenceRefs": [
+              "laya-release"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为浏览器和桌面 Agent 增加执行前检查。",
+            "evidenceRefs": [
+              "laya-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码；不据此推定模型权重授权。",
+          "evidenceRefs": [
+            "laya-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "无描述浏览器点击默认允许；桌面模型第二意见默认关闭。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "laya-release"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "laya-release",
+            "name": "v0.8.0 发布说明",
+            "url": "https://github.com/scs0209/laya-guard/releases/tag/v0.8.0",
+            "supports": "发布日期、变化、机制与默认限制。"
+          },
+          {
+            "id": "laya-license",
+            "name": "代码 LICENSE",
+            "url": "https://github.com/scs0209/laya-guard/blob/main/LICENSE",
+            "supports": "MIT 代码授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/scs0209/laya-guard/releases/tag/v0.8.0",
+        "canonical_url": "https://github.com/scs0209/laya-guard/releases/tag/v0.8.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4a2736f35a827db3c5c8ad7a583855034ab45378fcc63b95eb1ff6bd66916df4",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Octos 官方仓库称，它是可嵌入的 Rust Agent 执行内核，提供上下文、记忆、工具、工作流和任务协调，并可通过 OUP 协议供客户端控制。本次作为项目发现收录；11月的候选版本提供了近期维护证据。[项目仓库](https://github.com/octos-org/octos)",
+      "analysis": "适合需要自建界面、保留执行状态并协调多个 Agent 的应用团队。协议与内核分离有助于复用运行能力，但目前核对的版本属于预发布，集成前应固定版本并检查接口兼容性。",
+      "evidence_quote": "An embeddable AI agent harness kernel, written in Rust.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为自有应用提供 Agent 执行和状态管理内核。",
+        "technical": [
+          {
+            "description": "OUP 使用 JSON-RPC 2.0，经 WebSocket 或 stdio 传递命令与事件。",
+            "evidenceRefs": [
+              "octos-repo"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "嵌入编码应用或由其他 Agent 控制执行任务。",
+            "evidenceRefs": [
+              "octos-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码。",
+          "evidenceRefs": [
+            "octos-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v2.1.0-rc.1 为预发布；发布页标注11月4日，说明内部日期为2026-11-03。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "octos-release"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "octos-repo",
+            "name": "官方仓库 README",
+            "url": "https://github.com/octos-org/octos",
+            "supports": "项目能力、协议和应用场景。"
+          },
+          {
+            "id": "octos-release",
+            "name": "候选版本发布页",
+            "url": "https://github.com/octos-org/octos/releases/tag/v2.1.0-rc.1",
+            "supports": "近期维护与预发布状态。"
+          },
+          {
+            "id": "octos-license",
+            "name": "代码 LICENSE",
+            "url": "https://github.com/octos-org/octos/blob/main/LICENSE",
+            "supports": "Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/octos-org/octos",
+        "canonical_url": "https://github.com/octos-org/octos",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "36eb283c86948068e10efdee8d03dad8a4bec18dede9059b9dc3a5210fade930",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Vykar 官方宣布，v0.22.0 优化了 Rust 备份工具的索引、缓存和数据处理，并将 Hook 参数改为仅通过环境变量传递，替代存在命令插值风险的占位符。发布页标注11月15日；旧 Hook 配置需要迁移。[项目仓库](https://github.com/borgbase/vykar)",
+      "analysis": "适合研究大文件集备份中的内存控制和 Hook 安全边界。维护者的性能比较仅覆盖本地仓库，不能外推至网络后端；项目仍提示暂勿用于生产备份，现阶段更适合并行评估。",
+      "evidence_quote": "Hooks: values are now passed only through environment variables.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "通过加密和去重减少备份存储，并提供配置与桌面界面。",
+        "change": {
+          "summary": "正式发布，优化内存使用并改变 Hook 参数传递方式。",
+          "version": "v0.22.0",
+          "type": "release",
+          "publishedAt": "2026-11-15",
+          "evidenceRefs": [
+            "vykar-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "流式解码索引与缓存，限制本地数据包上传队列的字节量。",
+            "evidenceRefs": [
+              "vykar-release"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "评估本地文件集的加密、去重备份。",
+            "evidenceRefs": [
+              "vykar-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "GPL-3.0",
+          "scope": "仓库代码。",
+          "evidenceRefs": [
+            "vykar-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "仓库提示暂勿用于生产备份；发布基准由维护者提供，仅覆盖本地仓库。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "vykar-repo",
+              "vykar-release"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "vykar-release",
+            "name": "v0.22.0 发布说明",
+            "url": "https://github.com/borgbase/vykar/releases/tag/v0.22.0",
+            "supports": "更新、日期、迁移要求和基准边界。"
+          },
+          {
+            "id": "vykar-repo",
+            "name": "官方仓库",
+            "url": "https://github.com/borgbase/vykar",
+            "supports": "项目能力与生产使用限制。"
+          },
+          {
+            "id": "vykar-license",
+            "name": "代码 LICENSE",
+            "url": "https://github.com/borgbase/vykar/blob/main/LICENSE",
+            "supports": "GPL 第三版授权文件。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/borgbase/vykar/releases/tag/v0.22.0",
+        "canonical_url": "https://github.com/borgbase/vykar/releases/tag/v0.22.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "75b021b84f20eb2d431b7f95d9d63e6736a3ca636d0e59d945aa373a243dc539",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Shotcut 官方宣布，v26.11.15 修复时间线拖放、转场复制、音频播放和字幕烧录等问题，并新增 Premiere、Resolve 代理视频文件约定支持。发布页标注11月16日，这批变化直接涉及剪辑稳定性和素材协作。[项目仓库](https://github.com/mltframework/shotcut)",
+      "analysis": "对使用代理素材、多片段转场和字幕的剪辑流程具有实际价值，尤其适合受到近期回归问题影响的用户。版本名与发布日不同，应以发布记录判断时效；修复效果仍取决于平台和具体素材。",
+      "evidence_quote": "v26.11.15",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "提供视频时间线编辑、音频处理、字幕与导出能力。",
+        "change": {
+          "summary": "正式发布，修复剪辑回归问题并增加代理素材约定支持。",
+          "version": "v26.11.15",
+          "type": "release",
+          "publishedAt": "2026-11-16",
+          "evidenceRefs": [
+            "shotcut-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "识别 Proxy/Proxies 子目录及可选的 _Proxy 文件名后缀。",
+            "evidenceRefs": [
+              "shotcut-release"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "处理跨剪辑工具的代理素材和含字幕、转场的时间线。",
+            "evidenceRefs": [
+              "shotcut-release"
+            ]
+          }
+        ],
+        "license": {
+          "code": "GPL-3.0",
+          "scope": "项目 COPYING 所覆盖的软件代码，不代表用户素材授权。",
+          "evidenceRefs": [
+            "shotcut-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "修复字幕烧录在含空行条目之后无法继续渲染的问题。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "shotcut-release"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "shotcut-release",
+            "name": "v26.11.15 发布说明",
+            "url": "https://github.com/mltframework/shotcut/releases/tag/v26.11.15",
+            "supports": "发布日期、修复和代理素材支持。"
+          },
+          {
+            "id": "shotcut-license",
+            "name": "项目 COPYING",
+            "url": "https://github.com/mltframework/shotcut/blob/master/COPYING",
+            "supports": "GPL 第三版授权文件。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mltframework/shotcut/releases/tag/v26.11.15",
+        "canonical_url": "https://github.com/mltframework/shotcut/releases/tag/v26.11.15",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5ea523f452672409d159bdc9c5a12b784e775682ed3a29598734ba63c9499391",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Syft 官方宣布，v1.57.2 修复 SBOM 中的 dpkg 重复记录，增加 PEP 639 许可证目录识别，并稳定 uv.lock extras 输出顺序。这个工具用于容器镜像和文件系统的软件清单生成；发布页标注11月16日。[项目仓库](https://github.com/anchore/syft)",
+      "analysis": "包记录去重、许可证采集和确定性输出会影响后续漏洞匹配及清单差异审查，适合维护供应链扫描流程的团队关注。这些修复改善输入与识别质量，不能据此推定所有生态的清单都已完整准确。",
+      "evidence_quote": "find license files under .dist-info/licenses (PEP 639)",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "为容器镜像和文件系统生成软件物料清单。",
+        "change": {
+          "summary": "正式发布，修复包、许可证和版本识别问题。",
+          "version": "v1.57.2",
+          "type": "release",
+          "publishedAt": "2026-11-16",
+          "evidenceRefs": [
+            "syft-release"
+          ]
+        },
+        "technical": [
+          {
+            "description": "查找 .dist-info/licenses 中的许可证文件，并排序 uv.lock extras 以稳定输出。",
+            "evidenceRefs": [
+              "syft-release"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为供应链审查生成 SBOM 并比较版本间清单差异。",
+            "evidenceRefs": [
+              "syft-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "Syft 代码，不代表扫描对象的授权。",
+          "evidenceRefs": [
+            "syft-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "清单准确性改进有助于减少后续扫描与审查中的噪声。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "syft-release"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "syft-release",
+            "name": "v1.57.2 发布说明",
+            "url": "https://github.com/anchore/syft/releases/tag/v1.57.2",
+            "supports": "日期及包、许可证、输出修复。"
+          },
+          {
+            "id": "syft-repo",
+            "name": "官方仓库",
+            "url": "https://github.com/anchore/syft",
+            "supports": "SBOM 工具定位。"
+          },
+          {
+            "id": "syft-license",
+            "name": "代码 LICENSE",
+            "url": "https://github.com/anchore/syft/blob/main/LICENSE",
+            "supports": "Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/anchore/syft/releases/tag/v1.57.2",
+        "canonical_url": "https://github.com/anchore/syft/releases/tag/v1.57.2",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4d3cb2c5984e403cadd257b83c82d3e85f9125ac0c3d4c41f34b9e43c806e248",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Symbolic 官方仓库称，它提供原生堆栈符号化、调试信息和 JavaScript sourcemap 处理，并通过 C、Python 接口供其他语言使用。本次作为持续维护的成熟项目发现收录，可用于构建崩溃分析和符号处理服务。[项目仓库](https://github.com/getsentry/symbolic)",
+      "analysis": "适合已经拥有崩溃采集链路、需要补齐地址到源码映射能力的团队。独立模块和跨语言接口具有集成价值，但调试信息格式与版本兼容性需要控制，最新核对的预发布还包含 API 变化。",
+      "evidence_quote": "Stack trace symbolication library written in Rust",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "把原生堆栈和压缩 JavaScript 的位置映射回可读符号与源码。",
+        "technical": [
+          {
+            "description": "从 DWARF、PDB 等调试信息生成符号缓存，并提供 C/Python 接口。",
+            "evidenceRefs": [
+              "symbolic-repo"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建原生崩溃报告和 JavaScript sourcemap 处理服务。",
+            "evidenceRefs": [
+              "symbolic-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码。",
+          "evidenceRefs": [
+            "symbolic-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月3日的14.0.0-alpha.5提供维护证据，包含破坏性 API 变化。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "symbolic-releases"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "symbolic-repo",
+            "name": "官方仓库 README",
+            "url": "https://github.com/getsentry/symbolic",
+            "supports": "能力、格式与接口。"
+          },
+          {
+            "id": "symbolic-releases",
+            "name": "官方发布记录",
+            "url": "https://github.com/getsentry/symbolic/releases",
+            "supports": "近期维护与预发布兼容性变化。"
+          },
+          {
+            "id": "symbolic-license",
+            "name": "代码 LICENSE",
+            "url": "https://github.com/getsentry/symbolic/blob/master/LICENSE",
+            "supports": "MIT 授权条款。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/getsentry/symbolic",
+        "canonical_url": "https://github.com/getsentry/symbolic",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "29e7fd0e6e62da17c52d55e3c7b6e1ea1d70b74229db7eb7fe56bab89b0aac26",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Helia 官方仓库称，它是面向 JavaScript 和浏览器环境的模块化 TypeScript IPFS 实现，可处理内容寻址数据，并组合 UnixFS、IPNS 等模块。本次作为成熟项目发现收录；9月29日的组件发布提供近90天维护证据。[项目仓库](https://github.com/ipfs/helia)",
+      "analysis": "适合需要在 Web 应用中接入内容寻址和 IPFS 数据操作的团队，模块拆分便于按场景选择能力。集成时仍需核对组件版本组合与浏览器传输条件，不能把模块存在等同于任意网络环境下均可直连。",
+      "evidence_quote": "An implementation of IPFS in TypeScript",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "为 JavaScript 和浏览器应用提供 IPFS 内容寻址能力。",
+        "technical": [
+          {
+            "description": "通过 CID 引用数据，按模块提供 UnixFS、IPNS 和结构化对象操作。",
+            "evidenceRefs": [
+              "helia-repo"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在 Web 应用中添加和检索内容寻址对象。",
+            "evidenceRefs": [
+              "helia-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码的 MIT 授权选项；README另列Apache-2.0选项。",
+          "evidenceRefs": [
+            "helia-repo",
+            "helia-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "2026-09-29的UnixFS v8.0.9修复分片链接移除逻辑。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "helia-releases"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "helia-repo",
+            "name": "官方仓库 README",
+            "url": "https://github.com/ipfs/helia",
+            "supports": "项目能力、场景和授权选项。"
+          },
+          {
+            "id": "helia-releases",
+            "name": "官方组件发布记录",
+            "url": "https://github.com/ipfs/helia/releases",
+            "supports": "近90天维护证据。"
+          },
+          {
+            "id": "helia-license",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/ipfs/helia/blob/main/LICENSE-MIT",
+            "supports": "MIT 授权条款。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ipfs/helia",
+        "canonical_url": "https://github.com/ipfs/helia",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6e6c8bf6d85f92adad4af8c5e00e0edf947401c046ee26eae8eec0edb276c4bf",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Subduction 官方仓库称，它为 CRDT 提供无需中央服务器的 P2P 同步，支持加密数据分区、增量同步和可插拔传输。本次作为项目发现收录；11月14日 nightly 提供近期维护证据，官方仍将其标为不适合生产的早期预览。[项目仓库](https://github.com/inkandswitch/subduction)",
+      "analysis": "适合探索离线协作、端到端加密数据同步和 Automerge 集成。它的价值在于同步协议与传输方式可组合，但 API 尚不稳定；nightly 产物本身不足以证明新增重大功能，应以原型评估为主。",
+      "evidence_quote": "Sync protocol for hash-linked data",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "在节点之间同步分区、加密的 CRDT 数据。",
+        "technical": [
+          {
+            "description": "使用 Sedimentree 分片历史并增量同步，支持可插拔 P2P 传输。",
+            "evidenceRefs": [
+              "subduction-repo"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为 Automerge 协作应用评估去中心化同步。",
+            "evidenceRefs": [
+              "subduction-repo"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "LICENSE-MIT 覆盖的仓库代码。",
+          "evidenceRefs": [
+            "subduction-license"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "2026-11-14有nightly构建；README明确提示 API 不稳定且勿用于生产。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "subduction-nightly",
+              "subduction-repo"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "subduction-repo",
+            "name": "官方仓库 README",
+            "url": "https://github.com/inkandswitch/subduction",
+            "supports": "机制、场景与预览限制。"
+          },
+          {
+            "id": "subduction-nightly",
+            "name": "11月14日 nightly",
+            "url": "https://github.com/inkandswitch/subduction/releases/tag/v0.22.0-nightly.2026-11-14",
+            "supports": "近期维护证据。"
+          },
+          {
+            "id": "subduction-license",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/inkandswitch/subduction/blob/main/LICENSE-MIT",
+            "supports": "MIT 授权条款。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/inkandswitch/subduction",
+        "canonical_url": "https://github.com/inkandswitch/subduction",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
