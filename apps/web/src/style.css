@@ -1928,7 +1928,7 @@ html {
   }
   .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout {
     width: 100%;
-    max-width: 900px;
+    max-width: none;
     margin: 18px 0 64px;
   }
 }
@@ -1940,7 +1940,7 @@ html {
 .reading-layout.detail-layout > #content > .article-header,
 .reading-layout.detail-layout > #content > .article-body {
   width: 100%;
-  max-width: 900px;
+  max-width: 1120px;
 }
 @media (min-width: 1200px) {
   .reader-body:has(> .reading-layout.detail-layout) > .reading-layout.detail-layout.has-aside {
@@ -1948,7 +1948,7 @@ html {
     width: 100%;
     max-width: none;
     grid-template-columns: minmax(0, 1fr) 220px;
-    gap: clamp(32px, 4vw, 64px);
+    gap: clamp(28px, 3vw, 40px);
     margin: 18px 0 64px;
     justify-content: stretch;
     align-items: start;
