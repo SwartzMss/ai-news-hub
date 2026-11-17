@@ -654,10 +654,11 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
   } finally { rmSync(dir, { recursive: true, force: true }); }
 });
 
-test("news and investment details keep the article left and the TOC at the reader right edge", () => {
+test("desktop detail pages use a wider article column while keeping the TOC close", () => {
   const css = readFileSync("apps/web/src/style.css", "utf8");
-  assert.match(css, /\.reading-layout\.detail-layout\.has-aside\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 220px;[^}]*gap:\s*clamp\(32px, 4vw, 64px\);[^}]*justify-content:\s*stretch;/s);
-  assert.match(css, /\.reading-layout\.detail-layout > #content > \.investment-detail,[\s\S]*?\.reading-layout\.detail-layout > #content > \.article-body\s*\{[^}]*max-width:\s*900px;/s);
+  assert.match(css, /\.reader-body:has\(> \.reading-layout\.detail-layout\) > \.reading-layout\.detail-layout\s*\{[^}]*max-width:\s*none;/s);
+  assert.match(css, /\.reading-layout\.detail-layout > #content > \.detail-context,[\s\S]*?\.reading-layout\.detail-layout > #content > \.article-body\s*\{[^}]*max-width:\s*1120px;/s);
+  assert.match(css, /\.reading-layout\.detail-layout\.has-aside\s*\{[^}]*grid-template-columns:\s*minmax\(0, 1fr\) 220px;[^}]*gap:\s*clamp\(28px, 3vw, 40px\);[^}]*justify-content:\s*stretch;/s);
   assert.match(css, /\.detail-context\s*\{[^}]*display:\s*flex;[^}]*align-items:\s*center;/s);
   assert.match(css, /\.detail-context a\s*\{[^}]*color:\s*var\(--accent\);[^}]*font-size:\s*15px;[^}]*font-weight:\s*750;/s);
   assert.match(css, /\.detail-context time\s*\{[^}]*border-left:\s*1px solid var\(--line\);/s);
