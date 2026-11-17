@@ -1,0 +1,260 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "b95ce96a-c56d-48a6-9275-f471d9e04652",
+  "report_date": "2026-11-17",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月17日",
+  "collected_at": "2026-11-17T00:17:00.513Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-17T00:17:00.525Z",
+  "reviewed_content_sha256": "177bce292594ba0b722fec76d30526cde7a6abd050982362b9b0e2f4564ef353",
+  "items": [
+    {
+      "id": "56c219d0a1804ad7c7e7814cd57129b500689dcb7cc8f1aa8698ee1164ca49e3",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "据新浪科技11月16日报道，闲鱼宣布已对编造“拐卖儿童暗语”的造谣者提起民事诉讼，索赔100万元，并表示将陆续起诉其他造谣者。报道援引闲鱼黑板报称，相关交易聊天内容系赵某某个人编造，赵某某已删除内容并公开道歉。",
+      "analysis": null,
+      "evidence_quote": "闲鱼正式起诉“拐卖儿童暗语”造谣人，索赔100万元",
+      "details": {
+        "kind": "news",
+        "background": "此次维权涉及二手交易平台闲鱼的企业名誉，以及将普通交易对话解释为“拐卖儿童暗语”的虚假内容。",
+        "keyFacts": [
+          {
+            "name": "诉讼进展",
+            "value": "闲鱼宣布已提起民事诉讼",
+            "period": "2026-11-16",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "索赔金额",
+            "value": "100",
+            "unit": "万元人民币",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道未披露受理法院、案号及法院是否已正式受理；起诉进展为闲鱼的公开表述，尚无裁判结果。"
+        ],
+        "watchpoints": [
+          "法院受理及后续审理进展。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新浪科技：闲鱼正式起诉“拐卖儿童暗语”造谣人，索赔100万元",
+            "url": "https://finance.sina.com.cn/stock/marketresearch/2026-11-16/doc-iniywwzi2504474.shtml",
+            "supports": "援引闲鱼黑板报，说明起诉、索赔金额及造谣者公开道歉等情况。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.sina.com.cn",
+        "original_url": "https://finance.sina.com.cn/stock/marketresearch/2026-11-16/doc-iniywwzi2504474.shtml",
+        "canonical_url": "https://finance.sina.com.cn/stock/marketresearch/2026-11-16/doc-iniywwzi2504474.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ab8dda4961f34b266c8a0cbad65ed6ab1e0ee7b533e0c1c42b3045c4437a9935",
+      "category": "film_animation",
+      "importance": 3,
+      "fact_summary": "Amazon MGM Studios在11月16日发布的官方公告中宣布，罗伯特·帕丁森将出演新一任詹姆斯·邦德。影片由丹尼斯·维伦纽瓦执导、斯蒂文·奈特编剧，艾米·帕斯卡尔与大卫·海曼担任制片人。",
+      "analysis": null,
+      "evidence_quote": "Robert Pattinson is the new James Bond",
+      "details": {
+        "kind": "news",
+        "background": "詹姆斯·邦德是007电影系列的核心角色。法新社报道，帕丁森将接替丹尼尔·克雷格，成为该系列第七位邦德扮演者。",
+        "keyFacts": [
+          {
+            "name": "新任邦德演员",
+            "value": "罗伯特·帕丁森",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          },
+          {
+            "name": "导演",
+            "value": "丹尼斯·维伦纽瓦",
+            "nature": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Amazon官方公告：Robert Pattinson is the new James Bond",
+            "url": "https://www.aboutamazon.com/news/entertainment/james-bond-robert-pattinson-cast-amazon-mgm-film",
+            "supports": "正式宣布邦德演员及导演、编剧和制片团队；公告标注日期为2026年11月16日。"
+          },
+          {
+            "id": "e2",
+            "name": "法新社：UK actor Robert Pattinson to be new James Bond",
+            "url": "https://www.afp.com/en/uk-actor-robert-pattinson-be-new-james-bond-0",
+            "supports": "报道选角结果，并提供接替丹尼尔·克雷格及第七位邦德演员的背景。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.aboutamazon.com",
+        "original_url": "https://www.aboutamazon.com/news/entertainment/james-bond-robert-pattinson-cast-amazon-mgm-film",
+        "canonical_url": "https://www.aboutamazon.com/news/entertainment/james-bond-robert-pattinson-cast-amazon-mgm-film",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e20c64f11fdb1c208a85a09f1b62e07d7e3a6cf40f8f877023f1b7d9b9a1575b",
+      "category": "sports",
+      "importance": 3,
+      "fact_summary": "据联合早报11月16日报道，西甲联盟当日下午正式复函中央广播电视总台，称被用于指控亚马尔转发歧视亚裔内容的图片系恶意伪造，并非球员本人发布。联盟重申反对种族主义与歧视，并表示已针对发布不实信息的账号启动调查。",
+      "analysis": null,
+      "evidence_quote": "西甲称网传亚马尔转发歧视亚裔内容截图系伪造",
+      "details": {
+        "kind": "news",
+        "background": "亚马尔是巴塞罗那俱乐部球员。此次澄清针对一张被归于其名下的视频转发截图，截图真实性是相关指控成立与否的关键。",
+        "timeline": [
+          {
+            "time": "2026-11-16下午（北京时间）",
+            "precision": "approximate",
+            "event": "西甲联盟复函中央广播电视总台，称涉事截图系伪造，并表示已启动相关调查。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "西甲联盟",
+            "statement": "涉事图片为恶意伪造的虚假截图，并非亚马尔本人发布；联盟反对一切形式的种族主义与歧视行为。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道未披露调查对象的具体身份及调查结论。"
+        ],
+        "watchpoints": [
+          "西甲联盟调查是否公布进一步结果。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "联合早报：西甲称网传亚马尔转发歧视亚裔内容截图系伪造",
+            "url": "https://www.zaobao.com.sg/news/china/story20261116-10008374",
+            "supports": "根据央视体育报道及所附回函截图，说明西甲联盟的澄清、复函时间和启动调查的表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.zaobao.com.sg",
+        "original_url": "https://www.zaobao.com.sg/news/china/story20261116-10008374",
+        "canonical_url": "https://www.zaobao.com.sg/news/china/story20261116-10008374",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e847cd68c428c06fa7dc3988f394a67d155e630f54051c7826a5ffece273e1f1",
+      "category": "finance_consumption",
+      "importance": 3,
+      "fact_summary": "据澎湃新闻11月16日报道，北大文创官方小程序当日11时30分许无法打开，客服称正在抢修，门店工作人员解释为访问量过大、正在扩容。极目新闻当日实地采访显示，售价399元的文创羽绒服黑色、紫色款下午补货，白色款仍缺货；该产品尚未上架线上商城。",
+      "analysis": null,
+      "evidence_quote": "11月16日11时30分许，澎湃新闻查询发现，该小程序无法打开，客服表示小程序崩溃，工作人员正在抢修。",
+      "details": {
+        "kind": "news",
+        "background": "涉事产品为北大文创销售的轻薄羽绒服。极目新闻记者查看商品标签称，填充物为鹅绒，绒子含量90%，不同尺码充绒量为20.5至30.5克。",
+        "keyFacts": [
+          {
+            "name": "公开售价",
+            "value": "399",
+            "unit": "元人民币",
+            "period": "2026-11-16",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e2"
+            ]
+          },
+          {
+            "name": "当日下午库存变化",
+            "value": "黑色、紫色款补货，白色款仍缺货",
+            "period": "2026-11-16",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-16 11:30左右（北京时间）",
+            "precision": "approximate",
+            "event": "澎湃新闻记者查询发现北大文创小程序无法打开，客服称正在抢修。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-16下午（北京时间）",
+            "precision": "approximate",
+            "event": "极目新闻实探南门文创店，记录黑色、紫色款补货，白色款继续缺货。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "白色款补货日期仍为门店预计，并非确定供货承诺。",
+          "所列报道未提供小程序恢复正常服务的确切时间。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "澎湃新闻：北大文创小程序故障及门店回应",
+            "url": "https://www.thepaper.cn/newsDetail_forward_34489554",
+            "supports": "记者记录小程序无法打开的时间，以及客服抢修、工作人员扩容的表述。"
+          },
+          {
+            "id": "e2",
+            "name": "极目新闻实探北大文创店（凤凰网刊载）",
+            "url": "https://news.ifeng.com/c/8y6dMqyH8aX",
+            "supports": "实地采访说明当日补货、白色款缺货、售价、商品标签及尚未上架线上商城等情况。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.thepaper.cn",
+        "original_url": "https://www.thepaper.cn/newsDetail_forward_34489554",
+        "canonical_url": "https://www.thepaper.cn/newsDetail_forward_34489554",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
