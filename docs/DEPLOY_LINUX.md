@@ -413,6 +413,8 @@ sudo journalctl -u ai-news-hub.service --since '10 minutes ago' --no-pager
 
 若三类日报的最终轮都在数秒内以 `agent_failed` 结束，需更新并重启包含严格输出兼容 Schema 的 Backend；旧版可能因可选 `details` 被 Codex 拒绝为 HTTP 400。修复后手动重新运行失败任务，旧 Run 不会自动重跑。业务校验仍使用完整 Schema。
 
+若错误详情为 `invalid_json_schema`，指出 `details.kind` 或其他常量/枚举字段缺少 `type`，更新包含类型补全的 Backend，执行 `bash scripts/service.sh restart` 后手动重跑失败任务。`kind` 仍为详情类型必填字段；此修复不修改 SQLite 或已保存日报。
+
 若开源项目日报以 `report_schema_invalid` 结束，检查最终 JSON 的 `details.evaluation`：`nature=fact` 必须引用本条 `details.evidence` 中的 ID。更新 Backend 后该约束也会发送给 Codex；已保存任务的 Prompt 无需修改，但失败的托管 Run 仍需手动启动新 Run。
 
 科技投资日报若出现 `report_schema_invalid`，检查每条 `details` 的 UTF-8 JSON 字节数；当前后台硬上限为 3000 字节，模板指导模型以约 2200 字节为目标并省略重复或空泛章节。补充来源的 `evidence.name` 最长 160 字符；过长标题应在生成时缩写。更新 Backend 和模板后重启服务，再手动触发新 Run；历史失败记录不自动重跑。

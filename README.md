@@ -24,6 +24,8 @@ AI News Hub 将资讯研究、内容审核、归档和分发串联为一条工�
 
 Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。每日邮件由 Linux Backend Scheduler 按配置的北京时间计划调度，并通过 GitHub Actions API 触发 `workflow_dispatch`；GitHub Actions 负责运行发送脚本，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。GitHub Actions 不配置 `schedule` 定时触发；邮件投递需完成生产环境配置。
 
+最终日报的 `details.kind` 标识新闻、投资或项目详情，仍为必填；Backend 为 Codex 的结构化输出 Schema 补齐常量和枚举的类型声明。升级此修复后需重新构建并重启 Backend，再手动重跑此前因 `invalid_json_schema` 失败的任务。
+
 ## 开始使用
 
 准备 Linux 环境、Node.js 22.19.0 或更新的 22.x，以及已安装并登录的 Codex CLI。

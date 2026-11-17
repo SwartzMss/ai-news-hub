@@ -10,6 +10,8 @@ Backend 不再再次访问原文、解析网页或比对引文，也不再因为
 
 Codex 严格结构化输出要求所有属性必填，且不接受业务 Schema 的部分关键字。Backend 发送兼容 Schema，用 `null` 表示可选字段缺省；收到后删除这些可选 `null`，再用完整 RESEARCH_SCHEMA、详情引用和来源 URL 规则校验。`details` 对无模板的内部通用任务仍可选；三个正式主题通过稳定模板 ID 路由到专用严格 Schema，并要求各自的结构化详情。归档层统一要求 details。
 
+兼容 Schema 为仅含 `const` 或 `enum` 的字段补齐可推断的 JSON 类型，避免 Codex 在最终轮拒绝 `details.kind` 等字段；项目、新闻和投资详情的 `kind` 值本身保持必填。
+
 新报告条目标记 `verification=codex_reported`。来源名由链接域名确定；原始发布时间和事件时间在当前 Schema 未提供时均为 null。后端没有抓取原文，因此报告 `fetchedAt` 和归档 `fetched_at` 必须为 null；collectedAt 是 Backend 收到/保存日报的时间。
 
 迁移追加 source_mode 区分 codex_reported 与旧 verified 快照。articles 的历史非空 fetched_at 列在 codex_reported 模式表示收件时间，而不是网页抓取时间。旧报告保持 source_only 及原有抓取时间，不重写历史内容。

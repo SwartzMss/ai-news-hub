@@ -10,6 +10,12 @@ function strictSchema(schema: Schema): Schema {
     'minimum', 'maximum', 'exclusiveMinimum', 'exclusiveMaximum', 'multipleOf',
     'minItems', 'maxItems', 'additionalProperties'])
     if (Object.hasOwn(schema, name)) result[name] = schema[name];
+  if (!result.type && (Object.hasOwn(schema, 'const') || Array.isArray(schema.enum))) {
+    const values = Object.hasOwn(schema, 'const') ? [schema.const] : schema.enum as unknown[];
+    const types = new Set(values.map(value => value === null ? 'null' : typeof value === 'number' && Number.isInteger(value) ? 'integer' : typeof value));
+    const [type] = types;
+    if (types.size === 1 && ['string', 'integer', 'number', 'boolean', 'null'].includes(type)) result.type = type;
+  }
   if (Array.isArray(schema.oneOf)) {
     result.anyOf = (schema.oneOf as Schema[]).map(strictSchema);
   } else if (Array.isArray(schema.anyOf)) {
