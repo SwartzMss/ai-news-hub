@@ -2,7 +2,7 @@ import test from 'node:test';
 import assert from 'node:assert/strict';
 import {Ajv} from 'ajv';
 import {OPEN_SOURCE_RESEARCH_SCHEMA,RESEARCH_SCHEMA,TECHNOLOGY_RESEARCH_SCHEMA} from '../dist/apps/server/src/news/report-schema.js';
-import {CODEX_OPEN_SOURCE_RESEARCH_SCHEMA,CODEX_RESEARCH_SCHEMA,CODEX_TECHNOLOGY_RESEARCH_SCHEMA,normalizeResearchOutput} from '../dist/apps/server/src/news/structured-output-schema.js';
+import {CODEX_HEADLINES_RESEARCH_SCHEMA,CODEX_OPEN_SOURCE_RESEARCH_SCHEMA,CODEX_RESEARCH_SCHEMA,CODEX_TECHNOLOGY_RESEARCH_SCHEMA,normalizeResearchOutput} from '../dist/apps/server/src/news/structured-output-schema.js';
 
 function checkStrict(node){
   assert.equal(node.oneOf,undefined);
@@ -17,6 +17,16 @@ function checkStrict(node){
   if(node.items)checkStrict(node.items);
   for(const child of node.anyOf??[])checkStrict(child);
 }
+
+test('every Codex research schema gives enum and const fields an explicit type',()=>{
+  function check(node,path){
+    if(node.const!==undefined || node.enum!==undefined)assert.ok(node.type,`${path} needs type`);
+    for(const [name,child] of Object.entries(node.properties??{}))check(child,`${path}.${name}`);
+    if(node.items)check(node.items,`${path}.items`);
+    for(const [index,child] of (node.anyOf??[]).entries())check(child,`${path}.anyOf[${index}]`);
+  }
+  for(const [name,schema] of Object.entries({generic:CODEX_RESEARCH_SCHEMA,opensource:CODEX_OPEN_SOURCE_RESEARCH_SCHEMA,headlines:CODEX_HEADLINES_RESEARCH_SCHEMA,technology:CODEX_TECHNOLOGY_RESEARCH_SCHEMA}))check(schema,name);
+});
 
 test('Codex output schema requires nullable optional fields at every level and normalizes them for archive validation',()=>{
   checkStrict(CODEX_RESEARCH_SCHEMA);

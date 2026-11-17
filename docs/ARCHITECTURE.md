@@ -46,6 +46,8 @@ Codex 选择和提取新闻来源；Backend 不再访问原文，仅控制执行
 
 最终生成向 Codex 提交兼容严格结构化输出的独立 Schema：所有属性必填，业务可选值用 `null` 表示，不支持的校验关键字不送入 Codex。收到结果后仅清理业务可选的 `null`，再用完整的 RESEARCH_SCHEMA 与详情校验保存；三个主题统一发布到 archive v1；topic 与 details 是必填公开字段。
 
+转换 Schema 时为缺少 `type` 的 `const` / `enum` 字段推断并补齐类型；例如 `details.kind=project` 对 Codex 表示为字符串常量。业务 Schema 与归档内容不变。
+
 开源项目评价按 `nature` 分支约束：`fact` 必须带非空 `evidenceRefs`，`analysis` 可以省略引用。新生成日报的 Codex 输入 Schema 与 Backend 详情校验执行该约束；公开归档使用统一 v1 Schema，事实评价与证据引用按当前契约校验。内部去重状态由任务上下文提供，不属于单个项目的来源事实。
 
 报告、文章关联、快照与 Run/Turn 成功一起提交；取消/超时不写迟到成功。关闭中断工作并回收进程组，清理不确定时以 cleanup_failed 停止引擎。重启将未完成状态标 interrupted，不自动重跑。PID/启动时间/boot ID 保证同一数据目录只允许一个 Backend。
