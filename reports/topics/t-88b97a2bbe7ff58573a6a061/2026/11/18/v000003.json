@@ -1,0 +1,477 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "c8e7a364-50c5-4a55-9e73-f0627cd4c1b4",
+  "report_date": "2026-11-18",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜截至北京时间2026年11月18日08:11",
+  "collected_at": "2026-11-18T00:22:15.742Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-18T00:22:15.756Z",
+  "reviewed_content_sha256": "be8465f22bcdc35c2b765b207906be122135a6868cb914da7f23dc4fb54a70fb",
+  "items": [
+    {
+      "id": "56fa7b6253d961a542ee292cbccc4648c6e84b3068a03821159e8dc964cb2c15",
+      "category": "semiconductor",
+      "importance": 5,
+      "fact_summary": "NVIDIA于北京时间11月18日06:18宣布新增供应链承诺：景硕计划将专供NVIDIA的先进ABF基板产能扩大至当前3.5倍以上，预计2027年下半年开始生产，新增产能目标节点为2028年第三季度；SPIL在数十亿美元资金支持下扩充先进封装，目标2029年中增加专属签约产能。以上均为未来计划。公告重述的Amkor协议及光引擎扩产目标不计新增。纳入24小时窗口。",
+      "analysis": "推断：长期产能安排提高供应可见性，但预付款与扩产支出可能先于收入兑现；投资价值取决于投产、良率和利用率，而非签约规模本身。",
+      "evidence_quote": "Long-Term Supply Agreements Across Multiple Critical Inputs Position NVIDIA for Sustainable Growth",
+      "details": {
+        "kind": "investment",
+        "background": "公告发布于11月17日17:18 ET。新增基板及先进封装协议独立于季度业绩研究，不额外叠加终端需求。更正首轮名称：Kinsus为景硕，并非欣兴。",
+        "metrics": [
+          {
+            "name": "专供NVIDIA的先进ABF基板产能",
+            "value": ">3.5",
+            "unit": "倍",
+            "period": "新增产能目标2028年第三季度",
+            "comparison": "相对公告时当前水平；2027年下半年开始生产",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）｜采购及资金支持方",
+            "direction": "锁定远期供给",
+            "reason": "新增基板和封装协议由公司直接披露。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "景硕Kinsus（3189，OTHER：TWSE）｜ABF基板",
+            "direction": "规划产能增加",
+            "reason": "新协议扩充专供NVIDIA的产能；交易所资料确认公司身份及代码。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e3"
+            ]
+          },
+          {
+            "segment": "日月光投控（ASX，NYSE）｜SPIL所属封测集团",
+            "direction": "先进封装扩产",
+            "reason": "NVIDIA披露SPIL扩产协议；SPIL官网确认集团归属。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "investmentLogic": "专属产能协议支持供应商建设产线；设备到位、认证和良率达标后才形成可交付产能，再经订单和利用率转为收入。资金支持可能降低供应商融资压力，但折旧及闲置成本仍影响盈利。",
+        "watchpoints": [
+          "绝对新增产能、资金支付条款、投产及良率节点。"
+        ],
+        "risks": [
+          "未披露产能绝对值；计划延期或需求放缓可能造成低利用率。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "NVIDIA新增供应链承诺",
+            "url": "https://www.globenewswire.com/news-release/2026/11/17/3405251/0/en/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout.html",
+            "supports": "景硕新协议、扩产倍数与时间，以及SPIL新增先进封装协议。"
+          },
+          {
+            "id": "e2",
+            "name": "SPIL公司资料",
+            "url": "https://www.spilglobal.com/About/Overview",
+            "supports": "SPIL属于日月光投控及NYSE代码ASX。"
+          },
+          {
+            "id": "e3",
+            "name": "台湾证券交易所景硕资料",
+            "url": "https://wwwc.twse.com.tw/pdf/en/3189_en.pdf",
+            "supports": "Kinsus公司身份、基板业务及代码3189；不用于当前估值。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.globenewswire.com",
+        "original_url": "https://www.globenewswire.com/news-release/2026/11/17/3405251/0/en/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout.html",
+        "canonical_url": "https://www.globenewswire.com/news-release/2026/11/17/3405251/0/en/nvidia-expands-commitments-with-supply-chain-partners-to-support-ai-infrastructure-buildout.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "718591b6638d9fc32b81f8883aa04ba57379276d12b2dd67651b9f16a2a5409c",
+      "category": "semiconductor",
+      "importance": 5,
+      "fact_summary": "NVIDIA于美国当地11月17日公布FY27 Q3业绩：收入1,158亿美元，同比增长103%；数据中心收入1,076亿美元，同比增长110%，并称Vera Rubin NVL72已开始出货。公司指引FY27 Q4收入1,300亿美元±3%、GAAP及非GAAP毛利率71%～72%；该季度增加一周，且指引不包含中国数据中心计算收入。纳入24小时窗口；公告页面未提供精确发布时间。",
+      "analysis": "推断：收入增长与毛利率指引回落并存，后续盈利判断更依赖新平台放量后的成本和产品组合，而不能只外推收入增速。",
+      "evidence_quote": "NVIDIA Announces Financial Results for Third Quarter Fiscal 2027",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量为季度实际业绩、下一季度指引及Rubin开始出货。公司披露构成直接证据，不据此认定超出市场一致预期。",
+        "metrics": [
+          {
+            "name": "收入",
+            "value": "1158",
+            "unit": "亿美元",
+            "period": "FY27 Q3，截至2026-10-25",
+            "comparison": "同比+103%；环比+20%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "数据中心收入",
+            "value": "1076",
+            "unit": "亿美元",
+            "period": "FY27 Q3",
+            "comparison": "同比+110%；环比+21%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "收入指引",
+            "value": "1300，±3%",
+            "unit": "亿美元",
+            "period": "FY27 Q4，增加一周",
+            "comparison": "不假设中国数据中心计算收入",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）｜GPU及计算平台供应商",
+            "direction": "出货及收入增长",
+            "reason": "公司披露数据中心收入增长及Rubin开始出货，属于直接经营事实。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "Rubin交付若通过验收并形成收入，可扩大平台销售；但爬坡成本和产品组合决定毛利转化。收入增长还须结合存货、应收和回款检查，才能判断利润能否转为现金流。",
+        "watchpoints": [
+          "Rubin收入贡献、客户验收和下一季度实际毛利率。",
+          "扣除额外一周后的收入增速，以及库存、应收账款和经营现金流。"
+        ],
+        "risks": [
+          "指引毛利率低于Q3实际GAAP毛利率74.8%，收入增长未必同比例转为利润。",
+          "平台交付、出口许可或客户建设延期可能削弱收入兑现。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "NVIDIA FY27 Q3业绩公告",
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2027/default.aspx",
+            "supports": "季度收入、数据中心收入、Rubin出货、Q4指引及额外一周口径。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investor.nvidia.com",
+        "original_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2027/default.aspx",
+        "canonical_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Announces-Financial-Results-for-Third-Quarter-Fiscal-2027/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0bfad979ddedc869cec20e05ffcb7d4e658a302ae06c62c444bb9c8fdb80805c",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Supermicro于美国当地11月11日宣布，搭载第六代AMD EPYC 9006处理器的H15服务器组合已开始出货。公司称新平台最高增加33%核心数、提供2倍PCIe带宽和每插槽1.6 TB/秒内存带宽；未披露出货量、订单金额或ASP。H15出货不能外推为全部Helios、Helion机架已交付。纳入7天补充窗口；来源未提供精确时刻。",
+      "analysis": "推断：从产品发布进入出货阶段，增强了商业化证据；但缺少规模和回款信息，尚不足以量化盈利增量。",
+      "evidence_quote": "today announced that its H15 generation server portfolio is now shipping.",
+      "details": {
+        "kind": "investment",
+        "background": "本次新增事实是H15开始出货。规格提升来自公司披露，不等同实际客户吞吐提升，也未证明新增终端采购规模。",
+        "metrics": [
+          {
+            "name": "每插槽内存带宽规格",
+            "value": "1.6",
+            "unit": "TB/秒",
+            "period": "本次发布的H15平台",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Supermicro（SMCI，NASDAQ）｜服务器整机供应商",
+            "direction": "进入出货阶段",
+            "reason": "公司确认H15服务器组合已开始出货。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "AMD（AMD，NASDAQ）｜服务器CPU供应商",
+            "direction": "整机渠道导入",
+            "reason": "公告明确采用EPYC 9006处理器，并提供AMD对合作的确认。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "整机开始出货后，客户验收可支持收入确认；出货量、配置及ASP决定销售增量，采购和存货占款决定现金流转化。只有新增订单而非旧平台替代，才形成更明确的增量需求。",
+        "watchpoints": [
+          "H15订单、交付数量及收入占比。",
+          "服务器毛利率、库存周转和客户回款。"
+        ],
+        "risks": [
+          "未披露具名采购客户或数量，可能主要体现产品换代。",
+          "公司性能口径不能替代客户生产环境测试。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Supermicro H15服务器出货公告",
+            "url": "https://ir.supermicro.com/news/news-details/2026/Supermicro-Now-Shipping-Next-Generation-Servers-Powered-by-6th-Gen-AMD-EPYC-9006-Series-CPUs-for-Cloud-HPC-and-Agentic-AI-Workloads/default.aspx",
+            "supports": "开始出货、AMD处理器关系及平台规格；Helios和Helion另有产品安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.supermicro.com",
+        "original_url": "https://ir.supermicro.com/news/news-details/2026/Supermicro-Now-Shipping-Next-Generation-Servers-Powered-by-6th-Gen-AMD-EPYC-9006-Series-CPUs-for-Cloud-HPC-and-Agentic-AI-Workloads/default.aspx",
+        "canonical_url": "https://ir.supermicro.com/news/news-details/2026/Supermicro-Now-Shipping-Next-Generation-Servers-Powered-by-6th-Gen-AMD-EPYC-9006-Series-CPUs-for-Cloud-HPC-and-Agentic-AI-Workloads/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0d4171acba60be657480af3acb22f6e8e0382464c0e6cef31bf3d93d1d665f16",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Ecolab于11月16日宣布，将CoolIT直接液冷硬件与3D TRASAR流体管理技术整合，推出标称3 MW的CHx 3000冷却液分配单元。公司同时称，含Ovivo及CoolIT的Global High-Tech业务接近2026年年化销售额15亿美元，目标2030年销售额40亿美元、营业利润率25%；该业务不能全部视为AI液冷收入。来源未给精确时刻，保守纳入72小时窗口。",
+      "analysis": "推断：硬件与流体管理整合可能拓展设备及服务收入，但产品发布距离规模收入仍需订单、认证和现场运行数据验证。",
+      "evidence_quote": "a 3-megawatt coolant distribution unit",
+      "details": {
+        "kind": "investment",
+        "background": "仅纳入直接服务高密度AI数据中心的具体液冷产品。未将次日生态合作单列，也不将高科技业务整体目标等同液冷订单。",
+        "metrics": [
+          {
+            "name": "CHx 3000标称冷却能力",
+            "value": "3",
+            "unit": "MW",
+            "period": "11月16日发布产品",
+            "comparison": "产品规格，非客户已部署容量",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "High-Tech销售额目标",
+            "value": "40",
+            "unit": "亿美元/年",
+            "period": "2030年",
+            "comparison": "包含多个业务；营业利润率目标25%",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Ecolab（ECL，NYSE）｜液冷及流体管理平台供应商",
+            "direction": "扩充AI数据中心产品",
+            "reason": "公司公告确认CoolIT硬件与其流体管理技术整合。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若产品通过客户认证并进入部署，CDU销售可形成设备收入，后续维护和流体管理可增加服务收入；收入规模取决于订单，利润与现金流还取决于制造成本、服务投入及回款。",
+        "watchpoints": [
+          "量产和客户认证、订单金额、现场可靠性及液冷收入单独披露。"
+        ],
+        "risks": [
+          "未披露订单、出货及客户现场节能数据。",
+          "High-Tech业务包含半导体等领域，整体增长不能证明液冷独立盈利。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Ecolab集成液冷平台公告",
+            "url": "https://www.ecolab.com/en-us/media-center/news/ecolab-unveils-first-of-its-kind-integrated-cooling-platform-to-unlock-the-next-generation-of-ai",
+            "supports": "3 MW产品、技术整合、High-Tech年化销售表述及2030年目标。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ecolab.com",
+        "original_url": "https://www.ecolab.com/en-us/media-center/news/ecolab-unveils-first-of-its-kind-integrated-cooling-platform-to-unlock-the-next-generation-of-ai",
+        "canonical_url": "https://www.ecolab.com/en-us/media-center/news/ecolab-unveils-first-of-its-kind-integrated-cooling-platform-to-unlock-the-next-generation-of-ai",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9f013c93cc6d3ab716683d4601362da3f5c16aab272ec48b32758305c9edeee6",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "AMD于11月12日发布MI450X配置，并称MI455X在公司测试的DeepSeek-R1、MLPerf Inference Offline配置下达到每GPU 21,333 tokens/秒，较其引用的NVIDIA Vera Rubin已发布结果最高高30%。MI450X公布规格为每GPU 288 GB HBM4。性能比较属于厂商测试，未取得独立复测证据。原文标示08:00 CST，按美国中部标准时间为北京时间11月12日22:00，纳入7天补充窗口；后补MI430X内容不另计新增。",
+      "analysis": "推断：增加内存配置选择可能改善特定推理负载的采购经济性；缺少价格、供货和独立性能验证，尚不能推导成本优势或市场份额变化。",
+      "evidence_quote": "AMD Advances the Instinct MI400 Series for AI and Scientific Computing",
+      "details": {
+        "kind": "investment",
+        "background": "新增事实为MI450X配置及MI455X公司测试。原文脚注明确使用AMD自测配置，对照其他已发布结果，不能表述为独立同条件对测。",
+        "metrics": [
+          {
+            "name": "MI455X公司测试吞吐",
+            "value": "21333",
+            "unit": "tokens/秒/GPU",
+            "period": "2026年10月测试，11月12日披露",
+            "comparison": "DeepSeek-R1，AMD测试的MLPerf Inference Offline配置",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "MI450X公布HBM4容量",
+            "value": "288",
+            "unit": "GB/GPU",
+            "period": "11月12日公布配置",
+            "comparison": "产品规格，非量产出货量",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "AMD（AMD，NASDAQ）｜GPU设计及平台供应商",
+            "direction": "扩充推理配置",
+            "reason": "产品与测试的直接发布方。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）｜竞争GPU平台供应商",
+            "direction": "潜在竞争影响",
+            "reason": "仅为AMD引用的比较对象，不构成双方供货关系。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若模型适配较低内存配置且生产环境性能成立，客户可在同一架构内调整采购组合；实际售价、HBM成本和订单转化共同决定AMD收入及毛利，不能由测试吞吐直接推算。",
+        "watchpoints": [
+          "独立性能复测、精度及延迟条件、售价、量产日期和客户订单。"
+        ],
+        "risks": [
+          "测试软件和配置差异可能削弱可比性；尚无已披露订单支持份额判断。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "AMD MI400产品与测试说明",
+            "url": "https://newsroom.amd.com/news/amd-advances-instinct-mi400-series-ai-scientific-computing/",
+            "supports": "MI450X容量、MI455X测试数字、比较条件及页面更新说明。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.amd.com",
+        "original_url": "https://newsroom.amd.com/news/amd-advances-instinct-mi400-series-ai-scientific-computing/",
+        "canonical_url": "https://newsroom.amd.com/news/amd-advances-instinct-mi400-series-ai-scientific-computing/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "72fcd204ce880e08f8eaea9b31649c525cfccff78e0fd0d9721726a7ea58b264",
+      "category": "optical_communications",
+      "importance": 2,
+      "fact_summary": "Ciena与Internet2于11月17日宣布，采用WaveLogic 6 Nano相干可插拔技术，在生产网络上完成800 Gb/s、2,104公里链路测试，使用135 GBaud PKT-MAX模式及仅EDFA放大的光线路系统。增量为实网技术验证，未披露商业订单、出货量或ASP。原文未给精确时刻，保守纳入72小时窗口。",
+      "analysis": "推断：更长传输距离可能扩大800G可插拔产品的适用链路范围；单次测试尚不足以证明规模采购或盈利改善。",
+      "evidence_quote": "Successful 2,104 km trial powered by Ciena’s coherent optical technology",
+      "details": {
+        "kind": "investment",
+        "background": "属于800G相干光互连的实网验证；研究教育网络测试不等同超大规模云厂商认证或新增AI数据中心订单。",
+        "metrics": [
+          {
+            "name": "实网测试速率",
+            "value": "800",
+            "unit": "Gb/s",
+            "period": "11月17日披露测试",
+            "comparison": "传输距离2104公里",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Ciena（CIEN，NYSE）｜相干光互连技术及设备供应商",
+            "direction": "扩大技术适用范围",
+            "reason": "公告确认与Internet2合作完成测试；Internet2为具名非营利网络伙伴。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若更长距离能力在客户链路中复现且具备成本优势，可增加适用端口并推动认证；只有认证转为采购、出货和回款，才影响Ciena收入及现金流。原文未提供足以量化ASP或毛利的依据。",
+        "watchpoints": [
+          "客户认证、功耗及误码率数据、商用供货和800G订单。"
+        ],
+        "risks": [
+          "测试链路条件可能无法覆盖其他生产网络。",
+          "无规模采购证据，不能将技术验证计为订单增长。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Ciena与Internet2的800G实网测试",
+            "url": "https://www.ciena.com/about/newsroom/press-releases/ciena-and-internet2-reach-industry-record-for-longest-terrestrial-800-gbs-coherent-pluggable-link",
+            "supports": "测试合作、速率、距离、传输模式及放大方案。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ciena.com",
+        "original_url": "https://www.ciena.com/about/newsroom/press-releases/ciena-and-internet2-reach-industry-record-for-longest-terrestrial-800-gbs-coherent-pluggable-link",
+        "canonical_url": "https://www.ciena.com/about/newsroom/press-releases/ciena-and-internet2-reach-industry-record-for-longest-terrestrial-800-gbs-coherent-pluggable-link",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
