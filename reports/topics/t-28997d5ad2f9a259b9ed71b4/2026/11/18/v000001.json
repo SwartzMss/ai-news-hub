@@ -1,0 +1,372 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "d24f7b35-0263-4717-b15b-30a0ee0c0f3f",
+  "report_date": "2026-11-18",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月18日",
+  "collected_at": "2026-11-18T00:16:30.397Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-18T00:16:30.446Z",
+  "reviewed_content_sha256": "e1da5366aeaade9d00ed70105f537beab89ece82e0d60e4bc7accea406a52442",
+  "items": [
+    {
+      "id": "0e297f8145d98280a0a3bc5dcee2e516f29004a680bd9e3505e3817fa63381b5",
+      "category": "social_event",
+      "importance": 4,
+      "fact_summary": "据澎湃新闻11月17日报道，西安警方当日通报一起涉嫌利用电商“仅退款”规则诈骗的案件：一名29岁女子被指三年间虚构退款理由，申请400余次仅退款，涉案金额1.7万余元。目前该女子已被依法刑事拘留，案件正在进一步侦办。",
+      "analysis": null,
+      "evidence_quote": "女子在盒马申请400余次仅退款“薅”走1.7万元？涉嫌诈骗被刑拘",
+      "details": {
+        "kind": "news",
+        "background": "案件涉及消费者收货后虚构退款理由、保留商品的行为。警方通报中的涉嫌诈骗行为，与符合售后条件的正常退款申请应作区分。",
+        "keyFacts": [
+          {
+            "name": "涉嫌退款次数",
+            "value": "400余",
+            "unit": "次",
+            "period": "三年间",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "涉案金额",
+            "value": "1.7万余",
+            "unit": "元",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-17",
+            "precision": "date",
+            "event": "西安警方通报案件，称涉案女子已被刑事拘留，案件仍在侦办。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "刑事拘留不等于法院定罪，后续司法处理结果尚未公布。"
+        ],
+        "watchpoints": [
+          "案件后续侦查及司法处理进展。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "澎湃新闻：西安警方通报涉嫌利用仅退款规则诈骗案件",
+            "url": "https://www.thepaper.cn/newsDetail_forward_34492530",
+            "supports": "支持警方通报日期、涉嫌行为、次数、金额及刑拘和侦办状态。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.thepaper.cn",
+        "original_url": "https://www.thepaper.cn/newsDetail_forward_34492530",
+        "canonical_url": "https://www.thepaper.cn/newsDetail_forward_34492530",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "26b4a0ad9a7ebd7529579a6c4751ff16040ac6071705e9d4d17cbf45e64bf696",
+      "category": "gaming",
+      "importance": 4,
+      "fact_summary": "Xbox官方11月17日宣布，TGA 2026提名已经公布，公众投票开放。媒体刊载的主办方新闻稿显示，《GTA6》获得包括年度最佳游戏在内的8项提名；年度最佳游戏其余入围作品为《007 初露锋芒》《控制 共振》《影之刃零》《生化危机：安魂曲》和《塞尔达传说：时之笛》。颁奖活动定于12月10日举行。",
+      "analysis": null,
+      "evidence_quote": "Voting is now open",
+      "details": {
+        "kind": "news",
+        "background": "The Game Awards是年度游戏奖项活动，本次公布的是提名名单，最终获奖结果尚未揭晓。",
+        "keyFacts": [
+          {
+            "name": "GTA6提名数量",
+            "value": "8",
+            "unit": "项",
+            "period": "TGA 2026",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e2"
+            ]
+          },
+          {
+            "name": "年度最佳游戏入围数量",
+            "value": "6",
+            "unit": "款",
+            "period": "TGA 2026",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-17",
+            "precision": "date",
+            "event": "提名名单公布，公众投票开放。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          },
+          {
+            "time": "2026-12-10",
+            "precision": "date",
+            "event": "主办方安排举行颁奖活动。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "最终获奖名单。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Xbox Wire：2026年TGA提名公告",
+            "url": "https://news.xbox.com/en-us/2026/11/17/the-game-awards-2026-nominees-on-xbox/",
+            "supports": "确认提名公布、公众投票开放及颁奖日期。"
+          },
+          {
+            "id": "e2",
+            "name": "Skewed 'n Reviewed刊载TGA主办方提名新闻稿",
+            "url": "https://www.sknr.net/2026/11/17/the-game-awards-nominations-are-here/",
+            "supports": "支持GTA6获得8项提名及年度最佳游戏六款入围作品名单。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.xbox.com",
+        "original_url": "https://news.xbox.com/en-us/2026/11/17/the-game-awards-2026-nominees-on-xbox/",
+        "canonical_url": "https://news.xbox.com/en-us/2026/11/17/the-game-awards-2026-nominees-on-xbox/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0f8341501b8558170abfb62b29a73abcead80f0b661481674eb1991ae52ad88e",
+      "category": "sports",
+      "importance": 3,
+      "fact_summary": "据澎湃新闻报道，中国男足11月17日晚在肇庆以2比2战平巴林队。中国队一度两球落后，随后由拜合拉木头球破门、张玉宁罚入点球扳平，以1胜1平结束本月两场国际比赛。主教练邵佳一赛后表示，球队未实现两场全胜的目标，但达到了练兵效果，开场状态仍需总结。",
+      "analysis": null,
+      "evidence_quote": "交手不败纪录差点丢了！国足2比2战平，对阵巴林5胜5平",
+      "details": {
+        "kind": "news",
+        "background": "本场是中国男足在肇庆进行的本月第二场国际热身赛，上一场中国队以2比0战胜马来西亚队。",
+        "keyFacts": [
+          {
+            "name": "最终比分",
+            "value": "中国2比2巴林",
+            "period": "2026-11-17",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1",
+              "e3"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-17",
+            "precision": "date",
+            "event": "巴林队先入两球；拜合拉木第37分钟头球破门，张玉宁第80分钟罚入点球，双方最终战平。",
+            "evidenceRefs": [
+              "e1",
+              "e3"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "中国男足主教练邵佳一",
+            "statement": "球队原定目标是两场赢球，未能实现较为遗憾，但比赛过程达到了练兵效果；开场状态需要总结。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "澎湃新闻：国足战平巴林比赛报道",
+            "url": "https://m.thepaper.cn/newsDetail_forward_34492774",
+            "supports": "支持比赛地点、比分、进球过程及此前对马来西亚的比赛结果。"
+          },
+          {
+            "id": "e2",
+            "name": "澎湃新闻：邵佳一赛后发布会",
+            "url": "https://www.thepaper.cn/newsDetail_forward_34493488",
+            "supports": "支持本月1胜1平战绩及主教练对目标、练兵效果和开场表现的评价。"
+          },
+          {
+            "id": "e3",
+            "name": "PP体育：国足对巴林比赛报道",
+            "url": "https://www.ppsports.com/article/news/2654826.html",
+            "supports": "支持最终比分及拜合拉木、张玉宁进球等比赛事实。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "m.thepaper.cn",
+        "original_url": "https://m.thepaper.cn/newsDetail_forward_34492774",
+        "canonical_url": "https://m.thepaper.cn/newsDetail_forward_34492774",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "f6357603de17c162d79156e6b64d608eadba28ae1fb5a8bea916e05d51f07eee",
+      "category": "entertainment",
+      "importance": 3,
+      "fact_summary": "据新晚报11月17日报道，律师周兆成当日称受郭德纲委托发布声明，强调曲艺师承与民间认亲分属不同范畴。声明表示，律师团队已对其指称的AI伪造、恶意剪辑等侵权内容完成存证，将依法采取维权措施。相关侵权指控属于郭德纲律师方表述，报道未披露法院裁判结果。",
+      "analysis": null,
+      "evidence_quote": "郭德纲委托律师发布最新声明",
+      "details": {
+        "kind": "news",
+        "background": "声明涉及郭德纲与马志明民间认亲相关事项，以及曲艺技艺传承与私人交往的关系。",
+        "timeline": [
+          {
+            "time": "2026-11-17",
+            "precision": "date",
+            "event": "周兆成称受郭德纲委托发布律师声明，表示将采取法律措施维权。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "郭德纲代理律师周兆成",
+            "statement": "曲艺师承属于技艺传承体系，民间认亲属于私人交往，二者不应混同；尊重理性探讨和善意监督，反对无事实依据的攻击。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "actor": "郭德纲律师团队",
+            "statement": "已对其指称的侵权内容进行电子数据固化和公证保全，并计划采取投诉、诉讼等法律途径。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "声明中的侵权指控尚无已公布的司法认定，具体案件受理及处理结果未披露。"
+        ],
+        "watchpoints": [
+          "是否出现正式立案、受理或裁判进展。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新晚报：郭德纲委托律师发布声明",
+            "url": "https://finance.sina.com.cn/wm/2026-11-17/doc-iniyzhhm2221388.shtml",
+            "supports": "支持声明日期、委托关系、律师方立场及存证和维权计划。"
+          },
+          {
+            "id": "e2",
+            "name": "快科技：郭德纲律师声明内容报道",
+            "url": "https://news.mydrivers.com/1/1166/1166488.htm",
+            "supports": "补充说明律师方对AI伪造、恶意剪辑的指称及拟采取的法律措施。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.sina.com.cn",
+        "original_url": "https://finance.sina.com.cn/wm/2026-11-17/doc-iniyzhhm2221388.shtml",
+        "canonical_url": "https://finance.sina.com.cn/wm/2026-11-17/doc-iniyzhhm2221388.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b16311d5ba00960e0c8516791af462dbef7d03d00e898b8ae404fef8d0f3297d",
+      "category": "other",
+      "importance": 2,
+      "fact_summary": "封面新闻11月17日援引深圳市天文台信息称，今年狮子座流星雨预计于18日迎来极大，理想条件下天顶每小时出现率约为15。专家表示，今年没有流星暴爆发预报，城市或近郊实际肉眼可见数量可能更少，不宜按历史大爆发规模期待此次天象。",
+      "analysis": null,
+      "evidence_quote": "“流星雨之王”本月18日迎来极大期？天文专家：下一场“年度最佳”在12月｜天问",
+      "details": {
+        "kind": "news",
+        "background": "狮子座流星雨历史上曾出现大规模爆发，但每年流量并不相同。天顶每小时出现率描述理想观测条件下的流量，不代表普通观测者实际能看到的数量。",
+        "keyFacts": [
+          {
+            "name": "预报天顶每小时出现率",
+            "value": "约15",
+            "unit": "颗/小时",
+            "period": "2026年狮子座流星雨极大期",
+            "nature": "estimate",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-17",
+            "precision": "date",
+            "event": "封面新闻采访天文专家，说明本次流星雨的预报流量与观测条件。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "深圳市天文台专家",
+            "statement": "今年没有爆发预报，观测狮子座流星雨需要耐心。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "预报流量不等于实际观测结果，可见数量受天气、光污染及观测地点影响。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "封面新闻：狮子座流星雨预报与专家采访",
+            "url": "https://www.thecover.cn/news/hEmO2KLBikqH90qSdq8Jkw==",
+            "supports": "支持11月18日极大预报、约15的理想天顶流量及专家对实际观测预期的说明。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.thecover.cn",
+        "original_url": "https://www.thecover.cn/news/hEmO2KLBikqH90qSdq8Jkw==",
+        "canonical_url": "https://www.thecover.cn/news/hEmO2KLBikqH90qSdq8Jkw==",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
