@@ -1,0 +1,607 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "db5f150d-2c22-4c11-920d-bd8ee2abaa54",
+  "report_date": "2026-11-18",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-18｜统计：北京时间2026-11-17 08:08—2026-11-18 08:08；更新回溯72小时，另含项目发现",
+  "collected_at": "2026-11-18T00:19:22.041Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-18T00:19:22.057Z",
+  "reviewed_content_sha256": "afda44a2993a671f779184e82cc36174d9409e2fb79b05f2a3167ff28aa0974c",
+  "items": [
+    {
+      "id": "a9fd2e1fd1a889be157e17e3b10f9dd60890771d3497c0b6ef598dcfb77dbfb9",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Pydantic AI 官方发布的 v2.69.0 增加流式思考、文本和工具参数的循环检测，并将已完成子 Agent 的历史保留在文件中，避免重复驻留内存。此次更新还调整延迟工具调用的恢复接口，涉及长任务与多 Agent 执行管理。[项目仓库](https://github.com/pydantic/pydantic-ai)",
+      "analysis": "循环检测和任务历史管理值得长流程 Agent 开发者关注，有助于控制重复执行与上下文负担。恢复接口同时存在兼容性调整，升级前应核对既有工具调用处理逻辑。",
+      "evidence_quote": "v2.69.0 (2026-11-16)",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "Python Agent 框架，提供工具调用、子 Agent 与执行恢复能力。",
+        "change": {
+          "summary": "正式发布 v2.69.0，增加循环检测并调整子 Agent 历史管理。标题日期为11月16日，GitHub发布栏显示11月17日。",
+          "version": "v2.69.0",
+          "type": "release",
+          "publishedAt": "2026-11-17",
+          "evidenceRefs": [
+            "p1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "DetectLoops 检测流式思考、文本和工具调用参数中的循环。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          },
+          {
+            "description": "已完成子 Agent 的任务历史保留在保存文件中；延迟工具调用处理器可接收恢复令牌。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "管理需要暂停恢复和委派子任务的 Agent 流程。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件与相关文档",
+          "evidenceRefs": [
+            "p2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "RequestInput 合入 HandleDeferredToolCalls，属于需要检查的兼容性变化。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "p1",
+            "name": "v2.69.0 官方发布说明",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.69.0",
+            "supports": "版本、发布日期、循环检测、历史管理和兼容性变化"
+          },
+          {
+            "id": "p2",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/main/LICENSE",
+            "supports": "代码及相关文档授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.69.0",
+        "canonical_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.69.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a73359822afbcc6f5324341f77964b06aa69990ed9ad44dc1dd2e695e32800c3",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "GitHub Agentic Workflows 官方已合并归档参数注入修复：拒绝以连字符开头的暂存文件名，并给归档成员添加路径前缀，避免文件名被 zip 当作选项。PR 于11月15日合并；本次按已合并代码进展收录，尚未确认对应发行版本。[项目仓库](https://github.com/github/gh-aw)",
+      "analysis": "Agent 自动上传产物时，文件名也会进入命令执行边界，这项修复具有实际防护价值。但合并后仍有根目录条目处理的审查意见，不能据此认定归档路径风险已全部解决。",
+      "evidence_quote": "Prevent zip option injection from staged filenames",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "在 GitHub Actions 中执行 Agent 工作流，并处理自动化产物。",
+        "change": {
+          "summary": "PR #78015 于11月15日合并，修复暂存文件名触发 zip 选项解析的问题；对应发行版本未确认。",
+          "type": "technical",
+          "publishedAt": "2026-11-15",
+          "evidenceRefs": [
+            "g1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "暂存和归档阶段拒绝连字符开头的文件名，归档成员路径增加 ./ 前缀。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "审查 Agent 工作流自动打包、上传文件的执行边界。",
+            "evidenceRefs": [
+              "g1",
+              "g3"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件",
+          "evidenceRefs": [
+            "g2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "PR 合并后仍出现根目录条目可能导致扩大归档范围的审查意见。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "g1",
+            "name": "归档参数注入修复 PR",
+            "url": "https://github.com/github/gh-aw/pull/78015",
+            "supports": "修复机制、合并日期及后续审查意见"
+          },
+          {
+            "id": "g2",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/github/gh-aw/blob/main/LICENSE",
+            "supports": "软件授权"
+          },
+          {
+            "id": "g3",
+            "name": "官方项目仓库",
+            "url": "https://github.com/github/gh-aw",
+            "supports": "Agent 工作流项目定位"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/github/gh-aw/pull/78015",
+        "canonical_url": "https://github.com/github/gh-aw/pull/78015",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ce3bba0c4bc791ad74269be7c71e90798163f93d08d2803223621eb9cf939041",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "ChronoStack 官方仓库称，它通过共享虚拟时钟推进 Docker Compose 中数据库、缓存与应用服务的时间，用于测试到期和定时任务。作为早期项目发现收录，11月16日的 Alpha.5 已加入 BullMQ/Bull、Sidekiq 队列屏障，避免任务运行途中跳时。[项目仓库](https://github.com/Asmodeus14/ChronoStack)",
+      "analysis": "适合验证跨服务的试用到期、续费和任务队列行为，能把等待多天的测试转换为可重复场景。项目仍处 Alpha，调度器轮询语义需要单独处理，Apple Silicon Mac 尚缺官方测试覆盖。",
+      "evidence_quote": "ChronoStack 0.1.0-alpha.5",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "用可控虚拟时间测试整套 Compose 服务，减少时间相关集成测试的等待。",
+        "change": {
+          "summary": "Alpha.5 预发布加入队列屏障和 settle 等待，并在首次跳时前检查屏障。",
+          "version": "v0.1.0-alpha.5",
+          "type": "release",
+          "publishedAt": "2026-11-16",
+          "evidenceRefs": [
+            "c1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "BullMQ/Bull 与 Sidekiq 屏障使用 Redis 虚拟时钟检查到期任务；Sidekiq 额外等待心跳。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "复现试用到期与定时任务触发场景。",
+            "evidenceRefs": [
+              "c2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Apache-2.0",
+          "scope": "项目代码",
+          "evidenceRefs": [
+            "c3",
+            "c4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "仍是 Alpha；官方发布说明列明 Apple Silicon Mac 尚未测试。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "c1",
+            "name": "Alpha.5 发布说明",
+            "url": "https://github.com/Asmodeus14/ChronoStack/releases/tag/v0.1.0-alpha.5",
+            "supports": "预发布状态、日期、队列屏障及测试边界"
+          },
+          {
+            "id": "c2",
+            "name": "官方项目仓库",
+            "url": "https://github.com/Asmodeus14/ChronoStack",
+            "supports": "虚拟时钟能力及使用场景"
+          },
+          {
+            "id": "c3",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/Asmodeus14/ChronoStack/blob/main/LICENSE-MIT",
+            "supports": "MIT 授权"
+          },
+          {
+            "id": "c4",
+            "name": "Apache 授权文件",
+            "url": "https://github.com/Asmodeus14/ChronoStack/blob/main/LICENSE-APACHE",
+            "supports": "Apache-2.0 授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/Asmodeus14/ChronoStack/releases/tag/v0.1.0-alpha.5",
+        "canonical_url": "https://github.com/Asmodeus14/ChronoStack/releases/tag/v0.1.0-alpha.5",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b240a40936e7152fb40f274ff514adb3903a6990c5735d7ec4ba06256e6c3bc4",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "whisper.cpp 官方仓库称，它以 C/C++ 提供 Whisper 语音识别，支持 CPU 本地运行、整数重量化、VAD 和 C 风格接口，可嵌入离线转写应用。本次作为成熟项目发现收录；10月6日的 v1.9.5 维护版本提供近90天维护证据。[项目仓库](https://github.com/ggml-org/whisper.cpp)",
+      "analysis": "适合需要本地处理音频的字幕、录音转写和端侧语音应用。实际准确率与实时性仍取决于所选模型、硬件和音频条件；代码授权也不能直接替代模型权重的授权核查。",
+      "evidence_quote": "Plain C/C++ implementation without dependencies",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "提供可嵌入应用的本地语音识别实现，减少对远程转写服务的依赖。",
+        "technical": [
+          {
+            "description": "提供 C 风格接口、整数重量化、CPU 推理及语音活动检测。",
+            "evidenceRefs": [
+              "w1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建离线录音转写与设备端语音应用。",
+            "evidenceRefs": [
+              "w1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码；模型权重另行核查",
+          "evidenceRefs": [
+            "w3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "2026年10月6日发布 v1.9.5 维护版本，更新至 ggml v0.26.0；本条属于项目发现。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "w2"
+            ]
+          },
+          {
+            "description": "适合将语音识别嵌入本地产品，部署前应使用目标音频评估效果。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "w1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "w1",
+            "name": "官方项目仓库",
+            "url": "https://github.com/ggml-org/whisper.cpp",
+            "supports": "识别能力、接口及本地运行场景"
+          },
+          {
+            "id": "w2",
+            "name": "v1.9.5 发布说明",
+            "url": "https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.5",
+            "supports": "近期维护时间及版本内容"
+          },
+          {
+            "id": "w3",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/ggml-org/whisper.cpp/blob/master/LICENSE",
+            "supports": "代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ggml-org/whisper.cpp",
+        "canonical_url": "https://github.com/ggml-org/whisper.cpp",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "52212ccce7fdebe6b28436ec5cf1891298b896a487ddba43705a493445455a2f",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "html-to-video 官方宣布，11月17日发布的 v2.0.0 增加连续空间、批量笔触和光照三个独立库，支持相机轨迹、形态插值与昼夜变化。这个 HTML/Canvas 视频工具可用于程序化动画与 Agent 创作流程，新模板将卡片式镜头扩展到共享空间中的连续运镜。[项目仓库](https://github.com/wx4766/html-to-video)",
+      "analysis": "适合用代码制作解释动画、场景转场和连续运镜，三个库可以分别采用。新模板尚不支持字幕提示、透明输出和主题接口；发布页性能数字来自维护者，不能视为独立验证。",
+      "evidence_quote": "v2.0.0 · 一个世界，一条镜头轨迹",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "将 HTML/Canvas 动画转换为视频，支持程序化内容创作。",
+        "change": {
+          "summary": "正式发布 v2.0.0，增加空间、笔触与光照库及 program-film 模板。",
+          "version": "v2.0.0",
+          "type": "release",
+          "publishedAt": "2026-11-17",
+          "evidenceRefs": [
+            "h1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "空间库提供透视投影、深度排序和关键帧相机轨迹；笔触按颜色与粗细分桶提交。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          },
+          {
+            "description": "光照库提供色温、昼夜关键帧与曝光等处理，三个新库可独立使用。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "制作包含连续街景运镜与日落变化的程序化视频。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件；不推定外部素材授权",
+          "evidenceRefs": [
+            "h2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "新模板能力登记为不支持 theme、cues 和 alpha。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "h1",
+            "name": "v2.0.0 发布说明",
+            "url": "https://github.com/wx4766/html-to-video/releases/tag/v2.0.0",
+            "supports": "日期、新机制、示例模板及能力限制"
+          },
+          {
+            "id": "h2",
+            "name": "MIT 授权文件",
+            "url": "https://github.com/wx4766/html-to-video/blob/main/LICENSE",
+            "supports": "软件授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/wx4766/html-to-video/releases/tag/v2.0.0",
+        "canonical_url": "https://github.com/wx4766/html-to-video/releases/tag/v2.0.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7bc6ab6f65340a9234235557a59a8f54e2dd5fdcd24776671aa7901b5e6e1c26",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "OSV-Scanner 官方仓库称，它将项目依赖与 OSV 漏洞数据库关联，支持源码目录、容器镜像和依赖许可证扫描，可用于依赖风险排查。本次作为成熟项目发现收录；11月9日的 v2.7.1 改善修复筛选和配置过期提示，提供近期维护证据。[项目仓库](https://github.com/google/osv-scanner)",
+      "analysis": "适合把依赖漏洞检查接入开发和修复流程，报告筛选与忽略规则提示也有助于长期维护。扫描结果仍需结合实际调用和部署环境判断；实验性修复命令可能执行项目配置中的脚本。",
+      "evidence_quote": "Use OSV-Scanner to find existing vulnerabilities affecting your project's dependencies.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "连接依赖清单与公开漏洞数据，辅助定位和修复软件供应链风险。",
+        "technical": [
+          {
+            "description": "以 OSV-Scalibr 提取依赖，并关联 OSV 数据；支持容器分层扫描。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          },
+          {
+            "description": "下载本地漏洞数据库后可离线扫描；许可证检查使用 deps.dev 数据。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "检查代码仓库或容器中的已知依赖漏洞。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "扫描器软件；不涵盖外部数据库的独立授权",
+          "evidenceRefs": [
+            "o3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月9日的 v2.7.1 提供近期维护证据；本条按项目发现收录。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "o2"
+            ]
+          },
+          {
+            "description": "官方提示实验性 fix 命令可能触发包管理器执行脚本。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "o1",
+            "name": "官方项目仓库",
+            "url": "https://github.com/google/osv-scanner",
+            "supports": "扫描机制、适用场景及修复命令限制"
+          },
+          {
+            "id": "o2",
+            "name": "v2.7.1 发布说明",
+            "url": "https://github.com/google/osv-scanner/releases/tag/v2.7.1",
+            "supports": "维护时间及报告改进"
+          },
+          {
+            "id": "o3",
+            "name": "Apache-2.0 授权文件",
+            "url": "https://raw.githubusercontent.com/google/osv-scanner/main/LICENSE",
+            "supports": "扫描器代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/google/osv-scanner",
+        "canonical_url": "https://github.com/google/osv-scanner",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cd6e00918cb9d01c591e74d8f5576588b89e58389d6bc5d93425d422bfa6c803",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "EasyTier 官方 Nightly 变更记录称，11月17日提交修复 Windows 空 NRPT 策略及 DNS 规则处理，并在代理关闭时等待 TCP 任务。这个去中心化 Mesh VPN 支持 P2P 组网和子网共享；本次是开发版进展，不能视为新的稳定版发布。[项目仓库](https://github.com/EasyTier/EasyTier)",
+      "analysis": "适合关注跨平台自组网、远程访问和子网互通的团队。此次变化涉及 Windows DNS 与连接退出可靠性，但 Nightly 会原地更新，评估和复现时应记录具体提交，稳定版覆盖情况仍待确认。",
+      "evidence_quote": "fix(dns): handle empty NRPT policies and split Windows rules",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "通过对等节点构建虚拟网络，并允许节点共享可访问的子网。",
+        "change": {
+          "summary": "Nightly 收录11月17日的 DNS 与代理退出修复；日期为 UTC 提交日期，预发布原地更新。",
+          "version": "nightly / fbf0776",
+          "type": "technical",
+          "evidenceRefs": [
+            "e1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "节点地位对等，提供 NAT 穿透、子网代理及 AES-GCM 或 WireGuard 加密。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "连接不同网络中的设备，并共享节点可访问的内网子网。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "LGPL-3.0",
+          "scope": "仓库软件",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "Nightly 明确标为预发布并原地更新，页面创建日期不能作为本次变化日期。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方 Nightly 变更记录",
+            "url": "https://github.com/EasyTier/EasyTier/releases/tag/nightly",
+            "supports": "开发版状态、提交日期及修复内容"
+          },
+          {
+            "id": "e2",
+            "name": "官方项目仓库",
+            "url": "https://github.com/EasyTier/EasyTier",
+            "supports": "去中心化组网、穿透和子网共享能力"
+          },
+          {
+            "id": "e3",
+            "name": "LGPL 授权文件",
+            "url": "https://raw.githubusercontent.com/EasyTier/EasyTier/main/LICENSE",
+            "supports": "LGPL 第3版授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/EasyTier/EasyTier/releases/tag/nightly",
+        "canonical_url": "https://github.com/EasyTier/EasyTier/releases/tag/nightly",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
