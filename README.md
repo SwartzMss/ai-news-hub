@@ -26,7 +26,7 @@ Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，
 
 公共用户账户的数据基础设施另使用 `USER_DB` D1，与邮件订阅库和 Linux SQLite 隔离；收藏 API 尚未实现。见 [用户 D1 部署](docs/USER_DB.md)（[#157](https://github.com/SwartzMss/ai-news-hub/issues/157)）。
 
-Pages Functions 已加入默认关闭的邮箱密码认证 API，包括注册、邮箱验证、登录、`me` 和退出；生产仍需单独配置并验收 `AUTH_*` 与 Resend，前端用户中心属于后续阶段。见 [公共用户认证](docs/AUTH.md)（[#158](https://github.com/SwartzMss/ai-news-hub/issues/158)）。
+Pages Functions 已加入默认关闭的邮箱密码认证 API，并在 [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 补充密码重置、限流、Turnstile 与 Session 闲置过期；启用前须先迁移用户 D1、配置 Secrets 并验收真实 Cloudflare/Resend。前端用户中心属于后续阶段。见 [公共用户认证](docs/AUTH.md)。
 
 最终日报的 `details.kind` 标识新闻、投资或项目详情，仍为必填；Backend 为 Codex 的结构化输出 Schema 补齐常量和枚举的类型声明。升级此修复后需重新构建并重启 Backend，再手动重跑此前因 `invalid_json_schema` 失败的任务。
 
