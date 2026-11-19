@@ -29,9 +29,9 @@ test('registration stores password and verification token hashes; GET does not v
   assert.equal(preview.status, 200);
   assert.match(await preview.text(), /<form[^>]+method="post"/);
   assert.equal(f.db.prepare('SELECT email_verified_at FROM users').get().email_verified_at, null);
-  assert.equal((await request(f, 'verify-email', { body: { token } })).status, 200);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD } })).status, 200);
   assert.equal(f.db.prepare('SELECT email_verified_at FROM users').get().email_verified_at, NOW);
-  assert.equal((await request(f, 'verify-email', { body: { token } })).status, 400);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD } })).status, 400);
 });
 
 test('unverified and missing accounts cannot login; verified session authenticates me and logout revokes it', async t => {
@@ -41,7 +41,7 @@ test('unverified and missing accounts cannot login; verified session authenticat
   assert.equal((await login({ email: EMAIL, password: PASSWORD })).status, 401);
   assert.equal((await login({ email: 'missing@example.com', password: PASSWORD })).status, 401);
   assert.equal((await request(f, 'me', { method: 'GET' })).status, 401);
-  await request(f, 'verify-email', { body: { token: tokenFrom(f) } });
+  await request(f, 'verify-email', { body: { token: tokenFrom(f), password: PASSWORD } });
   const response = await login({ email: EMAIL, password: PASSWORD });
   assert.equal(response.status, 200);
   assert.deepEqual(Object.keys((await response.clone().json()).user).sort(), ['email', 'id']);
@@ -67,9 +67,9 @@ test('registration is generic for duplicate addresses, and expired or wrong-purp
   assert.equal(f.messages.length, 1);
   assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 1);
   const token = tokenFrom(f);
-  assert.equal((await request(f, 'verify-email', { body: { token }, now: () => new Date(NOW + 24 * HOUR) })).status, 400);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD }, now: () => new Date(NOW + 24 * HOUR) })).status, 400);
   f.db.prepare("UPDATE auth_email_tokens SET purpose='reset_password'").run();
-  assert.equal((await request(f, 'verify-email', { body: { token } })).status, 400);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD } })).status, 400);
 });
 
 test('origin, canonical host, payload limit, disabled config and unknown routes fail closed', async t => {
@@ -92,7 +92,7 @@ test('origin, canonical host, payload limit, disabled config and unknown routes 
 test('sessions expire, disabled users lose access, and logging in again revokes the old cookie', async t => {
   const f = fixture(); t.after(() => f.close());
   await request(f, 'register', { body: { email: EMAIL, password: PASSWORD } });
-  await request(f, 'verify-email', { body: { token: tokenFrom(f) } });
+  await request(f, 'verify-email', { body: { token: tokenFrom(f), password: PASSWORD } });
   const first = cookieFrom(await request(f, 'login', { body: { email: EMAIL, password: PASSWORD } }));
   const oldHeader = { cookie: `__Host-anh_session=${first}` };
   const second = cookieFrom(await request(f, 'login', { body: { email: EMAIL, password: PASSWORD }, headers: oldHeader }));
@@ -118,6 +118,50 @@ test('verification can be resent after cooldown; auth mail setup is independent 
   f.env.AUTH_FROM = undefined;
   assert.equal((await request(f, 'register', { body })).status, 503);
   const token = tokenFrom(f);
-  assert.equal((await request(f, 'verify-email', { body: { token }, now: () => new Date(NOW + HOUR + 1) })).status, 200);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD }, now: () => new Date(NOW + HOUR + 1) })).status, 200);
   assert.equal((await request(f, 'login', { body })).status, 200);
+});
+
+test('registration defers outbound mail when Pages waitUntil is available', async t => {
+  const f = fixture(); t.after(() => f.close());
+  const pending = [];
+  let mailFinished = false;
+  const fetcher = async () => {
+    await new Promise(resolve => setTimeout(resolve, 30));
+    mailFinished = true;
+    return Response.json({ id: 'mail-1' });
+  };
+  const response = await request(f, 'register', {
+    body: { email: EMAIL, password: PASSWORD }, fetcher, waitUntil: promise => pending.push(promise),
+  });
+  assert.equal(response.status, 202);
+  assert.equal(pending.length, 1);
+  assert.equal(mailFinished, false);
+  await pending[0];
+  assert.equal(mailFinished, true);
+});
+
+test('email owner chooses the final password when confirming a pre-registered address', async t => {
+  const f = fixture(); t.after(() => f.close());
+  const attackerPassword = 'attacker chooses this password';
+  await request(f, 'register', { body: { email: EMAIL, password: attackerPassword } });
+  const token = tokenFrom(f);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD } })).status, 200);
+  assert.equal((await request(f, 'login', { body: { email: EMAIL, password: attackerPassword } })).status, 401);
+  assert.equal((await request(f, 'login', { body: { email: EMAIL, password: PASSWORD } })).status, 200);
+});
+
+test('failed mail delivery releases the verification cooldown for retry', async t => {
+  const f = fixture(); t.after(() => f.close());
+  const body = { email: EMAIL, password: PASSWORD };
+  const pending = [];
+  const failed = await request(f, 'register', {
+    body, fetcher: async () => Response.json({ message: 'temporary failure' }, { status: 503 }),
+    waitUntil: promise => pending.push(promise),
+  });
+  assert.equal(failed.status, 202);
+  await pending[0];
+  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM auth_email_tokens').get().n, 0);
+  assert.equal((await request(f, 'register', { body })).status, 202);
+  assert.equal(f.messages.length, 1);
 });

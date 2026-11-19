@@ -48,15 +48,21 @@ export async function register(ctx: AuthContext, config: AuthConfig): Promise<Re
     .bind(crypto.randomUUID(), user.id, tokenHash, now, now + DAY, user.id, now - HOUR).run();
   if (!reserved.meta.changes) return json(ACCEPTED, 202);
   const url = `${config.origin}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
-  try {
-    await sendMail(mail, {
-      from: mail.from, to: [email], subject: '验证 AI News Hub 账户邮箱',
-      text: `请打开以下链接并确认邮箱。链接 24 小时内有效。\n\n${url}\n\n如果不是你申请的账户，请忽略此邮件。`,
-      html: `<p>请确认 AI News Hub 账户邮箱。链接 24 小时内有效。</p><p><a href="${url}">确认邮箱</a></p><p>如果不是你申请的账户，请忽略此邮件。</p>`,
-    }, `auth/verify/${user.id}/${now}`, ctx.fetcher);
-  } catch (error) {
+  const delivery = sendMail(mail, {
+    from: mail.from, to: [email], subject: '验证 AI News Hub 账户邮箱',
+    text: `请打开以下链接，设置账户密码并确认邮箱。链接 24 小时内有效。\n\n${url}\n\n如果不是你申请的账户，请忽略此邮件。`,
+    html: `<p>请设置 AI News Hub 账户密码并确认邮箱。链接 24 小时内有效。</p><p><a href="${url}">设置密码并确认邮箱</a></p><p>如果不是你申请的账户，请忽略此邮件。</p>`,
+  }, `auth/verify/${user.id}/${now}`, ctx.fetcher).catch(async error => {
+    try {
+      await config.db.prepare('DELETE FROM auth_email_tokens WHERE token_hash=? AND consumed_at IS NULL')
+        .bind(tokenHash).run();
+    } catch {
+      console.warn(JSON.stringify({ event: 'auth_verification_token_cleanup_failed' }));
+    }
     console.warn(JSON.stringify({ event: 'auth_verification_mail_failed', code: error instanceof MailError ? error.code : 'mail_unavailable' }));
-  }
+  });
+  if (ctx.waitUntil) ctx.waitUntil(delivery);
+  else await delivery;
   return json(ACCEPTED, 202);
 }
 
@@ -70,21 +76,23 @@ export async function verifyEmail(ctx: AuthContext, config: AuthConfig): Promise
       WHERE t.token_hash=? AND t.purpose='verify_email' AND t.consumed_at IS NULL
       AND t.expires_at>? AND u.status='active' AND u.email_verified_at IS NULL`)
       .bind(tokenHash, nowMs(ctx)).first();
-    return row ? page('确认邮箱', '点击按钮完成邮箱验证。', token) : page('链接已失效', '链接无效、已使用或已过期。', undefined, 400);
+    return row ? page('确认邮箱', '请设置登录密码并确认邮箱。', token) : page('链接已失效', '链接无效、已使用或已过期。', undefined, 400);
   }
   requireSameOrigin(ctx, config);
   const body = await readBody(ctx.request);
-  onlyKeys(body, ['token']);
+  onlyKeys(body, ['token', 'password']);
   if (typeof body.token !== 'string' || !TOKEN_PATTERN.test(body.token)) return verifyReply(ctx, false);
+  const password = validPassword(body.password);
   const tokenHash = await hashToken(body.token);
   const now = nowMs(ctx);
+  const passwordHash = await hashPassword(password);
   const results = await config.db.batch([
     config.db.prepare(`UPDATE auth_email_tokens SET consumed_at=? WHERE token_hash=?
       AND purpose='verify_email' AND consumed_at IS NULL AND expires_at>?
       AND user_id IN (SELECT id FROM users WHERE status='active' AND email_verified_at IS NULL)`).bind(now, tokenHash, now),
-    config.db.prepare(`UPDATE users SET email_verified_at=?,updated_at=? WHERE email_verified_at IS NULL
+    config.db.prepare(`UPDATE users SET password_hash=?,email_verified_at=?,updated_at=? WHERE email_verified_at IS NULL
       AND status='active' AND id=(SELECT user_id FROM auth_email_tokens
-        WHERE token_hash=? AND purpose='verify_email' AND consumed_at=?)`).bind(now, now, tokenHash, now),
+        WHERE token_hash=? AND purpose='verify_email' AND consumed_at=?)`).bind(passwordHash, now, now, tokenHash, now),
   ]);
   return verifyReply(ctx, results[0].meta.changes === 1 && results[1].meta.changes === 1);
 }

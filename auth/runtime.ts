@@ -13,6 +13,7 @@ export interface AuthContext {
   env: AuthEnv;
   fetcher?: typeof fetch;
   now?: () => Date;
+  waitUntil?: (promise: Promise<unknown>) => void;
 }
 
 export interface AuthConfig {
@@ -124,7 +125,7 @@ export function empty(status: number, extra: Record<string, string> = {}): Respo
 }
 export function page(title: string, message: string, token?: string, status = 200): Response {
   const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-  const form = token ? `<form method="post" action="/api/auth/verify-email"><input type="hidden" name="token" value="${escape(token)}"><button type="submit">确认邮箱</button></form>` : '';
+  const form = token ? `<form method="post" action="/api/auth/verify-email"><input type="hidden" name="token" value="${escape(token)}"><label>账户密码 <input type="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required></label><button type="submit">设置密码并确认邮箱</button></form>` : '';
   return new Response(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)}</title><main><h1>${escape(title)}</h1><p>${escape(message)}</p>${form}</main></html>`, {
     status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'content-security-policy': "default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'" },
   });

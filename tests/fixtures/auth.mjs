@@ -36,7 +36,7 @@ export function fixture() {
     const headers = new Headers({ origin: env.AUTH_SITE_URL, accept: 'application/json', ...(method === 'POST' ? { 'content-type': 'application/json' } : {}) });
     new Headers(options.headers).forEach((value, key) => headers.set(key, value));
     const body = method === 'GET' || method === 'HEAD' ? undefined : typeof options.body === 'string' ? options.body : JSON.stringify(options.body ?? {});
-    return { env, fetcher: options.fetcher ?? fetcher, now: options.now ?? (() => new Date(NOW)), request: new Request(new URL(`/api/auth/${action}`, env.AUTH_SITE_URL), { method, headers, ...(body === undefined ? {} : { body }) }) };
+    return { env, fetcher: options.fetcher ?? fetcher, now: options.now ?? (() => new Date(NOW)), ...(options.waitUntil ? { waitUntil: options.waitUntil } : {}), request: new Request(new URL(`/api/auth/${action}`, env.AUTH_SITE_URL), { method, headers, ...(body === undefined ? {} : { body }) }) };
   }
   return { db, env, messages, context, close() { db.close(); } };
 }
