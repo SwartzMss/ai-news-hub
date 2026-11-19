@@ -36,30 +36,34 @@ export async function register(ctx: AuthContext, config: AuthConfig): Promise<Re
   await config.db.prepare(`INSERT INTO users (id,email_normalized,password_hash,email_verified_at,status,created_at,updated_at)
     VALUES (?,?,?,NULL,'active',?,?) ON CONFLICT(email_normalized) DO NOTHING`)
     .bind(crypto.randomUUID(), email, passwordHash, now, now).run();
-  const user = await config.db.prepare('SELECT id,email_verified_at,status FROM users WHERE email_normalized=?')
-    .bind(email).first<Pick<UserRecord, 'id' | 'email_verified_at' | 'status'>>();
-  if (!user || user.status !== 'active' || user.email_verified_at !== null) return json(ACCEPTED, 202);
+  const user = await config.db.prepare('SELECT id FROM users WHERE email_normalized=?')
+    .bind(email).first<Pick<UserRecord, 'id'>>();
   const token = randomToken();
   const tokenHash = await hashToken(token);
   const reserved = await config.db.prepare(`INSERT INTO auth_email_tokens (id,user_id,token_hash,purpose,created_at,expires_at,consumed_at)
-    SELECT ?,?,?,'verify_email',?,?,NULL
-    WHERE NOT EXISTS (SELECT 1 FROM auth_email_tokens WHERE user_id=? AND purpose='verify_email'
+    SELECT ?,id,?,'verify_email',?,?,NULL FROM users
+    WHERE id=? AND status='active' AND email_verified_at IS NULL
+    AND NOT EXISTS (SELECT 1 FROM auth_email_tokens WHERE user_id=users.id AND purpose='verify_email'
       AND consumed_at IS NULL AND created_at>?)`)
-    .bind(crypto.randomUUID(), user.id, tokenHash, now, now + DAY, user.id, now - HOUR).run();
-  if (!reserved.meta.changes) return json(ACCEPTED, 202);
-  const url = `${config.origin}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
-  const delivery = sendMail(mail, {
-    from: mail.from, to: [email], subject: '验证 AI News Hub 账户邮箱',
-    text: `请打开以下链接，设置账户密码并确认邮箱。链接 24 小时内有效。\n\n${url}\n\n如果不是你申请的账户，请忽略此邮件。`,
-    html: `<p>请设置 AI News Hub 账户密码并确认邮箱。链接 24 小时内有效。</p><p><a href="${url}">设置密码并确认邮箱</a></p><p>如果不是你申请的账户，请忽略此邮件。</p>`,
-  }, `auth/verify/${user.id}/${now}`, ctx.fetcher).catch(async error => {
+    .bind(crypto.randomUUID(), tokenHash, now, now + DAY, user?.id ?? '', now - HOUR).run();
+  const delivery = Promise.resolve().then(async () => {
+    if (!user || !reserved.meta.changes) return;
+    const url = `${config.origin}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
     try {
-      await config.db.prepare('DELETE FROM auth_email_tokens WHERE token_hash=? AND consumed_at IS NULL')
-        .bind(tokenHash).run();
-    } catch {
-      console.warn(JSON.stringify({ event: 'auth_verification_token_cleanup_failed' }));
+      await sendMail(mail, {
+        from: mail.from, to: [email], subject: '验证 AI News Hub 账户邮箱',
+        text: `请打开以下链接，设置账户密码并确认邮箱。链接 24 小时内有效。\n\n${url}\n\n如果不是你申请的账户，请忽略此邮件。`,
+        html: `<p>请设置 AI News Hub 账户密码并确认邮箱。链接 24 小时内有效。</p><p><a href="${url}">设置密码并确认邮箱</a></p><p>如果不是你申请的账户，请忽略此邮件。</p>`,
+      }, `auth/verify/${user.id}/${now}`, ctx.fetcher);
+    } catch (error) {
+      try {
+        await config.db.prepare('DELETE FROM auth_email_tokens WHERE token_hash=? AND consumed_at IS NULL')
+          .bind(tokenHash).run();
+      } catch {
+        console.warn(JSON.stringify({ event: 'auth_verification_token_cleanup_failed' }));
+      }
+      console.warn(JSON.stringify({ event: 'auth_verification_mail_failed', code: error instanceof MailError ? error.code : 'mail_unavailable' }));
     }
-    console.warn(JSON.stringify({ event: 'auth_verification_mail_failed', code: error instanceof MailError ? error.code : 'mail_unavailable' }));
   });
   if (ctx.waitUntil) ctx.waitUntil(delivery);
   else await delivery;

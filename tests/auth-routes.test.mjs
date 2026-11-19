@@ -141,6 +141,20 @@ test('registration defers outbound mail when Pages waitUntil is available', asyn
   assert.equal(mailFinished, true);
 });
 
+test('registration gives verified addresses the same response and background scheduling', async t => {
+  const f = fixture(); t.after(() => f.close());
+  const body = { email: EMAIL, password: PASSWORD };
+  const first = await request(f, 'register', { body });
+  await request(f, 'verify-email', { body: { token: tokenFrom(f), password: PASSWORD } });
+  const pending = [];
+  const existing = await request(f, 'register', { body, waitUntil: promise => pending.push(promise) });
+  assert.equal(existing.status, 202);
+  assert.deepEqual(await existing.json(), await first.json());
+  assert.equal(pending.length, 1);
+  await pending[0];
+  assert.equal(f.messages.length, 1);
+});
+
 test('email owner chooses the final password when confirming a pre-registered address', async t => {
   const f = fixture(); t.after(() => f.close());
   const attackerPassword = 'attacker chooses this password';
