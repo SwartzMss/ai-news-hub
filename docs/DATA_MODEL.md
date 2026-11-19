@@ -99,7 +99,7 @@ Migration 10 为 `codex_news_runs` 追加 nullable `public_topic_json`。新受�
 
 可选邮件订阅使用独立 Cloudflare D1，迁移位于 `newsletter/migrations/`，与 Backend SQLite 迁移分开。订阅者、确认令牌哈希、日快照、发送记录、限流状态与按日期的短时发送批次租约均为私有数据，不进入公共输出和 GitHub 归档。详见 [邮件订阅](NEWSLETTER.md)。
 
-公共用户数据使用另一独立 Cloudflare D1 `USER_DB`，迁移位于 `users/migrations/`。`users` 保存规范化唯一邮箱、密码哈希、验证时间和账户状态；`auth_sessions` 保存 Session Token 哈希；`auth_email_tokens` 保存验证/重置 Token 哈希。子表通过级联外键关联用户。它与 Newsletter D1 无跨库关系，也不进入 Backend SQLite、GitHub 归档或公开输出。见 [用户 D1 数据库](USER_DB.md)。
+公共用户数据使用另一独立 Cloudflare D1 `USER_DB`，迁移位于 `users/migrations/`。`users` 保存规范化唯一邮箱、密码哈希、验证时间和账户状态；`auth_sessions` 保存 Session Token 哈希；`auth_email_tokens` 保存验证/重置 Token 哈希及一次性消费标识，`auth_rate_limits` 保存 HMAC 派生的限流键和窗口次数；Session 另记录最后活动时间。子表通过级联外键关联用户。它与 Newsletter D1 无跨库关系，也不进入 Backend SQLite、GitHub 归档或公开输出。见 [用户 D1 数据库](USER_DB.md)。
 
 认证 API 只在用户 D1 写入用户、验证 Token 和 Session；Token 原文仅在邮件链接或 Cookie 中，数据库保存 SHA-256 哈希。密码使用带独立盐和参数标识的 PBKDF2-HMAC-SHA256 派生值。见 [公共用户认证](AUTH.md)。
 

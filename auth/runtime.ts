@@ -6,6 +6,9 @@ export interface AuthEnv {
   AUTH_SITE_URL?: string;
   AUTH_FROM?: string;
   RESEND_API_KEY?: string;
+  AUTH_TURNSTILE_SITE_KEY?: string;
+  AUTH_TURNSTILE_SECRET?: string;
+  AUTH_RATE_LIMIT_SECRET?: string;
 }
 
 export interface AuthContext {
@@ -21,6 +24,9 @@ export interface AuthConfig {
   origin: string;
   from?: string;
   apiKey?: string;
+  turnstileSiteKey?: string;
+  turnstileSecret?: string;
+  rateLimitSecret?: string;
 }
 
 export class AuthError extends Error {
@@ -44,7 +50,9 @@ export function getConfig(env: AuthEnv): AuthConfig {
       if (/[\r\n]/.test(env.AUTH_FROM)) throw Error();
       normalizeEmail(env.AUTH_FROM.match(/<([^<>]+)>$/)?.[1] ?? env.AUTH_FROM);
     }
-    return { db: env.USER_DB, origin: url.origin, from: env.AUTH_FROM, apiKey: env.RESEND_API_KEY };
+    return { db: env.USER_DB, origin: url.origin, from: env.AUTH_FROM, apiKey: env.RESEND_API_KEY,
+      turnstileSiteKey: env.AUTH_TURNSTILE_SITE_KEY, turnstileSecret: env.AUTH_TURNSTILE_SECRET,
+      rateLimitSecret: env.AUTH_RATE_LIMIT_SECRET };
   } catch { throw new AuthError('auth_unavailable', 503); }
 }
 
@@ -116,16 +124,19 @@ export function readSessionToken(request: Request): string | null {
   return /^[A-Za-z0-9_-]{43}$/.test(token) ? token : null;
 }
 
-const headers = { 'cache-control': 'no-store', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff', 'x-frame-options': 'DENY', 'cross-origin-resource-policy': 'same-origin' };
+const headers = { 'cache-control': 'no-store', 'referrer-policy': 'no-referrer', 'x-content-type-options': 'nosniff',
+  'x-frame-options': 'DENY', 'cross-origin-resource-policy': 'same-origin',
+  vary: 'Sec-Fetch-Site, Sec-Fetch-Mode, Sec-Fetch-Dest' };
 export function json(data: unknown, status = 200, extra: Record<string, string> = {}): Response {
   return Response.json(data, { status, headers: { ...headers, ...extra } });
 }
 export function empty(status: number, extra: Record<string, string> = {}): Response {
   return new Response(null, { status, headers: { ...headers, ...extra } });
 }
-export function page(title: string, message: string, token?: string, status = 200): Response {
+export function page(title: string, message: string, token?: string, status = 200,
+  action = '/api/auth/verify-email', button = '设置密码并确认邮箱'): Response {
   const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
-  const form = token ? `<form method="post" action="/api/auth/verify-email"><input type="hidden" name="token" value="${escape(token)}"><label>账户密码 <input type="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required></label><button type="submit">设置密码并确认邮箱</button></form>` : '';
+  const form = token ? `<form method="post" action="${escape(action)}"><input type="hidden" name="token" value="${escape(token)}"><label for="password">新密码</label><input id="password" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required><button type="submit">${escape(button)}</button></form>` : '';
   return new Response(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)}</title><main><h1>${escape(title)}</h1><p>${escape(message)}</p>${form}</main></html>`, {
     status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'content-security-policy': "default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'" },
   });
