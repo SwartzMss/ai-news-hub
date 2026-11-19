@@ -42,7 +42,7 @@ Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`
 
 注册和找回密码必须提交 Turnstile Token；服务端调用 Cloudflare Siteverify，验证 `success`、本站 hostname 与对应 action，并在用户 D1 记录令牌哈希，拒绝重复使用。登录在同一 IP 或邮箱 15 分钟内超过 6 次尝试时要求 action 为 `login` 的新挑战；即使密码正确也不能绕过。Siteverify Token 过期或失败需重新获取。Turnstile 校验前先限制 IP，成功后才计入注册/找回的邮箱额度，避免无效挑战耗尽他人的邮箱额度。具体 [Cloudflare 服务端验证规则](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/)指出 Token 约 5 分钟有效且只能使用一次；本地 D1 去重补足短时间内的重放收敛窗口。
 
-固定窗口限流保存在 `auth_rate_limits`，IP/邮箱键由 Secret 通过 HMAC 派生，Turnstile Token 另存 SHA-256 哈希；不保存原始 IP/邮箱/挑战 Token；仅信任 Cloudflare 的 `CF-Connecting-IP`，忽略客户端 `X-Forwarded-For`。注册：每 IP 10 次/小时、每邮箱 3 次/天；找回：每 IP 10 次/天、每邮箱 3 次/天；登录：每 IP 30 次/15 分钟、每邮箱 12 次/15 分钟；验证：每 IP 30 次/小时、每 Token 5 次/小时；重置和改密各有 IP 与 Token/账户额度。超限返回 429。过期窗口在请求过程中分批清理。以上规则降低滥用，但不能替代 Cloudflare 平台监控与实际流量验收。
+固定窗口限流保存在 `auth_rate_limits`，IP/邮箱键由 Secret 通过 HMAC 派生，Turnstile Token 另存 SHA-256 哈希；不保存原始 IP/邮箱/挑战 Token；仅信任 Cloudflare 的 `CF-Connecting-IP`，忽略客户端 `X-Forwarded-For`。注册：每 IP 10 次/小时、每邮箱 3 次/天；找回：每 IP 10 次/天、每邮箱 3 次/天；登录：每 IP 30 次/15 分钟、每邮箱 12 次/15 分钟；验证：每 IP 30 次/小时、每 Token POST 5 次/小时；重置与改密各有 IP 与 Token/账户额度。邮件链接 GET 只计 IP，不耗尽一次性 Token 的提交额度。超限返回 429。过期窗口在请求过程中分批清理。以上规则降低滥用，但不能替代 Cloudflare 平台监控与实际流量验收。
 
 数据库只保存密码派生值、Session Token 的 SHA-256 哈希和验证 Token 的 SHA-256 哈希；明文随机 Token 只发给浏览器或邮件，不入日志。邮箱由写入端规范化为小写，数据库再次约束唯一性。验证和 Session 查询始终从哈希查用户，忽略客户端提供的 `user_id`。
 

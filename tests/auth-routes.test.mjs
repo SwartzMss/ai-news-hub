@@ -31,7 +31,9 @@ test('registration stores password and verification token hashes; GET does not v
   assert.equal(f.db.prepare('SELECT email_verified_at FROM users').get().email_verified_at, null);
   assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD } })).status, 200);
   assert.equal(f.db.prepare('SELECT email_verified_at FROM users').get().email_verified_at, NOW);
-  assert.equal((await request(f, 'verify-email', { body: { token, password: PASSWORD } })).status, 400);
+  assert.equal((await request(f, 'verify-email', { body: { token, password: 'replayed attacker password' } })).status, 400);
+  assert.equal((await request(f, 'login', { body: { email: EMAIL, password: PASSWORD } })).status, 200);
+  assert.equal((await request(f, 'login', { body: { email: EMAIL, password: 'replayed attacker password' } })).status, 401);
 });
 
 test('unverified and missing accounts cannot login; verified session authenticates me and logout revokes it', async t => {
@@ -344,4 +346,27 @@ test('cross-site subresource requests cannot use auth APIs while email link navi
   const token = tokenFrom(f);
   const navigation = { 'sec-fetch-site': 'cross-site', 'sec-fetch-mode': 'navigate', 'sec-fetch-dest': 'document' };
   assert.equal((await request(f, `verify-email?token=${token}`, { method: 'GET', headers: navigation })).status, 200);
+});
+
+test('mail link previews cannot exhaust the token budget for confirmation submits', async t => {
+  const f = fixture(); t.after(() => f.close());
+  await request(f, 'register', { body: { email: EMAIL, password: PASSWORD } });
+  const verification = tokenFrom(f);
+  for (let i = 0; i < 6; i++) assert.equal((await request(f, `verify-email?token=${verification}`, { method: 'GET' })).status, 200);
+  assert.equal((await request(f, 'verify-email', { body: { token: verification, password: PASSWORD } })).status, 200);
+  await request(f, 'forgot-password', { body: { email: EMAIL, turnstileToken: 'reset-preview' }, turnstileAction: 'forgot_password' });
+  const reset = tokenFrom(f);
+  for (let i = 0; i < 6; i++) assert.equal((await request(f, `reset-password?token=${reset}`, { method: 'GET' })).status, 200);
+  assert.equal((await request(f, 'reset-password', { body: { token: reset, password: 'another secure password phrase' } })).status, 200);
+});
+
+test('verification and reset submissions have independent token attempt limits', async t => {
+  const f = fixture(); t.after(() => f.close());
+  const token = 'A'.repeat(43);
+  for (const action of ['verify-email', 'reset-password']) {
+    for (let i = 0; i < 5; i++) {
+      assert.equal((await request(f, action, { body: { token, password: PASSWORD } })).status, 400);
+    }
+    assert.equal((await request(f, action, { body: { token, password: PASSWORD } })).status, 429);
+  }
 });

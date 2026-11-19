@@ -83,7 +83,7 @@ export async function verifyEmail(ctx: AuthContext, config: AuthConfig): Promise
     const token = new URL(ctx.request.url).searchParams.get('token');
     if (!token || !TOKEN_PATTERN.test(token)) return page('链接已失效', '链接无效、已使用或已过期。', undefined, 400);
     const tokenHash = await hashToken(token);
-    await limitRequest(ctx, config, 'verify_email', tokenHash);
+    await limitRequest(ctx, config, 'verify_email', tokenHash, 'ip');
     const row = await config.db.prepare(`SELECT t.id FROM auth_email_tokens t JOIN users u ON u.id=t.user_id
       WHERE t.token_hash=? AND t.purpose='verify_email' AND t.consumed_at IS NULL
       AND t.expires_at>? AND u.status='active' AND u.email_verified_at IS NULL`)
@@ -163,7 +163,7 @@ export async function resetPassword(ctx: AuthContext, config: AuthConfig): Promi
     const token = new URL(ctx.request.url).searchParams.get('token');
     if (!token || !TOKEN_PATTERN.test(token)) return reply(false);
     const tokenHash = await hashToken(token);
-    await limitRequest(ctx, config, 'reset_password', tokenHash);
+    await limitRequest(ctx, config, 'reset_password', tokenHash, 'ip');
     const row = await config.db.prepare(`SELECT t.id FROM auth_email_tokens t JOIN users u ON u.id=t.user_id
       WHERE t.token_hash=? AND t.purpose='reset_password' AND t.consumed_at IS NULL
       AND t.expires_at>? AND u.status='active' AND u.email_verified_at IS NOT NULL`)
