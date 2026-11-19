@@ -526,6 +526,8 @@ Newsletter Scheduler 升级自动应用 migration 12 和新增的 migration 13�
 
 Pages Functions 的 Newsletter 并发批次修复依赖独立的 D1 migration 0002；在部署新 Functions 之前执行 `npx wrangler d1 migrations apply ai-news-hub-newsletter --remote`。此迁移与 Linux Backend 的 SQLite migration 12/13 分开，详见 [Newsletter](NEWSLETTER.md)。
 
+公共用户库使用另一套 Cloudflare D1 和 `USER_DB` Binding，生产与预览必须绑定不同数据库；本地/测试只用本地存储。先创建两个用户 D1 并分别应用 `users/migrations/`，再部署 Pages。它不改动 Newsletter D1 或 Linux Backend SQLite。创建、迁移、核验和配置步骤见 [用户 D1 数据库](USER_DB.md)（[#157](https://github.com/SwartzMss/ai-news-hub/issues/157)）。
+
 开源项目五方向研究升级：部署 Backend 与公开站构建代码后，在后台编辑已有「每日开源项目」任务，重新选择 `daily-opensource` v1 模板并保存，再手动运行和审核新日报。模板版本仍为 v1；新运行输出五方向分类与 `kind=project` 详情，新发布话题归档采用统一 v1 Schema。旧任务 Prompt 和历史 Run 不会自动改写；公开站只读取统一 v1 topic-scoped 归档，并按 details.kind 显示项目详情。
 
 详情页阅读导航升级仅涉及公共站构建与部署，不修改日报归档或任务 Prompt。部署时重新执行公共站构建，验收 news、investment、project 及历史项目页面的目录、证据锚点和移动端折叠导航。
