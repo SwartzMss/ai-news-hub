@@ -1,0 +1,301 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "885c310a-6264-4be8-9864-f3d328e8f278",
+  "report_date": "2026-11-19",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月19日",
+  "collected_at": "2026-11-19T00:15:49.849Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-19T00:15:49.858Z",
+  "reviewed_content_sha256": "33e0ce90eb794ffe9f6155b57b3d6646f7af00856d83fa5ae567c96eb69d7983",
+  "items": [
+    {
+      "id": "5c179b19cb0532a5a59b77e543e7e619767ed565d2fb2f4ba7ea930edacbd0a5",
+      "category": "gaming",
+      "importance": 4,
+      "fact_summary": "Rockstar官网列明《侠盗猎车手VI》预定于11月19日发售，平台为PlayStation 5和Xbox Series X|S。据IT之家11月18日报道，游戏按地区分批解锁，新西兰对应北京时间18日19时，港澳台地区定于19日零时解锁。",
+      "analysis": null,
+      "evidence_quote": "13 年等待结束：《侠盗猎车手 6》今明日正式发售，登陆 PS5、Xbox Series X|S 平台",
+      "details": {
+        "kind": "news",
+        "background": "《侠盗猎车手VI》是Rockstar开发的开放世界动作冒险游戏，故事设定在虚构的雷奥奈达州及罪恶城。",
+        "keyFacts": [
+          {
+            "name": "官网预定发售日期",
+            "value": "2026-11-19",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "发售平台",
+            "value": "PlayStation 5、Xbox Series X|S",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-19T00:00:00+08:00",
+            "precision": "datetime",
+            "event": "IT之家报道的港澳台地区预定解锁时间。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "官网页面仍使用预定发售表述，实际开放状态及各区服务情况尚无进一步确认。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Rockstar Games《Grand Theft Auto VI》官网",
+            "url": "https://www.rockstargames.com/VI",
+            "supports": "预定发售日期、游戏平台和故事背景。"
+          },
+          {
+            "id": "e2",
+            "name": "IT之家：GTA6各地区发售与解锁安排",
+            "url": "https://www.ithome.com/1/029/019.htm",
+            "supports": "11月18日至19日各地区解锁安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.ithome.com",
+        "original_url": "https://www.ithome.com/1/029/019.htm",
+        "canonical_url": "https://www.ithome.com/1/029/019.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "65bfb2222e0893c68fc00666daeab0ca4e4870f818624e0244781778d6c77aa1",
+      "category": "finance_consumption",
+      "importance": 4,
+      "fact_summary": "四川平武县市场监督管理局11月18日通报，已对被投诉烤全羊分量不足的涉事民宿立案调查。通报称，经营者未留存称重凭证，现有证据难以核实实际重量，参考视频疑似存在缺斤少两问题；现场另发现未明码标价。消费者与经营者已就赔付达成一致。",
+      "analysis": null,
+      "evidence_quote": "官方通报烤全羊被指剥不出1两肉：已对涉事民宿立案调查",
+      "details": {
+        "kind": "news",
+        "background": "游客于11月11日在平武县一家民宿预订烤全羊，用餐时认为分量不足。此次通报公布了实地调查情况和立案进展。",
+        "keyFacts": [
+          {
+            "name": "调查进展",
+            "value": "已对涉事民宿立案调查",
+            "period": "2026-11-18",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "称重证据",
+            "value": "经营者未留存称重凭证，实际重量难以核实",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-11",
+            "precision": "date",
+            "event": "游客在涉事民宿食宿并购买烤全羊。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-18",
+            "precision": "date",
+            "event": "市场监管部门通报调查情况，宣布已立案。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "烤全羊实际重量尚无法核实，“剥不出一两肉”并非监管部门确认的结论。"
+        ],
+        "watchpoints": [
+          "后续调查结论及行政处理结果。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "澎湃新闻刊载平武县市场监督管理局情况通报",
+            "url": "https://www.thepaper.cn/newsDetail_forward_34504099",
+            "supports": "事件时间、赔付进展、称重证据缺失、未明码标价及立案调查。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.thepaper.cn",
+        "original_url": "https://www.thepaper.cn/newsDetail_forward_34504099",
+        "canonical_url": "https://www.thepaper.cn/newsDetail_forward_34504099",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "839e44e4cd9e7fc49270ff761939d41fc801d9ce0db70bb4882b98e1a710c0c7",
+      "category": "tech_digital",
+      "importance": 3,
+      "fact_summary": "据凤凰网科技11月18日报道，蔚来副总裁马麟回应ES9灯光秀将“爸爸我爱你”判定违规的问题，称系统把“爱”识别成其他文字，触发内容限制。他表示原有限制策略不合理，相关问题已经修复。",
+      "analysis": null,
+      "evidence_quote": "蔚来ES9误判“爸爸我爱你”违规，副总裁马麟回应",
+      "details": {
+        "kind": "news",
+        "background": "一名ES9车主称，为女儿生日使用车载灯光秀时，手写“爸爸我爱你”被提示违规，改写“妈妈我爱你”则能正常生成。",
+        "timeline": [
+          {
+            "time": "2026-11-18",
+            "precision": "date",
+            "event": "马麟公开解释误识别原因，并表示限制策略已修复。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "蔚来副总裁马麟",
+            "statement": "系统对文字的识别错误触发了限制，原有处理策略不合理，已作修复。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道未披露此次问题涉及的车辆数量。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "凤凰网科技报道（老虎证券转载）",
+            "url": "https://www.itiger.com/hans/news/2684695938",
+            "supports": "车主反馈、马麟11月18日的解释及修复表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.itiger.com",
+        "original_url": "https://www.itiger.com/hans/news/2684695938",
+        "canonical_url": "https://www.itiger.com/hans/news/2684695938",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e7b543d52c1efb0f933c1db1ba6bf2bd93f31ea686197487a8956a4376cad3a9",
+      "category": "gaming",
+      "importance": 3,
+      "fact_summary": "据直播吧11月18日刊载的EDG人员变动公告，无畏契约选手郑永康（ID：ZmjjKK）经双方沟通协商，即日起正式离队。俱乐部感谢其贡献，并表示支持他继续职业生涯；公告未披露下一站。",
+      "analysis": null,
+      "evidence_quote": "EDG官宣：前无畏契约世界冠军 ZmjjKK正式离队",
+      "details": {
+        "kind": "news",
+        "background": "ZmjjKK曾帮助EDG夺得无畏契约全球冠军赛冠军，是俱乐部冠军阵容成员。",
+        "keyFacts": [
+          {
+            "name": "人员变动",
+            "value": "郑永康（ZmjjKK）正式离开EDG无畏契约分部",
+            "period": "2026-11-18",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "EDG电子竞技俱乐部",
+            "statement": "感谢ZmjjKK为团队作出的贡献，支持其开启新的职业旅程。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "此次公告未披露选手下一站去向。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "直播吧刊载EDG无畏契约分部人员变动公告",
+            "url": "https://m.zhibo8.com/news/web/game/2026-11-18/6afd854a2728dnative.htm",
+            "supports": "离队日期、选手身份及俱乐部正式表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "m.zhibo8.com",
+        "original_url": "https://m.zhibo8.com/news/web/game/2026-11-18/6afd854a2728dnative.htm",
+        "canonical_url": "https://m.zhibo8.com/news/web/game/2026-11-18/6afd854a2728dnative.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "88ca315c32a33b2ad8f3fbcf8577a7d1b63e3f4034dbcf1e6147b74578e2163b",
+      "category": "entertainment",
+      "importance": 2,
+      "fact_summary": "据潇湘晨报11月18日报道，陆雨萱（贝儿）当日宣布签约百沐娱乐，正式出道。她此前已发行个人单曲，今年9月推出《如果某天有人读懂我的安静》，10月26日发布《喜欢》。",
+      "analysis": null,
+      "evidence_quote": "演员陆毅女儿贝儿宣布签约百沐娱乐，正式出道",
+      "details": {
+        "kind": "news",
+        "background": "陆雨萱是演员陆毅与鲍蕾的女儿，曾与陆毅参加《爸爸去哪儿》第二季，并参与动画电影配音及音乐作品录制。",
+        "keyFacts": [
+          {
+            "name": "签约公司",
+            "value": "百沐娱乐",
+            "period": "2026-11-18",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "潇湘晨报：贝儿宣布签约百沐娱乐（凤凰网刊载）",
+            "url": "https://news.ifeng.com/c/8y9LynoVPSB",
+            "supports": "11月18日签约消息及此前演艺、音乐经历。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8y9LynoVPSB",
+        "canonical_url": "https://news.ifeng.com/c/8y9LynoVPSB",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
