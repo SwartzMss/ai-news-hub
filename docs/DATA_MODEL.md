@@ -101,6 +101,8 @@ Migration 10 为 `codex_news_runs` 追加 nullable `public_topic_json`。新受�
 
 公共用户数据使用另一独立 Cloudflare D1 `USER_DB`，迁移位于 `users/migrations/`。`users` 保存规范化唯一邮箱、密码哈希、验证时间和账户状态；`auth_sessions` 保存 Session Token 哈希；`auth_email_tokens` 保存验证/重置 Token 哈希。子表通过级联外键关联用户。它与 Newsletter D1 无跨库关系，也不进入 Backend SQLite、GitHub 归档或公开输出。见 [用户 D1 数据库](USER_DB.md)。
 
+认证 API 只在用户 D1 写入用户、验证 Token 和 Session；Token 原文仅在邮件链接或 Cookie 中，数据库保存 SHA-256 哈希。密码使用带独立盐和参数标识的 PBKDF2-HMAC-SHA256 派生值。见 [公共用户认证](AUTH.md)。
+
 Migration 11 追加 `report_deletions`，保存日报 ID、频道、日期、版本、删除状态和安全错误码，不保存正文或凭据；不以外键依赖被删除的日报。成功删除日报及批准、发布与条目关联，news_runs/codex_news_runs.report_id 置空，写入 report_deleted 运行事件。运行、轮次、来源原文和快照历史保留。版本分配同时查询日报和删除记录，避免复用已经删除的归档路径。失败或中断的删除由用户显式重试，不自动恢复发布。
 
 ## 投资研究详情
