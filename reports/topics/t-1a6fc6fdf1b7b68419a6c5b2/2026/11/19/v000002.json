@@ -1,0 +1,792 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "ffdcacb5-c9cf-4812-926d-5ba20167b829",
+  "report_date": "2026-11-19",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-19｜统计：2026-11-18 08:08:25—2026-11-19 08:08:25（北京时间；更新回溯72小时，含持续维护项目发现）",
+  "collected_at": "2026-11-19T00:19:17.635Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-19T00:19:17.648Z",
+  "reviewed_content_sha256": "6f61753643699246c5d2052afaf2a5867b4266a6e46381558ff516a379391204",
+  "items": [
+    {
+      "id": "655da18c731a96055ec26a4624ced39ce5ce33fc061313071c84eae48460e4e9",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "OpenHands 官方宣布，v1.42.0 恢复自动化流程的原生 webhook 来源验证，并增加仓库连接时精确选择 Git provider 的能力。发布说明标注11月18日，可供使用外部事件触发 Coding Agent 工作流的团队关注。[项目仓库](https://github.com/OpenHands/OpenHands)",
+      "analysis": "来源验证直接关系到自动化任务的触发边界，适合已有 webhook 集成的团队检查升级。此次属于具体集成与可靠性改进，实际适用范围仍应结合部署方式核对。",
+      "evidence_quote": "fix(automations): restore native webhook source validation",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "提供 Coding Agent 的自托管控制界面，并支持定时或 webhook 触发自动化。",
+        "change": {
+          "summary": "正式发布 v1.42.0，恢复原生 webhook 来源验证，增加精确选择已连接 Git provider 的能力。",
+          "version": "v1.42.0",
+          "type": "release",
+          "publishedAt": "2026-11-18",
+          "evidenceRefs": [
+            "oh1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "自动化可按计划运行，也可响应 webhook 事件。",
+            "evidenceRefs": [
+              "oh2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "通过代码托管服务事件触发 Agent 工程任务。",
+            "evidenceRefs": [
+              "oh2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库根授权文件覆盖的软件与文档。",
+          "evidenceRefs": [
+            "oh3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "已有自动化集成的团队值得检查本次来源验证修复。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "oh1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "oh1",
+            "name": "v1.42.0 发布说明",
+            "url": "https://github.com/OpenHands/OpenHands/releases/tag/v1.42.0",
+            "supports": "版本、发布日期及本次变化。"
+          },
+          {
+            "id": "oh2",
+            "name": "官方仓库",
+            "url": "https://github.com/OpenHands/OpenHands",
+            "supports": "控制界面、后端连接与自动化能力。"
+          },
+          {
+            "id": "oh3",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/OpenHands/OpenHands/main/LICENSE",
+            "supports": "代码授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/OpenHands/OpenHands/releases/tag/v1.42.0",
+        "canonical_url": "https://github.com/OpenHands/OpenHands/releases/tag/v1.42.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8c8afbc5e665c59a95b5347012b0e94e084f756b06fb927be70a574020299848",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Plasmate 官方仓库称，它将 HTML 转换为供 Agent 使用的语义对象模型，结合 V8、MCP、AWP 和有限的 CDP 兼容层提供页面读取与交互。本次作为项目发现收录，11月18日仍有维护提交；v0.6.0 在变更记录中仍标为未发布。[项目仓库](https://github.com/plasmate-labs/plasmate)",
+      "analysis": "结构化页面表示适合网页信息提取和受控浏览器自动化。采用前需验证目标站点及所需 CDP 方法，官方明确没有承诺完整的 Puppeteer、Playwright 或网页平台兼容性。",
+      "evidence_quote": "HTML in. Semantic Object Model out.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "将网页转成语义对象模型，供 Agent 获取内容并操作交互元素。",
+        "technical": [
+          {
+            "description": "通过 V8 执行页面脚本，再将 DOM 变化序列化并编译为 SOM。",
+            "evidenceRefs": [
+              "pl1"
+            ]
+          },
+          {
+            "description": "提供原生 MCP、AWP，以及文档限定的 CDP 子集。",
+            "evidenceRefs": [
+              "pl1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为网页提取和自动化流程提供结构化页面输入。",
+            "evidenceRefs": [
+              "pl1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "项目代码。",
+          "evidenceRefs": [
+            "pl4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月18日有合并提交；v0.6.0 仍属未发布候选。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "pl2",
+              "pl3"
+            ]
+          },
+          {
+            "description": "适合针对具体网页验证，不能据此假设完整浏览器兼容性。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "pl1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "pl1",
+            "name": "官方仓库与兼容性说明",
+            "url": "https://github.com/plasmate-labs/plasmate",
+            "supports": "能力、机制与兼容边界。"
+          },
+          {
+            "id": "pl2",
+            "name": "官方提交记录",
+            "url": "https://github.com/plasmate-labs/plasmate/commits",
+            "supports": "11月18日维护活动。"
+          },
+          {
+            "id": "pl3",
+            "name": "变更记录",
+            "url": "https://raw.githubusercontent.com/plasmate-labs/plasmate/master/CHANGELOG.md",
+            "supports": "v0.6.0 尚未发布。"
+          },
+          {
+            "id": "pl4",
+            "name": "授权文件",
+            "url": "https://raw.githubusercontent.com/plasmate-labs/plasmate/master/LICENSE",
+            "supports": "Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/plasmate-labs/plasmate",
+        "canonical_url": "https://github.com/plasmate-labs/plasmate",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c7d21c81942f9a6adeb332bf80858e2c31a2b97df4b5863a66bdcf70e987cd5a",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Yazi 官方仓库称，它是采用非阻塞异步 I/O 的 Rust 终端文件管理器，提供任务管理、文件预览、Lua 插件和虚拟文件系统。本次作为成熟项目发现收录；官方 Nightly 正文记录11月13日生成构建，提供近期维护证据。[项目仓库](https://github.com/sxyazi/yazi)",
+      "analysis": "适合经常在终端处理文件、预览素材和扩展批量操作的用户。异步任务与插件接口也有工程阅读价值；采用新能力时需要区分稳定版本与开发构建。",
+      "evidence_quote": "Yazi - ⚡️ Blazing Fast Terminal File Manager",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "在终端统一管理文件、预览内容并调度文件操作任务。",
+        "technical": [
+          {
+            "description": "I/O 异步执行，CPU 任务分布到多个线程，并提供任务取消和进度更新。",
+            "evidenceRefs": [
+              "ya1"
+            ]
+          },
+          {
+            "description": "Lua 插件支持预览等扩展，虚拟文件系统支持远程文件管理与自定义提供者。",
+            "evidenceRefs": [
+              "ya1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在终端浏览、预览文件并管理后台文件任务。",
+            "evidenceRefs": [
+              "ya1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "主项目代码；图标另有授权文件。",
+          "evidenceRefs": [
+            "ya1",
+            "ya3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "Nightly 正文记录生成于2026年11月13日05:41 UTC。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "ya2"
+            ]
+          },
+          {
+            "description": "适合需要可扩展文件工作流的终端用户，部署时应按实际版本核对功能。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "ya1",
+              "ya2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ya1",
+            "name": "官方仓库",
+            "url": "https://github.com/sxyazi/yazi",
+            "supports": "能力、架构及图标授权文件的存在。"
+          },
+          {
+            "id": "ya2",
+            "name": "官方发布记录",
+            "url": "https://github.com/sxyazi/yazi/releases",
+            "supports": "近期开发构建证据。"
+          },
+          {
+            "id": "ya3",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/sxyazi/yazi/main/LICENSE",
+            "supports": "主项目授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/sxyazi/yazi",
+        "canonical_url": "https://github.com/sxyazi/yazi",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4ba20179c6333ede3390db904b30dd77b64d7d65c0830b6053a7ccd1b68c8b67",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Dust 官方仓库称，它以目录树、大小和占比展示磁盘使用情况，帮助用户直接找到占空间的文件与子目录。本次作为实用 Rust CLI 项目发现收录；9月16日的 v1.2.6 提供近90天维护证据，不作为今日功能发布。[项目仓库](https://github.com/bootandy/dust)",
+      "analysis": "适合排查缓存、构建产物或数据目录的空间占用，层级条形展示能减少手动排序和逐层检查。该版本说明没有列出功能变化，因此推荐依据是工具用途与维护记录。",
+      "evidence_quote": "du + rust = dust. Like du but more intuitive.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "以可视化目录层级展示磁盘占用，辅助定位大文件和大目录。",
+        "technical": [
+          {
+            "description": "自动向较大子目录递归，并用条形与颜色表示占用和父子关系。",
+            "evidenceRefs": [
+              "du1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "定位缓存、构建产物和数据目录中的主要空间占用。",
+            "evidenceRefs": [
+              "du1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "项目代码。",
+          "evidenceRefs": [
+            "du3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v1.2.6 发布于9月16日；页面显示此后还有16次提交。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "du2"
+            ]
+          },
+          {
+            "description": "适合快速空间排查；发布说明不足以支持具体新功能结论。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "du1",
+              "du2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "du1",
+            "name": "官方仓库",
+            "url": "https://github.com/bootandy/dust",
+            "supports": "工具目的与展示机制。"
+          },
+          {
+            "id": "du2",
+            "name": "v1.2.6 发布页",
+            "url": "https://github.com/bootandy/dust/releases/tag/v1.2.6",
+            "supports": "维护时间及版本说明范围。"
+          },
+          {
+            "id": "du3",
+            "name": "授权文件",
+            "url": "https://raw.githubusercontent.com/bootandy/dust/master/LICENSE",
+            "supports": "Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/bootandy/dust",
+        "canonical_url": "https://github.com/bootandy/dust",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6596d4caae506b37b4f813aa4b35f5cee39948ecf780fd8645e23e3c20248a1e",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Auto-Editor 官方仓库称，它通过音量、画面运动等分析自动剪辑视频和音频，可用于清理长录制中的空白片段。本次作为持续维护项目发现收录；11月13日的31.9.0 加入 FCPXML 导入、速度渐变和字幕轨道等能力。[项目仓库](https://github.com/WyattBlue/auto-editor)",
+      "analysis": "适合录课、访谈等素材的初剪，以及将自动处理结果交给人工继续编辑。时间线交换能力有实际价值，但不同编辑器对转场、字幕和速度渐变的保留程度存在差异。",
+      "evidence_quote": "Auto-Editor is a command line application for automatically editing video and audio",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "自动分析并剪辑音视频，减少长素材初剪中的重复操作。",
+        "technical": [
+          {
+            "description": "根据音频响度、画面运动及组合表达式决定自动剪切。",
+            "evidenceRefs": [
+              "ae1"
+            ]
+          },
+          {
+            "description": "31.9.0 支持 FCPXML 导入、速度渐变、字幕轨道和 EDL 交换。",
+            "evidenceRefs": [
+              "ae2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "清理录课或访谈空白片段，再导出到编辑器继续处理。",
+            "evidenceRefs": [
+              "ae1",
+              "ae2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Unlicense",
+          "scope": "项目自身代码；不扩展至第三方依赖或输入素材。",
+          "evidenceRefs": [
+            "ae3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "31.9.0 发布于11月13日；部分编辑器格式会降级或省略无法表示的效果。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "ae2"
+            ]
+          },
+          {
+            "description": "适合自动初剪与人工精剪衔接，交换时间线前应验证效果保留情况。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "ae2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ae1",
+            "name": "官方仓库",
+            "url": "https://github.com/WyattBlue/auto-editor",
+            "supports": "自动剪辑机制与使用场景。"
+          },
+          {
+            "id": "ae2",
+            "name": "31.9.0 发布说明",
+            "url": "https://github.com/WyattBlue/auto-editor/releases/tag/31.9.0",
+            "supports": "维护时间、时间线能力及格式限制。"
+          },
+          {
+            "id": "ae3",
+            "name": "授权文件",
+            "url": "https://raw.githubusercontent.com/WyattBlue/auto-editor/master/LICENSE",
+            "supports": "Unlicense 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/WyattBlue/auto-editor",
+        "canonical_url": "https://github.com/WyattBlue/auto-editor",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9c90fe0639aa43be54100044d955669f75b9af9e7bad54353cdd15aa6ee2b3e1",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Handy 官方仓库称，它在本地完成语音识别，通过快捷键录音并将文字输入当前应用，支持 Whisper、Parakeet 和 VAD。本次作为离线语音工具发现收录；11月14日的 v0.10.1 增加 Opus 文件解码并修复多项桌面平台问题。[项目仓库](https://github.com/cjpais/Handy)",
+      "analysis": "适合重视音频本地处理的桌面听写场景，快捷键到文本框的流程降低了跨应用使用成本。实际识别体验仍取决于所选模型与设备，代码许可证也不自动覆盖模型权重。",
+      "evidence_quote": "A free, open source, and extensible speech-to-text application that works completely offline.",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "提供本地语音转文字，并将识别结果输入用户正在使用的应用。",
+        "technical": [
+          {
+            "description": "使用 Silero VAD 过滤静音，可选择 Whisper 或 Parakeet 模型。",
+            "evidenceRefs": [
+              "ha1"
+            ]
+          },
+          {
+            "description": "通过可配置快捷键控制录音，将转写结果粘贴到当前应用。",
+            "evidenceRefs": [
+              "ha1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在编辑器或其他文本输入框内进行离线听写。",
+            "evidenceRefs": [
+              "ha1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "应用代码；不据此声明模型权重授权。",
+          "evidenceRefs": [
+            "ha3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月14日的 v0.10.1 提供近期维护证据，并加入 Opus 文件解码。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "ha2"
+            ]
+          },
+          {
+            "description": "适合本地听写；应按设备和语言选择模型并验证效果。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "ha1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ha1",
+            "name": "官方仓库",
+            "url": "https://github.com/cjpais/Handy",
+            "supports": "离线能力与工作流程。"
+          },
+          {
+            "id": "ha2",
+            "name": "v0.10.1 发布说明",
+            "url": "https://github.com/cjpais/Handy/releases/tag/v0.10.1",
+            "supports": "近期维护、Opus 解码及平台修复。"
+          },
+          {
+            "id": "ha3",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/cjpais/Handy/main/LICENSE",
+            "supports": "应用代码授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/cjpais/Handy",
+        "canonical_url": "https://github.com/cjpais/Handy",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2ad26709981472ec58cc33189707acb4f05c7a9743d56e014821aa095187328c",
+      "category": "security",
+      "importance": 5,
+      "fact_summary": "agent-framework 的 GitHub 安全通告称，PyPI 发行物1.26.1和1.26.2 含凭据窃取代码，可通过 .pth 在 Python 启动时执行，两版本已被移除。通告于11月18日发布，将1.26.0列为此前干净版本；本条作为供应链事件更新收录。[项目仓库](https://github.com/microsoft/agent-framework)",
+      "analysis": "该触发方式让风险超出显式导入 Agent 框架的进程，值得使用相关依赖的开发和 CI 团队优先排查。通告尚不能证明具体入侵入口，也不能把发行物问题推广到所有组件。",
+      "evidence_quote": "Malicious code in agent-framework (PyPI)",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "本条跟进 Microsoft Agent Framework 的 Python 发行物供应链事件。",
+        "change": {
+          "summary": "安全通告披露1.26.1和1.26.2含窃取代码，已从 PyPI 移除；通告未列修补版本。",
+          "version": "1.26.1 / 1.26.2",
+          "type": "technical",
+          "publishedAt": "2026-11-18",
+          "evidenceRefs": [
+            "af1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "恶意发行物使用 .pth 启动钩子，无需显式导入框架即可执行。",
+            "evidenceRefs": [
+              "af1"
+            ]
+          },
+          {
+            "description": "通告记录环境变量、凭据文件及云元数据令牌窃取行为。",
+            "evidenceRefs": [
+              "af1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "排查开发环境与 CI 是否安装过受影响版本。",
+            "evidenceRefs": [
+              "af1"
+            ]
+          }
+        ],
+        "evaluation": [
+          {
+            "description": "通告称两个恶意版本已移除，1.26.0及此前版本不受该事件影响。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "af1"
+            ]
+          },
+          {
+            "description": "应按具体版本和发行物判断影响，不能据此推断整个组件生态均被污染。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "af1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "af1",
+            "name": "GitHub 恶意包安全通告",
+            "url": "https://github.com/advisories/GHSA-764m-3ppc-5m73",
+            "supports": "事件时间、受影响版本、执行机制与移除状态。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/advisories/GHSA-764m-3ppc-5m73",
+        "canonical_url": "https://github.com/advisories/GHSA-764m-3ppc-5m73",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "dff5d9d6b168dac08fb535bdf5e1893794141a3fe20e6dbe41cbabbdb65e376f",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "samply 官方仓库称，它提供 macOS、Linux、Windows 命令行 CPU 采样分析，并以 Firefox Profiler 展示结果，可辅助定位程序热点。本次作为成熟项目发现收录；11月2日的官方提交记录证明仍有维护，不将旧版 Windows 支持写成今日更新。[项目仓库](https://github.com/mstange/samply)",
+      "analysis": "适合希望用统一界面查看不同平台 CPU 采样结果的开发者。它的价值在采集与可视化衔接；不同平台的采集权限和符号配置仍需分别准备，不能等同于所有分析行为一致。",
+      "evidence_quote": "Command-line sampling profiler for macOS, Linux, and Windows",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "从命令行采集 CPU 性能数据，并通过 Firefox Profiler 界面查看。",
+        "technical": [
+          {
+            "description": "支持 macOS、Linux、Windows；Linux 使用 perf events。",
+            "evidenceRefs": [
+              "sa1"
+            ]
+          },
+          {
+            "description": "支持配置符号服务器，帮助解析采样堆栈。",
+            "evidenceRefs": [
+              "sa1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "对应用执行过程采样并定位 CPU 热点。",
+            "evidenceRefs": [
+              "sa1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "代码的 MIT 授权选项。",
+          "evidenceRefs": [
+            "sa3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "官方提交页记录11月2日仍有维护提交。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "sa2"
+            ]
+          },
+          {
+            "description": "适合跨平台热点分析，但采集权限与符号配置需按平台核对。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "sa1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "sa1",
+            "name": "官方仓库",
+            "url": "https://github.com/mstange/samply",
+            "supports": "平台支持、采样与符号化能力。"
+          },
+          {
+            "id": "sa2",
+            "name": "官方提交记录",
+            "url": "https://github.com/mstange/samply/commits",
+            "supports": "11月2日维护证据。"
+          },
+          {
+            "id": "sa3",
+            "name": "MIT 授权文件",
+            "url": "https://raw.githubusercontent.com/mstange/samply/main/LICENSE-MIT",
+            "supports": "MIT 授权选项。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mstange/samply",
+        "canonical_url": "https://github.com/mstange/samply",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8a967ece1ec068ec950b46731fd4b2205b8463e563bca144d7e17ef249b94095",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Hyperdrive 官方仓库称，它提供实时分布式文件系统，支持文件读写、目录遍历和流接口，并可通过 discovery key 在 Hyperswarm 中发现数据。本次作为成熟 P2P 项目发现收录；9月17日的版本与功能提交提供近90天维护证据。[项目仓库](https://github.com/holepunchto/hyperdrive)",
+      "analysis": "适合构建 P2P 文件分发与同步应用，其文件接口比底层连接库更接近业务需求。采用时仍需设计发现、写权限与持久保存策略，接口存在本身不能证明生产级可用性保证。",
+      "evidence_quote": "Hyperdrive is a secure, real-time distributed file system",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "为分布式应用提供文件、目录及流式读写接口。",
+        "technical": [
+          {
+            "description": "目录结构由 Hyperbee 支撑，文件内容关联 Hyperblobs。",
+            "evidenceRefs": [
+              "hy1"
+            ]
+          },
+          {
+            "description": "公开密钥标识数据，discovery key 可作为 Hyperswarm 主题。",
+            "evidenceRefs": [
+              "hy1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建需要文件接口的 P2P 数据分发或同步应用。",
+            "evidenceRefs": [
+              "hy1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "项目代码。",
+          "evidenceRefs": [
+            "hy3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "提交记录显示9月17日有13.3.4版本及下载差异相关提交。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "hy2"
+            ]
+          },
+          {
+            "description": "适合研究应用层文件同步，实际持久性与权限策略仍需单独设计。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "hy1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "hy1",
+            "name": "官方仓库与 API",
+            "url": "https://github.com/holepunchto/hyperdrive",
+            "supports": "文件能力、底层结构与发现机制。"
+          },
+          {
+            "id": "hy2",
+            "name": "官方提交记录",
+            "url": "https://github.com/holepunchto/hyperdrive/commits",
+            "supports": "9月17日维护证据。"
+          },
+          {
+            "id": "hy3",
+            "name": "授权文件",
+            "url": "https://raw.githubusercontent.com/holepunchto/hyperdrive/main/LICENSE",
+            "supports": "Apache-2.0 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/holepunchto/hyperdrive",
+        "canonical_url": "https://github.com/holepunchto/hyperdrive",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
