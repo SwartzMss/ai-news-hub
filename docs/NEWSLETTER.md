@@ -25,6 +25,8 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 公共用户账户另用独立 `USER_DB`，其迁移和环境隔离见 [用户 D1 数据库](USER_DB.md)。Newsletter 的订阅者、发送记录和迁移历史不迁入用户库；新增用户库不会改变现有邮件开关或订阅流程。
 
+认证验证邮件复用 Resend 发信传输代码与账号，但从 `AUTH_ENABLED`、`AUTH_FROM` 和 `USER_DB` 独立配置；关闭 Newsletter 不会关闭认证邮件，认证也不读取 `NEWSLETTER_TOKEN_SECRET`。见 [公共用户认证](AUTH.md)。
+
 ## 3. 设置 Pages 生产环境
 
 | 变量 | 填写内容 |
@@ -44,7 +46,7 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 配置好后重新部署 Pages。启用时，Header 显示 Subscribe 按钮，点击打开邮件订阅弹窗；页面底部仅保留版权信息。弹窗使用现有订阅 API，未启用时不显示按钮和弹窗，演示站始终禁用订阅。预览域名与 `SITE_URL` 不一致时接口拒绝操作。
 
-订阅接口由仓库根目录的 Pages Functions 提供，构建输出仍为 `dist/web`。Pages 的 Functions 路由只处理 `/api/newsletter/*`，不连接私有管理后台。
+订阅接口由仓库根目录的 Pages Functions 提供，构建输出仍为 `dist/web`。Newsletter 路由只处理 `/api/newsletter/*`；独立的公共认证路由处理 `/api/auth/*`，两者都不连接私有管理后台。
 
 ## 4. 开启每日发送
 

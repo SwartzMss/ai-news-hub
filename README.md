@@ -24,7 +24,9 @@ AI News Hub 将资讯研究、内容审核、归档和分发串联为一条工�
 
 Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。每日邮件由 Linux Backend Scheduler 按配置的北京时间计划调度，并通过 GitHub Actions API 触发 `workflow_dispatch`；GitHub Actions 负责运行发送脚本，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。GitHub Actions 不配置 `schedule` 定时触发；邮件投递需完成生产环境配置。
 
-公共用户账户的数据基础设施另使用 `USER_DB` D1，与邮件订阅库和 Linux SQLite 隔离；当前仅有迁移和环境配置，注册、登录及收藏 API 尚未实现。见 [用户 D1 部署](docs/USER_DB.md)（[#157](https://github.com/SwartzMss/ai-news-hub/issues/157)）。
+公共用户账户的数据基础设施另使用 `USER_DB` D1，与邮件订阅库和 Linux SQLite 隔离；收藏 API 尚未实现。见 [用户 D1 部署](docs/USER_DB.md)（[#157](https://github.com/SwartzMss/ai-news-hub/issues/157)）。
+
+Pages Functions 已加入默认关闭的邮箱密码认证 API，包括注册、邮箱验证、登录、`me` 和退出；生产仍需单独配置并验收 `AUTH_*` 与 Resend，前端用户中心属于后续阶段。见 [公共用户认证](docs/AUTH.md)（[#158](https://github.com/SwartzMss/ai-news-hub/issues/158)）。
 
 最终日报的 `details.kind` 标识新闻、投资或项目详情，仍为必填；Backend 为 Codex 的结构化输出 Schema 补齐常量和枚举的类型声明。升级此修复后需重新构建并重启 Backend，再手动重跑此前因 `invalid_json_schema` 失败的任务。
 

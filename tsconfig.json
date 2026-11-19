@@ -8,5 +8,5 @@
     "outDir": "dist",
     "skipLibCheck": true
   },
-  "include": ["tools/**/*.ts", "apps/server/src/**/*.ts", "packages/shared/src/**/*.ts", "scripts/**/*.ts", "newsletter/**/*.ts", "functions/**/*.ts"]
+  "include": ["tools/**/*.ts", "apps/server/src/**/*.ts", "packages/shared/src/**/*.ts", "scripts/**/*.ts", "cloudflare/**/*.ts", "newsletter/**/*.ts", "mail/**/*.ts", "auth/**/*.ts", "functions/**/*.ts"]
 }
