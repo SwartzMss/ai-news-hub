@@ -145,6 +145,8 @@ GitHub 上传路径只允许 topic-scoped v1 归档。升级后可重试此前�
 
 公共邮件订阅作为可选功能：Pages Functions 处理订阅确认与退订，独立 D1 保存私有订阅/发送状态，GitHub Actions 按上海时间每日触发汇总，Resend 负责实际发送；不连接私有 Backend 或向 Codex 暴露邮件凭据。默认关闭，演示站禁用，需完成发件域名、密钥和 D1 配置才可验收真实投递。每日发送从北京时间 09:00 开始检查；工作流兼容早期互换的 GitHub Variable/Secret 名称，待规范配置后移除旧项。见 [邮件订阅](NEWSLETTER.md)。
 
+公共用户数据规划为另一套 Pages Functions `USER_DB` D1：生产与预览使用不同数据库，本地测试使用本地存储；`users/migrations/` 与 Newsletter 的 D1 迁移、Linux Backend SQLite 迁移完全独立。目前只有基础表和配置，没有认证或收藏 API。见 [用户 D1 数据库](USER_DB.md) 与 [#157](https://github.com/SwartzMss/ai-news-hub/issues/157)。
+
 Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 `/api/prompt-templates` 读取模板；编辑器复制主题和全部轮次，任务及 Run 继续保存完整配置快照。每日开源项目 v1 为两轮：先按 AI Agent、Rust、多媒体、性能与安全、去中心化基础设施五个方向发现候选，再核实直接来源并生成 JSON；近期实质变化优先近 24 小时、最多回溯 72 小时，同时发现值得认识的新项目。每个方向精选 0～2 个，不设全局目标数量。输出包含 `researchArea`、`factSummary`、`analysis` 和 `kind=project` 结构化详情；所有主题归档统一采用 archive v1 Schema。明确区分更新与项目发现，社区热度只作发现线索。每日科技投资简报 v1 收窄为 AI 产业链、光模块与光通信、半导体三个方向，以 Nasdaq 为核心市场，NYSE 次之，仅在产业链直接相关时纳入 A 股/港股。两轮流程先发现候选，再核查来源与投资影响；优先最近 24 小时，必要时补充至 72 小时、最多 7 天。最终按事实增量、业绩影响和证据强度精选 5～8 条、最多 10 条，不设方向配额、不凑数。同一事件只归入一个主方向。第二轮使用专用三分类投资 Schema，每条必须包含 `kind=investment` 和至少一个原始证据；科技投资话题归档使用统一 archive v1，details.kind 必须为 investment。同任务最近 7 天最多 60 条完整摘要、来源 canonical URL 及可提取的项目仓库链接，作为不可信去重数据提供给所有托管主题日报；固定条数标记仅控制数量校验。开源项目第二轮模板再次要求在 factSummary 中写有证据的用途、技术要点等可识别标签，以匹配项目分节详情；无依据的技术栈直接省略。模板更新不改写已保存的任务和 Run。删除日报使用现有发布服务互斥锁，先核对归档字节哈希，以 Git tree/commit 和非强制 ref 更新原子移除日报 JSON，再事务删除本地日报、批准和发布记录及来源关联，并解除研究快照的 report_id。Run、Turn、来源原文和 Git 历史保留。删除状态持久化以支持显式重试，并禁止重新批准/发布进入删除流程的日报。
 
 邮件订阅修复 Cloudflare Workers 发信/读取日报前的请求兼容问题：使用 `redirect: manual` 并拒绝非 2xx，禁止自动跟随重定向。需重新部署 Pages，已有待确认订阅不会自动补发。排查步骤见 [邮件订阅](NEWSLETTER.md)。

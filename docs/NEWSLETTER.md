@@ -23,6 +23,8 @@ npx wrangler d1 migrations apply ai-news-hub-newsletter --remote
 
 在当前 Pages 项目的生产环境绑定该 D1 数据库，绑定名为 **`NEWSLETTER_DB`**。只放入订阅数据，不上传 Linux 后台的数据库。不要将生产 D1 或邮件密钥绑定到预览环境。
 
+公共用户账户另用独立 `USER_DB`，其迁移和环境隔离见 [用户 D1 数据库](USER_DB.md)。Newsletter 的订阅者、发送记录和迁移历史不迁入用户库；新增用户库不会改变现有邮件开关或订阅流程。
+
 ## 3. 设置 Pages 生产环境
 
 | 变量 | 填写内容 |

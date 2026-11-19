@@ -1,4 +1,6 @@
 # Copy to the repository root as wrangler.toml; do not commit the local copy.
+# Top-level bindings serve production and local emulation. Local runs use
+# Wrangler's local SQLite storage unless --remote is explicitly requested.
 name = "ai-news-hub"
 pages_build_output_dir = "./dist/web"
 compatibility_date = "2026-11-07"
@@ -6,5 +8,19 @@ compatibility_date = "2026-11-07"
 [[d1_databases]]
 binding = "NEWSLETTER_DB"
 database_name = "ai-news-hub-newsletter"
-database_id = "replace-with-your-d1-database-id"
+database_id = "replace-with-newsletter-production-database-id"
 migrations_dir = "newsletter/migrations"
+
+[[d1_databases]]
+binding = "USER_DB"
+database_name = "ai-news-hub-users"
+database_id = "replace-with-users-production-database-id"
+migrations_dir = "users/migrations"
+
+# Preview overrides the entire D1 binding list, including NEWSLETTER_DB.
+# Do not point this entry at the production user database.
+[[env.preview.d1_databases]]
+binding = "USER_DB"
+database_name = "ai-news-hub-users-preview"
+database_id = "replace-with-users-preview-database-id"
+migrations_dir = "users/migrations"
