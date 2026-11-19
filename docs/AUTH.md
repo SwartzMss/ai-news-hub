@@ -16,7 +16,7 @@ Issue [#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 在 Pages Func
 | `AUTH_TURNSTILE_SECRET` | Turnstile Secret Key，必须使用 Cloudflare Secret，绝不放入前端或 Git |
 | `AUTH_RATE_LIMIT_SECRET` | 至少 32 字符的随机密钥，用于按 IP/邮箱生成不可逆限流键；必须使用 Cloudflare Secret |
 
-Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`；若没有稳定的预览域名，保持 Preview 的 `AUTH_ENABLED` 未设置。生产 `AUTH_SITE_URL` 指向生产站点。先在各自用户 D1 应用 `0002.sql`，再部署使用该库的 Pages Functions。Turnstile Widget 只允许对应环境的站点主机名，并按 `register`、`forgot_password`、`login` 设置 action；Siteverify 返回的 hostname/action 必须匹配。`/api/auth/register` 和 `/api/auth/forgot-password` 还要求 `AUTH_FROM` 与 `RESEND_API_KEY`；登录、`me` 和退出在邮件配置缺失时仍可使用。页面部署后，在 Cloudflare 中保存变量/Secret 并重新部署才会生效。没有 `AUTH_RATE_LIMIT_SECRET` 或可信 `CF-Connecting-IP` 时，受限认证请求返回 503。
+Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`；若没有稳定的预览域名，保持 Preview 的 `AUTH_ENABLED` 未设置。生产 `AUTH_SITE_URL` 指向生产站点。代码可以在认证关闭时先部署；启用任一环境的认证前，必须先在该环境用户 D1 应用 `0002.sql`。Turnstile Widget 只允许对应环境的站点主机名，并按 `register`、`forgot_password`、`login` 设置 action；Siteverify 返回的 hostname/action 必须匹配。`/api/auth/register` 和 `/api/auth/forgot-password` 还要求 `AUTH_FROM` 与 `RESEND_API_KEY`；登录、`me` 和退出在邮件配置缺失时仍可使用。页面部署后，在 Cloudflare 中保存变量/Secret 并重新部署才会生效。没有 `AUTH_RATE_LIMIT_SECRET` 或可信 `CF-Connecting-IP` 时，受限认证请求返回 503。
 
 建议先在隔离 Preview 用自有邮箱验收；若暂不配置 Preview，则保持 Preview 认证关闭，并在生产受控测试后决定是否长期开放：注册返回统一 202、收到验证邮件、GET 只展示确认页、在确认页设置最终密码并 POST 验证、登录设置 Cookie、`me` 返回最小用户资料、退出后旧 Cookie 失效。再核对 Cloudflare Workers CPU/错误日志和 Resend 投递情况，确认生产计划后才设 Production `AUTH_ENABLED=1`。**不要**把密码、验证链接、Cookie、API Key 或完整请求日志发到 Issue。Newsletter 的 `NEWSLETTER_ENABLED` 保持独立；不需要改 Newsletter D1 或密钥。
 
