@@ -9,6 +9,7 @@ export function fixture() {
   db.exec(readFileSync(new URL('../../users/migrations/0001.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../../users/migrations/0002.sql', import.meta.url), 'utf8'));
   db.exec(readFileSync(new URL('../../users/migrations/0003.sql', import.meta.url), 'utf8'));
+  db.exec(readFileSync(new URL('../../users/migrations/0004.sql', import.meta.url), 'utf8'));
   const messages = [];
   class Statement {
     constructor(sql, params = []) { this.sql = sql; this.params = params; }
