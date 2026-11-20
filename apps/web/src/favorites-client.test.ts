@@ -44,7 +44,7 @@ describe("private favorites page", () => {
     vi.stubGlobal("fetch", vi.fn(async (input: string) => input === "/api/favorite-categories"
       ? Response.json({ categories: [] })
       : Response.json({ favorite: { id: "33333333-3333-4333-8333-333333333333", articleKey: "a".repeat(32), categoryId: null, createdAt: Date.now(),
-        snapshot: { article: { title: "存档", fact_summary: "事实摘要", analysis: "分析", evidence_quote: "原文引文", verification: "source_only",
+        snapshot: { article: { title: "存档", category: "科技", research_area: "agent", importance: 3, fact_summary: "事实摘要", analysis: "分析", evidence_quote: "原文引文", verification: "source_only",
           details: { kind: "news", background: "背景", evidence: [] }, source: { name: "来源", original_url: "https://example.com/a", canonical_url: "https://example.com/a", published_at: null, event_at: null, fetched_at: null },
           report_date: "2026-11-19", report_version: 3, first_approved_at: "2026-11-19T02:00:00Z", topic: { id: "t-0123456789abcdef01234567", name: "AI" }, key: "a".repeat(32) } } } })));
     await mountFavorites(Promise.resolve({ kind: "user", user: { id: "u1", email: "reader@example.com" } }));
@@ -53,5 +53,7 @@ describe("private favorites page", () => {
     expect(content).toContain("source_only");
     expect(content).toContain("2026-11-19");
     expect(content).toContain("日报版本3");
+    expect(content).toContain("文章分类科技");
+    expect(content).toContain("研究方向agent");
   });
 });

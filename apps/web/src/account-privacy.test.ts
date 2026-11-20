@@ -18,6 +18,8 @@ it("revalidates a restored private page before showing any cached data", async (
     <div data-account-links>收藏</div></main>`;
   vi.stubGlobal("fetch", vi.fn(async () => Response.json({ error: "unauthorized" }, { status: 401 })));
   watchPrivateSession();
+  window.dispatchEvent(new Event("pagehide"));
+  expect(document.querySelector("[data-account-email]")!.textContent).toBe("");
   const event = new Event("pageshow"); Object.defineProperty(event, "persisted", { value: true });
   window.dispatchEvent(event);
   await vi.waitFor(() => expect(document.querySelector("[data-account-status]")!.textContent).toMatch(/重新登录/));

@@ -54,6 +54,7 @@ export function watchPrivateSession(): void {
     checking = false;
   };
   window.addEventListener("pageshow", event => { if (event.persisted) void revalidate(); });
+  window.addEventListener("pagehide", () => clearPrivateContent());
   document.addEventListener("visibilitychange", () => { if (!document.hidden) void revalidate(); });
   authChannel?.addEventListener("message", event => { if (event.data === "logout") void revalidate(); });
 }

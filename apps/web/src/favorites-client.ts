@@ -5,7 +5,8 @@ import { clearPrivateContent } from "./account-privacy";
 interface Category { id: string; name: string; sortOrder: number }
 interface Favorite { id: string; articleKey: string; title: string; createdAt: number; categoryId: string | null;
   topic: { id: string; name: string }; sourceName: string; sourcePublishedAt: string | null; reportDate: string }
-interface Snapshot { article: { title: string; fact_summary: string; analysis: string | null; evidence_quote: string; verification: string;
+interface Snapshot { article: { title: string; category: string; research_area?: string; importance: number;
+  fact_summary: string; analysis: string | null; evidence_quote: string; verification: string;
   details: Record<string, unknown>; source: { name: string; original_url: string; canonical_url: string; published_at: string | null; event_at: string | null; fetched_at: string | null };
   report_date: string; report_version: number; first_approved_at: string; topic: { id: string; name: string }; key: string } }
 interface FavoriteDetail { id: string; articleKey: string; categoryId: string | null; createdAt: number; snapshot: Snapshot }
@@ -17,6 +18,7 @@ const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, t
   return node;
 };
 const date = (value: number | string | null) => value ? new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium" }).format(new Date(value)) : "日期未知";
+const dateTime = (value: string | null) => value ? new Intl.DateTimeFormat("zh-CN", { dateStyle: "medium", timeStyle: "medium" }).format(new Date(value)) : "时间未知";
 const articlePath = (topicId: string, key: string) => `/topics/${encodeURIComponent(topicId)}/news/${encodeURIComponent(key)}/`;
 const fieldNames: Record<string, string> = {
   background: "背景", keyFacts: "关键事实", timeline: "时间线", positions: "相关方观点", impacts: "影响",
@@ -165,7 +167,8 @@ export async function mountFavorites(auth: Promise<AuthState>): Promise<void> {
         if (!confirm(`删除分类「${item.name}」？其中的收藏会移至未分类。`)) return;
         try { await api<void>(`/api/favorite-categories/${item.id}`, "DELETE");
           if (categoryValue === item.id) { categoryValue = "all"; const next = new URL(location.href); next.searchParams.delete("category"); history.replaceState({}, "", next.pathname + next.search); }
-          categoryStatus.textContent = "分类已删除，文章已移至未分类。"; await reloadCategories(); if (!detailId) await loadList(true); }
+          categoryStatus.textContent = "分类已删除，文章已移至未分类。"; await reloadCategories();
+          if (detailId) location.reload(); else await loadList(true); }
         catch (error) { categoryStatus.textContent = requestMessage(error); }
       });
       row.append(name, rename, up, down, remove); categoryList.append(row);
@@ -232,9 +235,11 @@ export async function mountFavorites(auth: Promise<AuthState>): Promise<void> {
       const summary = el("p", "favorite-summary", article.fact_summary);
       const archival = el("dl", "favorite-archive-meta");
       for (const [label, value] of [
-        ["原文发布时间", date(article.source.published_at)], ["事件时间", date(article.source.event_at)],
-        ["抓取时间", date(article.source.fetched_at)], ["日报日期", article.report_date],
-        ["日报版本", String(article.report_version)], ["首次批准时间", date(article.first_approved_at)],
+        ["文章分类", article.category], ["重要性", `${article.importance}/5`],
+        ...(article.research_area ? [["研究方向", article.research_area]] : []),
+        ["原文发布时间", dateTime(article.source.published_at)], ["事件时间", dateTime(article.source.event_at)],
+        ["抓取时间", dateTime(article.source.fetched_at)], ["日报日期", article.report_date],
+        ["日报版本", String(article.report_version)], ["首次批准时间", dateTime(article.first_approved_at)],
         ["验证状态", article.verification],
       ]) archival.append(el("dt", undefined, label), el("dd", undefined, value));
       const source = el("a", undefined, "查看原始来源 ↗"); source.href = article.source.canonical_url; source.target = "_blank"; source.rel = "noopener noreferrer";
