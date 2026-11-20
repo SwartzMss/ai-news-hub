@@ -1,0 +1,311 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "0267cb99-8dd6-4b74-8f0e-1b7e88d84850",
+  "report_date": "2026-11-20",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月20日",
+  "collected_at": "2026-11-20T00:16:48.855Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-20T00:16:48.866Z",
+  "reviewed_content_sha256": "6314e5e3694f4188f53312ca86b06dc85fb27f61493281e4f5bc40bcbd72dabd",
+  "items": [
+    {
+      "id": "8a278599b8d56183101333bde62bd60a9712f25d6fef21206467552526d2bee1",
+      "category": "international_topic",
+      "importance": 4,
+      "fact_summary": "韩联社11月19日报道，韩国法学适性考试（LEET）满分考生李镇宇当日未现身原定的直播答题活动，随后被发现身亡。他此前否认利用AI作弊的指控。韩联社援引警方表述称，将继续调查相关指控以查明事实。",
+      "analysis": null,
+      "evidence_quote": "(3rd LD) LEET top scorer suspected of AI cheating found dead; police to continue probe",
+      "details": {
+        "kind": "news",
+        "background": "李镇宇曾在韩国法学院入学所用的LEET考试中获得满分，并在大学修学能力考试中取得优异成绩。他原计划通过现场答题回应AI作弊质疑。",
+        "keyFacts": [
+          {
+            "name": "当日进展",
+            "value": "李镇宇未现身原定答题活动，随后被警方及消防人员发现身亡。",
+            "period": "2026-11-19",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          },
+          {
+            "name": "调查安排",
+            "value": "韩联社援引警方称，将继续调查作弊指控以查明事实。",
+            "period": "2026-11-19",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "作弊指控尚未得到调查结论确认。",
+          "不能仅凭作弊争议与死亡先后发生，就认定两者存在因果关系。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "韩联社：LEET满分考生身亡，警方将继续调查",
+            "url": "https://en.yna.co.kr/view/AEN20261119005352315",
+            "supports": "当日未现身答题活动、被发现身亡，以及警方继续查明作弊指控的表述。"
+          },
+          {
+            "id": "e2",
+            "name": "SBS：LEET满分考生李镇宇被发现身亡",
+            "url": "https://news.sbs.co.kr/amp/news.amp?news_id=N1008854049",
+            "supports": "独立报道确认发现地点、消防部门处置及死亡情况。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "en.yna.co.kr",
+        "original_url": "https://en.yna.co.kr/view/AEN20261119005352315",
+        "canonical_url": "https://en.yna.co.kr/view/AEN20261119005352315",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ea470195a02eb9b841fee8e3c69d68bbfc483d2517a43aabafadfe28b4a66e19",
+      "category": "social_event",
+      "importance": 4,
+      "fact_summary": "据京报网11月19日报道，前中国女子体操国家队运动员芦玉菲当日上午表示，相关部门与原单位已将此前欠缴的社保部分全部缴纳完成。她此前称，退役后查询发现欠费长达91个月、合计近15万元。",
+      "analysis": null,
+      "evidence_quote": "11月19日上午，芦玉菲表示，相关部门与原单位迅速重视，已于19日上午将欠缴部分全部缴纳完成。",
+      "details": {
+        "kind": "news",
+        "background": "芦玉菲曾参加东京奥运会。她于11月18日反映，退役后查询发现原单位存在长期欠缴社保和养老保险的情况。",
+        "keyFacts": [
+          {
+            "name": "此前反映的欠费情况",
+            "value": "91个月、合计近15万元",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "最新处理结果",
+            "value": "芦玉菲表示，欠缴部分已全部缴纳完成。",
+            "period": "2026-11-19上午",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道未披露原单位对欠缴原因的说明。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "京报网／长安街知事：芦玉菲社保，补缴完成",
+            "url": "https://news.bjd.com.cn/2026/11/19/12036195.shtml",
+            "supports": "此前欠费情况及芦玉菲19日上午关于全部补缴完成的表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.bjd.com.cn",
+        "original_url": "https://news.bjd.com.cn/2026/11/19/12036195.shtml",
+        "canonical_url": "https://news.bjd.com.cn/2026/11/19/12036195.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "38cade12e7ea1839a83cad6297cf6e3c74d32365a2ae1c4de81feafa7559a819",
+      "category": "finance_consumption",
+      "importance": 3,
+      "fact_summary": "极目新闻11月19日晚报道，曾用于APEC欢迎晚宴的广州从化悦荔荔枝冰酒，在一家网上旗舰店的多款产品已显示缺货。厂家工作人员表示，已启动紧急补货机制；其所称单店营业额增长超过900倍，报道未披露比较基期。",
+      "analysis": null,
+      "evidence_quote": "亮相APEC晚宴的广东荔枝冰酒被买断货，厂家：已启动紧急补货机制",
+      "details": {
+        "kind": "news",
+        "background": "据报道，广州从化生产的悦荔荔枝冰酒于11月18日晚被选作深圳APEC欢迎晚宴用酒。",
+        "keyFacts": [
+          {
+            "name": "店铺供货情况",
+            "value": "记者19日晚查看一家网上旗舰店时，多款酒品显示缺货。",
+            "period": "2026-11-19晚",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "补货安排",
+            "value": "厂家工作人员称已启动紧急补货机制。",
+            "period": "2026-11-19",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "impacts": [
+          {
+            "description": "报道所查看店铺的多款产品出现缺货。",
+            "status": "observed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "厂家所称营业额增长超过900倍的比较基期未披露。",
+          "报道未给出恢复供货的确切日期。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "极目新闻：荔枝冰酒多款产品缺货，厂家启动补货",
+            "url": "https://news.ifeng.com/c/8yBho3b39EH",
+            "supports": "记者查看店铺所见缺货情况，以及厂家关于销量和补货的表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8yBho3b39EH",
+        "canonical_url": "https://news.ifeng.com/c/8yBho3b39EH",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d579deca680336940aea56ac3a450078c35268b547aaf97ce0178b62ef842a1f",
+      "category": "tech_digital",
+      "importance": 3,
+      "fact_summary": "上游新闻11月19日报道，记者当日测试豆包、元宝、千问等AI工具，发现生成指定数量物体的图片时出现数量错误，其中要求豆包生成13个鸡蛋，结果得到12个。豆包客服表示会将建议反馈工程师；千问客服建议细化指令、更换模型或新建对话。",
+      "analysis": "这组测试提示，对物体数量有严格要求的图片仍需人工逐项检查；有限样本不足以推断所有模型的表现。",
+      "evidence_quote": "生成13个鸡蛋难倒一众AI？记者实测多款大模型生图“数不准”，多方回应",
+      "details": {
+        "kind": "news",
+        "background": "本次测试针对文生图工具能否准确执行物体数量要求，涉及鸡蛋、玫瑰花和篮球等对象。",
+        "keyFacts": [
+          {
+            "name": "豆包测试结果",
+            "value": "要求生成13个鸡蛋时得到12个；随后要求生成14个时得到13个。",
+            "period": "2026-11-19",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "其他工具测试",
+            "value": "记者称，元宝、千问的尝试中也出现了数量错误。",
+            "period": "2026-11-19",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "豆包客服",
+            "statement": "生成内容可能存在不准确之处，会将相关建议反馈给工程师。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "actor": "千问客服",
+            "statement": "此前也收到过类似反馈，建议将指令描述得更具体、完整，或更换模型、新建对话。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道未完整披露各工具的模型版本、测试次数及成功率，不能据此得出普遍失败率。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "上游新闻：记者实测多款大模型生图数量错误，并采访客服",
+            "url": "https://www.cqcb.com/news/16/2026-11-19/6259032.html",
+            "supports": "19日记者测试的具体结果，以及豆包、千问客服的回应。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.cqcb.com",
+        "original_url": "https://www.cqcb.com/news/16/2026-11-19/6259032.html",
+        "canonical_url": "https://www.cqcb.com/news/16/2026-11-19/6259032.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7de691cb81514a5028338231abc75f43c370f77312bfc607f75a1f86f0d8c51b",
+      "category": "entertainment",
+      "importance": 2,
+      "fact_summary": "据封面新闻11月19日报道，当日更新的《后会友期》中，文吉儿称曾两次找王子璇拍戏，但因对方报价过高未能合作；王子璇否认存在报价环节，并表示保留了聊天记录。双方还就此前火车软卧包间安排表达了不同感受。",
+      "analysis": null,
+      "evidence_quote": "王子璇说文吉儿占软卧包间夸张",
+      "details": {
+        "kind": "news",
+        "background": "《后会友期》节目中的这段对谈涉及两人过往相处与工作合作经历。",
+        "positions": [
+          {
+            "actor": "文吉儿",
+            "statement": "称曾两次邀请王子璇拍戏，但因对方报价过高未能合作。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "actor": "王子璇",
+            "statement": "否认存在报价环节，称曾追问项目情况，并保留全部聊天记录。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "报道呈现的是节目中的双方说法，未提供完整项目资料及聊天记录，合作未成的具体原因尚不明确。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "封面新闻：王子璇与文吉儿在新一期节目中回应相处及合作分歧",
+            "url": "https://finance.sina.cn/2026-11-19/detail-inizhfam1040342.d.html?oid=21&vt=4",
+            "supports": "节目19日更新，以及双方关于拍戏邀约、报价和软卧安排的表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.sina.cn",
+        "original_url": "https://finance.sina.cn/2026-11-19/detail-inizhfam1040342.d.html?oid=21&vt=4",
+        "canonical_url": "https://finance.sina.cn/2026-11-19/detail-inizhfam1040342.d.html?oid=21&vt=4",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
