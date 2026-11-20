@@ -92,7 +92,12 @@ export interface Page {
     | "article"
     | "date"
     | "report"
-    | "404";
+    | "404"
+    | "login"
+    | "register"
+    | "forgot-password"
+    | "account"
+    | "favorites";
   path: string;
   topicId?: string;
   canonicalPath?: string;

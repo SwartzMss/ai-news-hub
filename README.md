@@ -26,7 +26,7 @@ Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，
 
 公共用户账户、永久收藏和自定义收藏分类使用独立 `USER_DB` D1，与邮件订阅库和 Linux SQLite 隔离。收藏 API 从已发布静态文章生成完整快照，原日报过期后仍可读取；分类属于用户私有数据，删除分类会保留收藏。生产启用前须依次应用 `0003.sql`、`0004.sql`。见 [用户 D1 部署](docs/USER_DB.md)与 [收藏 API](docs/FAVORITES.md)（[#160](https://github.com/SwartzMss/ai-news-hub/issues/160)、[#161](https://github.com/SwartzMss/ai-news-hub/issues/161)）。
 
-Pages Functions 已加入默认关闭的邮箱密码认证 API，并在 [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 补充密码重置、限流、Turnstile 与 Session 闲置过期；启用前须先迁移用户 D1、配置 Secrets 并验收真实 Cloudflare/Resend。前端用户中心属于后续阶段。见 [公共用户认证](docs/AUTH.md)。
+Pages Functions 已加入默认关闭的邮箱密码认证 API，并在 [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 补充密码重置、限流、Turnstile 与 Session 闲置过期；[#162](https://github.com/SwartzMss/ai-news-hub/issues/162) 提供账户页面、文章收藏按钮、私人收藏列表及分类管理。启用前须先迁移用户 D1、配置 Secrets 并验收真实 Cloudflare/Resend。见 [公共用户认证](docs/AUTH.md)。
 
 最终日报的 `details.kind` 标识新闻、投资或项目详情，仍为必填；Backend 为 Codex 的结构化输出 Schema 补齐常量和枚举的类型声明。升级此修复后需重新构建并重启 Backend，再手动重跑此前因 `invalid_json_schema` 失败的任务。
 
@@ -169,7 +169,7 @@ bash scripts/service.sh uninstall  # 停止并卸载服务，取消开机自启
 | 环境变量 `SITE_URL` | 你的网站地址，例如 `https://your-project.pages.dev` |
 | 环境变量 `NODE_VERSION` | `22.19.0` |
 
-配置 Git 集成后，生产分支收到新的日报归档提交时，Cloudflare Pages 会自动构建并更新网站和 RSS。任务首次归档后会成为一个独立话题；首页按日期合并展示各话题的最新一期，文章标签先显示去掉「每日」前缀的话题名，再显示细分类别；搜索可查找最近 30 天的文章。顶部导航仅保留首页和搜索，日报日期/版本链接继续可用。单个话题和全站 RSS 订阅保持不变。网站适配桌面和手机，浏览器会记住明暗模式。点击资讯标题阅读详情，点击来源查看原文；详情只展示归档中已有的信息，历史内容不会被自动补写。
+配置 Git 集成后，生产分支收到新的日报归档提交时，Cloudflare Pages 会自动构建并更新网站和 RSS。任务首次归档后会成为一个独立话题；首页按日期合并展示各话题的最新一期，文章标签先显示去掉「每日」前缀的话题名，再显示细分类别；搜索可查找最近 30 天的文章。顶部导航提供首页、搜索和账户入口；认证关闭时账户入口自动隐藏。日报日期/版本链接继续可用。单个话题和全站 RSS 订阅保持不变。网站适配桌面和手机，浏览器会记住明暗模式。点击资讯标题阅读详情，点击来源查看原文；详情只展示归档中已有的信息，历史内容不会被自动补写。
 
 新开源日报支持有来源引用的结构化项目详情；历史无结构化详情的项目仍按已有事实标签展示。更新模板后，已保存任务需在后台重新选择模板并保存，历史归档不会自动补齐技术信息。
 

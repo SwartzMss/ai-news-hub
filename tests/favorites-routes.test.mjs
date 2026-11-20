@@ -53,6 +53,11 @@ test('favorites persist full snapshot, paginate, remain after report deletion, a
   const list = await request(f, '?limit=1&offset=0', 'GET', undefined, cookie);
   assert.equal(list.status, 200);
   assert.equal((await list.json()).favorites[0].id, saved.favorite.id);
+  const searched = await request(f, '?q=Publisher&category=none', 'GET', undefined, cookie);
+  assert.equal((await searched.json()).favorites[0].sourceName, 'Publisher');
+  assert.equal((await request(f, '?q=missing', 'GET', undefined, cookie).then(r => r.json())).favorites.length, 0);
+  assert.equal((await request(f, `?articleKey=${KEY}`, 'GET', undefined, cookie).then(r => r.json())).favorites[0].id, saved.favorite.id);
+  assert.equal((await request(f, '?q=%25', 'GET', undefined, cookie).then(r => r.json())).favorites.length, 0);
   const detail = await request(f, `/${saved.favorite.id}`, 'GET', undefined, cookie);
   assert.deepEqual((await detail.json()).favorite.snapshot.article, article);
   assert.equal(f.db.prepare("SELECT name FROM sqlite_master WHERE name='favorites'").get().name, 'favorites');

@@ -17,7 +17,9 @@ import { StructuredProjectAside, StructuredProjectDetail } from "./StructuredPro
 import { InvestmentAside, InvestmentDetail } from "./InvestmentDetail";
 import { NewsAside, NewsDetail } from "./NewsDetail";
 import { SearchPage } from "./Search";
+import { AccountPage } from "./AccountPages";
 export function Site({ data, page }: { data: PublicData; page: Page }) {
+  if (["login", "register", "forgot-password", "account", "favorites"].includes(page.kind)) return <AccountPage data={data} page={page} />;
   if (page.kind === "home") return <TopicHome data={data} />;
   if (page.kind === "search") return <SearchPage data={data} />;
   if (page.kind === "channel") return <TopicDirectory data={data} />;
@@ -179,6 +181,7 @@ export function Site({ data, page }: { data: PublicData; page: Page }) {
                 <a href={topicPath(story.topic.id)} data-return-home>返回话题</a>
                 <time dateTime={story.report_date}>{dateLabel(story.report_date)}</time>
               </nav>
+              <div className="article-favorite-action"><button type="button" data-favorite-key={story.key}>收藏文章</button><span data-favorite-status role="status" aria-live="polite" /></div>
               {structuredProject ? (
                 <StructuredProjectDetail story={story} />
               ) : investment ? (

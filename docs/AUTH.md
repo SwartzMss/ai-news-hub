@@ -1,6 +1,6 @@
 # 公共用户认证
 
-Issue [#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 在 Pages Functions 的 `/api/auth/*` 实现邮箱密码注册、邮箱验证、登录、当前用户和退出；Issue [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 追加密码重置、Turnstile、限流与 Session 闲置过期。数据仅写 `USER_DB`，依次使用 [用户 D1 迁移](USER_DB.md)的 `0001.sql`、`0002.sql`。认证默认关闭，合并代码不会自动开放注册。登录/注册与收藏前端属于后续 Issue。
+Issue [#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 在 Pages Functions 的 `/api/auth/*` 实现邮箱密码注册、邮箱验证、登录、当前用户和退出；Issue [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 追加密码重置、Turnstile、限流与 Session 闲置过期；[#162](https://github.com/SwartzMss/ai-news-hub/issues/162) 加入账户与收藏前端。数据仅写 `USER_DB`，依次使用 [用户 D1 迁移](USER_DB.md)的 `0001.sql`、`0002.sql`。认证默认关闭，合并代码不会自动开放注册。
 
 ## Pages 配置
 
@@ -12,7 +12,7 @@ Issue [#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 在 Pages Func
 | `AUTH_SITE_URL` | 当前环境的稳定 HTTPS origin，不能带路径、查询或凭据；用于校验请求 Host 与邮件链接 |
 | `AUTH_FROM` | Resend 已验证域名下的发件地址，可与 Newsletter 使用相同地址，但单独配置 |
 | `RESEND_API_KEY` | 现有 Resend Secret；认证与 Newsletter 共用传输服务，不共用业务开关或 Token Secret |
-| `AUTH_TURNSTILE_SITE_KEY` | Turnstile 公开 Site Key，文本变量；未来注册/找回页面从 `/api/auth/config` 获取 |
+| `AUTH_TURNSTILE_SITE_KEY` | Turnstile 公开 Site Key，文本变量；注册/找回页面从 `/api/auth/config` 获取 |
 | `AUTH_TURNSTILE_SECRET` | Turnstile Secret Key，必须使用 Cloudflare Secret，绝不放入前端或 Git |
 | `AUTH_RATE_LIMIT_SECRET` | 至少 32 字符的随机密钥，用于按 IP/邮箱生成不可逆限流键；必须使用 Cloudflare Secret |
 

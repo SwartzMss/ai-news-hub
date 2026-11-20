@@ -26,6 +26,14 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   ])
     assert.ok(readFileSync(join(root, p), "utf8").includes("AI News Hub"));
   const data = readArchives("tests/fixtures/web-reports", { allowDemo: true });
+  for (const path of ["account/login/", "account/register/", "account/forgot-password/", "account/", "account/favorites/"]) {
+    const html = readFileSync(join(root, path, "index.html"), "utf8");
+    assert.match(html, /<meta name="robots" content="noindex,nofollow">/);
+    assert.doesNotMatch(html, /__Host-anh_session|RESEND_API_KEY|AUTH_TURNSTILE_SECRET/);
+  }
+  const articleHtml = readFileSync(join(root, `topics/${data.articles[0].topic.id}/news/${data.articles[0].key}/index.html`), "utf8");
+  assert.match(articleHtml, /data-favorite-key=/);
+  assert.doesNotMatch(readFileSync(join(root, "sitemap.xml"), "utf8"), /\/account\//);
   for (const article of data.current) {
     const snapshot = JSON.parse(readFileSync(join(root, `data/articles/${article.key}.json`), "utf8"));
     assert.equal(snapshot.key, article.key);
@@ -55,8 +63,8 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     homeDoc.querySelector("main h1").textContent,
     new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
   );
-  assert.deepEqual([...homeDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
-  assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索"]);
+  assert.deepEqual([...homeDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索", "账户"]);
+  assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索", "账户"]);
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, 1);
   assert.ok(homeDoc.querySelector('.news-row h2 a[href*="?from=home"]'), "merged home-feed article links preserve the home return context");
@@ -618,6 +626,7 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     let complete;
     const calls = [];
     window.fetch = (...args) => {
+      if (args[0] === "/api/auth/me") return Promise.resolve({ status: 503, ok: false, json: async () => ({ error: "auth_unavailable" }) });
       calls.push(args);
       return new Promise((resolve) => { complete = resolve; });
     };

@@ -1,11 +1,11 @@
 # 永久收藏 API
 
-Issue [#160](https://github.com/SwartzMss/ai-news-hub/issues/160) 在 Pages Functions 增加用户收藏；[#161](https://github.com/SwartzMss/ai-news-hub/issues/161) 增加私有分类。数据写在独立的 `USER_DB`。目标用户 D1 先执行 `users/migrations/0003.sql`，再执行 `0004.sql`；已执行的版本不重复运行。生产认证仍由 `AUTH_ENABLED` 控制，未完成真实验收前保持关闭。收藏前端属于 [#162](https://github.com/SwartzMss/ai-news-hub/issues/162)。
+Issue [#160](https://github.com/SwartzMss/ai-news-hub/issues/160) 在 Pages Functions 增加用户收藏；[#161](https://github.com/SwartzMss/ai-news-hub/issues/161) 增加私有分类；[#162](https://github.com/SwartzMss/ai-news-hub/issues/162) 加入收藏与分类前端。数据写在独立的 `USER_DB`。目标用户 D1 先执行 `users/migrations/0003.sql`，再执行 `0004.sql`；已执行的版本不重复运行。生产认证仍由 `AUTH_ENABLED` 控制，未完成真实验收前保持关闭。
 
 | 接口 | 请求 | 响应 |
 | --- | --- | --- |
 | `POST /api/favorites` | JSON `{ "articleKey": "32位小写十六进制" }` | 新增 201、重复 200，返回已有或新增完整快照 |
-| `GET /api/favorites?limit=20&offset=0&sort=newest` | `limit` 1–50，`offset` 0–10000，`sort` 为 `newest`/`oldest` | 收藏摘要列表和 `hasMore` |
+| `GET /api/favorites?limit=20&offset=0&sort=newest` | `limit` 1–50，`offset` 0–10000，`sort` 为 `newest`/`oldest`；可选 `q`（标题/来源，最多 100 字符）、`category`（`all`/`none`/分类 UUID）、`articleKey`（32 位 key） | 含来源名称、原文日期的收藏摘要列表和 `hasMore` |
 | `GET /api/favorites/:id` | 收藏 UUID | 当前用户的版本化完整快照 |
 | `PATCH /api/favorites/:id/category` | JSON `{ "categoryId": "分类 UUID" }` 或 `{ "categoryId": null }` | 移动收藏或回到未分类，返回更新后的收藏 |
 | `DELETE /api/favorites/:id` | 收藏 UUID | 成功 204，不存在或其他用户的 ID 返回 404 |

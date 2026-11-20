@@ -12,6 +12,7 @@ Issue #3 的基础 Backend 按第 9 节安装；Schema 见 [数据模型](DATA_M
 - Node.js LTS + TypeScript Backend、SQLite、Codex CLI / App Server。
 - Linux systemd 管理 Backend 进程；手动任务经 Backend 启动并监管 `codex app-server --listen stdio://` 子进程，每个 Turn 一个子进程，不对外监听 Agent 端口。
 - GitHub 按日期保存审核通过的日报 JSON（Markdown 留私有 SQLite）；Cloudflare Pages 自动构建公开网站及 RSS。
+- 公共账户页和收藏操作在 Pages 静态站运行，依赖 Pages Functions 与独立 `USER_DB`；启用步骤和真实验收见 [公共用户认证](AUTH.md)、[收藏 API](FAVORITES.md)。生产认证在完成验收前保持关闭。
 - 管理台通过 Linux Backend 提供的 API 访问；默认仅绑定 `127.0.0.1`，远程使用时优先 SSH 端口转发，暂不对公网开放管理 API。
 
 ## 1. 基础环境检查
