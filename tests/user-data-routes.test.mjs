@@ -24,7 +24,6 @@ test('authenticated data export includes private favorites and categories withou
     .run(user.id, JSON.stringify({ schemaVersion: 1, article: { title: 'Saved story' } }), NOW);
   const response = await request(f, 'export-data', { body: { password: PASSWORD }, headers: { cookie: user.cookie } });
   assert.equal(response.status, 200);
-  assert.match(response.headers.get('content-disposition'), /attachment/);
   assert.equal(response.headers.get('cache-control'), 'no-store');
   const text = await response.text();
   const data = JSON.parse(text);
@@ -33,6 +32,28 @@ test('authenticated data export includes private favorites and categories withou
   assert.equal(data.favorites[0].snapshot.article.title, 'Saved story');
   assert.doesNotMatch(text, /password_hash|token_hash|correct horse battery staple/);
   assert.equal((await request(f, 'export-data', { body: { password: 'wrong password string' }, headers: { cookie: user.cookie } })).status, 401);
+});
+
+test('data export continues across requests without hitting the per-invocation D1 query limit', async t => {
+  const f = fixture(); t.after(() => f.close());
+  const user = await activeUser(f);
+  const insert = f.db.prepare(`INSERT INTO favorites(id,user_id,article_key,snapshot_version,snapshot_json,created_at)
+    VALUES (?,?,?,?,?,?)`);
+  for (let i = 0; i < 101; i++) insert.run(`favorite-${i.toString().padStart(3, '0')}`, user.id, i.toString(16).padStart(32, '0'),
+    1, JSON.stringify({ schemaVersion: 1, article: { title: `Story ${i}` } }), NOW);
+  const headers = { cookie: user.cookie };
+  const first = await (await request(f, 'export-data', { body: { password: PASSWORD }, headers })).json();
+  assert.equal(first.favorites.length, 100);
+  assert.ok(first.nextCursor);
+  assert.equal(first.favorites[0].snapshot.article.title, 'Story 0');
+  const payload = { cursor: first.nextCursor, exportedAt: first.exportedAt, exportToken: first.exportToken };
+  const secondResponse = await request(f, 'export-data', { body: payload, headers });
+  assert.equal(secondResponse.status, 200, await secondResponse.clone().text());
+  const second = await secondResponse.json();
+  assert.equal(second.favorites.length, 1);
+  assert.equal(second.nextCursor, null);
+  assert.equal(second.favorites[0].snapshot.article.title, 'Story 100');
+  assert.equal((await request(f, 'export-data', { body: { ...payload, exportToken: 'bad' }, headers })).status, 401);
 });
 
 test('account deletion requires a private ledger write and cascades only the current user', async t => {

@@ -36,7 +36,7 @@ Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`
 | `/api/auth/reset-password?token=...` | GET | 仅展示设置新密码表单，不修改密码 |
 | `/api/auth/reset-password` | POST JSON 或表单 `{token,password}` | 一次性消费重置 Token，更新密码并撤销该用户全部 Session |
 | `/api/auth/change-password` | POST JSON `{currentPassword,newPassword}` | 必须有有效 Session 并验证当前密码；更新后撤销全部 Session |
-| `/api/auth/export-data` | POST JSON `{password}` | 有效 Session、同源请求和当前密码；流式下载该账户资料、收藏快照及分类，不含凭据/令牌 |
+| `/api/auth/export-data` | POST JSON `{password}`，后续页提交返回的 `cursor`、`exportedAt`、`exportToken` | 有效 Session、同源请求和当前密码；按页读取该账户资料、收藏快照及分类，前端合成下载文件，不含凭据/令牌 |
 | `/api/auth/delete-account` | POST JSON `{password}` | 有效 Session、同源请求和当前密码；先写私有墓碑再级联删除账户并清除 Cookie |
 
 请求体上限 4096 字节；所有写入接口拒绝额外字段，密码为 12–128 个字符且最多 256 UTF-8 字节。注册时的密码仅为待验证账户的临时密码；邮箱持有人须在验证页再次设置最终密码，避免他人提前注册该邮箱后借验证邮件激活攻击者密码。所有 POST 要求 `Origin` 与 `AUTH_SITE_URL` 完全相同；所有路由要求请求 URL 的 origin 与配置一致；Fetch Metadata 拒绝跨站 API 子资源请求，但允许从邮件跨站导航到验证/重置 GET 页面。Cookie 使用 `HttpOnly; Secure; SameSite=Lax; Path=/`，无 `Domain` 属性，Session 绝对有效期 30 天、服务端闲置有效期 7 天；`me` 活动每隔至少 5 分钟刷新闲置时间。API 与确认页使用 `no-store`，确认页禁止外部资源与跨站表单。登录错误不区分账号不存在、密码错误、未验证或禁用；注册和找回密码对已存在/不存在邮箱返回相同 202。两类邮件请求都对任何邮箱执行令牌哈希与预约查询，并通过 Pages `waitUntil` 在统一响应后处理发信；发信失败会释放令牌预约。邮箱验证链接 24 小时有效且设置 1 小时重发冷却；重置链接 30 分钟有效，活跃链接期间不重发，过期后可重新申请。重置 Token 的消费标识还防止同一毫秒内重复提交改写密码。
