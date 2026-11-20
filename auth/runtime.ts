@@ -2,6 +2,7 @@ import type { D1Database } from '../cloudflare/d1.js';
 
 export interface AuthEnv {
   USER_DB?: D1Database;
+  ASSETS?: { fetch(input: string): Promise<Response> };
   AUTH_ENABLED?: string;
   AUTH_SITE_URL?: string;
   AUTH_FROM?: string;

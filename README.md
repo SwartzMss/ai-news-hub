@@ -24,7 +24,7 @@ AI News Hub 将资讯研究、内容审核、归档和分发串联为一条工�
 
 Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，批准后的 JSON 归档到 GitHub。Cloudflare Pages 构建公开网站和 RSS。每日邮件由 Linux Backend Scheduler 按配置的北京时间计划调度，并通过 GitHub Actions API 触发 `workflow_dispatch`；GitHub Actions 负责运行发送脚本，Pages Functions 使用独立 D1 管理订阅状态，并通过 Resend 发送确认邮件和每日汇总。GitHub Actions 不配置 `schedule` 定时触发；邮件投递需完成生产环境配置。
 
-公共用户账户的数据基础设施另使用 `USER_DB` D1，与邮件订阅库和 Linux SQLite 隔离；收藏 API 尚未实现。见 [用户 D1 部署](docs/USER_DB.md)（[#157](https://github.com/SwartzMss/ai-news-hub/issues/157)）。
+公共用户账户和永久收藏使用独立 `USER_DB` D1，与邮件订阅库和 Linux SQLite 隔离。收藏 API 从已发布静态文章生成完整快照，原日报过期后仍可读取；生产启用前须应用 `0003.sql`。见 [用户 D1 部署](docs/USER_DB.md)与 [收藏 API](docs/FAVORITES.md)（[#160](https://github.com/SwartzMss/ai-news-hub/issues/160)）。
 
 Pages Functions 已加入默认关闭的邮箱密码认证 API，并在 [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 补充密码重置、限流、Turnstile 与 Session 闲置过期；启用前须先迁移用户 D1、配置 Secrets 并验收真实 Cloudflare/Resend。前端用户中心属于后续阶段。见 [公共用户认证](docs/AUTH.md)。
 

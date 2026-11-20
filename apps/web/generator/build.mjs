@@ -166,6 +166,10 @@ export async function buildPublic({
       articles: data.current,
     }) + "\n",
   );
+  for (const article of data.current) {
+    const title = article.fact_summary.split(/[。；\n]/u)[0].trim().slice(0, 180);
+    write(`data/articles/${article.key}.json`, JSON.stringify({ ...article, title }) + "\n");
+  }
   write(
     "data/search-index.json",
     JSON.stringify(searchIndex) + "\n",

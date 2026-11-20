@@ -26,6 +26,12 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
   ])
     assert.ok(readFileSync(join(root, p), "utf8").includes("AI News Hub"));
   const data = readArchives("tests/fixtures/web-reports", { allowDemo: true });
+  for (const article of data.current) {
+    const snapshot = JSON.parse(readFileSync(join(root, `data/articles/${article.key}.json`), "utf8"));
+    assert.equal(snapshot.key, article.key);
+    assert.equal(snapshot.title, article.fact_summary.split(/[。；\n]/u)[0].trim().slice(0, 180));
+    assert.deepEqual(snapshot.details, article.details);
+  }
   const homeDoc = new JSDOM(readFileSync(join(root, "index.html"), "utf8"))
     .window.document;
   assert.equal(existsSync(join(root, "archive/index.html")), false);
