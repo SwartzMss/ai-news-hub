@@ -15,6 +15,7 @@ Issue [#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 在 Pages Func
 | `AUTH_TURNSTILE_SITE_KEY` | Turnstile 公开 Site Key，文本变量；注册/找回页面从 `/api/auth/config` 获取 |
 | `AUTH_TURNSTILE_SECRET` | Turnstile Secret Key，必须使用 Cloudflare Secret，绝不放入前端或 Git |
 | `AUTH_RATE_LIMIT_SECRET` | 至少 32 字符的随机密钥，用于按 IP/邮箱生成不可逆限流键；必须使用 Cloudflare Secret |
+| `USER_BACKUP_BUCKET` | 私有 R2 bucket Binding；账户注销写入墓碑所必需。Production 与 Preview 必须隔离 |
 
 Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`；若没有稳定的预览域名，保持 Preview 的 `AUTH_ENABLED` 未设置。生产 `AUTH_SITE_URL` 指向生产站点。代码可以在认证关闭时先部署；启用任一环境的认证前，必须先在该环境用户 D1 应用 `0002.sql`。Turnstile Widget 只允许对应环境的站点主机名，并按 `register`、`forgot_password`、`login` 设置 action；Siteverify 返回的 hostname/action 必须匹配。`/api/auth/register` 和 `/api/auth/forgot-password` 还要求 `AUTH_FROM` 与 `RESEND_API_KEY`；登录、`me` 和退出在邮件配置缺失时仍可使用。页面部署后，在 Cloudflare 中保存变量/Secret 并重新部署才会生效。没有 `AUTH_RATE_LIMIT_SECRET` 或可信 `CF-Connecting-IP` 时，受限认证请求返回 503。
 
@@ -35,6 +36,8 @@ Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`
 | `/api/auth/reset-password?token=...` | GET | 仅展示设置新密码表单，不修改密码 |
 | `/api/auth/reset-password` | POST JSON 或表单 `{token,password}` | 一次性消费重置 Token，更新密码并撤销该用户全部 Session |
 | `/api/auth/change-password` | POST JSON `{currentPassword,newPassword}` | 必须有有效 Session 并验证当前密码；更新后撤销全部 Session |
+| `/api/auth/export-data` | POST JSON `{password}`，后续页提交返回的 `cursor`、`exportedAt`、`exportToken` | 有效 Session、同源请求和当前密码；按页读取该账户资料、收藏快照及分类，前端合成下载文件，不含凭据/令牌 |
+| `/api/auth/delete-account` | POST JSON `{password}` | 有效 Session、同源请求和当前密码；先写私有墓碑再级联删除账户并清除 Cookie |
 
 请求体上限 4096 字节；所有写入接口拒绝额外字段，密码为 12–128 个字符且最多 256 UTF-8 字节。注册时的密码仅为待验证账户的临时密码；邮箱持有人须在验证页再次设置最终密码，避免他人提前注册该邮箱后借验证邮件激活攻击者密码。所有 POST 要求 `Origin` 与 `AUTH_SITE_URL` 完全相同；所有路由要求请求 URL 的 origin 与配置一致；Fetch Metadata 拒绝跨站 API 子资源请求，但允许从邮件跨站导航到验证/重置 GET 页面。Cookie 使用 `HttpOnly; Secure; SameSite=Lax; Path=/`，无 `Domain` 属性，Session 绝对有效期 30 天、服务端闲置有效期 7 天；`me` 活动每隔至少 5 分钟刷新闲置时间。API 与确认页使用 `no-store`，确认页禁止外部资源与跨站表单。登录错误不区分账号不存在、密码错误、未验证或禁用；注册和找回密码对已存在/不存在邮箱返回相同 202。两类邮件请求都对任何邮箱执行令牌哈希与预约查询，并通过 Pages `waitUntil` 在统一响应后处理发信；发信失败会释放令牌预约。邮箱验证链接 24 小时有效且设置 1 小时重发冷却；重置链接 30 分钟有效，活跃链接期间不重发，过期后可重新申请。重置 Token 的消费标识还防止同一毫秒内重复提交改写密码。
 

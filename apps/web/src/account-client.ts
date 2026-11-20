@@ -1,6 +1,7 @@
 import { api, ApiError, type AuthState, requestMessage } from "./account-api";
 import { safeReturnPath } from "./account-path";
 import { notifyLogout } from "./account-privacy";
+import { mountAccountDataControls } from "./account-data-client";
 
 type Widget = string;
 type Turnstile = {
@@ -55,6 +56,8 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
     if (state.kind === "user") {
       status.textContent = "";
       profile.hidden = links.hidden = false;
+      const tools = home.querySelector<HTMLElement>("[data-account-tools]");
+      if (tools) { tools.hidden = false; mountAccountDataControls(navigate); }
       profile.querySelector<HTMLElement>("[data-account-email]")!.textContent = state.user.email;
       home.querySelector<HTMLButtonElement>("[data-account-logout]")?.addEventListener("click", async () => {
         try { await api<void>("/api/auth/logout", "POST"); notifyLogout(); navigate("/"); }

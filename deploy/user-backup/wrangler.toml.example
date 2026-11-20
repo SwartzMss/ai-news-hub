@@ -1,0 +1,27 @@
+# Copy to wrangler.toml in this directory and fill the account/database/bucket names.
+# This is a separate Worker; never deploy it as the public Pages project.
+name = "ai-news-hub-user-backup"
+main = "worker.mjs"
+compatibility_date = "2026-11-20"
+
+[vars]
+ACCOUNT_ID = "replace-with-account-id"
+DATABASE_ID = "replace-with-production-user-db-id"
+
+[[workflows]]
+name = "ai-news-hub-user-backup"
+binding = "USER_BACKUP_WORKFLOW"
+class_name = "UserBackupWorkflow"
+schedules = ["0 18 * * *"]
+
+[triggers]
+crons = ["15 * * * *"]
+
+[[d1_databases]]
+binding = "USER_DB"
+database_name = "ai-news-hub-users"
+database_id = "replace-with-production-user-db-id"
+
+[[r2_buckets]]
+binding = "USER_BACKUP_BUCKET"
+bucket_name = "replace-with-private-user-backup-bucket"

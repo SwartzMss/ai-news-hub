@@ -15,6 +15,8 @@ export function clearPrivateContent(): void {
   if (email) email.textContent = "";
   const links = document.querySelector<HTMLElement>("[data-account-links]");
   if (links) links.hidden = true;
+  const tools = document.querySelector<HTMLElement>("[data-account-tools]");
+  if (tools) tools.hidden = true;
   for (const selector of ["[data-favorites-list-view]", "[data-favorite-detail]", "[data-categories-panel]"]) {
     const section = document.querySelector<HTMLElement>(selector);
     if (section) section.hidden = true;
@@ -24,6 +26,8 @@ export function clearPrivateContent(): void {
   }
   document.querySelector<HTMLFormElement>("[data-favorites-filter]")?.reset();
   document.querySelector<HTMLFormElement>("[data-category-create]")?.reset();
+  document.querySelector<HTMLFormElement>("[data-account-export]")?.reset();
+  document.querySelector<HTMLFormElement>("[data-account-delete]")?.reset();
   document.querySelector<HTMLElement>(".account-menu")?.remove();
   const nav = document.querySelector<HTMLAnchorElement>("[data-account-nav]");
   if (nav) { nav.hidden = false; nav.textContent = "账户"; }
