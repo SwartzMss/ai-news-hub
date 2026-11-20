@@ -1,0 +1,489 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "78a26061-9176-48e3-b316-2789fad5ff77",
+  "report_date": "2026-11-20",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月20日｜截至北京时间08:11",
+  "collected_at": "2026-11-20T00:22:54.064Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-20T00:22:54.073Z",
+  "reviewed_content_sha256": "b9af15218b74050347e17a52cdc5d93db7a813ce348dd05f03b8c01acfa9a843",
+  "items": [
+    {
+      "id": "709e68477bd2af6fed64a48ffdab49456b56f60dffb3c4003bc7e42ca8be9dee",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "阿里巴巴11月19日披露，截至2026年9月30日季度资本开支为人民币504.77亿元，同比增长60%，公司归因于AI基础设施扩张、芯片组件涨价和CPU算力投入等因素；同期非GAAP自由现金流流出344.72亿元。资本开支为集团口径，不能全部视为GPU采购。原文未列精确发布时间，保守纳入72小时窗口。",
+      "analysis": "推断：实际投入支持AI基础设施需求延续，但采购涨价与扩容共同推高支出，现金回报仍取决于新增容量利用率及客户付费转化。",
+      "evidence_quote": "capital expenditures were RMB50,477 million (US$7,529 million)",
+      "details": {
+        "kind": "investment",
+        "background": "新增信息为季度实际投入和现金流结果；集团资本开支还包含非AI用途，不能据支出增幅推算GPU采购量。",
+        "metrics": [
+          {
+            "name": "集团资本开支",
+            "value": "504.77",
+            "unit": "亿元人民币",
+            "period": "截至2026-09-30季度",
+            "comparison": "同比增长60%；上年同期315.01亿元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "AI云与计算服务收入增速",
+            "value": "53",
+            "unit": "%",
+            "period": "截至2026-09-30季度",
+            "comparison": "同比",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "非GAAP自由现金流",
+            "value": "-344.72",
+            "unit": "亿元人民币",
+            "period": "截至2026-09-30季度",
+            "comparison": "上年同期为-218.40亿元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "阿里巴巴（BABA，NYSE；9988，HKEX）：云算力运营及采购方",
+            "direction": "基础设施投入增加",
+            "reason": "公司明确将资本开支增长与AI基础设施需求联系；未确认具名外部供应商新增订单。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "扩容及组件涨价推动设备支出，形成未来可售算力，同时增加现金流出和后续折旧；只有云收入、利用率及回款覆盖新增成本，投入才能转化为盈利与自由现金流。",
+        "watchpoints": [
+          "后续资本开支、可用容量、云收入和客户预付款",
+          "设备与建筑支出拆分、折旧及自由现金流改善"
+        ],
+        "risks": [
+          "集团支出无法完全归因于AI；价格上涨可能夸大实物扩容幅度。",
+          "需求转化或交付放缓，可能延长投资回收期。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "阿里巴巴9月季度业绩公告（SEC附件）",
+            "url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465926130115/tm2630263d1_ex99-1.htm",
+            "supports": "资本开支及增长原因、云收入增速、自由现金流与统计口径"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465926130115/tm2630263d1_ex99-1.htm",
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/1577552/000110465926130115/tm2630263d1_ex99-1.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "064bdbb02534d377f80a4c4a0ba7156c863f0608f6fda09f66247a622d86e477",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "联想11月19日宣布，FY2026/27第二季度GPU服务器收入同比增长超过300%，相关pipeline环比增长48%至800亿美元；ISG收入113亿美元，同比增长178%，营业利润率9.6%。pipeline属于项目储备，不能当作已签订单。原文未列精确时刻，保守纳入72小时窗口。",
+      "analysis": "推断：服务器需求已体现为实际收入和分部盈利，但未来增长可见度仍取决于项目储备的签约、交付和回款质量。",
+      "evidence_quote": "GPU server revenue grew more than 300% year-on-year",
+      "details": {
+        "kind": "investment",
+        "background": "关键AI服务器整机厂披露新增季度经营结果；ISG同时包含传统服务器及存储，分部利润不能全部归因于GPU服务器。",
+        "metrics": [
+          {
+            "name": "GPU服务器收入增速",
+            "value": ">300",
+            "unit": "%",
+            "period": "FY2026/27第二季度",
+            "comparison": "同比",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GPU服务器项目储备",
+            "value": "800",
+            "unit": "亿美元",
+            "period": "FY2026/27第二季度披露",
+            "comparison": "环比增长48%；非已签订单",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "ISG营业利润率",
+            "value": "9.6",
+            "unit": "%",
+            "period": "FY2026/27第二季度",
+            "comparison": "公司称创纪录",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "联想集团（0992，HKEX）：AI服务器整机供应商",
+            "direction": "收入及分部盈利扩大",
+            "reason": "公司确认GPU服务器收入增长与项目储备规模，未披露本次新增客户或芯片采购份额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "项目储备转为签约和验收出货后，可增加服务器收入并摊薄固定成本；若备货及应收账款同步上升，利润增长仍需回款验证。",
+        "watchpoints": [
+          "pipeline定义、签约比例及交付周期",
+          "GPU服务器收入、ISG利润率和营运资金变化"
+        ],
+        "risks": [
+          "项目储备可能延期、缩减或流失。",
+          "业务组合及并购影响分部表现，无法单独识别GPU服务器盈利贡献。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "联想FY2026/27第二季度官方业绩公告",
+            "url": "https://news.lenovo.com/pressroom/press-releases/q2-fy-2026-27/",
+            "supports": "GPU服务器收入、项目储备及ISG收入和利润率"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.lenovo.com",
+        "original_url": "https://news.lenovo.com/pressroom/press-releases/q2-fy-2026-27/",
+        "canonical_url": "https://news.lenovo.com/pressroom/press-releases/q2-fy-2026-27/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2cd8322141705a1d8a5f2929d1d9cf32463949fc573f969c2b2782d202ca0ac6",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "Corvex于美国当地11月16日披露三年、1.03亿美元Blackwell算力take-or-pay协议，预计2027年第一季度开始交付超过1,000块HGX B200 GPU。预计部署成本7,800万美元，拟由客户预付款和债务融资覆盖其中6,400万美元；8-K明确债务提款仍附尽调等条件。纳入7天补充窗口，非已实现收入或融资全部到账。",
+      "analysis": "推断：容量合同提高收入可见度，但融资交割和客户验收决定项目能否兑现，不能仅依据take-or-pay金额判断现金流安全性。",
+      "evidence_quote": "the term sheet does not assure that financing will be available when needed",
+      "details": {
+        "kind": "investment",
+        "background": "SEC文件确认确定性客户协议，同时披露融资及验收条件；客户身份未公开。",
+        "metrics": [
+          {
+            "name": "已签合同总额",
+            "value": "1.03",
+            "unit": "亿美元",
+            "period": "三年合同；2026-11-16披露",
+            "comparison": "预留容量按take-or-pay支付；非当期收入",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "预计部署成本",
+            "value": "7800",
+            "unit": "万美元",
+            "period": "本次部署",
+            "comparison": "拟由2600万美元预付款、3800万美元债务融资覆盖部分成本",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Corvex（MOVE，NASDAQ）：GPU云运营商",
+            "direction": "新增签约容量",
+            "reason": "8-K确认客户合同；交付及验收尚待完成。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）：GPU及网络平台供应商",
+            "direction": "具名设备需求",
+            "reason": "文件明确HGX B200与Quantum-2；未披露直接采购合同或芯片销售额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "融资及预付款落实后支持设备采购，交付验收再形成可计费容量；收入须覆盖电力、租金、折旧与利息才能贡献盈利和现金流。",
+        "watchpoints": [
+          "债务最终文件、提款及预付款落实",
+          "2027年第一季度设备交付、客户验收与收入启动"
+        ],
+        "risks": [
+          "融资可能延迟、减少或无法取得。",
+          "合同含验收、服务承诺及终止权，客户违约或交付延期会影响兑现。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Corvex 2026年11月16日8-K",
+            "url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390026120168/ea031185401-8k_corvex.htm",
+            "supports": "合同、设备数量、预计成本、融资结构及交割和验收条件"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390026120168/ea031185401-8k_corvex.htm",
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/1734750/000121390026120168/ea031185401-8k_corvex.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "647f94b62256f6a6df0b023286d1713f1108bafed936b0cc5ce665b1d1539111",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "美国《联邦公报》11月19日正式刊登先进半导体远程访问临时最终规则，明确当日生效。本次新增为正式刊登和确定生效日期，更新此前已收录、日期仍为占位符的公告稿；既有许可范围不重复计为新增。按美国当地披露日期纳入24小时窗口，未取得精确刊登时刻。",
+      "analysis": "推断：规则进入生效阶段，可能增加相关海外算力部署的许可和客户审查摩擦；尚无依据量化具体公司的订单或收入损失。",
+      "evidence_quote": "This rule is effective November 19, 2026.",
+      "details": {
+        "kind": "investment",
+        "background": "此前仅确认规则公告，本次正式文本消除了生效日期不确定性。监管对象涉及先进计算芯片及海外数据中心远程算力用途。",
+        "supplyChain": [
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）：先进计算芯片供应商",
+            "direction": "潜在许可及交付摩擦",
+            "reason": "规则可能影响符合管制条件的产品与海外部署；未确认公司具体订单受限。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "AMD（AMD，NASDAQ）：先进计算芯片供应商",
+            "direction": "潜在客户审查及交付变化",
+            "reason": "影响取决于产品分类、目的地、最终用途与例外；并非已确认业务损失。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "正式生效使适用交易进入许可与尽调流程；如审批延长或客户无法获得许可，可能推迟芯片出货及回款。影响规模须结合公司披露的地域订单和适用产品确认。",
+        "watchpoints": [
+          "BIS后续解释、许可审批及例外适用",
+          "芯片厂商对订单地域、交付和收入指引的更新"
+        ],
+        "risks": [
+          "不能将全部海外AI需求视为受限需求。",
+          "例外、获批许可及客户重新配置可能降低实际影响；正式文本部分过渡表述需结合具体交易解释。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "联邦公报：先进半导体远程访问规则",
+            "url": "https://www.govinfo.gov/content/pkg/FR-2026-11-19/pdf/2026-23529.pdf",
+            "supports": "正式刊登、生效日期及许可和尽调要求；不证明个别公司损失"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.govinfo.gov",
+        "original_url": "https://www.govinfo.gov/content/pkg/FR-2026-11-19/pdf/2026-23529.pdf",
+        "canonical_url": "https://www.govinfo.gov/content/pkg/FR-2026-11-19/pdf/2026-23529.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "588cb5c55af45ff2da12ef89f5e460c74bde06796bb6399639da75301d6bf0f3",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Kyndryl于美国当地11月17日宣布，与Argentum AI签署20年、6.3亿美元数据中心合作协议，初始提供Boulder设施10 MW容量，部署NVIDIA B300系统；公司称部署已进行。协议总额不是当期收入，也不是GPU采购额。原文未列精确时刻，纳入72小时窗口。",
+      "analysis": "推断：现有设施转用于AI推理有望增加利用率和长期服务收入，但合同经济性仍取决于分期上线、改造支出及履约成本。",
+      "evidence_quote": "Argentum AI signs $630M data center collaboration with Kyndryl to deploy NVIDIA GPUs",
+      "details": {
+        "kind": "investment",
+        "background": "本次为具备金额、期限和容量的协议及部署进展；未披露GPU数量或完整合同条款。",
+        "metrics": [
+          {
+            "name": "合作协议总额",
+            "value": "6.3",
+            "unit": "亿美元",
+            "period": "20年；2026-11-17披露",
+            "comparison": "长期合同口径，非年度收入",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "初始约定容量",
+            "value": "10",
+            "unit": "MW",
+            "period": "Boulder项目初期",
+            "comparison": "部署进行中，非全部已上线容量",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Kyndryl（KD，NYSE）：设施与基础设施服务方",
+            "direction": "新增长期合作",
+            "reason": "公司确认向未上市GPU云运营商Argentum AI提供设施容量。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）：GPU平台供应商",
+            "direction": "具名B300部署",
+            "reason": "公告确认采用B300；未确认直接订单金额或收入季度。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "设施改造和B300部署完成后，约定容量可转为付费服务；增量收入扣除运营及改造成本后才形成现金回报，不能将总合同额平均分配为确定年度收入。",
+        "watchpoints": [
+          "首批及全部容量上线、计费起点",
+          "改造资本开支、收入确认和合同利润贡献"
+        ],
+        "risks": [
+          "部署进行中不等于客户已验收或满载。",
+          "退出条款、价格调整及支出责任未公开，限制现金流测算。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Kyndryl与Argentum AI数据中心协议公告",
+            "url": "https://www.kyndryl.com/in/en/about-us/news/2026/11/argentum-ai-deal",
+            "supports": "20年、6.3亿美元、初始10 MW、B300及部署进展"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.kyndryl.com",
+        "original_url": "https://www.kyndryl.com/in/en/about-us/news/2026/11/argentum-ai-deal",
+        "canonical_url": "https://www.kyndryl.com/in/en/about-us/news/2026/11/argentum-ai-deal",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2818bfd65cdc8b3f7ac554eab3482855a36da792eca3ec5aa087f8c6de149f63",
+      "category": "ai_industry_chain",
+      "importance": 2,
+      "fact_summary": "Dell于美国当地11月16日宣布，计划2027年上半年推出Exascale的2OU、32盘位直接液冷AI存储平台及1U、20盘位平台，并称Exascale上的软件定义PowerScale已获NVIDIA-Certified Storage Foundation级验证。前者为硬件计划，后者为公司宣布的认证进展；未披露订单或出货量。纳入7天补充窗口。",
+      "analysis": "推断：液冷存储与机架级AI系统适配有望扩大系统销售机会，但认证和产品计划尚不足以支持收入或毛利预测上调。",
+      "evidence_quote": "Dell AI Data Platform Makes Data Agent-Ready at SC26",
+      "details": {
+        "kind": "investment",
+        "background": "仅保留AI存储硬件及认证增量。直接液冷平台拟与计算、网络共享液冷机架；公司比较性领先主张不作为独立核验事实。",
+        "metrics": [
+          {
+            "name": "液冷存储设计",
+            "value": "32盘位／2OU",
+            "unit": "硬件规格",
+            "period": "预计2027年上半年推出",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "高密度存储设计",
+            "value": "20盘位／1U",
+            "unit": "硬件规格",
+            "period": "预计2027年上半年推出",
+            "comparison": "公司称每机架单位盘位密度较上代2U、24盘位提高67%",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Dell（DELL，NYSE）：AI存储系统供应商",
+            "direction": "扩展机架级AI硬件组合",
+            "reason": "公司公布新平台计划及PowerScale认证进展。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）：存储认证生态方",
+            "direction": "系统兼容性验证",
+            "reason": "认证由Dell公告确认；不代表NVIDIA采购承诺。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "机架适配及验证可能降低客户集成障碍，推动AI存储随计算系统销售；只有形成商用订单并按期交付，才可能贡献存储收入和毛利。",
+        "watchpoints": [
+          "2027年上半年SKU上市及客户部署",
+          "认证目录、AI存储订单和实际出货"
+        ],
+        "risks": [
+          "未披露订单，上市时间及规格仍可能调整。",
+          "硬件密度改善不能直接推算客户成本或供应商利润改善。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Dell SC26 AI数据平台及Exascale更新",
+            "url": "https://www.dell.com/en-us/blog/dell-ai-data-platform-makes-data-agent-ready-at-sc26",
+            "supports": "硬件规格、预计上市时间及Foundation级存储认证"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.dell.com",
+        "original_url": "https://www.dell.com/en-us/blog/dell-ai-data-platform-makes-data-agent-ready-at-sc26",
+        "canonical_url": "https://www.dell.com/en-us/blog/dell-ai-data-platform-makes-data-agent-ready-at-sc26",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
