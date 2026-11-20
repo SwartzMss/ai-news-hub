@@ -1,5 +1,7 @@
 # Linux 部署与运行约束（v0.1）
 
+公共用户账户由 Cloudflare Pages/D1/R2 承载，不写入 Linux Backend SQLite。生产 `AUTH_ENABLED` 保持关闭，直到 [用户生产上线与恢复](USER_PRODUCTION.md) 中的私有备份、墓碑保留、隔离恢复和认证验收完成。Linux SQLite 的独立备份要求仍适用。
+
 > **Backend、Codex 主题/多轮研究、待审核日报和人工批准归档已实现。** 持久计划调度已实现；原生服务账户/systemd 与 Cloudflare 实际上线仍待验收。本文区分现有代码与待验收步骤。
 
 Issue #2 的独立验证工具已实现，可按第 8 节执行。它不启动新闻服务；目标主机验收结果仍需补齐，详见 [验证记录](validation/CODEX_LINUX_PROBE.md)。

@@ -1,5 +1,7 @@
 # 架构与实现边界
 
+公共用户账户使用独立 D1 `USER_DB`。Issue #163 增加当前密码确认的数据导出和账户注销；注销前写入私有 R2 墓碑，在线账户及收藏级联删除。独立 Worker/Workflow 定时将用户 D1 导出到私有 R2，恢复时须在隔离 D1 导入并应用全部墓碑。生产配置与演练见 [用户生产上线与恢复](USER_PRODUCTION.md)。Linux Backend 的 SQLite、Newsletter D1 与用户 D1 各自独立。
+
 AI News Hub 采用 **Linux 单实例执行、Codex 主题研究、人工审核、GitHub 归档与静态公开站**。支持手动与持久计划调度、顺序 Prompt 及可选自动归档；自动重试、原生 Ubuntu Server 24.04 服务账户/systemd 验收及 Cloudflare 上线尚未完成。
 
 ![主题和多轮 prompt 驱动 Codex 搜索，经 Backend 校验、SQLite、人工审核及 GitHub 归档，生成公共 Web 与输出 RSS](assets/architecture.svg)

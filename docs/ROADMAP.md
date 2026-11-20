@@ -1,5 +1,7 @@
 # 开发路线图（Linux-only）
 
+Issue #163：公共用户数据导出、账户注销、定时私有备份与墓碑恢复工具已加入代码；Cloudflare 资源配置、实际备份、隔离恢复、隐私说明发布和端到端验收仍待完成。见 [用户生产上线与恢复](USER_PRODUCTION.md)。
+
 > v0.1 唯一目标平台：**Linux（首选 Ubuntu Server 24.04 LTS）**。不考虑 Windows 或 WSL 的实现与测试。复选框按实际交付状态标记，验证工具完成不等于业务服务完成。
 
 Issue #2：独立接入探针与故障测试已实现；原生 Ubuntu Server 24.04、独立服务账户、真实 systemd Turn 与长期认证仍待验收。见 [验证记录](validation/CODEX_LINUX_PROBE.md)。

@@ -1,5 +1,7 @@
 # 公共用户 D1 数据库
 
+生产上线、R2 私有备份、墓碑与隔离恢复流程见 [用户生产上线与恢复](USER_PRODUCTION.md)。账户注销依赖 Pages 的 `USER_BACKUP_BUCKET` R2 Binding；没有绑定时接口返回 503，不删除在线数据。
+
 Issue [#157](https://github.com/SwartzMss/ai-news-hub/issues/157) 只建立用户数据基础设施。公共站仍由 Cloudflare Pages 静态构建；本阶段没有注册、登录、Session 或收藏 API，也不启用用户邮件发送。
 
 ## 数据与迁移边界

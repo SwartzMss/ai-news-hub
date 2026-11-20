@@ -17,6 +17,12 @@ database_name = "ai-news-hub-users"
 database_id = "replace-with-users-production-database-id"
 migrations_dir = "users/migrations"
 
+# Private R2 backup bucket is required for account deletion tombstones.
+# Create the bucket and its lifecycle policy before enabling AUTH_ENABLED.
+[[r2_buckets]]
+binding = "USER_BACKUP_BUCKET"
+bucket_name = "replace-with-private-user-backup-bucket"
+
 # Preview overrides the entire D1 binding list, including NEWSLETTER_DB.
 # Do not point this entry at the production user database.
 [[env.preview.d1_databases]]
@@ -24,3 +30,8 @@ binding = "USER_DB"
 database_name = "ai-news-hub-users-preview"
 database_id = "replace-with-users-preview-database-id"
 migrations_dir = "users/migrations"
+
+# Preview must never write tombstones into the production backup bucket.
+[[env.preview.r2_buckets]]
+binding = "USER_BACKUP_BUCKET"
+bucket_name = "replace-with-private-user-backup-preview-bucket"

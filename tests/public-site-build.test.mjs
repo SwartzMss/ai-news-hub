@@ -31,6 +31,10 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     assert.match(html, /<meta name="robots" content="noindex,nofollow">/);
     assert.doesNotMatch(html, /__Host-anh_session|RESEND_API_KEY|AUTH_TURNSTILE_SECRET/);
   }
+  const accountDoc = new JSDOM(readFileSync(join(root, "account/index.html"), "utf8")).window.document;
+  assert.ok(accountDoc.querySelector('form[data-account-export] input[type="password"][autocomplete="current-password"]'));
+  assert.ok(accountDoc.querySelector('form[data-account-delete] input[type="password"][autocomplete="current-password"]'));
+  assert.ok(accountDoc.querySelector('form[data-account-delete] input[type="checkbox"][required]'));
   const articleHtml = readFileSync(join(root, `topics/${data.articles[0].topic.id}/news/${data.articles[0].key}/index.html`), "utf8");
   assert.match(articleHtml, /data-favorite-key=/);
   assert.doesNotMatch(readFileSync(join(root, "sitemap.xml"), "utf8"), /\/account\//);

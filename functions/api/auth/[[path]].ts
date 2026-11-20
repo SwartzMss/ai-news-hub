@@ -1,5 +1,6 @@
 import { changePassword, forgotPassword, login, logout, me, register, resetPassword, verifyEmail } from '../../../auth/routes.js';
 import { AuthError, type AuthContext, getConfig, json, requireOrigin } from '../../../auth/runtime.js';
+import { deleteAccount, exportData } from '../../../auth/user-data.js';
 
 export async function onRequest(ctx: AuthContext): Promise<Response> {
   try {
@@ -23,6 +24,8 @@ export async function onRequest(ctx: AuthContext): Promise<Response> {
     if (action === 'login' && ctx.request.method === 'POST') return await login(ctx, config);
     if (action === 'logout' && ctx.request.method === 'POST') return await logout(ctx, config);
     if (action === 'me' && ctx.request.method === 'GET') return await me(ctx, config);
+    if (action === 'export-data' && ctx.request.method === 'POST') return await exportData(ctx, config);
+    if (action === 'delete-account' && ctx.request.method === 'POST') return await deleteAccount(ctx, config);
     return json({ error: 'not_found' }, 404);
   } catch (error) {
     const safe = error instanceof AuthError ? error : new AuthError('auth_unavailable', 503);
