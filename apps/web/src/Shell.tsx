@@ -8,7 +8,7 @@ export function Shell({
   children,
 }: {
   data: PublicData;
-  active?: "topics" | "search";
+  active?: "topics" | "search" | "account";
   page?: string;
   children: ReactNode;
 }) {
@@ -32,6 +32,7 @@ export function Shell({
           <a href="/search/" aria-current={active === "search" ? "page" : undefined}>
             搜索
           </a>
+          <a href="/account/" aria-current={active === "account" ? "page" : undefined} data-account-nav>账户</a>
         </nav>
         <div className="header-actions">
           <nav className="header-links" aria-label="外部链接">

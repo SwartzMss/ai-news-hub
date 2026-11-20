@@ -48,23 +48,42 @@ async function route(ctx: AuthContext, config: AuthConfig, userId: string): Prom
     return json({ favorite: favorite(row) }, inserted.meta.changes === 1 ? 201 : 200);
   }
   if (path === '' && ctx.request.method === 'GET') {
-    if ([...url.searchParams.keys()].some(key => !['limit', 'offset', 'sort'].includes(key))
-      || ['limit', 'offset', 'sort'].some(key => url.searchParams.getAll(key).length > 1)) throw new AuthError('invalid_request', 400);
+    if ([...url.searchParams.keys()].some(key => !['limit', 'offset', 'sort', 'q', 'category', 'articleKey'].includes(key))
+      || ['limit', 'offset', 'sort', 'q', 'category', 'articleKey'].some(key => url.searchParams.getAll(key).length > 1)) throw new AuthError('invalid_request', 400);
     const limitText = url.searchParams.get('limit') ?? '20';
     const offsetText = url.searchParams.get('offset') ?? '0';
     const sort = url.searchParams.get('sort') ?? 'newest';
+    const query = (url.searchParams.get('q') ?? '').trim();
+    const categoryId = url.searchParams.get('category') ?? 'all';
+    const articleKey = url.searchParams.get('articleKey');
     if (!/^[1-9]\d*$/.test(limitText) || !/^\d+$/.test(offsetText) || !['newest', 'oldest'].includes(sort)) throw new AuthError('invalid_request', 400);
+    if (query.length > 100 || /[\u0000-\u001f\u007f]/u.test(query)
+      || (categoryId !== 'all' && categoryId !== 'none' && !validId(categoryId))) throw new AuthError('invalid_request', 400);
+    if (articleKey !== null && !/^[0-9a-f]{32}$/.test(articleKey)) throw new AuthError('invalid_request', 400);
     const limit = Number(limitText), offset = Number(offsetText);
     if (limit > 50 || offset > 10000) throw new AuthError('invalid_request', 400);
     const order = sort === 'newest' ? 'DESC' : 'ASC';
-    const rows = await config.db.prepare(`SELECT id,article_key,snapshot_json,created_at,category_id FROM favorites WHERE user_id=?
-      ORDER BY created_at ${order},id ${order} LIMIT ? OFFSET ?`).bind(userId, limit + 1, offset).all<Row>();
+    const filters = ['user_id=?'];
+    const args: unknown[] = [userId];
+    if (categoryId === 'none') filters.push('category_id IS NULL');
+    else if (categoryId !== 'all') { filters.push('category_id=?'); args.push(categoryId); }
+    if (articleKey) { filters.push('article_key=?'); args.push(articleKey); }
+    if (query) {
+      const pattern = `%${query.replace(/[\\%_]/g, '\\$&')}%`;
+      filters.push(`(json_extract(snapshot_json,'$.article.title') LIKE ? ESCAPE '\\'
+        OR json_extract(snapshot_json,'$.article.source.name') LIKE ? ESCAPE '\\')`);
+      args.push(pattern, pattern);
+    }
+    const rows = await config.db.prepare(`SELECT id,article_key,snapshot_json,created_at,category_id FROM favorites WHERE ${filters.join(' AND ')}
+      ORDER BY created_at ${order},id ${order} LIMIT ? OFFSET ?`).bind(...args, limit + 1, offset).all<Row>();
     return json({ favorites: rows.results.slice(0, limit).map(row => {
       const snapshot = JSON.parse(row.snapshot_json) as FavoriteSnapshot;
       const article = snapshot.article;
+      const source = article.source as { name: string; published_at: string | null } | undefined;
       return { id: row.id, articleKey: row.article_key, createdAt: row.created_at, categoryId: row.category_id,
-        title: article.title, topic: article.topic, category: article.category, reportDate: article.report_date };
-    }), limit, offset, sort, hasMore: rows.results.length > limit });
+        title: article.title, topic: article.topic, category: article.category, reportDate: article.report_date,
+        sourceName: source?.name ?? '', sourcePublishedAt: source?.published_at ?? null };
+    }), limit, offset, sort, q: query, categoryId, hasMore: rows.results.length > limit });
   }
   const moveId = /^\/([^/]+)\/category$/.exec(path)?.[1];
   if (moveId && ctx.request.method === 'PATCH') {

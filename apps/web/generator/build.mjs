@@ -68,6 +68,11 @@ export async function buildPublic({
     { kind: "home", path: "/" },
     { kind: "search", path: "/search/" },
     { kind: "channel", path: "/channel/opensource/", canonicalPath: "/" },
+    { kind: "login", path: "/account/login/" },
+    { kind: "register", path: "/account/register/" },
+    { kind: "forgot-password", path: "/account/forgot-password/" },
+    { kind: "account", path: "/account/" },
+    { kind: "favorites", path: "/account/favorites/" },
   ];
   const topicRoot = (id) => `/topics/${id}/`;
   const editionPath = (r, version = false) =>
@@ -116,6 +121,11 @@ export async function buildPublic({
         topic: data.topics.find((t) => t.id === page.topicId)?.name,
         channel: "全部话题",
         search: "搜索文章",
+        login: "登录",
+        register: "创建账户",
+        "forgot-password": "找回密码",
+        account: "我的账户",
+        favorites: "我的收藏",
         date: page.date,
         report: page.date + " 历史版本",
         article: data.articles
@@ -127,7 +137,7 @@ export async function buildPublic({
       '<!doctype html><html lang="zh-CN"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1"><title>' +
       xml(title) +
       '</title><meta name="description" content="AI、开源项目与产业资讯，按日期整理的新闻简报。">' +
-      (data.demo || page.kind === "404" || page.kind === "search"
+      (data.demo || page.kind === "404" || page.kind === "search" || ["login", "register", "forgot-password", "account", "favorites"].includes(page.kind)
         ? '<meta name="robots" content="noindex,nofollow">'
         : "") +
       '<link rel="canonical" href="' +
@@ -178,7 +188,7 @@ export async function buildPublic({
     "sitemap.xml",
     '<?xml version="1.0" encoding="UTF-8"?><urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">' +
       routes
-        .filter((p) => !p.canonicalPath && p.kind !== "search")
+        .filter((p) => !p.canonicalPath && p.kind !== "search" && !["login", "register", "forgot-password", "account", "favorites"].includes(p.kind))
         .map(
           (p) => "<url><loc>" + xml(new URL(p.path, url).href) + "</loc></url>",
         )
@@ -195,7 +205,7 @@ export async function buildPublic({
   );
   write(
     "_headers",
-    `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${data.newsletterEnabled ? "strict-origin" : "no-referrer"}\n  Content-Security-Policy: default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src 'self'; form-action 'self'\n/rss/*\n  Content-Type: application/rss+xml; charset=utf-8\n/data/*\n  Content-Type: application/json; charset=utf-8\n`,
+    `/*\n  X-Content-Type-Options: nosniff\n  Referrer-Policy: ${data.newsletterEnabled ? "strict-origin" : "no-referrer"}\n  Content-Security-Policy: default-src 'self'; script-src 'self' https://challenges.cloudflare.com; frame-src https://challenges.cloudflare.com; style-src 'self'; img-src 'self'; object-src 'none'; base-uri 'none'; frame-ancestors 'none'; connect-src 'self' https://challenges.cloudflare.com; form-action 'self'\n/rss/*\n  Content-Type: application/rss+xml; charset=utf-8\n/data/*\n  Content-Type: application/json; charset=utf-8\n`,
   );
   rmSync(join(output, ".vite"), { recursive: true, force: true });
   return {

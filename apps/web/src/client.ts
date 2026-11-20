@@ -1,7 +1,14 @@
 import "./style.css";
 import { mountSiteSearch } from "./search-client";
+import { readAuth } from "./account-api";
+import { mountAccount } from "./account-client";
+import { mountFavoriteButton, mountFavorites } from "./favorites-client";
 
 mountSiteSearch();
+const auth = readAuth();
+void mountAccount(auth).catch(() => console.warn("account_ui_failed"));
+void mountFavoriteButton(auth).catch(() => console.warn("favorite_button_failed"));
+void mountFavorites(auth).catch(() => console.warn("favorites_ui_failed"));
 
 // Articles opened from the merged home feed should return to that feed.
 // Topic-specific article links keep their existing topic destination.

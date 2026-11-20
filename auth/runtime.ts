@@ -138,7 +138,7 @@ export function page(title: string, message: string, token?: string, status = 20
   action = '/api/auth/verify-email', button = '设置密码并确认邮箱'): Response {
   const escape = (value: string) => value.replaceAll('&', '&amp;').replaceAll('<', '&lt;').replaceAll('>', '&gt;').replaceAll('"', '&quot;').replaceAll("'", '&#39;');
   const form = token ? `<form method="post" action="${escape(action)}"><input type="hidden" name="token" value="${escape(token)}"><label for="password">新密码</label><input id="password" type="password" name="password" autocomplete="new-password" minlength="12" maxlength="128" required><button type="submit">${escape(button)}</button></form>` : '';
-  return new Response(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)}</title><main><h1>${escape(title)}</h1><p>${escape(message)}</p>${form}</main></html>`, {
+  return new Response(`<!doctype html><html lang="zh-CN"><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>${escape(title)}</title><main><h1>${escape(title)}</h1><p>${escape(message)}</p>${form}<p><a href="/account/login/">返回登录</a></p></main></html>`, {
     status, headers: { ...headers, 'content-type': 'text/html; charset=utf-8', 'content-security-policy': "default-src 'none'; form-action 'self'; base-uri 'none'; frame-ancestors 'none'" },
   });
 }
