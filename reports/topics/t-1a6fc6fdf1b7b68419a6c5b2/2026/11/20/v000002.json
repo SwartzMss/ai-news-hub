@@ -1,0 +1,815 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "c89526fc-6c74-4b83-8162-a2470ac5f3a8",
+  "report_date": "2026-11-20",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-20｜统计：北京时间11月19日08:08—11月20日08:08；更新回溯至11月17日08:08，项目发现参考近90天维护",
+  "collected_at": "2026-11-20T00:20:06.889Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-20T00:20:06.900Z",
+  "reviewed_content_sha256": "3e8ee23711714ac58b0fd96d2d9ed52ab310ff84dd327499684ce8141ebebad0",
+  "items": [
+    {
+      "id": "2ada1751911b5f87fd37d9dfa03606663cbcf61646ec458535b4ed96ec926bf8",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Claude Agent ACP 官方宣布，v0.109.0 增加 ACP v2 会话游标及按游标分叉，并让相同 idempotencyKey 的提示只插入一条消息。该适配器让 ACP 客户端接入 Claude Agent SDK；发布页标注11月19日。[项目仓库](https://github.com/agentclientprotocol/claude-agent-acp)",
+      "analysis": "会话分叉适合从已有上下文探索不同执行路径，消息去重则有助于处理客户端重试。价值主要面向实现相关 ACP v2 能力的客户端，接入时仍需核对协议支持范围。",
+      "evidence_quote": "announce session cursors on v2 and fork at a cursor",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "将 Claude Agent SDK 接入 ACP 客户端，提供会话、工具调用与交互能力。",
+        "change": {
+          "summary": "正式发布 v0.109.0，增加会话游标分叉和提示幂等处理。",
+          "version": "v0.109.0",
+          "type": "release",
+          "publishedAt": "2026-11-19",
+          "evidenceRefs": [
+            "e1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "ACP v2 支持公布会话游标并在指定游标处分叉。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "description": "v2 session/prompt 按 idempotencyKey 限制重复消息插入。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为 Coding Agent 客户端实现会话分叉和请求重试。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "适配器仓库代码",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "新增游标和消息幂等能力明确限定在协议 v2。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "v0.109.0 官方发布说明",
+            "url": "https://github.com/agentclientprotocol/claude-agent-acp/releases/tag/v0.109.0",
+            "supports": "版本、日期、会话分叉及消息去重"
+          },
+          {
+            "id": "e2",
+            "name": "官方仓库",
+            "url": "https://github.com/agentclientprotocol/claude-agent-acp",
+            "supports": "项目定位与客户端集成能力"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/agentclientprotocol/claude-agent-acp/blob/main/LICENSE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/agentclientprotocol/claude-agent-acp/releases/tag/v0.109.0",
+        "canonical_url": "https://github.com/agentclientprotocol/claude-agent-acp/releases/tag/v0.109.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "3d1a7b53967a6b6d5fa0047fa90f44dfadf73a6db101cd224ce83ebf753ccf73",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Pydantic AI 官方宣布，v2.71.0 新增 ToolBridge，以搜索、描述和调用接口管理大型工具集合，并让审批者查看延迟工具调用的已验证参数。发布页显示11月19日发布；相比此前上榜的 v2.69.0，本次增加了实质工具管理能力。[项目仓库](https://github.com/pydantic/pydantic-ai)",
+      "analysis": "工具数量频繁变化时，固定入口有助于控制工具描述对提示缓存的影响，适合复杂 Agent 工作流。升级仍需检查接口更名等兼容性变化，不能直接推定已有集成无需修改。",
+      "evidence_quote": "v2.71.0 (2026-11-18)",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "提供 Agent 构建与工具执行能力，本次重点改善大型工具集合和延迟调用审批。",
+        "change": {
+          "summary": "正式发布 v2.71.0；标题标注11月18日，GitHub发布时间显示11月19日02:13 UTC。",
+          "version": "v2.71.0",
+          "type": "release",
+          "publishedAt": "2026-11-19",
+          "evidenceRefs": [
+            "e1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "ToolBridge 通过 tool_search、tool_describe、tool_call 保持固定工具入口。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "description": "DeferredToolRequests.validated_args 向审批者展示实际执行参数。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建工具集合较大、部分调用需要人工审批的 Agent。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "e2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "PeerNetwork 更名为 PeerConnection，存在兼容性调整。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "v2.71.0 官方发布说明",
+            "url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0",
+            "supports": "版本、发布时间、工具管理、审批参数及兼容性变化"
+          },
+          {
+            "id": "e2",
+            "name": "LICENSE",
+            "url": "https://github.com/pydantic/pydantic-ai/blob/main/LICENSE",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0",
+        "canonical_url": "https://github.com/pydantic/pydantic-ai/releases/tag/v2.71.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "774227ad761ef8cdefdba21c769970f538e5ec6a27d18f09061b014935e59f27",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "redb 官方宣布，v5.0.0 优化若干 Option 类型的存储编码，并修复数据库压缩和写缓冲区遇到 panic 时的问题。这个纯 Rust 嵌入式键值数据库支持 ACID 事务；11月18日发布的新版本包含需要迁移的编码变化。[项目仓库](https://github.com/cberner/redb)",
+      "analysis": "值得已有 redb 持久化应用关注，尤其是自定义值编码的项目。迁移影响比新增功能更关键：官方指出部分自定义类型可能静默误读旧表，应先设计数据读取和迁移路径。",
+      "evidence_quote": "The new encoding is not compatible with the one used in prior versions.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "为应用提供纯 Rust 嵌入式事务键值存储。",
+        "change": {
+          "summary": "正式发布 v5.0.0，调整存储编码与API，并修复压缩及panic处理。",
+          "version": "v5.0.0",
+          "type": "release",
+          "publishedAt": "2026-11-18",
+          "evidenceRefs": [
+            "e1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "数据组织为写时复制 B+树，支持 ACID 事务与 MVCC。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          },
+          {
+            "description": "旧 Option 编码可通过 Legacy 包装读取，再复制到新表迁移。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为本地应用保存需要事务一致性的键值数据。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库提供的MIT授权选项",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "自定义 Value 若使用受影响的 Option 编码，未迁移可能静默误读旧表。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "v5.0.0 官方发布说明",
+            "url": "https://github.com/cberner/redb/releases/tag/v5.0.0",
+            "supports": "版本、日期、修复和迁移限制"
+          },
+          {
+            "id": "e2",
+            "name": "官方仓库",
+            "url": "https://github.com/cberner/redb",
+            "supports": "数据库机制与事务能力"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/cberner/redb/blob/master/LICENSE-MIT",
+            "supports": "MIT授权选项"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/cberner/redb/releases/tag/v5.0.0",
+        "canonical_url": "https://github.com/cberner/redb/releases/tag/v5.0.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "99713f800245d4f8d5c5949ebe078d25a4e13b2e8a34b7e83960d5ea982bcea2",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "bottom 官方仓库称，它是跨平台 Rust 终端系统监控工具，可展示 CPU、内存、网络和磁盘 I/O，并搜索进程、查看进程树。作为成熟项目发现收录；11月19日的官方 Nightly 提供近期维护证据，不作为重大功能发布。[项目仓库](https://github.com/ClementTsang/bottom)",
+      "analysis": "适合通过终端快速观察资源变化、定位占用异常的进程，布局配置也便于长期使用。它提供系统观察视角；需要函数级热点或分配归因时，仍应配合专门的分析工具。",
+      "evidence_quote": "A customizable cross-platform graphical process/system monitor for the terminal.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "在终端集中展示系统资源趋势和进程信息，支持 Linux、macOS、Windows。",
+        "technical": [
+          {
+            "description": "图形组件展示CPU、内存、网络和磁盘I/O随时间的变化，支持进程树与搜索。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在远程终端排查资源占用异常并查找相关进程。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月19日存在官方Nightly构建；本条按成熟项目发现收录。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方仓库",
+            "url": "https://github.com/ClementTsang/bottom",
+            "supports": "项目定位、监控组件与平台范围"
+          },
+          {
+            "id": "e2",
+            "name": "官方发布记录",
+            "url": "https://github.com/ClementTsang/bottom/releases",
+            "supports": "11月19日Nightly维护记录"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/ClementTsang/bottom/blob/main/LICENSE",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ClementTsang/bottom",
+        "canonical_url": "https://github.com/ClementTsang/bottom",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "182cf80b976db0c1dd9d6a9504b7b999d93e0149502e86ff83103dce431095e0",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Pipecat 官方仓库称，它将语音识别、语音合成和对话处理组合为模块化流水线，并支持 WebSocket、WebRTC 等传输。作为持续维护项目发现收录；11月12日的 v1.16.0 提供近期维护证据，可用于实时语音交互应用。[项目仓库](https://github.com/pipecat-ai/pipecat)",
+      "analysis": "适合需要组合识别、合成和对话服务的语音应用，模块化设计有利于替换服务商。最终延迟、费用和语音能力仍取决于所选服务与传输方案，仓库功能不能替代端到端验证。",
+      "evidence_quote": "Voice-first: Integrates speech recognition, text-to-speech, and conversation handling",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "帮助开发者组合语音识别、合成与对话逻辑，构建实时多模态应用。",
+        "technical": [
+          {
+            "description": "以可组合流水线连接处理组件，并支持WebSocket与WebRTC传输。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建电话助手或具备流式语音交互的客服应用。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "BSD-2-Clause",
+          "scope": "框架代码；外部服务及模型授权另计",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v1.16.0于11月12日发布，本条作为项目发现而非今日更新。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方仓库",
+            "url": "https://github.com/pipecat-ai/pipecat",
+            "supports": "流水线、语音能力、传输及应用场景"
+          },
+          {
+            "id": "e2",
+            "name": "v1.16.0发布说明",
+            "url": "https://github.com/pipecat-ai/pipecat/releases/tag/v1.16.0",
+            "supports": "近期维护日期"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/pipecat-ai/pipecat/blob/main/LICENSE",
+            "supports": "BSD-2-Clause授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/pipecat-ai/pipecat",
+        "canonical_url": "https://github.com/pipecat-ai/pipecat",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b9cdeba46112f10ce75a3172a2a29c76e046d8307c7fac1f038630b29228ae59",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "LosslessCut 官方仓库称，它以 FFmpeg 提供音视频无损裁切、轨道提取和重封装，并可检测场景、黑帧与静音。作为成熟媒体工具发现收录；10月28日的 v3.70.2 提供近90天维护证据，适合长素材粗剪与轨道整理。[项目仓库](https://github.com/mifi/lossless-cut)",
+      "analysis": "适合先从相机、录屏等长素材中保留有用片段，减少重复编码。实际能否无损导出取决于操作和素材条件，不能把所有裁切需求都理解为任意切点的帧精确处理。",
+      "evidence_quote": "The swiss army knife of lossless video/audio editing",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "通过图形界面完成音视频流复制、裁切、重封装与轨道管理。",
+        "technical": [
+          {
+            "description": "基于FFmpeg复制媒体流，支持轨道提取、重封装及场景和静音检测。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "粗剪长录制素材，或从文件中提取音频与字幕轨道。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "GPL-2.0",
+          "scope": "仓库代码；素材授权另计",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v3.70.2于10月28日发布，修复Windows静音与黑场检测；本条按项目发现收录。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方仓库",
+            "url": "https://github.com/mifi/lossless-cut",
+            "supports": "媒体处理能力及FFmpeg机制"
+          },
+          {
+            "id": "e2",
+            "name": "v3.70.2发布说明",
+            "url": "https://github.com/mifi/lossless-cut/releases/tag/v3.70.2",
+            "supports": "近期维护日期与检测修复"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/mifi/lossless-cut/blob/master/LICENSE",
+            "supports": "GPL第二版授权文本"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mifi/lossless-cut",
+        "canonical_url": "https://github.com/mifi/lossless-cut",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2691334bdbb62800483215901225a4778cac2ac204c0820b184f88d9b39eafd9",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Memray 官方仓库称，它追踪 Python 内存分配，并支持 C/C++ 原生调用栈和线程，可生成内存火焰图。作为成熟性能工具发现收录；11月16日的官方提交提供近期维护证据，可用于分析 Python 与原生扩展共同造成的内存增长。[项目仓库](https://github.com/bloomberg/memray)",
+      "analysis": "对使用原生扩展的 Python 应用，它能提供比单看进程内存更具体的分配归因。适合调查内存增长来源，但目标平台支持和采集开销仍应结合应用验证，本轮没有独立性能实测。",
+      "evidence_quote": "Memray is a memory profiler for Python",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "追踪Python应用的内存分配，并将原生扩展调用纳入分析。",
+        "technical": [
+          {
+            "description": "支持Python与C/C++调用栈、原生线程，并生成火焰图等报告。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "定位使用NumPy、pandas等原生扩展的应用中的内存分配来源。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月16日仍有构建与CI维护；不将旧版功能写成今日发布。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方仓库",
+            "url": "https://github.com/bloomberg/memray",
+            "supports": "内存分析、原生调用栈与报告能力"
+          },
+          {
+            "id": "e2",
+            "name": "官方提交记录",
+            "url": "https://github.com/bloomberg/memray/commits",
+            "supports": "11月16日维护记录"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/bloomberg/memray/blob/main/LICENSE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/bloomberg/memray",
+        "canonical_url": "https://github.com/bloomberg/memray",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8d6a25c3be6711da87d9e6d2eec0f6c57df286d6d4766e5b36c4b60421c392e9",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Grype 官方宣布，v0.122.1 修复 JVM 版本比较逻辑缺口，以及将 Apache Airflow CVE 错配到 Python lightning 包的问题。这个容器镜像与文件系统漏洞扫描器于11月18日发布更新，涉及扫描结果的匹配准确性。[项目仓库](https://github.com/anchore/grype)",
+      "analysis": "已有扫描流程值得检查此次匹配修复，尤其是包含 JVM 或相关 Python 依赖的项目。发布说明支持具体逻辑修正，但不足以量化整体误报率或漏报率的改善。",
+      "evidence_quote": "Address gaps in grype's jvm version comparison logic",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "扫描容器镜像和文件系统中的已知漏洞，辅助依赖风险排查。",
+        "change": {
+          "summary": "正式发布v0.122.1，修复JVM版本比较及Python包漏洞误匹配。",
+          "version": "v0.122.1",
+          "type": "release",
+          "publishedAt": "2026-11-18",
+          "evidenceRefs": [
+            "e1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "更新JVM版本比较逻辑，并修正Airflow CVE与lightning包的匹配问题。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在镜像或文件系统扫描流程中排查依赖漏洞。",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "扫描器代码",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "已有受影响依赖扫描流程值得更新后复查结果。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "v0.122.1官方发布说明",
+            "url": "https://github.com/anchore/grype/releases/tag/v0.122.1",
+            "supports": "版本、日期及两项匹配修复"
+          },
+          {
+            "id": "e2",
+            "name": "官方仓库",
+            "url": "https://github.com/anchore/grype",
+            "supports": "扫描器定位与扫描对象"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/anchore/grype/blob/main/LICENSE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/anchore/grype/releases/tag/v0.122.1",
+        "canonical_url": "https://github.com/anchore/grype/releases/tag/v0.122.1",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0039f9c5998b67c5e119d6f3e8bc03964e5c1c35bef39506a24ecf44cf32fc91",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "js-libp2p 官方仓库称，它提供 JavaScript 的 libp2p 网络栈实现，已用于 IPFS 等生产系统，并持续维护。作为成熟 P2P 项目发现收录；10月19日的 Yamux 组件发布提供近90天维护证据，可供 JavaScript 点对点应用参考。[项目仓库](https://github.com/libp2p/js-libp2p)",
+      "analysis": "适合在 JavaScript 应用中组合 P2P 网络能力，已有生产使用记录有助于评估成熟度。具体传输组合和版本迁移仍需核对；不能把计划中的协议里程碑直接视为已经交付。",
+      "evidence_quote": "A JavaScript Implementation of libp2p networking stack.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "为JavaScript应用提供libp2p点对点网络栈。",
+        "technical": [
+          {
+            "description": "组件化网络栈包含Yamux、WebTransport、WebSocket等独立发布组件。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建JavaScript点对点连接应用或IPFS相关网络集成。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库提供的MIT授权选项",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "Yamux v8.0.7于10月19日发布，作为近期维护证据。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方仓库",
+            "url": "https://github.com/libp2p/js-libp2p",
+            "supports": "项目定位、生产使用与维护说明"
+          },
+          {
+            "id": "e2",
+            "name": "官方组件发布记录",
+            "url": "https://github.com/libp2p/js-libp2p/releases",
+            "supports": "组件构成及10月19日维护记录"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/libp2p/js-libp2p/blob/main/LICENSE-MIT",
+            "supports": "MIT授权选项"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/libp2p/js-libp2p",
+        "canonical_url": "https://github.com/libp2p/js-libp2p",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "1de6b8e1c4c21c24acb8116b1f0cc13b454478850aa6a0fef00664ebf4d8e9b2",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Autobase 官方仓库称，它基于 Hypercore 构建多写入者数据结构，通过因果 DAG 排序写入并生成确定性视图。作为成熟项目发现收录；9月8日的版本与锁释放修复提交提供近90天维护证据，可用于 P2P 协作数据同步。[项目仓库](https://github.com/holepunchto/autobase)",
+      "analysis": "适合需要合并多个写入者历史的协作应用，确定性视图可作为共享状态的基础。主要约束是新数据可能触发重排与重放，应用更新逻辑必须遵守确定性要求，不能随意修改外部状态。",
+      "evidence_quote": "Ordering is eventually consistent.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "基于Hypercore合并多写入者日志，生成共同的数据视图。",
+        "technical": [
+          {
+            "description": "写入节点形成因果DAG，经线性化后确定性更新视图；新因果信息可能触发重排。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建需要多方写入并同步共享状态的P2P协作应用。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "视图更新必须确定性执行；外部状态更新不能随视图重排自动正确回滚。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "description": "9月8日有7.28.2版本提交和锁释放修复，未将提交日期视为包发行日期。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "官方仓库",
+            "url": "https://github.com/holepunchto/autobase",
+            "supports": "多写入者、因果排序、确定性视图及重放限制"
+          },
+          {
+            "id": "e2",
+            "name": "官方提交记录",
+            "url": "https://github.com/holepunchto/autobase/commits",
+            "supports": "9月8日维护记录"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/holepunchto/autobase/blob/main/LICENSE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/holepunchto/autobase",
+        "canonical_url": "https://github.com/holepunchto/autobase",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
