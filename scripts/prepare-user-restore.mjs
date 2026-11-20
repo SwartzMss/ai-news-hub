@@ -14,7 +14,12 @@ function deletionSql(tombstones) {
       || Number.isNaN(Date.parse(item.deletedAt))) throw Error('invalid_tombstones');
     ids.add(item.userId.toLowerCase());
   }
-  return `\nPRAGMA foreign_keys = ON;\n${ids.size ? `DELETE FROM users WHERE id IN (${[...ids].map(id => `'${id}'`).join(',')});\n` : ''}`;
+  const values = [...ids];
+  const statements = [];
+  for (let start = 0; start < values.length; start += 500) {
+    statements.push(`DELETE FROM users WHERE id IN (${values.slice(start, start + 500).map(id => `'${id}'`).join(',')});`);
+  }
+  return `\nPRAGMA foreign_keys = ON;\n${statements.join('\n')}${statements.length ? '\n' : ''}`;
 }
 
 export function prepareRestoreSql(backupSql, tombstones) {

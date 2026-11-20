@@ -18,3 +18,13 @@ test('restore preparation replays deletion tombstones after importing an older b
 test('restore preparation rejects malformed deletion records', () => {
   assert.throws(() => prepareRestoreSql('SELECT 1;', [{ schemaVersion: 1, userId: "x'); DROP TABLE users; --", deletedAt: '2026-11-20T12:00:00.000Z' }]));
 });
+
+test('restore preparation keeps each deletion statement below the D1 SQL size limit', () => {
+  const tombstones = Array.from({ length: 3000 }, (_, i) => ({ schemaVersion: 1,
+    userId: `33333333-3333-4333-8333-${i.toString(16).padStart(12, '0')}`,
+    deletedAt: '2026-11-20T12:00:00.000Z' }));
+  const sql = prepareRestoreSql('SELECT 1;', tombstones);
+  const deletes = sql.match(/DELETE FROM users WHERE id IN \([^;]+;/g) ?? [];
+  assert.ok(deletes.length > 1);
+  for (const statement of deletes) assert.ok(Buffer.byteLength(statement) < 100000);
+});
