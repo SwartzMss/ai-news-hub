@@ -534,4 +534,6 @@ Pages Functions 的 Newsletter 并发批次修复依赖独立的 D1 migration 00
 
 永久收藏 API 部署前，在对应环境 `USER_DB` 执行尚未应用的 `users/migrations/0003.sql`，随后重新构建并部署公共站及 Pages Functions。构建会在 `/data/articles/<key>.json` 输出当前公开文章；收藏时 Function 从同部署静态资源读取并保存独立快照。生产 `AUTH_ENABLED` 在认证真实端到端与 CPU 验收完成前保持关闭；不修改 Linux Backend、Newsletter D1 或域名配置。见 [收藏 API](FAVORITES.md) 与 [#160](https://github.com/SwartzMss/ai-news-hub/issues/160)。
 
+收藏分类 API 部署前，在同一环境 `USER_DB` 的 `0003.sql` 之后执行 `users/migrations/0004.sql`，再部署新 Pages Functions。迁移增加私有分类表和收藏的可空分类外键；删除分类只清空收藏归属。生产认证继续保持关闭，直到独立的真实认证与 CPU 验收完成。见 [收藏 API](FAVORITES.md) 与 [#161](https://github.com/SwartzMss/ai-news-hub/issues/161)。
+
 详情页阅读导航升级仅涉及公共站构建与部署，不修改日报归档或任务 Prompt。部署时重新执行公共站构建，验收 news、investment、project 及历史项目页面的目录、证据锚点和移动端折叠导航。

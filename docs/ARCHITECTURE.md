@@ -145,7 +145,7 @@ GitHub 上传路径只允许 topic-scoped v1 归档。升级后可重试此前�
 
 公共邮件订阅作为可选功能：Pages Functions 处理订阅确认与退订，独立 D1 保存私有订阅/发送状态，GitHub Actions 按上海时间每日触发汇总，Resend 负责实际发送；不连接私有 Backend 或向 Codex 暴露邮件凭据。默认关闭，演示站禁用，需完成发件域名、密钥和 D1 配置才可验收真实投递。每日发送从北京时间 09:00 开始检查；工作流兼容早期互换的 GitHub Variable/Secret 名称，待规范配置后移除旧项。见 [邮件订阅](NEWSLETTER.md)。
 
-公共用户数据使用另一套 Pages Functions `USER_DB` D1：生产与预览使用不同数据库，本地测试使用本地存储；`users/migrations/` 与 Newsletter 的 D1 迁移、Linux Backend SQLite 迁移完全独立。`/api/favorites` 根据当前 Session 和已发布的 `/data/articles/<key>.json` 写入版本化完整快照；查询与删除在 SQL 中限定用户，收藏不受日报 30 天清理影响。见 [用户 D1 数据库](USER_DB.md)、[收藏 API](FAVORITES.md) 与 [#160](https://github.com/SwartzMss/ai-news-hub/issues/160)。
+公共用户数据使用另一套 Pages Functions `USER_DB` D1：生产与预览使用不同数据库，本地测试使用本地存储；`users/migrations/` 与 Newsletter 的 D1 迁移、Linux Backend SQLite 迁移完全独立。`/api/favorites` 根据当前 Session 和已发布的 `/data/articles/<key>.json` 写入版本化完整快照；查询与删除在 SQL 中限定用户，收藏不受日报 30 天清理影响。`/api/favorite-categories` 管理当前用户的分类，收藏可移入一个分类或回到未分类；删除分类只清空归属。见 [用户 D1 数据库](USER_DB.md)、[收藏 API](FAVORITES.md) 与 [#160](https://github.com/SwartzMss/ai-news-hub/issues/160)、[#161](https://github.com/SwartzMss/ai-news-hub/issues/161)。
 
 公共认证路由 `/api/auth/*` 由 Pages Functions 提供并默认关闭，使用 `USER_DB` 保存密码派生值、验证 Token 哈希和 Session 哈希；Resend 传输模块与 Newsletter 共用，但认证开关、发件配置和数据库独立。验证 GET 不修改账户；登录与私有查询从 Session Cookie 获取身份。密码重置、改密、按 IP/邮箱限流、Turnstile 服务端校验与 Session 闲置过期由 #159 增加；前端用户中心尚未实现。见 [公共用户认证](AUTH.md)、[#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 与 [#159](https://github.com/SwartzMss/ai-news-hub/issues/159)。
 
