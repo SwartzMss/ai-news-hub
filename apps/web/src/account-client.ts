@@ -57,7 +57,7 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
       status.textContent = "";
       profile.hidden = links.hidden = false;
       const tools = home.querySelector<HTMLElement>("[data-account-tools]");
-      if (tools) { tools.hidden = false; mountAccountDataControls(navigate); }
+      if (tools) { tools.hidden = false; mountAccountDataControls(); }
       profile.querySelector<HTMLElement>("[data-account-email]")!.textContent = state.user.email;
       home.querySelector<HTMLButtonElement>("[data-account-logout]")?.addEventListener("click", async () => {
         try { await api<void>("/api/auth/logout", "POST"); notifyLogout(); navigate("/"); }

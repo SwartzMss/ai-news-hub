@@ -56,30 +56,10 @@ test('data export continues across requests without hitting the per-invocation D
   assert.equal((await request(f, 'export-data', { body: { ...payload, exportToken: 'bad' }, headers })).status, 401);
 });
 
-test('account deletion requires a private ledger write and cascades only the current user', async t => {
+test('account deletion is unavailable while the user data lifecycle is deferred', async t => {
   const f = fixture(); t.after(() => f.close());
   const user = await activeUser(f);
-  const other = await activeUser(f, 'other@example.com');
-  f.db.prepare(`INSERT INTO favorite_categories(id,user_id,name,name_key,created_at,updated_at)
-    VALUES ('33333333-3333-4333-8333-333333333333',?,'Later','later',?,?)`).run(user.id, NOW, NOW);
   const options = { body: { password: PASSWORD }, headers: { cookie: user.cookie } };
-  assert.equal((await request(f, 'delete-account', options)).status, 503);
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 2);
-  f.env.USER_BACKUP_BUCKET = { put: async () => { throw Error('R2 down'); } };
-  assert.equal((await request(f, 'delete-account', options)).status, 503);
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users').get().n, 2);
-  const writes = [];
-  f.env.USER_BACKUP_BUCKET = { put: async (key, value) => { writes.push({ key, value: JSON.parse(value) }); return { key }; } };
-  assert.equal((await request(f, 'delete-account', { body: { password: 'wrong password string' }, headers: { cookie: user.cookie } })).status, 401);
-  assert.equal(writes.length, 0);
-  const deleted = await request(f, 'delete-account', options);
-  assert.equal(deleted.status, 204);
-  assert.match(deleted.headers.get('set-cookie'), /Max-Age=0/);
-  assert.equal(writes.length, 1);
-  assert.equal(writes[0].key, `tombstones/${user.id}.json`);
-  assert.equal(writes[0].value.userId, user.id);
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users WHERE id=?').get(user.id).n, 0);
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM favorite_categories').get().n, 0);
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM auth_sessions WHERE user_id=?').get(user.id).n, 0);
-  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users WHERE id=?').get(other.id).n, 1);
+  assert.equal((await request(f, 'delete-account', options)).status, 404);
+  assert.equal(f.db.prepare('SELECT COUNT(*) AS n FROM users WHERE id=?').get(user.id).n, 1);
 });

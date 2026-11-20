@@ -11,7 +11,6 @@ const policies: Record<string, { ip: [number, number]; subject: [number, number]
   reset_password: { ip: [20, HOUR], subject: [5, HOUR] },
   change_password: { ip: [20, HOUR], subject: [5, HOUR] },
   export_data: { ip: [10, HOUR], subject: [5, HOUR] },
-  delete_account: { ip: [10, HOUR], subject: [5, HOUR] },
 };
 
 async function keyFor(secret: string, action: string, scope: string, value: string, windowStart: number): Promise<string> {

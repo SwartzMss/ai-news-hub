@@ -2038,10 +2038,6 @@ html {
 .account-data-tools form > button { min-height: 48px; width: fit-content; padding: 9px 18px; border: 1px solid var(--accent); border-radius: 8px; background: var(--paper); color: var(--accent); font-weight: 700; }
 .account-data-tools form > button:disabled { opacity: .55; cursor: progress; }
 .account-data-tools form > p[role="status"] { min-height: 24px; color: var(--muted); font-size: 13px; }
-.account-check { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; }
-.account-check input { width: 20px; height: 20px; margin: 3px 0 0; accent-color: var(--accent); }
-.account-data-tools .account-delete { border-top-color: #d9b6b2; }
-.account-data-tools .account-delete form > button { border-color: #9d3936; color: #9d3936; }
 .article-favorite-action { display: flex; flex-wrap: wrap; gap: 10px; align-items: center; margin: 14px 0 24px; }
 .article-favorite-action button, .favorite-actions button, .category-row button, .favorites-more { min-height: 44px; padding: 7px 13px; border: 1px solid var(--accent); border-radius: 8px; background: var(--paper); color: var(--accent); font-weight: 650; }
 .article-favorite-action button[aria-pressed="true"] { background: var(--tint); }

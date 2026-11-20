@@ -1,7 +1,7 @@
 import test from 'node:test';
 import assert from 'node:assert/strict';
 import { fixture, NOW } from './fixtures/auth.mjs';
-import { cleanupUserDb } from '../deploy/user-backup/cleanup.mjs';
+import { cleanupUserDb } from '../deploy/user-cleanup/cleanup.mjs';
 
 test('hourly privacy cleanup removes expired auth records and keeps active sessions', async t => {
   const f = fixture(); t.after(() => f.close());

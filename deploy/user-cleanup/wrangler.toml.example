@@ -1,0 +1,13 @@
+# Optional scheduled cleanup Worker for an enabled public user system.
+# Copy to wrangler.toml, fill the production user database ID, then deploy separately from Pages.
+name = "ai-news-hub-user-cleanup"
+main = "worker.mjs"
+compatibility_date = "2026-11-20"
+
+[triggers]
+crons = ["15 * * * *"]
+
+[[d1_databases]]
+binding = "USER_DB"
+database_name = "ai-news-hub-users"
+database_id = "replace-with-production-user-db-id"
