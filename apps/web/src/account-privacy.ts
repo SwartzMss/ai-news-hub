@@ -27,7 +27,6 @@ export function clearPrivateContent(): void {
   document.querySelector<HTMLFormElement>("[data-favorites-filter]")?.reset();
   document.querySelector<HTMLFormElement>("[data-category-create]")?.reset();
   document.querySelector<HTMLFormElement>("[data-account-export]")?.reset();
-  document.querySelector<HTMLFormElement>("[data-account-delete]")?.reset();
   document.querySelector<HTMLElement>(".account-menu")?.remove();
   const nav = document.querySelector<HTMLAnchorElement>("[data-account-nav]");
   if (nav) { nav.hidden = false; nav.textContent = "账户"; }

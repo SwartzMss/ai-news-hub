@@ -58,16 +58,6 @@ function AccountHome() {
           <button type="submit">下载数据文件</button>
         </form>
       </section>
-      <section className="account-delete" aria-labelledby="account-delete-title">
-        <h2 id="account-delete-title">删除账户</h2>
-        <p>删除后会撤销登录，并删除在线账户、收藏及分类。备份中的数据按备份保留期到期。</p>
-        <form data-account-delete aria-labelledby="account-delete-title" action="/api/auth/delete-account" method="post">
-          <div className="account-field"><label htmlFor="delete-password">当前密码</label><input id="delete-password" name="password" type="password" autoComplete="current-password" minLength={12} maxLength={128} required /></div>
-          <label className="account-check"><input name="confirm" type="checkbox" required /> 我确认要删除账户及其收藏，且操作无法撤销。</label>
-          <p data-account-delete-status role="status" aria-live="polite" />
-          <button type="submit">永久删除账户</button>
-        </form>
-      </section>
     </div>
   </main>;
 }

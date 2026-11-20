@@ -1,9 +1,7 @@
-import { api, ApiError, requestMessage } from "./account-api";
-import { notifyLogout } from "./account-privacy";
+import { ApiError, requestMessage } from "./account-api";
 
-export function mountAccountDataControls(navigate: (path: string) => void): void {
+export function mountAccountDataControls(): void {
   const exportForm = document.querySelector<HTMLFormElement>("[data-account-export]");
-  const deleteForm = document.querySelector<HTMLFormElement>("[data-account-delete]");
   exportForm?.addEventListener("submit", async event => {
     event.preventDefault();
     if (!exportForm.reportValidity()) return;
@@ -41,20 +39,5 @@ export function mountAccountDataControls(navigate: (path: string) => void): void
       exportForm.reset();
     } catch (error) { status.textContent = requestMessage(error); }
     finally { password.value = ""; button.disabled = false; }
-  });
-  deleteForm?.addEventListener("submit", async event => {
-    event.preventDefault();
-    if (!deleteForm.reportValidity()) return;
-    const button = deleteForm.querySelector<HTMLButtonElement>('button[type="submit"]')!;
-    if (button.disabled) return;
-    const password = deleteForm.elements.namedItem("password") as HTMLInputElement;
-    const status = deleteForm.querySelector<HTMLElement>("[data-account-delete-status]")!;
-    button.disabled = true; status.textContent = "正在删除账户…";
-    try {
-      await api<void>("/api/auth/delete-account", "POST", { password: password.value });
-      notifyLogout();
-      navigate("/");
-    } catch (error) { status.textContent = requestMessage(error); button.disabled = false; }
-    finally { password.value = ""; }
   });
 }

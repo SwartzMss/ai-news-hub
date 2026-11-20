@@ -1,6 +1,6 @@
 # 公共用户 D1 数据库
 
-生产上线、R2 私有备份、墓碑与隔离恢复流程见 [用户生产上线与恢复](USER_PRODUCTION.md)。账户注销依赖 Pages 的 `USER_BACKUP_BUCKET` R2 Binding；没有绑定时接口返回 503，不删除在线数据。
+生产上线条件见 [用户生产验收](USER_PRODUCTION.md)。当前版本不提供账户注销，也没有独立用户库备份；D1 Time Travel 仅提供有限时间内的恢复能力，不能代替上线前的完整备份和删除政策。
 
 Issue [#157](https://github.com/SwartzMss/ai-news-hub/issues/157) 只建立用户数据基础设施。公共站仍由 Cloudflare Pages 静态构建；本阶段没有注册、登录、Session 或收藏 API，也不启用用户邮件发送。
 
