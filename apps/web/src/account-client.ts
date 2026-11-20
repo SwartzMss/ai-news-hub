@@ -1,5 +1,6 @@
 import { api, ApiError, type AuthState, requestMessage } from "./account-api";
 import { safeReturnPath } from "./account-path";
+import { notifyLogout } from "./account-privacy";
 
 type Widget = string;
 type Turnstile = {
@@ -39,7 +40,7 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
       const menuStatus = document.createElement("span"); menuStatus.setAttribute("role", "status");
       logout.addEventListener("click", async () => {
         logout.disabled = true;
-        try { await api<void>("/api/auth/logout", "POST"); navigate("/"); }
+        try { await api<void>("/api/auth/logout", "POST"); notifyLogout(); navigate("/"); }
         catch (error) { menuStatus.textContent = requestMessage(error); logout.disabled = false; }
       });
       items.append(account, favorites, logout, menuStatus); menu.append(summary, items); nav.after(menu);
@@ -56,7 +57,7 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
       profile.hidden = links.hidden = false;
       profile.querySelector<HTMLElement>("[data-account-email]")!.textContent = state.user.email;
       home.querySelector<HTMLButtonElement>("[data-account-logout]")?.addEventListener("click", async () => {
-        try { await api<void>("/api/auth/logout", "POST"); navigate("/"); }
+        try { await api<void>("/api/auth/logout", "POST"); notifyLogout(); navigate("/"); }
         catch (error) { status.textContent = requestMessage(error); }
       });
     } else if (state.kind === "guest") {

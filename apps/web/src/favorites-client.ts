@@ -1,10 +1,13 @@
 import { api, ApiError, type AuthState, requestMessage } from "./account-api";
 import { safeReturnPath } from "./account-path";
+import { clearPrivateContent } from "./account-privacy";
 
 interface Category { id: string; name: string; sortOrder: number }
 interface Favorite { id: string; articleKey: string; title: string; createdAt: number; categoryId: string | null;
   topic: { id: string; name: string }; sourceName: string; sourcePublishedAt: string | null; reportDate: string }
-interface Snapshot { article: { title: string; fact_summary: string; analysis: string | null; details: Record<string, unknown>; source: { name: string; canonical_url: string; published_at: string | null }; report_date: string; topic: { id: string; name: string }; key: string } }
+interface Snapshot { article: { title: string; fact_summary: string; analysis: string | null; evidence_quote: string; verification: string;
+  details: Record<string, unknown>; source: { name: string; original_url: string; canonical_url: string; published_at: string | null; event_at: string | null; fetched_at: string | null };
+  report_date: string; report_version: number; first_approved_at: string; topic: { id: string; name: string }; key: string } }
 interface FavoriteDetail { id: string; articleKey: string; categoryId: string | null; createdAt: number; snapshot: Snapshot }
 
 const el = <K extends keyof HTMLElementTagNameMap>(tag: K, className?: string, text?: string): HTMLElementTagNameMap[K] => {
@@ -124,8 +127,7 @@ export async function mountFavorites(auth: Promise<AuthState>): Promise<void> {
   sort.value = values.get("sort") === "oldest" ? "oldest" : "newest";
   let categoryValue = values.get("category") ?? "all";
   window.addEventListener("favorite-session-expired", () => {
-    listView.hidden = detailView.hidden = categoryPanel.hidden = true;
-    list.replaceChildren(); detailContent.replaceChildren(); categoryList.replaceChildren();
+    clearPrivateContent();
     status.replaceChildren("登录已失效，请重新登录。 ");
     const link = el("a", undefined, "前往登录"); link.href = `/account/login/?return=${encodeURIComponent(location.pathname + location.search)}`; status.append(link);
   }, { once: true });
@@ -161,7 +163,9 @@ export async function mountFavorites(auth: Promise<AuthState>): Promise<void> {
       down.addEventListener("click", () => void shift(index + 1));
       remove.addEventListener("click", async () => {
         if (!confirm(`删除分类「${item.name}」？其中的收藏会移至未分类。`)) return;
-        try { await api<void>(`/api/favorite-categories/${item.id}`, "DELETE"); categoryStatus.textContent = "分类已删除，文章已移至未分类。"; await reloadCategories(); await loadList(true); }
+        try { await api<void>(`/api/favorite-categories/${item.id}`, "DELETE");
+          if (categoryValue === item.id) { categoryValue = "all"; const next = new URL(location.href); next.searchParams.delete("category"); history.replaceState({}, "", next.pathname + next.search); }
+          categoryStatus.textContent = "分类已删除，文章已移至未分类。"; await reloadCategories(); if (!detailId) await loadList(true); }
         catch (error) { categoryStatus.textContent = requestMessage(error); }
       });
       row.append(name, rename, up, down, remove); categoryList.append(row);
@@ -174,7 +178,8 @@ export async function mountFavorites(auth: Promise<AuthState>): Promise<void> {
     select.value = favorite.categoryId ?? "";
     select.addEventListener("change", async () => {
       select.disabled = true;
-      try { await api(`/api/favorites/${favorite.id}/category`, "PATCH", { categoryId: select.value || null }); status.textContent = "分类已更新。"; favorite.categoryId = select.value || null; }
+      try { await api(`/api/favorites/${favorite.id}/category`, "PATCH", { categoryId: select.value || null }); status.textContent = "分类已更新。"; favorite.categoryId = select.value || null;
+        if (!detailId && category.value !== "all") await loadList(true); }
       catch (error) { select.value = favorite.categoryId ?? ""; status.textContent = requestMessage(error); }
       finally { select.disabled = false; }
     });
@@ -225,12 +230,24 @@ export async function mountFavorites(auth: Promise<AuthState>): Promise<void> {
       const heading = el("h2", undefined, article.title);
       const meta = el("p", "favorite-meta", `${article.topic.name} · ${article.source.name} · 原文 ${date(article.source.published_at)} · 收藏 ${date(favorite.createdAt)}`);
       const summary = el("p", "favorite-summary", article.fact_summary);
+      const archival = el("dl", "favorite-archive-meta");
+      for (const [label, value] of [
+        ["原文发布时间", date(article.source.published_at)], ["事件时间", date(article.source.event_at)],
+        ["抓取时间", date(article.source.fetched_at)], ["日报日期", article.report_date],
+        ["日报版本", String(article.report_version)], ["首次批准时间", date(article.first_approved_at)],
+        ["验证状态", article.verification],
+      ]) archival.append(el("dt", undefined, label), el("dd", undefined, value));
       const source = el("a", undefined, "查看原始来源 ↗"); source.href = article.source.canonical_url; source.target = "_blank"; source.rel = "noopener noreferrer";
       const original = el("a", undefined, "查看站内文章"); original.href = articlePath(article.topic.id, favorite.articleKey);
       const actions = el("div", "favorite-actions"); actions.append(makeCategorySelect(favorite), makeRemove(favorite));
-      detailContent.replaceChildren(heading, meta, summary);
+      detailContent.replaceChildren(heading, meta, archival, summary, el("h3", undefined, "原文证据摘录"), el("p", "favorite-evidence-quote", article.evidence_quote));
       if (article.analysis) detailContent.append(el("h3", undefined, "分析与推断"), el("p", undefined, article.analysis));
-      detailContent.append(snapshotDetails(article.details), actions, source, original); status.textContent = "";
+      detailContent.append(snapshotDetails(article.details), actions, source);
+      if (article.source.original_url !== article.source.canonical_url) {
+        const originalSource = el("a", undefined, "查看原始链接"); originalSource.href = article.source.original_url;
+        originalSource.target = "_blank"; originalSource.rel = "noopener noreferrer"; detailContent.append(originalSource);
+      }
+      detailContent.append(original); status.textContent = "";
     } else { listView.hidden = false; await loadList(true); }
   } catch (error) { status.textContent = requestMessage(error); }
   more.addEventListener("click", () => void loadList(false));
