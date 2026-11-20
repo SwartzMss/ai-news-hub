@@ -532,4 +532,6 @@ Pages Functions 的 Newsletter 并发批次修复依赖独立的 D1 migration 00
 
 开源项目五方向研究升级：部署 Backend 与公开站构建代码后，在后台编辑已有「每日开源项目」任务，重新选择 `daily-opensource` v1 模板并保存，再手动运行和审核新日报。模板版本仍为 v1；新运行输出五方向分类与 `kind=project` 详情，新发布话题归档采用统一 v1 Schema。旧任务 Prompt 和历史 Run 不会自动改写；公开站只读取统一 v1 topic-scoped 归档，并按 details.kind 显示项目详情。
 
+永久收藏 API 部署前，在对应环境 `USER_DB` 执行尚未应用的 `users/migrations/0003.sql`，随后重新构建并部署公共站及 Pages Functions。构建会在 `/data/articles/<key>.json` 输出当前公开文章；收藏时 Function 从同部署静态资源读取并保存独立快照。生产 `AUTH_ENABLED` 在认证真实端到端与 CPU 验收完成前保持关闭；不修改 Linux Backend、Newsletter D1 或域名配置。见 [收藏 API](FAVORITES.md) 与 [#160](https://github.com/SwartzMss/ai-news-hub/issues/160)。
+
 详情页阅读导航升级仅涉及公共站构建与部署，不修改日报归档或任务 Prompt。部署时重新执行公共站构建，验收 news、investment、project 及历史项目页面的目录、证据锚点和移动端折叠导航。

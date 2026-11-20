@@ -24,7 +24,7 @@ npx wrangler d1 create ai-news-hub-users-preview
 
 先分别迁移预览和生产库，再部署会使用该库的 Pages Functions。命令始终写**数据库名**，避免把 `USER_DB` 绑定名误解析到另一环境：
 
-升级到认证加固版时，已有 `0001.sql` 的数据库只执行新增的 `0002.sql`。若使用 Cloudflare D1 控制台手动执行，打开目标**用户库**的 Console，复制并执行 `users/migrations/0002.sql` 全部内容；先核对库名，生产与预览分别执行，不能对 Newsletter 库运行。手动执行不会生成 Wrangler 的迁移记录，之后再改用 `wrangler d1 migrations apply` 前应先核对 `d1_migrations`，避免对同一库重复执行 `ALTER TABLE`。
+升级到认证加固版时，已有 `0001.sql` 的数据库只执行新增的 `0002.sql`；升级到收藏版时，再执行新增的 `0003.sql`。若使用 Cloudflare D1 控制台手动执行，打开目标**用户库**的 Console，按顺序复制并执行尚未应用的迁移文件全部内容；先核对库名，生产与预览分别执行，不能对 Newsletter 库运行。每个文件只执行一次。手动执行不会生成 Wrangler 的迁移记录，之后再改用 `wrangler d1 migrations apply` 前应先核对 `d1_migrations`，避免重复执行。
 
 ```bash
 npx wrangler d1 migrations list ai-news-hub-users-preview --env preview --remote
