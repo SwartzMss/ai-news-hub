@@ -1,0 +1,743 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "2f8a7e81-368f-4e9b-9a4d-34a144891495",
+  "report_date": "2026-11-21",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-21｜统计：2026-11-20 08:08—2026-11-21 08:08（北京时间）；更新回溯至11-18 08:08，另含项目发现",
+  "collected_at": "2026-11-21T00:19:26.182Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-21T00:19:26.197Z",
+  "reviewed_content_sha256": "e9fb08450fd32d548a4100665d2b8d0e218a77916d14d6d4d544040a1d39ba27",
+  "items": [
+    {
+      "id": "08f7fccfef9f839f9f11327073a58015e4aef535129731cc4efb601b762f50f7",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "FrontierAgent 官方仓库介绍，它提供 ReAct 与 Agent Team 工作流，由协调者拆分任务、并行分发并接收结构化报告，同时展示任务板、检查点和执行追踪。本次作为项目发现收录；官方组织列表显示11月20日更新，首次公开日期未确认。[项目仓库](https://github.com/ApodexAI/FrontierAgent)",
+      "analysis": "值得研究的是任务分工、文件交付和恢复执行如何组合，适合研究型自动化与文件处理流程。仓库描述了沙箱和审批机制，但具体隔离边界仍应按部署平台核对，不能仅凭接口设计推定安全强度。",
+      "evidence_quote": "Native Agent Team workflow.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为多步骤任务提供协调、执行、交付物管理和会话恢复。",
+        "technical": [
+          {
+            "description": "协调者分发有边界的并行任务，接收结构化报告。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          },
+          {
+            "description": "文件工具共享任务级目录，区分只读输入、工作状态和持久交付物。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "将研究与文件任务拆分给多个 Agent，并追踪执行状态。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "f2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "官方组织列表显示2026年11月20日更新；首次公开日期未确认。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "f3"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "f1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/ApodexAI/FrontierAgent",
+            "supports": "协调工作流、沙箱目录、检查点与追踪"
+          },
+          {
+            "id": "f2",
+            "name": "LICENSE",
+            "url": "https://github.com/ApodexAI/FrontierAgent/blob/main/LICENSE",
+            "supports": "Apache-2.0 授权"
+          },
+          {
+            "id": "f3",
+            "name": "官方组织仓库列表",
+            "url": "https://github.com/orgs/ApodexAI/repositories",
+            "supports": "近期维护时间"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ApodexAI/FrontierAgent",
+        "canonical_url": "https://github.com/ApodexAI/FrontierAgent",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "98c9749c65507b2c5e29762854971a326ac5e71fe55752325dde83bf5dc9bfcc",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Hermes Agent 官方宣布，v0.23.3 汇总提示缓存生命周期管理、压缩时归档被移除的工具结果，以及默认主动裁剪工具结果等变化，涉及长任务的上下文与状态管理。GitHub 显示11月20日发布，正文版本日期为11月19日。[项目仓库](https://github.com/NousResearch/hermes-agent)",
+      "analysis": "适合关注长时间工具执行和持续会话的团队参考。缓存维护、上下文裁剪与持久化共同影响运行可靠性，但完整整理版说明尚待后续版本提供，升级前仍需核对具体客户端行为。",
+      "evidence_quote": "Hermes Agent v0.23.3",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "支持持续会话和工具执行的 Agent 项目，本次更新集中改善上下文与持久化管理。",
+        "change": {
+          "summary": "正式补丁版；GitHub 显示11月20日发布，正文标注11月19日。",
+          "version": "v0.23.3",
+          "type": "release",
+          "publishedAt": "2026-11-20",
+          "evidenceRefs": [
+            "h1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "增加提示缓存生命周期控制，并归档压缩时移除的工具结果。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          },
+          {
+            "description": "存储层拆分为持久化接口及 SQLite 后端。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "维护包含长工具调用和多次压缩的持续会话。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "h2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "完整整理版变更说明计划随 v0.24.0 提供。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "h1",
+            "name": "v0.23.3 官方发布说明",
+            "url": "https://github.com/NousResearch/hermes-agent/releases/tag/v0.23.3",
+            "supports": "正式版本、日期差异、上下文及持久化变化"
+          },
+          {
+            "id": "h2",
+            "name": "LICENSE",
+            "url": "https://github.com/NousResearch/hermes-agent/blob/main/LICENSE",
+            "supports": "MIT 代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/NousResearch/hermes-agent/releases/tag/v0.23.3",
+        "canonical_url": "https://github.com/NousResearch/hermes-agent/releases/tag/v0.23.3",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "573faf2a9a18aa6949cc3162d68503cb20b8cae0d93498e15b27c7e55fa0b712",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "rustic 官方仓库称，它以 Rust 提供加密、去重备份，并读写 restic 仓库格式。本次作为持续维护项目发现收录；11月17日的 v0.12.0 修复并行清理与备份可能导致数据丢失的问题，发布时间略早于本轮72小时窗口。[项目仓库](https://github.com/rustic-rs/rustic)",
+      "analysis": "适合已有 restic 格式备份、希望比较另一种实现的用户关注。数据完整性修复比一般功能增加更值得运维团队检查，但现有备份的可恢复性仍需通过自己的恢复流程验证。",
+      "evidence_quote": "rustic - fast, encrypted, and deduplicated backups powered by Rust",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "通过加密与去重管理备份数据，可读写 restic 仓库格式。",
+        "technical": [
+          {
+            "description": "采用 Rust 实现，兼容读写 restic 仓库格式。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在既有 restic 格式仓库上评估另一种备份实现。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Apache-2.0",
+          "scope": "仓库代码，使用者可任选其一",
+          "evidenceRefs": [
+            "r1",
+            "r3",
+            "r4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月17日发布的 v0.12.0 修复并行 prune 与 backup 潜在数据丢失问题，作为近期维护证据。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "r2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "r1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/rustic-rs/rustic",
+            "supports": "备份能力、仓库格式与双许可证选择"
+          },
+          {
+            "id": "r2",
+            "name": "v0.12.0 发布说明",
+            "url": "https://github.com/rustic-rs/rustic/releases/tag/v0.12.0",
+            "supports": "维护时间与数据完整性修复"
+          },
+          {
+            "id": "r3",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/rustic-rs/rustic/blob/main/LICENSE-MIT",
+            "supports": "MIT 授权"
+          },
+          {
+            "id": "r4",
+            "name": "LICENSE-APACHE",
+            "url": "https://github.com/rustic-rs/rustic/blob/main/LICENSE-APACHE",
+            "supports": "Apache-2.0 授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/rustic-rs/rustic",
+        "canonical_url": "https://github.com/rustic-rs/rustic",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "31890ba763e2aaa9938b3f7cd2c9343a0cbf1c4ec8a59c6cc1383927a14086c5",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "dua-cli 官方仓库称，它通过并行扫描统计目录磁盘占用，并提供终端交互浏览和文件删除功能，可用于清理缓存与构建产物。本次作为成熟项目发现收录；11月12日的 v3.0.3 恢复 macOS 构建，提供近期维护证据。[项目仓库](https://github.com/Byron/dua-cli)",
+      "analysis": "适合排查大型工作目录和开发缓存的空间占用，交互浏览能缩短定位过程。作为 Rust 库集成时需要留意：dua 的库接口已标为实验性，不能将 CLI 的兼容性承诺直接套用到库接口。",
+      "evidence_quote": "View disk space usage and delete unwanted data, fast.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "在终端中定位占空间的目录和文件，并支持交互清理。",
+        "technical": [
+          {
+            "description": "默认并行扫描；交互模式用于浏览和删除文件。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "定位构建产物与缓存占用，选择需要清理的文件。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "d3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v3.0.3 于11月12日重新发行以恢复 macOS 构建。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d2"
+            ]
+          },
+          {
+            "description": "3.0 起 dua 库 API 为实验性，dua-core 保留稳定 Rust API。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "d1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/Byron/dua-cli",
+            "supports": "并行扫描、交互清理和 API 边界"
+          },
+          {
+            "id": "d2",
+            "name": "v3.0.3 发布记录",
+            "url": "https://github.com/Byron/dua-cli/releases/tag/v3.0.3",
+            "supports": "近期维护与构建修复"
+          },
+          {
+            "id": "d3",
+            "name": "LICENSE",
+            "url": "https://github.com/Byron/dua-cli/blob/main/LICENSE",
+            "supports": "MIT 授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/Byron/dua-cli",
+        "canonical_url": "https://github.com/Byron/dua-cli",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "170d6d046ff583dcf9ba97d710d18375e0745262baa77481ce31b03292b684fb",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "yovoice 官方仓库称，它将语音合成、零样本声音克隆、带歌词音乐生成和多轨乐谱编排整合为本地音频工作室。本次作为持续维护项目发现收录；11月15日的 v0.8.0 改善视频转写与字幕编辑，可供音频创作和字幕工作流参考。[项目仓库](https://github.com/leemysw/yovoice)",
+      "analysis": "适合希望将配音、音乐与转写集中到本地流程的创作者评估。组合能力较完整，但不同模型的资源需求和授权并不统一，商业使用前应分别确认模型与依赖条款。",
+      "evidence_quote": "Open-source local AI audio & music studio for macOS & Windows.",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "把配音、声音克隆、歌曲生成和乐谱编排整合到本地工作室。",
+        "technical": [
+          {
+            "description": "提供零样本声音克隆、情绪控制和 General MIDI 乐谱编排。",
+            "evidenceRefs": [
+              "y1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "本地制作配音、歌曲，并整理视频转写字幕。",
+            "evidenceRefs": [
+              "y1",
+              "y2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码；依赖及 IndexTTS 模型另有授权",
+          "evidenceRefs": [
+            "y1",
+            "y3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月15日 v0.8.0 改善视频字幕联动和转写编辑，作为近期维护证据。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "y2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "y1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/leemysw/yovoice",
+            "supports": "本地创作能力与第三方许可边界"
+          },
+          {
+            "id": "y2",
+            "name": "v0.8.0 发布说明",
+            "url": "https://github.com/leemysw/yovoice/releases/tag/v0.8.0",
+            "supports": "近期维护与转写编辑能力"
+          },
+          {
+            "id": "y3",
+            "name": "LICENSE",
+            "url": "https://github.com/leemysw/yovoice/blob/main/LICENSE",
+            "supports": "Apache-2.0 代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/leemysw/yovoice",
+        "canonical_url": "https://github.com/leemysw/yovoice",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "68d73a0911a12e2153892700bc8816911a6d3e5f09f0f016dd6ae1597742edc9",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Phosphene 官方宣布，11月20日发布的 v5.0.76 在无法连接 Hugging Face 时，为相关视频、图片与音乐模型下载提供中国镜像回退，并记录切换日志。这个面向 Apple Silicon 的本地媒体创作应用，本次主要改善模型安装的可达性。[项目仓库](https://github.com/mrbizarro/Phosphene)",
+      "analysis": "适合因模型下载受阻而无法完成安装的用户关注，修复覆盖了本地创作流程的实际入口。镜像回退是否适合组织环境还取决于下载策略；应用代码授权也不能替代各模型权重的许可。",
+      "evidence_quote": "Phosphene 5.0.76: downloads work in mainland China",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "在 Apple Silicon 上提供本地视频、图片、语音与音乐创作入口。",
+        "change": {
+          "summary": "无法连接 Hugging Face 时，为指定模型下载回退至中国镜像。",
+          "version": "v5.0.76",
+          "type": "release",
+          "publishedAt": "2026-11-20",
+          "evidenceRefs": [
+            "p1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "镜像回退覆盖 Hailuo H3、FLUX 图片与 YuE2 音乐模型，并在下载日志提示。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在 Hugging Face 不可达的网络中完成相关模型下载。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码；不涵盖第三方模型权重",
+          "evidenceRefs": [
+            "p2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "改善模型安装可达性，适合评估本地媒体创作工作流。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "p1",
+            "name": "v5.0.76 官方发布说明",
+            "url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.76",
+            "supports": "发布日期、回退机制与覆盖模型"
+          },
+          {
+            "id": "p2",
+            "name": "LICENSE",
+            "url": "https://github.com/mrbizarro/Phosphene/blob/main/LICENSE",
+            "supports": "MIT 代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.76",
+        "canonical_url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.76",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "69b7e5bf8833650ea836a364dd6ae01b8cdc5b27ec77f1f561e79a0a84351ddb",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Semgrep 官方宣布，v1.186.0 让 MCP 接口遵守关闭指标与追踪的配置，并从遥测中移除扫描错误、stderr 和供应链扫描结果。GitHub 显示11月18日发布，正文日期为11月17日；变化涉及将安全扫描接入 Agent 时的数据暴露边界。[项目仓库](https://github.com/semgrep/semgrep)",
+      "analysis": "适合通过 MCP 调用代码扫描的团队检查升级，遥测开关与日志内容直接关系到扫描数据流向。本条只关注已明确说明的遥测修复，不能据此推断所有运行模式都不会向外发送数据。",
+      "evidence_quote": "Release v1.186.0",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "提供代码静态分析与安全扫描，本次修复 MCP 遥测控制。",
+        "change": {
+          "summary": "正式版本修复 MCP 指标关闭配置和遥测内容；正文日期比 GitHub 发布日期早一天。",
+          "version": "v1.186.0",
+          "type": "release",
+          "publishedAt": "2026-11-18",
+          "evidenceRefs": [
+            "s1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "semgrep mcp 遵守 SEMGREP_SEND_METRICS=off，关闭指标与追踪。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          },
+          {
+            "description": "指标与日志不再包含扫描错误消息、stderr 和供应链扫描结果。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "将代码扫描接入 Agent，并控制 MCP 调用产生的遥测。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "LGPL-2.1",
+          "scope": "仓库 LICENSE 所覆盖代码；不延伸至商业 Pro 功能",
+          "evidenceRefs": [
+            "s2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "适合使用 MCP 扫描接口的团队优先核对遥测配置。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "v1.186.0 官方发布说明",
+            "url": "https://github.com/semgrep/semgrep/releases/tag/v1.186.0",
+            "supports": "日期差异、MCP 配置与遥测修复"
+          },
+          {
+            "id": "s2",
+            "name": "LICENSE",
+            "url": "https://github.com/semgrep/semgrep/blob/develop/LICENSE",
+            "supports": "LGPL 2.1 许可证文本"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/semgrep/semgrep/releases/tag/v1.186.0",
+        "canonical_url": "https://github.com/semgrep/semgrep/releases/tag/v1.186.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9719d15362f8257323118e884019516beb5c4217b34b5a72b0726243253f50b3",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "OpenSSF Scorecard 官方仓库称，它自动检查依赖固定、Token 权限、分支保护、签名发行与 Fuzzing 等安全实践，并提供 CLI、GitHub Action 和 API。本次作为成熟项目发现收录；11月仍有贡献活动，可用于依赖引入评估和仓库治理。[项目仓库](https://github.com/ossf/scorecard)",
+      "analysis": "适合为大量依赖建立统一的初筛标准，也能帮助维护者寻找具体治理缺口。分数反映可观察的工程实践，不能代替漏洞审计；不同运行方式的检查覆盖范围也需要单独确认。",
+      "evidence_quote": "OpenSSF Scorecard - Security health metrics for Open Source",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "自动汇总开源仓库的安全实践，辅助依赖评估和维护治理。",
+        "technical": [
+          {
+            "description": "检查依赖固定、Token 权限、分支保护、代码审查和签名发行等实践。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为依赖引入建立初筛，并持续追踪仓库治理缺口。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "项目代码；API 数据另有授权说明",
+          "evidenceRefs": [
+            "o1",
+            "o2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "官方 PR 列表显示11月18日仍有贡献活动，不将未合并 PR 当作已发布功能。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "o3"
+            ]
+          },
+          {
+            "description": "评分适合初筛，不能单独证明依赖没有漏洞。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "o1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/ossf/scorecard",
+            "supports": "检查机制、使用方式与数据授权边界"
+          },
+          {
+            "id": "o2",
+            "name": "LICENSE",
+            "url": "https://github.com/ossf/scorecard/blob/main/LICENSE",
+            "supports": "Apache-2.0 代码授权"
+          },
+          {
+            "id": "o3",
+            "name": "官方 PR 列表",
+            "url": "https://github.com/ossf/scorecard/pulls",
+            "supports": "近期贡献活动"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ossf/scorecard",
+        "canonical_url": "https://github.com/ossf/scorecard",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e935914e6df86e3853974f0e21dcc34a1c6ec9de878ea1ccbf098658818dd6f3",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Syncthing 官方仓库称，它在两台或更多计算机之间持续同步文件，并将数据安全和自动运行列为项目目标。本次作为成熟项目发现收录；10月21日的 v2.1.7 修复加密接收文件回收、数据库语句增长和异常协议输入处理，提供近90天维护证据。[项目仓库](https://github.com/syncthing/syncthing)",
+      "analysis": "适合需要跨设备持续同步工作文件的个人与小团队参考。同步会传播文件变化，评估时应同时考虑删除、冲突和恢复流程；有近期维护记录也不意味着旧版本中的问题会自动消失。",
+      "evidence_quote": "Open Source Continuous File Synchronization",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "持续同步两台或更多计算机之间的文件。",
+        "technical": [
+          {
+            "description": "以持续、自动的多计算机文件同步为核心能力。",
+            "evidenceRefs": [
+              "t1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在多台个人计算机之间同步工作文件。",
+            "evidenceRefs": [
+              "t1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MPL-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "t3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "10月21日 v2.1.7 修复接收加密文件回收、SQLite 语句增长和异常协议输入处理。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "t2"
+            ]
+          },
+          {
+            "description": "应结合删除与冲突恢复流程评估同步方案。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "t1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "t1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/syncthing/syncthing",
+            "supports": "多计算机持续同步与项目目标"
+          },
+          {
+            "id": "t2",
+            "name": "v2.1.7 发布说明",
+            "url": "https://github.com/syncthing/syncthing/releases/tag/v2.1.7",
+            "supports": "近期维护时间与可靠性修复"
+          },
+          {
+            "id": "t3",
+            "name": "LICENSE",
+            "url": "https://github.com/syncthing/syncthing/blob/main/LICENSE",
+            "supports": "MPL-2.0 授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/syncthing/syncthing",
+        "canonical_url": "https://github.com/syncthing/syncthing",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
