@@ -15,6 +15,8 @@ export function clearPrivateContent(): void {
   if (email) email.textContent = "";
   const links = document.querySelector<HTMLElement>("[data-account-links]");
   if (links) links.hidden = true;
+  const guest = document.querySelector<HTMLElement>("[data-account-guest]");
+  if (guest) guest.hidden = true;
   const tools = document.querySelector<HTMLElement>("[data-account-tools]");
   if (tools) tools.hidden = true;
   for (const selector of ["[data-favorites-list-view]", "[data-favorite-detail]", "[data-categories-panel]"]) {
@@ -29,7 +31,9 @@ export function clearPrivateContent(): void {
   document.querySelector<HTMLFormElement>("[data-account-export]")?.reset();
   document.querySelector<HTMLElement>(".account-menu")?.remove();
   const nav = document.querySelector<HTMLAnchorElement>("[data-account-nav]");
-  if (nav) { nav.hidden = false; nav.textContent = "账户"; }
+  if (nav) { nav.hidden = true; nav.href = "/account/favorites/"; }
+  const login = document.querySelector<HTMLElement>("[data-account-login]");
+  if (login) login.hidden = true;
 }
 
 export function watchPrivateSession(): void {
@@ -40,7 +44,7 @@ export function watchPrivateSession(): void {
     checking = true;
     clearPrivateContent();
     const status = document.querySelector<HTMLElement>("[data-favorites-status],[data-account-home] [data-account-status]");
-    if (status) status.textContent = "正在确认登录状态…";
+    if (status) { status.hidden = false; status.textContent = "正在确认登录状态…"; }
     const state = await readAuth();
     if (state.kind === "user") { location.reload(); return; }
     if (status) {
@@ -53,7 +57,9 @@ export function watchPrivateSession(): void {
       }
     }
     const nav = document.querySelector<HTMLAnchorElement>("[data-account-nav]");
-    if (nav && state.kind === "unavailable") nav.hidden = true;
+    if (nav && state.kind === "guest") { nav.hidden = false; nav.href = "/account/login/?return=%2Faccount%2Ffavorites%2F"; }
+    const login = document.querySelector<HTMLElement>("[data-account-login]");
+    if (login && state.kind === "guest") login.hidden = false;
     checking = false;
   };
   window.addEventListener("pageshow", event => { if (event.persisted) void revalidate(); });

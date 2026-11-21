@@ -66,8 +66,10 @@ test("isolated static site contains all real routes, deterministic RSS and no ad
     homeDoc.querySelector("main h1").textContent,
     new Intl.DateTimeFormat("zh-CN", {year:"numeric",month:"long",day:"numeric",timeZone:"UTC"}).format(new Date(data.topics[0].latest.report_date + "T00:00:00Z")),
   );
-  assert.deepEqual([...homeDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索", "账户"]);
-  assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索", "账户"]);
+  assert.deepEqual([...homeDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索", "收藏"]);
+  assert.deepEqual([...searchDoc.querySelectorAll(".site-nav a")].map((a) => a.textContent.trim()), ["首页", "搜索", "收藏"]);
+  assert.equal(homeDoc.querySelector('[data-account-nav]')?.getAttribute('href'), '/account/favorites/');
+  assert.equal(homeDoc.querySelector('[data-account-login]')?.getAttribute('href'), '/account/login/');
   assert.equal(homeDoc.querySelectorAll(".topic-issue-heading, .topic-panel-header, .news-footer, .news-row .news-number").length, 0);
   assert.equal(homeDoc.querySelectorAll(".brief-heading").length, 1);
   assert.ok(homeDoc.querySelector('.news-row h2 a[href*="?from=home"]'), "merged home-feed article links preserve the home return context");
@@ -621,7 +623,7 @@ test("newsletter is opt-in, works as a native POST form and keeps email out of s
     assert.equal(window.document.querySelector("#newsletter-dialog .newsletter-email span"), null, "newsletter email label is not displayed");
     assert.equal(window.document.querySelector("#newsletter-dialog input[name='email']")?.getAttribute("aria-label"), "邮箱地址", "email input retains an accessible name");
     assert.match(publicStyles, /@media \(max-width: 700px\)[\s\S]*?\.newsletter-fields button\s*\{[^}]*justify-self:\s*stretch;[^}]*width:\s*100%;/s, "subscribe button fills the mobile dialog width");
-    assert.match(publicStyles, /\.header-link,\s*\.header-actions \.subscribe-action\s*\{[^}]*min-height:\s*40px;[^}]*padding:\s*0 14px;[^}]*border-radius:\s*10px;[^}]*background:\s*var\(--paper\);/s, "GitHub, Contact and Subscribe share the same outline-button treatment");
+    assert.match(publicStyles, /\.header-link,\s*\.header-account-login,\s*\.header-actions \.subscribe-action\s*\{[^}]*min-height:\s*40px;[^}]*padding:\s*0 14px;[^}]*border-radius:\s*10px;[^}]*background:\s*var\(--paper\);/s, "GitHub, Contact, Subscribe and Login share the same outline-button treatment");
     assert.match(publicStyles, /\.header-links\s*\{[^}]*gap:\s*8px;[^}]*\}/s, "header action buttons use a compact consistent gap");
     assert.match(publicStyles, /\.header-actions #theme-toggle\s*\{[^}]*width:\s*40px;[^}]*height:\s*40px;[^}]*border-radius:\s*10px;/s, "theme toggle aligns with the header action buttons");
     assert.ok(publicStyles.includes(".site-footer {\n  flex-shrink: 0;"), "footer is a minimal separated line");

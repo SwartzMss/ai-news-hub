@@ -8,7 +8,7 @@ export function Shell({
   children,
 }: {
   data: PublicData;
-  active?: "topics" | "search" | "account";
+  active?: "topics" | "search" | "favorites" | "none";
   page?: string;
   children: ReactNode;
 }) {
@@ -32,7 +32,7 @@ export function Shell({
           <a href="/search/" aria-current={active === "search" ? "page" : undefined}>
             搜索
           </a>
-          <a href="/account/" aria-current={active === "account" ? "page" : undefined} data-account-nav>账户</a>
+          <a href="/account/favorites/" aria-current={active === "favorites" ? "page" : undefined} data-account-nav hidden>收藏</a>
         </nav>
         <div className="header-actions">
           <nav className="header-links" aria-label="外部链接">
@@ -69,6 +69,7 @@ export function Shell({
           <button id="theme-toggle" aria-label="切换明暗主题" aria-pressed="false" type="button">
             ◐
           </button>
+          <a className="header-account-login" href="/account/login/" data-account-login hidden>登录</a>
         </div>
       </header>
       {data.demo && <p className="demo-banner">演示 / 测试站点</p>}
