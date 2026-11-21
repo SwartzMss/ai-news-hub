@@ -1,0 +1,388 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "a569a95e-c5d2-4707-8edc-5fe64395990d",
+  "report_date": "2026-11-21",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月21日",
+  "collected_at": "2026-11-21T00:16:10.735Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-21T00:16:10.744Z",
+  "reviewed_content_sha256": "cfff7194c4b0b827cea391cf3b889179979d42c7acd66c8abb4ca66631b2fdfa",
+  "items": [
+    {
+      "id": "3b3270b0917323ae879a1f5a2e2db2f4dea36313e995fa2b3fa90521189cc310",
+      "category": "tech_digital",
+      "importance": 5,
+      "fact_summary": "据Les Numériques及Aju Press报道，数学家、Anthropic研究员Levent Alpöge于11月20日发布说明，称相信自己与Claude合作找到了黎曼猜想的证明，并公布Lean形式化材料。他还声称方法可扩展至广义黎曼猜想。相关证明尚未获独立验证，不能据此认定该数学难题已经解决。",
+      "analysis": null,
+      "evidence_quote": "I believe I have, working with Claude, discovered a proof",
+      "details": {
+        "kind": "news",
+        "background": "黎曼猜想涉及素数分布，是长期未解决的数学问题。本次公布的是作者的证明主张及形式化材料，其正确性仍有待确认。",
+        "keyFacts": [
+          {
+            "name": "公开材料",
+            "value": "四页说明及Lean形式化材料",
+            "period": "2026-11-20",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          },
+          {
+            "name": "验证状态",
+            "value": "尚未获独立验证",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e3"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-20",
+            "precision": "date",
+            "event": "据报道，Alpöge在个人网站公布证明主张及相关材料。",
+            "evidenceRefs": [
+              "e2",
+              "e3"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "Levent Alpöge",
+            "statement": "相信自己与Claude合作找到了黎曼猜想的证明，并称相关论证已完成形式化。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "所公布论证是否正确、是否完整证明了所声称的命题，尚无独立验证结论。"
+        ],
+        "watchpoints": [
+          "完整形式化证明的独立检查结果。",
+          "作者后续公布的可读论证及数学专家评议。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Levent Alpöge个人网站：证明主张说明",
+            "url": "https://alpo.ge/remark.pdf",
+            "supports": "作者关于与Claude合作、黎曼猜想及形式化论证的声明。"
+          },
+          {
+            "id": "e2",
+            "name": "Les Numériques：Alpöge公布黎曼猜想证明主张",
+            "url": "https://www.lesnumeriques.com/intelligence-artificielle/claude-ce-mathematicien-affirme-avoir-resolu-le-plus-celebre-probleme-des-mathematiques-au-monde-l-hypothese-de-riemann-n268158.html",
+            "supports": "11月20日公布说明及Lean材料的时间与内容。"
+          },
+          {
+            "id": "e3",
+            "name": "Aju Press：Anthropic数学家声称发现黎曼猜想证明",
+            "url": "https://www.ajupress.com/view/20261121072070839",
+            "supports": "证明主张尚未独立验证。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "alpo.ge",
+        "original_url": "https://alpo.ge/remark.pdf",
+        "canonical_url": "https://alpo.ge/remark.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "3489d94aa5053363f6726d17f32810c26eb698f7417790b26cab61424fc8e3c3",
+      "category": "sports",
+      "importance": 4,
+      "fact_summary": "据北京日报客户端11月20日报道，中国反兴奋剂中心当日公布违规处理结果：羽毛球运动员周昊东检测阳性，被禁赛3年，禁赛结束日期为2028年11月3日；教练员桑洋被禁赛1年6个月，浙江体育职业技术学院被警告。报道所述检测日期为2025年9月12日，本次新进展为处罚结果公布。",
+      "analysis": null,
+      "evidence_quote": "羽毛球运动员周昊东兴奋剂检测结果阳性，被禁赛3年",
+      "details": {
+        "kind": "news",
+        "background": "该处罚涉及此前的兴奋剂检测，处罚公布日期与检测日期不同。",
+        "keyFacts": [
+          {
+            "name": "周昊东禁赛期限",
+            "value": "3",
+            "unit": "年",
+            "period": "禁赛结束日期为2028-11-03",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "桑洋处罚",
+            "value": "禁赛1年6个月",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "相关单位处罚",
+            "value": "浙江体育职业技术学院被警告",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2025-09-12",
+            "precision": "date",
+            "event": "报道所述周昊东检测阳性对应的检测日期。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-20",
+            "precision": "date",
+            "event": "中国反兴奋剂中心公布相关违规处理结果。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "北京日报客户端：周昊东兴奋剂检测阳性，被禁赛3年",
+            "url": "https://news.sina.com.cn/c/2026-11-20/doc-inizkurf0306500.shtml",
+            "supports": "处罚公布日期、检测日期、禁赛期限及教练和相关单位处罚。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.sina.com.cn",
+        "original_url": "https://news.sina.com.cn/c/2026-11-20/doc-inizkurf0306500.shtml",
+        "canonical_url": "https://news.sina.com.cn/c/2026-11-20/doc-inizkurf0306500.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "3d1ccb3e5979caec4e08d81891291c5c9c5a8e83f9b3e0cb95340acaa03a46ca",
+      "category": "sports",
+      "importance": 3,
+      "fact_summary": "据直播吧报道，北京时间11月20日晚，中国U17男足在U17世界杯小组赛H组首轮以0比5负于西班牙U17。中国队半场0比2落后，下半场再失三球。报道列明，中国队下一场比赛定于北京时间11月23日23时对阵摩洛哥U17。",
+      "analysis": null,
+      "evidence_quote": "惨败开门黑！U17国少0-5负西班牙 尾声12分钟丢三球 通卡拉传射",
+      "details": {
+        "kind": "news",
+        "background": "本场为中国U17男足在该届U17世界杯小组赛的首场比赛，对手为西班牙U17。",
+        "keyFacts": [
+          {
+            "name": "全场比分",
+            "value": "中国U17 0比5 西班牙U17",
+            "period": "2026-11-20",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "半场比分",
+            "value": "中国U17 0比2 西班牙U17",
+            "period": "2026-11-20",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-20T22:00:00+08:00",
+            "precision": "datetime",
+            "event": "中国U17对阵西班牙U17的比赛开赛。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026-11-23T23:00:00+08:00",
+            "precision": "datetime",
+            "event": "按报道赛程，中国U17将对阵摩洛哥U17。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "中国U17下一轮对阵摩洛哥U17的表现。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "直播吧：U17中国队对阵西班牙队战报",
+            "url": "https://m2.zhibo8.com/news/web/zuqiu/2026-11-20/match1986909date2026vnative.htm",
+            "supports": "比赛时间、半场和全场比分及中国队下一场赛程。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "m2.zhibo8.com",
+        "original_url": "https://m2.zhibo8.com/news/web/zuqiu/2026-11-20/match1986909date2026vnative.htm",
+        "canonical_url": "https://m2.zhibo8.com/news/web/zuqiu/2026-11-20/match1986909date2026vnative.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9f9a0ff7f56f62d63b503b731b3220da82b44514796632f2a7301c1d4de4fdb7",
+      "category": "gaming",
+      "importance": 3,
+      "fact_summary": "据懂球帝11月20日刊载的DK俱乐部加盟公告，上路选手Doran与打野选手Kanavi正式加入DK，成为其2027赛季阵容成员。公告分别介绍了两名选手的加盟，未披露合同期限。",
+      "analysis": null,
+      "evidence_quote": "DK官方：上路选手Doran和打野选手Kanavi正式加盟俱乐部",
+      "details": {
+        "kind": "news",
+        "background": "DK正在组建2027赛季英雄联盟阵容，本次公告确定了上路和打野位置的两名加盟选手。",
+        "keyFacts": [
+          {
+            "name": "上路加盟选手",
+            "value": "Doran",
+            "period": "2027赛季",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "打野加盟选手",
+            "value": "Kanavi",
+            "period": "2027赛季",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-20",
+            "precision": "date",
+            "event": "据懂球帝刊载的公告，DK宣布Doran和Kanavi加盟。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "该公告未披露两名选手的合同期限。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "懂球帝：DK宣布Doran和Kanavi加盟",
+            "url": "https://pc.dongqiudi.com/articles/6672643.html",
+            "supports": "两名选手的加盟公告、位置及所属赛季。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "pc.dongqiudi.com",
+        "original_url": "https://pc.dongqiudi.com/articles/6672643.html",
+        "canonical_url": "https://pc.dongqiudi.com/articles/6672643.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a97fffd0ecdd894d10efc255deecc7835b813ba3b9dc0de7fc36f7439639d70c",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "中国新闻周刊11月20日刊发南京“零元面馆”新采访：周边商户杨先生称，自己名下两家店未获补偿，据其了解，附近13家同类商铺也未收到补偿款，并称商户已向社区反映情况。报道同时记载，另一家拉面馆此前收到店主送来的1万元。面馆店主曾表示愿补偿受损商户，但未接受该刊此次采访。",
+      "analysis": null,
+      "evidence_quote": "“年轻人往里面一排队，周围都是异样的眼神”",
+      "details": {
+        "kind": "news",
+        "background": "南京“零元面馆”免费供餐引发周边商户对客源分流的担忧。报道记载，面馆此前已调整免费就餐对象，店主曾承诺补偿周围一定范围内确受损失的餐饮商户。",
+        "keyFacts": [
+          {
+            "name": "已报道的补偿个案",
+            "value": "一家附近牛肉拉面馆曾收到店主送来的1万元",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-20",
+            "precision": "date",
+            "event": "中国新闻周刊刊发新采访，披露周边商户对补偿落实情况的不同说法。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "周边商户杨先生",
+            "statement": "称自己名下两家店分文未收，据其了解，附近13家同类餐饮商铺均未拿到补偿款。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "actor": "面馆店主张先生",
+            "statement": "此前表示，如果周围200米内餐饮商户确因面馆受到损失，愿意全额补偿。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "13家商铺未获补偿是受访商户所述，并非报道逐店确认的结果。",
+          "店主未接受此次采访，具体损失及补偿协商进度尚不明确。"
+        ],
+        "watchpoints": [
+          "店主对补偿落实情况的回应及后续协商结果。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "中国新闻周刊：南京零元面馆新采访",
+            "url": "https://news.inewsweek.cn/society/2026-11-20/33239.shtml",
+            "supports": "商户新表述、既有补偿个案、店主此前承诺及此次未接受采访的情况。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.inewsweek.cn",
+        "original_url": "https://news.inewsweek.cn/society/2026-11-20/33239.shtml",
+        "canonical_url": "https://news.inewsweek.cn/society/2026-11-20/33239.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
