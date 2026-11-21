@@ -2,7 +2,7 @@ import { expect, it, vi } from "vitest";
 import { clearPrivateContent, watchPrivateSession } from "./account-privacy";
 
 it("clears private content immediately when a session ends", () => {
-  document.body.innerHTML = `<a data-account-nav hidden>账户</a><details class="account-menu"></details>
+  document.body.innerHTML = `<a data-account-nav hidden>收藏</a><a data-account-login hidden>登录</a><details class="account-menu"></details>
     <main data-account-home><div data-account-profile><strong data-account-email>reader@example.com</strong></div><div data-account-links>收藏</div></main>
     <section data-favorites-list-view><div data-favorites-list>私人文章</div></section>`;
   clearPrivateContent();
@@ -10,10 +10,11 @@ it("clears private content immediately when a session ends", () => {
   expect(document.querySelector("[data-favorites-list]")!.textContent).toBe("");
   expect(document.querySelector<HTMLElement>("[data-favorites-list-view]")!.hidden).toBe(true);
   expect(document.querySelector(".account-menu")).toBeNull();
+  expect(document.querySelector<HTMLElement>("[data-account-login]")!.hidden).toBe(true);
 });
 
 it("revalidates a restored private page before showing any cached data", async () => {
-  document.body.innerHTML = `<a data-account-nav hidden>账户</a><main data-account-home>
+  document.body.innerHTML = `<a data-account-nav hidden>收藏</a><a data-account-login hidden>登录</a><main data-account-home>
     <p data-account-status></p><div data-account-profile><strong data-account-email>old@example.com</strong></div>
     <div data-account-links>收藏</div></main>`;
   vi.stubGlobal("fetch", vi.fn(async () => Response.json({ error: "unauthorized" }, { status: 401 })));

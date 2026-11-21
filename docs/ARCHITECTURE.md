@@ -149,7 +149,7 @@ GitHub 上传路径只允许 topic-scoped v1 归档。升级后可重试此前�
 
 公共用户数据使用另一套 Pages Functions `USER_DB` D1：生产与预览使用不同数据库，本地测试使用本地存储；`users/migrations/` 与 Newsletter 的 D1 迁移、Linux Backend SQLite 迁移完全独立。`/api/favorites` 根据当前 Session 和已发布的 `/data/articles/<key>.json` 写入版本化完整快照；查询与删除在 SQL 中限定用户，收藏不受日报 30 天清理影响。`/api/favorite-categories` 管理当前用户的分类，收藏可移入一个分类或回到未分类；删除分类只清空归属。见 [用户 D1 数据库](USER_DB.md)、[收藏 API](FAVORITES.md) 与 [#160](https://github.com/SwartzMss/ai-news-hub/issues/160)、[#161](https://github.com/SwartzMss/ai-news-hub/issues/161)。
 
-公共认证路由 `/api/auth/*` 由 Pages Functions 提供并默认关闭，使用 `USER_DB` 保存密码派生值、验证 Token 哈希和 Session 哈希；Resend 传输模块与 Newsletter 共用，但认证开关、发件配置和数据库独立。验证 GET 不修改账户；登录与私有查询从 Session Cookie 获取身份。密码重置、改密、按 IP/邮箱限流、Turnstile 服务端校验与 Session 闲置过期由 #159 增加。#162 加入静态账户页面与浏览器端交互：每页从 `/api/auth/me` 读取共享状态，私人收藏与分类仅经同源 API 加载，不写入静态文件或本地存储；认证关闭时隐藏入口并禁用表单。见 [公共用户认证](AUTH.md)、[#158](https://github.com/SwartzMss/ai-news-hub/issues/158)、[#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 与 [#162](https://github.com/SwartzMss/ai-news-hub/issues/162)。
+公共认证路由 `/api/auth/*` 由 Pages Functions 提供并默认关闭，使用 `USER_DB` 保存密码派生值、验证 Token 哈希和 Session 哈希；Resend 传输模块与 Newsletter 共用，但认证开关、发件配置和数据库独立。验证 GET 不修改账户；登录与私有查询从 Session Cookie 获取身份。密码重置、改密、按 IP/邮箱限流、Turnstile 服务端校验与 Session 闲置过期由 #159 增加。#162 加入静态账户页面与浏览器端交互：每页从 `/api/auth/me` 读取共享状态，私人收藏与分类仅经同源 API 加载，不写入静态文件或本地存储；认证关闭时隐藏收藏和用户入口并禁用表单。见 [公共用户认证](AUTH.md)、[#158](https://github.com/SwartzMss/ai-news-hub/issues/158)、[#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 与 [#162](https://github.com/SwartzMss/ai-news-hub/issues/162)。
 
 Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 `/api/prompt-templates` 读取模板；编辑器复制主题和全部轮次，任务及 Run 继续保存完整配置快照。每日开源项目 v1 为两轮：先按 AI Agent、Rust、多媒体、性能与安全、去中心化基础设施五个方向发现候选，再核实直接来源并生成 JSON；近期实质变化优先近 24 小时、最多回溯 72 小时，同时发现值得认识的新项目。每个方向精选 0～2 个，不设全局目标数量。输出包含 `researchArea`、`factSummary`、`analysis` 和 `kind=project` 结构化详情；所有主题归档统一采用 archive v1 Schema。明确区分更新与项目发现，社区热度只作发现线索。每日科技投资简报 v1 收窄为 AI 产业链、光模块与光通信、半导体三个方向，以 Nasdaq 为核心市场，NYSE 次之，仅在产业链直接相关时纳入 A 股/港股。两轮流程先发现候选，再核查来源与投资影响；优先最近 24 小时，必要时补充至 72 小时、最多 7 天。最终按事实增量、业绩影响和证据强度精选 5～8 条、最多 10 条，不设方向配额、不凑数。同一事件只归入一个主方向。第二轮使用专用三分类投资 Schema，每条必须包含 `kind=investment` 和至少一个原始证据；科技投资话题归档使用统一 archive v1，details.kind 必须为 investment。同任务最近 7 天最多 60 条完整摘要、来源 canonical URL 及可提取的项目仓库链接，作为不可信去重数据提供给所有托管主题日报；固定条数标记仅控制数量校验。开源项目第二轮模板再次要求在 factSummary 中写有证据的用途、技术要点等可识别标签，以匹配项目分节详情；无依据的技术栈直接省略。模板更新不改写已保存的任务和 Run。删除日报使用现有发布服务互斥锁，先核对归档字节哈希，以 Git tree/commit 和非强制 ref 更新原子移除日报 JSON，再事务删除本地日报、批准和发布记录及来源关联，并解除研究快照的 report_id。Run、Turn、来源原文和 Git 历史保留。删除状态持久化以支持显式重试，并禁止重新批准/发布进入删除流程的日报。
 
@@ -159,11 +159,11 @@ Prompt 模板以 `prompt-templates/<id>.v<version>.json` 纳入 Git，受保护 
 
 源码目录部署支持 `scripts/install-service.mjs`：从运行账号和 Node/Codex/环境文件路径生成系统级 systemd unit，校验后安装并启用开机启动；默认不接管现有进程，不迁移数据库或认证，不在 unit 中嵌入环境文件内容。原有独立服务账号的 `/opt` 部署模板继续可用。
 
-公共站顶部导航仅保留首页和搜索，不再生成往期归档目录页；日期/版本页、RSS 文件及页面的订阅发现链接保留。启用邮件订阅时，表单单独显示在页面底部。页面容器最小高度覆盖视口，正文区域填充剩余空间，短内容和空页面的订阅表单贴住视口底部，长页面的表单排在正文末尾。
+公共站顶部导航提供首页、搜索和收藏（认证关闭时隐藏收藏），右侧显示登录入口或账户菜单；不再生成往期归档目录页；日期/版本页、RSS 文件及页面的订阅发现链接保留。启用邮件订阅时，Header 的 Subscribe 按钮打开同源订阅对话框。页面容器最小高度覆盖视口，正文区域填充剩余空间，短内容和空页面的订阅表单贴住视口底部，长页面的表单排在正文末尾。
 
 README 已恢复动态架构图及 SVG 动画入口，生成器同步展示 systemd、任务调度、GitHub 归档、Cloudflare Pages/Web/RSS，以及 GitHub Actions → Pages Functions ↔ 私有 D1、Pages Functions → Resend → 订阅者的邮件链路。架构图作为文档资源生成，邮件投递仍以生产配置和实际验收为准。
 
-公共站已移除话题归档列表；邮件订阅保持在页脚，正文阅读页宽度规则不变。
+公共站已移除话题归档列表；邮件订阅由 Header 按钮打开对话框，正文阅读页宽度规则不变。
 
 源码目录服务控制现支持 `service.sh start/restart` 先自动编译 Backend/Admin，成功后检测缺失 unit 并安装启用，再执行启动/重启动作；编译失败不会操作服务，systemd 开机与故障重启直接使用已有构建；`uninstall` 停止、禁用并删除固定系统 unit，保留业务数据与私有配置。权限通过按需 sudo 获取，安装仍复用现有校验；相关系统级运行验收由 #2 跟踪。
 

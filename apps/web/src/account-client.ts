@@ -27,16 +27,18 @@ function loadTurnstile(): Promise<void> {
 export async function mountAccount(auth: Promise<AuthState>, navigate: (path: string) => void = path => location.assign(path)): Promise<void> {
   const state = await auth;
   const nav = document.querySelector<HTMLAnchorElement>("[data-account-nav]");
+  const login = document.querySelector<HTMLAnchorElement>("[data-account-login]");
+  if (login) login.hidden = state.kind !== "guest";
   if (nav) {
-    nav.hidden = state.kind === "unavailable";
+    nav.hidden = state.kind !== "guest" && state.kind !== "user";
+    nav.href = state.kind === "guest" ? "/account/login/?return=%2Faccount%2Ffavorites%2F" : "/account/favorites/";
     if (state.kind === "user") {
-      nav.hidden = true;
       const menu = document.createElement("details"); menu.className = "account-menu";
       const summary = document.createElement("summary"); summary.textContent = "我的账户";
-      if (location.pathname.startsWith("/account/")) summary.setAttribute("aria-current", "page");
+      if (location.pathname.startsWith("/account/") && !location.pathname.startsWith("/account/favorites/")) summary.setAttribute("aria-current", "page");
       const items = document.createElement("div"); items.className = "account-menu-items";
+      const email = document.createElement("span"); email.className = "account-menu-email"; email.textContent = state.user.email;
       const account = document.createElement("a"); account.href = "/account/"; account.textContent = "账户概览";
-      const favorites = document.createElement("a"); favorites.href = "/account/favorites/"; favorites.textContent = "我的收藏";
       const logout = document.createElement("button"); logout.type = "button"; logout.textContent = "退出登录";
       const menuStatus = document.createElement("span"); menuStatus.setAttribute("role", "status");
       logout.addEventListener("click", async () => {
@@ -44,29 +46,34 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
         try { await api<void>("/api/auth/logout", "POST"); notifyLogout(); navigate("/"); }
         catch (error) { menuStatus.textContent = requestMessage(error); logout.disabled = false; }
       });
-      items.append(account, favorites, logout, menuStatus); menu.append(summary, items); nav.after(menu);
+      items.append(email, account, logout, menuStatus); menu.append(summary, items); (login ?? nav).after(menu);
     }
   }
   const form = document.querySelector<HTMLFormElement>("[data-account-form]");
   const home = document.querySelector<HTMLElement>("[data-account-home]");
   if (home) {
     const status = home.querySelector<HTMLElement>("[data-account-status]")!;
+    const guest = home.querySelector<HTMLElement>("[data-account-guest]");
     const profile = home.querySelector<HTMLElement>("[data-account-profile]")!;
     const links = home.querySelector<HTMLElement>("[data-account-links]")!;
     if (state.kind === "user") {
       status.textContent = "";
+      status.hidden = true;
       profile.hidden = links.hidden = false;
       const tools = home.querySelector<HTMLElement>("[data-account-tools]");
       if (tools) { tools.hidden = false; mountAccountDataControls(); }
       profile.querySelector<HTMLElement>("[data-account-email]")!.textContent = state.user.email;
       home.querySelector<HTMLButtonElement>("[data-account-logout]")?.addEventListener("click", async () => {
         try { await api<void>("/api/auth/logout", "POST"); notifyLogout(); navigate("/"); }
-        catch (error) { status.textContent = requestMessage(error); }
+        catch (error) { status.hidden = false; status.textContent = requestMessage(error); }
       });
     } else if (state.kind === "guest") {
-      status.replaceChildren("请先登录。 ");
-      const link = document.createElement("a"); link.href = "/account/login/?return=%2Faccount%2F"; link.textContent = "前往登录"; status.append(link);
-    } else status.textContent = state.kind === "unavailable" ? "账户功能暂未开放。" : "无法确认登录状态，请刷新页面重试。";
+      if (guest) { guest.hidden = false; status.hidden = true; status.textContent = ""; }
+      else {
+        status.replaceChildren("请先登录。 ");
+        const link = document.createElement("a"); link.href = "/account/login/?return=%2Faccount%2F"; link.textContent = "前往登录"; status.append(link);
+      }
+    } else { status.hidden = false; status.textContent = state.kind === "unavailable" ? "账户功能暂未开放。" : "无法确认登录状态，请刷新页面重试。"; }
   }
   if (!form) return;
   const status = form.querySelector<HTMLElement>("[data-account-status]")!;

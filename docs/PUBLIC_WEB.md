@@ -41,7 +41,7 @@ SITE_URL=https://your-project.pages.dev npm run build:web
 
 RSS 最多包含 100 个当前来源条目，GUID 为 `urn:ai-news-hub:article:<stable-key>`，修订与重复构建不会更改。pubDate 使用该 ID 最早人工允许发布的时间；来源原始发布时间另列在描述/详情，不用抓取时间冒充。链接指向静态详情，描述另含原文 URL。XML 文本统一转义，非法字符拒绝构建。输出不使用当前构建时钟，因此同一输入内容确定。公共站不提供管理台或语义搜索；账户、收藏同步与分类通过 Pages Functions 私有 API 提供，静态输出不含用户数据。站内搜索只匹配最近 30 个北京时间自然日内的文章标题、事实摘要、话题名称、分类和开源研究方向。
 
-`/account/`、`/account/login/`、`/account/register/`、`/account/forgot-password/`、`/account/favorites/` 是静态页面，均为 noindex 且不进入 sitemap。邮箱验证和重置链接由 `/api/auth/*` 提供受保护的 HTML 页面。认证开启时客户端每页读取 `/api/auth/me`；收藏列表、搜索、分类、详情只从同源私有 API 请求，用户信息和快照不进入构建产物、公共索引或 localStorage。退出时立即清除页面内私人内容；恢复缓存页或切回标签时重新确认 Session，跨标签退出会发送不含凭据的通知。未登录时文章收藏引导登录并安全返回原页面；认证关闭时隐藏账户/收藏入口并禁用表单。Turnstile 仅在相关表单加载，CSP 允许其官方脚本与 iframe。见 [公共用户认证](AUTH.md)和 [收藏 API](FAVORITES.md)。
+`/account/`、`/account/login/`、`/account/register/`、`/account/forgot-password/`、`/account/favorites/` 是静态页面，均为 noindex 且不进入 sitemap。邮箱验证和重置链接由 `/api/auth/*` 提供受保护的 HTML 页面。认证开启时客户端每页读取 `/api/auth/me`；收藏列表、搜索、分类、详情只从同源私有 API 请求，用户信息和快照不进入构建产物、公共索引或 localStorage。退出时立即清除页面内私人内容；恢复缓存页或切回标签时重新确认 Session，跨标签退出会发送不含凭据的通知。未登录时文章收藏引导登录并安全返回原页面；认证关闭时隐藏收藏和用户入口并禁用表单。Turnstile 仅在相关表单加载，CSP 允许其官方脚本与 iframe。见 [公共用户认证](AUTH.md)和 [收藏 API](FAVORITES.md)。
 
 ## 站内搜索
 

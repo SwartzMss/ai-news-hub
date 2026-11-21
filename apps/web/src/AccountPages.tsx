@@ -21,9 +21,10 @@ function EmailField() {
 function AuthForm({ kind }: { kind: "login" | "register" | "forgot-password" }) {
   const titles = { login: "登录", register: "创建账户", "forgot-password": "找回密码" };
   const actions = { login: "/api/auth/login", register: "/api/auth/register", "forgot-password": "/api/auth/forgot-password" };
-  return <main id="content" className="account-layout">
+  return <main id="content" className="account-layout account-auth-layout">
     <div className="account-intro"><span>AI News Hub 账户</span><h1>{titles[kind]}</h1>
       <p>{kind === "login" ? "登录后，跨设备查看你保存的文章。" : kind === "register" ? "用邮箱创建账户，把值得回看的文章留在自己的收藏里。" : "输入注册邮箱，我们会发送密码重置链接。"}</p></div>
+    <div className="account-panel">
     <form className="account-form" data-account-form={kind} method="post" action={actions[kind]}>
       <EmailField />
       {kind !== "forgot-password" && <PasswordField id="password" label="密码" autocomplete={kind === "login" ? "current-password" : "new-password"} />}
@@ -39,12 +40,20 @@ function AuthForm({ kind }: { kind: "login" | "register" | "forgot-password" }) 
       {kind !== "register" && <a href="/account/register/" data-preserve-return>创建账户</a>}
       {kind !== "forgot-password" && <a href="/account/forgot-password/">忘记密码</a>}
     </nav>
+    </div>
   </main>;
 }
 
 function AccountHome() {
-  return <main id="content" className="account-layout" data-account-home>
+  return <main id="content" className="account-layout account-auth-layout" data-account-home>
     <div className="account-intro"><span>AI News Hub 账户</span><h1>我的账户</h1><p>在这里查看账户和已保存的文章。</p></div>
+    <div className="account-panel">
+    <div className="account-guest" data-account-guest hidden>
+      <h2>继续阅读，从这里开始</h2>
+      <p>登录后，你保存的文章会留在自己的收藏里，换设备也能继续查看。</p>
+      <a className="account-guest-primary" href="/account/login/?return=%2Faccount%2F">登录账户</a>
+      <a className="account-guest-secondary" href="/account/register/">创建账户</a>
+    </div>
     <p className="account-status" data-account-status role="status" aria-live="polite">正在确认登录状态…</p>
     <div className="account-profile" data-account-profile hidden><span>登录邮箱</span><strong data-account-email /></div>
     <div className="account-links" data-account-links hidden><a href="/account/favorites/">查看我的收藏</a><button type="button" data-account-logout>退出登录</button></div>
@@ -58,6 +67,7 @@ function AccountHome() {
           <button type="submit">下载数据文件</button>
         </form>
       </section>
+    </div>
     </div>
   </main>;
 }
@@ -90,7 +100,7 @@ function FavoritesHome() {
 }
 
 export function AccountPage({ data, page }: { data: PublicData; page: Page }) {
-  return <Shell data={data} active="account" page="account">
+  return <Shell data={data} active={page.kind === "favorites" ? "favorites" : "none"} page="account">
     {page.kind === "login" || page.kind === "register" || page.kind === "forgot-password"
       ? <AuthForm kind={page.kind} />
       : page.kind === "account" ? <AccountHome /> : <FavoritesHome />}
