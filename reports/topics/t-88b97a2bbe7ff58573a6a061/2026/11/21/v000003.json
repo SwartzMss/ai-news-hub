@@ -1,0 +1,378 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "d4a5e63c-30a8-4cbb-8aa7-27b92ef95dcc",
+  "report_date": "2026-11-21",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜截至北京时间2026年11月21日08:10｜精选5条",
+  "collected_at": "2026-11-21T00:22:03.797Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-21T00:22:03.808Z",
+  "reviewed_content_sha256": "ae44fd5b18a0f0edaaa1a2be9da3f0cf599a6f7aeb1381481647d813ccff1501",
+  "items": [
+    {
+      "id": "25fdaa44368e2649371adb307849373ffdcd0d6a656a96b2c0fcf54915338010",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "腾讯11月18日披露，2026年第三季度资本开支814.33亿元人民币，前季为527.84亿元；资本开支付款651亿元，同比增长225%。公司称经营现金流包含用于内部AI及外部云需求的大额算力采购预付款，同期自由现金流净流出691亿元。集团资本开支不全部属于AI采购，两种资本开支口径不能相加。原始财报未列精确发布时间，保守纳入7天补充窗口。",
+      "analysis": "推断：采购投入为算力需求提供较强资金证据，但盈利兑现取决于交付后的利用率与变现效率；未披露供应商，不能据此确认美股公司的新增订单。",
+      "evidence_quote": "腾讯公布二零二六年第三季业绩",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量为Q3实际资本投入及算力采购预付款披露。财报明确预付款服务于模型升级、推理及外部云需求。",
+        "metrics": [
+          {
+            "name": "集团资本开支",
+            "value": "814.33",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "comparison": "2026年第二季度527.84亿元；2025年第三季度129.83亿元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "资本开支付款",
+            "value": "651",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "comparison": "同比增长225%；现金付款口径",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "自由现金流",
+            "value": "-691",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "腾讯／00700／HKEX／云服务及算力采购方",
+            "direction": "已确认增加算力投入",
+            "reason": "公司披露采购预付款用于内部AI及外部云服务，未具名硬件或算力供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "采购预付款先压低经营现金流；待算力交付并投入服务后，若新增云收入及内部业务收益覆盖折旧、租赁和运维成本，投入才可能转化为利润与现金回收。",
+        "watchpoints": [
+          "采购预付款交付期限、退款条件及供应商披露。",
+          "云服务增长、算力利用率、折旧和自由现金流变化。"
+        ],
+        "risks": [
+          "预付款不等于设备已交付或容量已上线。",
+          "交付延期、价格竞争或利用率不足可能延缓现金回收。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "腾讯2026年第三季度业绩",
+            "url": "https://www.tencent.com/wp-content/uploads/2026/11/%E8%85%BE%E8%AE%AF%E5%85%AC%E5%B8%83%E4%BA%8C%E9%9B%B6%E4%BA%8C%E5%85%AD%E5%B9%B4%E7%AC%AC%E4%B8%89%E5%AD%A3%E4%B8%9A%E7%BB%A9.pdf",
+            "supports": "资本开支、现金付款、自由现金流及算力采购预付款用途。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.tencent.com",
+        "original_url": "https://www.tencent.com/wp-content/uploads/2026/11/%E8%85%BE%E8%AE%AF%E5%85%AC%E5%B8%83%E4%BA%8C%E9%9B%B6%E4%BA%8C%E5%85%AD%E5%B9%B4%E7%AC%AC%E4%B8%89%E5%AD%A3%E4%B8%9A%E7%BB%A9.pdf",
+        "canonical_url": "https://www.tencent.com/wp-content/uploads/2026/11/%E8%85%BE%E8%AE%AF%E5%85%AC%E5%B8%83%E4%BA%8C%E9%9B%B6%E4%BA%8C%E5%85%AD%E5%B9%B4%E7%AC%AC%E4%B8%89%E5%AD%A3%E4%B8%9A%E7%BB%A9.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "31eb6c537bcf1555144182121a09b9f73ddcc31acd9a760a3165ed71c9637849",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "百度11月16日披露，2026年第三季度AI Cloud Infra收入82亿元人民币，同比增长94%、环比增长11%；其中GPU Cloud收入同比增长191%、环比增长43%。公司称客户预付款增加、合同趋向长期化。业务经营数据来自未经审计的内部管理记录，GPU Cloud未披露绝对收入。纳入7天补充窗口，原文未列精确发布时间。",
+      "analysis": "推断：GPU云商业化增长支持算力需求判断，但收入增长可能同时受到利用率与价格影响，不能等同新增GPU采购增长。",
+      "evidence_quote": "Baidu Announces Third Quarter 2026 Results",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量是Q3算力云实际经营数据及合同结构变化。GPU Cloud此前称AI加速器基础设施订阅收入。",
+        "metrics": [
+          {
+            "name": "AI Cloud Infra收入",
+            "value": "82",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "comparison": "同比增长94%；环比增长11%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GPU Cloud收入增速",
+            "value": "191%／43%",
+            "unit": "同比／环比",
+            "period": "2026年第三季度",
+            "comparison": "分别对比2025年第三季度、2026年第二季度；未披露绝对收入",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "百度／BIDU／NASDAQ／算力云服务商",
+            "direction": "已确认服务收入增长",
+            "reason": "原始财报披露GPU云收入增长及客户预付款增加，未具名硬件供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "较长期合同和客户预付款若转化为持续使用，可提高容量规划与收款可见度；只有服务收入覆盖设备折旧、供电及运维成本，收入增长才能形成可持续现金回报。",
+        "watchpoints": [
+          "GPU云绝对收入、利用率及单位算力价格。",
+          "合同最低消费义务、预付款余额和业务利润率。"
+        ],
+        "risks": [
+          "业务分类数据未经审计，可能与最终核算存在差异。",
+          "价格竞争、客户集中或闲置容量可能削弱收入增长的盈利贡献。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "百度2026年第三季度业绩",
+            "url": "https://ir.baidu.com/node/14996/pdf",
+            "supports": "AI Cloud Infra及GPU Cloud增速、预付款与长期合同趋势，以及管理数据口径。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.baidu.com",
+        "original_url": "https://ir.baidu.com/node/14996/pdf",
+        "canonical_url": "https://ir.baidu.com/node/14996/pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cdc0d2f8b3ad2c627982aae100892cd0245f9164167ca7cad59a3dd9e33f47da",
+      "category": "optical_communications",
+      "importance": 4,
+      "fact_summary": "新易盛11月18日公告称，1.6T光模块已进入大规模放量阶段，成都与泰国基地快速增加产能；公司称当前不存在需求预期下修或砍单情形，并预计NPO产品2027年批量出货、2028年大规模交付。后两项属于公司展望，未披露订单金额或出货量。原文仅列日期，保守纳入7天补充窗口。",
+      "analysis": "推断：放量状态与NPO交付时间表提高了产品升级的可见度，但缺乏数量、ASP和良率，尚不足以量化新增盈利。",
+      "evidence_quote": "关于公司近期生产经营情况的公告",
+      "details": {
+        "kind": "investment",
+        "background": "公告编号2026-069。新增重点是1.6T大规模放量、双基地扩产及NPO商业化时间表；CPO、OCS仍为技术储备和产品布局。",
+        "metrics": [
+          {
+            "name": "NPO批量出货计划",
+            "value": "2027",
+            "unit": "年",
+            "period": "2027年",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "NPO大规模交付计划",
+            "value": "2028",
+            "unit": "年",
+            "period": "2028年",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "新易盛／300502／SZSE／高速光模块制造商",
+            "direction": "已确认产品放量及扩产",
+            "reason": "公司公告确认1.6T经营进展及成都、泰国基地扩产，未具名客户或芯片供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "1.6T需求经新增产能转化为合格交付后，可影响收入规模与产品结构；毛利率能否改善取决于ASP、良率及扩产成本，营运资金回收还取决于库存和客户账期。",
+        "watchpoints": [
+          "1.6T出货量、收入占比及新增有效产能。",
+          "NPO客户认证、正式订单及实际交付节点。"
+        ],
+        "risks": [
+          "公司订单表述未经客户独立确认，未披露约束条款。",
+          "关键物料、良率爬坡或客户架构调整可能改变交付计划。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新易盛2026-069经营公告原始PDF（新浪镜像）",
+            "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-18/12713145.PDF",
+            "supports": "1.6T放量、订单表述、双基地扩产及NPO交付展望。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "file.finance.sina.com.cn",
+        "original_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-18/12713145.PDF",
+        "canonical_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-18/12713145.PDF",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0be5b462017d5def2c491c120eb374519b415efbabe90da82f477ed990ea0ee0",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Supermicro于11月18日宣布，采用AMD EPYC 9006处理器的首批Petascale全闪存存储服务器已开始出货，支持PCIe Gen 6。首款系统采用2U机箱，最多容纳32块E3.S SSD，最高容量3.93 PB。本次为AI存储产品交付增量，与此前通用H15服务器出货区分；未披露订单或销量。按原文日期保守纳入7天补充窗口。",
+      "analysis": "推断：实际出货使AI存储产品升级具备收入转化基础，但规格提升不足以证明订单放量或毛利率改善。",
+      "evidence_quote": "The first systems, now shipping, include the Petascale system",
+      "details": {
+        "kind": "investment",
+        "background": "公司原始公告确认首批产品出货，后续SP8版本仍需随处理器发布推进；最高容量为配置上限。",
+        "metrics": [
+          {
+            "name": "首款系统最大存储容量",
+            "value": "3.93",
+            "unit": "PB",
+            "period": "2026年11月公布规格",
+            "comparison": "2U机箱，最多32块122 TB E3.S SSD；非实际客户平均配置",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Supermicro／SMCI／NASDAQ／服务器整机商",
+            "direction": "已确认存储产品出货",
+            "reason": "公司公告明确首批Petascale系统已出货。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "AMD／AMD／NASDAQ／服务器处理器供应商",
+            "direction": "已确认平台采用关系",
+            "reason": "产品采用EPYC 9006，公告含AMD具名合作说明。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "AI集群存储吞吐需求若转化为客户采购，可带动SMCI存储服务器收入及AMD处理器需求；利润和现金流增量仍取决于销量、整机毛利、备货及回款。",
+        "watchpoints": [
+          "付费客户、订单金额、实际出货数量及收入确认。",
+          "不同配置的性能验证和后续SP8产品交付。"
+        ],
+        "risks": [
+          "未披露商业规模，首批出货不代表大规模部署。",
+          "厂商规格与实际工作负载表现可能不同；不能推定SSD供应商。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Supermicro PCIe Gen 6全闪存服务器出货公告",
+            "url": "https://ir.supermicro.com/news/news-details/2026/Supermicro-Ships-First-All-Flash-Storage-Servers-Delivering-PCIe-Gen-6-Performance-and-Broad-Software-Defined-Storage-Support-for-AI-Training-and-Inference/default.aspx",
+            "supports": "首批出货、平台规格、AMD处理器采用及合作说明。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.supermicro.com",
+        "original_url": "https://ir.supermicro.com/news/news-details/2026/Supermicro-Ships-First-All-Flash-Storage-Servers-Delivering-PCIe-Gen-6-Performance-and-Broad-Software-Defined-Storage-Support-for-AI-Training-and-Inference/default.aspx",
+        "canonical_url": "https://ir.supermicro.com/news/news-details/2026/Supermicro-Ships-First-All-Flash-Storage-Servers-Delivering-PCIe-Gen-6-Performance-and-Broad-Software-Defined-Storage-Support-for-AI-Training-and-Inference/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b17c69286fcaf938f667e254a0f19d5174f347953827014be02a4ba5087911f8",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "PJM于11月16日向FERC提交Fast Energization改革申请，拟将发电接入与大型负荷输电服务请求合并为12个月研究流程。原始申请预计2027年11月下旬开放首轮窗口，首个周期2029年完成。新增事实是正式申请，方案尚待批准；12个月指研究周期，不是数据中心投运期限。纳入7天补充窗口，11月20日媒体报道不另计新事件。",
+      "analysis": "推断：改革可能改善AI数据中心中期容量规划，但过渡时间较长，不宜据此上调近期可交付算力。",
+      "evidence_quote": "The first Fast Energization Cycle would therefore finish in 2029.",
+      "details": {
+        "kind": "investment",
+        "background": "本次直接影响数据中心接入流程，属于AI基础设施扩张约束。PJM是非上市电网运营机构；原文没有确认具体上市公司项目受益。",
+        "metrics": [
+          {
+            "name": "拟议联合研究周期",
+            "value": "12",
+            "unit": "个月",
+            "period": "Fast Energization实施后",
+            "comparison": "拟由约两年缩短至一年；待FERC批准",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "首轮预计完成时间",
+            "value": "2029",
+            "unit": "年",
+            "period": "首个Fast Energization周期",
+            "comparison": "预计2027年11月下旬开放申请窗口",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "联合研究若获批并落实，可能减少接入研究重复及成本不确定性；实际容量交付仍需电网升级、施工和送电。只有项目交付提前，才能影响服务器部署、租金收入及现金回收；目前无法归属到具体上市公司。",
+        "watchpoints": [
+          "FERC裁决、成本分摊及过渡申请安排。",
+          "实际首轮启动时间及具名AI数据中心送电进度。"
+        ],
+        "risks": [
+          "申请可能被修改、延期或否决。",
+          "研究提速不消除发电、电网施工与许可约束，也不保证项目经济性。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "PJM向FERC提交的ER27-531-000改革申请",
+            "url": "https://www.pjm.com/-/media/DotCom/documents/ferc/filings/2026/20261116-er27-531-000.pdf",
+            "supports": "11月16日正式申请、12个月研究流程及首轮2027—2029年时间安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.pjm.com",
+        "original_url": "https://www.pjm.com/-/media/DotCom/documents/ferc/filings/2026/20261116-er27-531-000.pdf",
+        "canonical_url": "https://www.pjm.com/-/media/DotCom/documents/ferc/filings/2026/20261116-er27-531-000.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
