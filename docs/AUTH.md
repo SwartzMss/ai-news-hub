@@ -51,10 +51,10 @@ Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`
 
 ## 密码哈希选型与升级
 
-目前使用 WebCrypto `PBKDF2-HMAC-SHA256`，每个账户独立随机 16 字节盐、600,000 次迭代和 32 字节输出，编码格式为 `$pbkdf2-sha256$i=600000$<salt>$<derived>`。Argon2id 是首选，但 [Cloudflare Workers 的原生 crypto 文档](https://developers.cloudflare.com/workers/runtime-apis/nodejs/crypto/)明确不支持 `argon2`；引入 WASM Argon2 需额外验证 128 MiB isolate 内存和实际计划的 CPU 限额。本实现使用 Workers 已支持的 [WebCrypto PBKDF2](https://developers.cloudflare.com/workers/runtime-apis/web-crypto/)；600,000 次符合 [OWASP 密码存储建议](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)。不能用普通 SHA-256 替代密码哈希。
+Cloudflare Workers 生产运行时目前拒绝单次超过 100,000 次的 PBKDF2 调用（见 [workerd 限制记录](https://github.com/cloudflare/workerd/issues/1346)）。新密码哈希使用 WebCrypto `PBKDF2-HMAC-SHA256` 连续 6 轮、每轮 100,000 次；每个账户使用随机 16 字节盐，每轮在盐末尾附加轮次字节，并将上一轮 32 字节输出作为下一轮输入。存储格式为 `$pbkdf2-sha256-chain$r=6,i=100000$<salt>$<derived>`。这保持了每次猜测需完成 600,000 次 PBKDF2 迭代的成本，但**不是**单次 600,000 次的标准 PBKDF2，不能将其称为直接符合 [OWASP 对 PBKDF2-HMAC-SHA256 的参数建议](https://cheatsheetseries.owasp.org/cheatsheets/Password_Storage_Cheat_Sheet.html)。不能用普通 SHA-256 替代密码哈希。
 
-哈希字符串自带算法与参数，未来提升成本或改用已验证的 Argon2id 时，验证器可按格式识别旧值，并在成功登录后重新派生写回新格式；更换算法前须同时支持旧格式直到完成升级。当前没有自动升级逻辑，也未在真实 Cloudflare CPU 限额下完成性能验收。Cloudflare 文档列出的 Workers Free CPU 限额为 10 ms，开启认证前必须在目标计划实际测量注册/登录是否可执行；若超限，应选择可承载该哈希成本的计划，不能降低到不安全参数。
+验证器仍接受旧的单次 600,000–1,200,000 次 `$pbkdf2-sha256` 哈希；遇到 Workers 的上限错误时使用 `@noble/hashes` 计算同一标准 PBKDF2 值。旧哈希验证比新格式更耗 CPU。当前没有登录后自动升级逻辑，也未在真实 Cloudflare CPU 限额下完成性能验收。Cloudflare [Workers 限额](https://developers.cloudflare.com/workers/platform/limits/)列出的 Free CPU 限额为 10 ms；多轮密码派生很可能超过此限额，因此**合入代码和重新部署不等于生产注册已修复**。启用认证前须在目标计划实测注册、验证邮箱、登录、重置密码和旧账户登录；若 CPU 超限，须使用能承载该成本的计划，不能降低密码参数。该修复不需要 D1 迁移或新增 Pages 变量。
 
 ## 本地验证
 
-`npm test` 使用内存 SQLite 与假邮件传输执行真实 SQL/HTTP 处理路径；不调用 Cloudflare 或 Resend。可单独运行 `npm run build && node --test tests/auth-routes.test.mjs`。真实发信与 Cookie 的浏览器端验收仍需在配置完整的 Preview 上进行。
+`npm test` 使用内存 SQLite 与假邮件传输执行真实 SQL/HTTP 处理路径；不调用 Cloudflare 或 Resend。可单独运行 `npm run build && node --test tests/auth-password.test.mjs tests/auth-routes.test.mjs`，其中密码测试模拟 Workers 的 100,000 次上限。真实发信、CPU 和 Cookie 的浏览器端验收仍需在配置完整的 Pages 环境进行。

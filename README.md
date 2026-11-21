@@ -28,6 +28,8 @@ Linux Backend 通过 stdio 驱动 Codex 研究，SQLite 保存任务与日报，
 
 Pages Functions 已加入默认关闭的邮箱密码认证 API，并在 [#159](https://github.com/SwartzMss/ai-news-hub/issues/159) 补充密码重置、限流、Turnstile 与 Session 闲置过期；[#162](https://github.com/SwartzMss/ai-news-hub/issues/162) 提供账户页面、文章收藏按钮、私人收藏列表及分类管理。启用前须先迁移用户 D1、配置 Secrets 并验收真实 Cloudflare/Resend。见 [公共用户认证](docs/AUTH.md)。
 
+密码派生已改为 6 轮、每轮 100,000 次的 WebCrypto PBKDF2，以避开 Cloudflare Workers 单次调用上限；旧哈希仍可验证。无需新增 D1 迁移或 Pages 变量，但必须在实际 Cloudflare 计划下测量 CPU 并完成真实注册/登录验收，合入和重新部署本身不代表认证可用。见 [密码哈希与验收](docs/AUTH.md#密码哈希选型与升级)。
+
 [#163](https://github.com/SwartzMss/ai-news-hub/issues/163) 已加入账户数据导出。按当前部署选择，暂不提供账户注销，也不部署 R2 用户库备份。生产认证仍默认关闭；开放前须确定备份、恢复和删除政策并完成 [用户生产验收](docs/USER_PRODUCTION.md)，核对 [隐私说明草稿](docs/USER_PRIVACY.md)。
 
 最终日报的 `details.kind` 标识新闻、投资或项目详情，仍为必填；Backend 为 Codex 的结构化输出 Schema 补齐常量和枚举的类型声明。升级此修复后需重新构建并重启 Backend，再手动重跑此前因 `invalid_json_schema` 失败的任务。

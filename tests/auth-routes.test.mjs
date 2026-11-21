@@ -19,7 +19,7 @@ test('registration stores password and verification token hashes; GET does not v
   assert.equal(user.email_normalized, EMAIL);
   assert.equal(user.email_verified_at, null);
   assert.notEqual(user.password_hash, PASSWORD);
-  assert.match(user.password_hash, /^\$pbkdf2-sha256\$i=600000\$/);
+  assert.match(user.password_hash, /^\$pbkdf2-sha256-chain\$r=6,i=100000\$/);
   const token = tokenFrom(f);
   const saved = f.db.prepare('SELECT * FROM auth_email_tokens').get();
   assert.equal(saved.purpose, 'verify_email');
