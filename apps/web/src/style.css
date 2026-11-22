@@ -2035,6 +2035,13 @@ html {
 .account-intro h1 { margin: 5px 0 10px; font-size: clamp(29px, 4vw, 43px); line-height: 1.25; letter-spacing: -.03em; }
 .account-intro p, .account-help { color: var(--muted); font-size: 14px; }
 .account-form { max-width: 520px; display: grid; gap: 19px; }
+.account-step-title { margin: 0 0 12px; font-size: 16px; line-height: 1.4; }
+.account-verify-step { display: grid; gap: 19px; }
+.account-verify-step[hidden], [data-register-send][hidden] { display: none; }
+.account-verify-step input[name="code"] { font-variant-numeric: tabular-nums; letter-spacing: .3em; font-size: 1.2rem; }
+.account-verify-actions { display: flex; flex-wrap: wrap; gap: 14px; }
+.account-text-button { width: fit-content; min-height: 44px; padding: 0; border: 0; background: transparent; color: var(--accent); font: inherit; text-align: left; cursor: pointer; }
+.account-text-button:disabled { color: var(--muted); cursor: default; }
 .account-field { display: grid; gap: 6px; min-width: 0; }
 .account-field label { font-size: 13px; font-weight: 650; }
 .account-field input, .account-field select, .favorite-category-select { width: 100%; min-height: 48px; padding: 8px 12px; border: 1px solid var(--line); border-radius: 8px; background: var(--paper); color: var(--ink); font: inherit; }

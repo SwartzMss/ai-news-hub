@@ -1,4 +1,4 @@
-import { changePassword, forgotPassword, login, logout, me, register, resetPassword, verifyEmail } from '../../../auth/routes.js';
+import { changePassword, forgotPassword, login, logout, me, register, resetPassword, verifyEmail, verifyEmailCode } from '../../../auth/routes.js';
 import { AuthError, type AuthContext, getConfig, json, requireOrigin } from '../../../auth/runtime.js';
 import { exportData } from '../../../auth/user-data.js';
 
@@ -18,6 +18,7 @@ export async function onRequest(ctx: AuthContext): Promise<Response> {
     }
     if (action === 'register' && ctx.request.method === 'POST') return await register(ctx, config);
     if (action === 'verify-email' && ['GET', 'POST'].includes(ctx.request.method)) return await verifyEmail(ctx, config);
+    if (action === 'verify-email-code' && ctx.request.method === 'POST') return await verifyEmailCode(ctx, config);
     if (action === 'forgot-password' && ctx.request.method === 'POST') return await forgotPassword(ctx, config);
     if (action === 'reset-password' && ['GET', 'POST'].includes(ctx.request.method)) return await resetPassword(ctx, config);
     if (action === 'change-password' && ctx.request.method === 'POST') return await changePassword(ctx, config);

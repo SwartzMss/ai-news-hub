@@ -14,19 +14,20 @@ Issue [#158](https://github.com/SwartzMss/ai-news-hub/issues/158) 在 Pages Func
 | `RESEND_API_KEY` | 现有 Resend Secret；认证与 Newsletter 共用传输服务，不共用业务开关或 Token Secret |
 | `AUTH_TURNSTILE_SITE_KEY` | Turnstile 公开 Site Key，文本变量；注册/找回页面从 `/api/auth/config` 获取 |
 | `AUTH_TURNSTILE_SECRET` | Turnstile Secret Key，必须使用 Cloudflare Secret，绝不放入前端或 Git |
-| `AUTH_RATE_LIMIT_SECRET` | 至少 32 字符的随机密钥，用于按 IP/邮箱生成不可逆限流键；必须使用 Cloudflare Secret |
+| `AUTH_RATE_LIMIT_SECRET` | 至少 32 字符的随机密钥，用于限流键和注册验证码的 HMAC；必须使用 Cloudflare Secret，轮换后未使用的验证码会失效 |
 
 Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`；若没有稳定的预览域名，保持 Preview 的 `AUTH_ENABLED` 未设置。生产 `AUTH_SITE_URL` 指向生产站点。代码可以在认证关闭时先部署；启用任一环境的认证前，必须先在该环境用户 D1 应用 `0002.sql`。Turnstile Widget 只允许对应环境的站点主机名，并按 `register`、`forgot_password`、`login` 设置 action；Siteverify 返回的 hostname/action 必须匹配。`/api/auth/register` 和 `/api/auth/forgot-password` 还要求 `AUTH_FROM` 与 `RESEND_API_KEY`；登录、`me` 和退出在邮件配置缺失时仍可使用。页面部署后，在 Cloudflare 中保存变量/Secret 并重新部署才会生效。没有 `AUTH_RATE_LIMIT_SECRET` 或可信 `CF-Connecting-IP` 时，受限认证请求返回 503。
 
-建议先在隔离 Preview 用自有邮箱验收；若暂不配置 Preview，则保持 Preview 认证关闭，并在生产受控测试后决定是否长期开放：注册返回统一 202、收到验证邮件、GET 只展示确认页、在确认页设置最终密码并 POST 验证、登录设置 Cookie、`me` 返回最小用户资料、退出后旧 Cookie 失效。再核对 Cloudflare Workers CPU/错误日志和 Resend 投递情况，确认生产计划后才设 Production `AUTH_ENABLED=1`。**不要**把密码、验证链接、Cookie、API Key 或完整请求日志发到 Issue。Newsletter 的 `NEWSLETTER_ENABLED` 保持独立；不需要改 Newsletter D1 或密钥。
+建议先在隔离 Preview 用自有邮箱验收；若暂不配置 Preview，则保持 Preview 认证关闭，并在生产受控测试后决定是否长期开放：输入邮箱并完成 Turnstile 后收到 6 位验证码，在同一注册页输入验证码并设置密码，随后登录、检查 `me` 和退出。核对 60 秒重发间隔、10 分钟到期、Cloudflare Workers CPU/错误日志及 Resend 投递情况。**不要**把密码、验证码、重置链接、Cookie、API Key 或完整请求日志发到 Issue。Newsletter 的 `NEWSLETTER_ENABLED` 保持独立；不需要改 Newsletter D1 或密钥。改用验证码无需新增 Pages 变量、Binding、DNS 或 D1 迁移，只需部署新的 Pages 代码。
 
 ## 接口与数据边界
 
 | 路径 | 方法 | 结果 |
 | --- | --- | --- |
-| `/api/auth/register` | POST JSON `{email,password,turnstileToken}` | 202 统一提示；新账户发送 24 小时验证链接，同一未验证邮箱一小时内不重发 |
-| `/api/auth/verify-email?token=...` | GET | 仅展示设置密码和邮箱确认表单，不改变账户状态 |
-| `/api/auth/verify-email` | POST JSON 或表单 `{token,password}` | 一次性消费验证 Token，以邮箱持有人设置的密码替换临时密码，并更新验证时间 |
+| `/api/auth/register` | POST JSON `{email,turnstileToken}` | 202 统一提示；可注册邮箱发送 6 位验证码，10 分钟有效，同一未验证邮箱至少间隔 60 秒才重发 |
+| `/api/auth/verify-email-code` | POST JSON `{email,code,password}` | 校验最新验证码并一次性激活账户，将密码哈希写入 D1；错误/过期码返回 400 |
+| `/api/auth/verify-email?token=...` | GET | 只兼容部署前已发出的 24 小时验证链接，不再由新注册邮件生成 |
+| `/api/auth/verify-email` | POST JSON 或表单 `{token,password}` | 只兼容旧验证链接，消费后由邮箱持有人设置密码 |
 | `/api/auth/login` | POST JSON `{email,password,turnstileToken?}` | 200 最小用户资料，设置 `__Host-anh_session` Cookie |
 | `/api/auth/me` | GET | 200 当前用户最小资料；无效/过期/撤销会话返回 401 |
 | `/api/auth/logout` | POST | 撤销当前 Session，204 并清除 Cookie |
@@ -39,15 +40,15 @@ Preview 的 `AUTH_SITE_URL` 必须是实际预览域名且使用预览 `USER_DB`
 
 当前版本暂不提供账户注销接口；认证启用时 `POST /api/auth/delete-account` 返回 404，认证关闭时统一返回 503。数据导出仍可用。生产开放注册前须确定账户删除途径与数据保留政策，见 [用户生产验收](USER_PRODUCTION.md)。
 
-请求体上限 4096 字节；所有写入接口拒绝额外字段，密码为 12–128 个字符且最多 256 UTF-8 字节。注册时的密码仅为待验证账户的临时密码；邮箱持有人须在验证页再次设置最终密码，避免他人提前注册该邮箱后借验证邮件激活攻击者密码。所有 POST 要求 `Origin` 与 `AUTH_SITE_URL` 完全相同；所有路由要求请求 URL 的 origin 与配置一致；Fetch Metadata 拒绝跨站 API 子资源请求，但允许从邮件跨站导航到验证/重置 GET 页面。Cookie 使用 `HttpOnly; Secure; SameSite=Lax; Path=/`，无 `Domain` 属性，Session 绝对有效期 30 天、服务端闲置有效期 7 天；`me` 活动每隔至少 5 分钟刷新闲置时间。API 与确认页使用 `no-store`，确认页禁止外部资源与跨站表单。登录错误不区分账号不存在、密码错误、未验证或禁用；注册和找回密码对已存在/不存在邮箱返回相同 202。两类邮件请求都对任何邮箱执行令牌哈希与预约查询，并通过 Pages `waitUntil` 在统一响应后处理发信；发信失败会释放令牌预约。邮箱验证链接 24 小时有效且设置 1 小时重发冷却；重置链接 30 分钟有效，活跃链接期间不重发，过期后可重新申请。重置 Token 的消费标识还防止同一毫秒内重复提交改写密码。
+请求体上限 4096 字节；所有写入接口拒绝额外字段，密码为 12–128 个字符且最多 256 UTF-8 字节。第一步只提交邮箱，D1 中未验证用户的密码字段写入不可登录的占位值；第二步凭最新验证码设置最终密码，避免他人提前注册该邮箱后让邮箱持有人激活攻击者密码。验证码只在邮件中出现，数据库仅存储以现有 Secret、用户 ID、令牌 ID 和验证码计算的 HMAC，不保存明文或可离线枚举的普通 SHA-256。所有 POST 要求 `Origin` 与 `AUTH_SITE_URL` 完全相同；所有路由要求请求 URL 的 origin 与配置一致；Fetch Metadata 拒绝跨站 API 子资源请求，但允许从邮件跨站导航到旧验证/重置 GET 页面。Cookie 使用 `HttpOnly; Secure; SameSite=Lax; Path=/`，无 `Domain` 属性，Session 绝对有效期 30 天、服务端闲置有效期 7 天；`me` 活动每隔至少 5 分钟刷新闲置时间。API 与确认页使用 `no-store`，确认页禁止外部资源与跨站表单。登录错误不区分账号不存在、密码错误、未验证或禁用；注册和找回密码对已存在/不存在邮箱返回相同 202。两类邮件请求通过 Pages `waitUntil` 在统一响应后处理发信；发信失败会释放验证码预约。验证码 10 分钟有效、最新一封生效，60 秒内同一邮箱不重发；重置链接 30 分钟有效，活跃链接期间不重发，过期后可重新申请。重置 Token 的消费标识还防止同一毫秒内重复提交改写密码。
 
 ### 滥用防护
 
 注册和找回密码必须提交 Turnstile Token；服务端调用 Cloudflare Siteverify，验证 `success`、本站 hostname 与对应 action，并在用户 D1 记录令牌哈希，拒绝重复使用。登录在同一 IP 或邮箱 15 分钟内超过 6 次尝试时要求 action 为 `login` 的新挑战；即使密码正确也不能绕过。Siteverify Token 过期或失败需重新获取。Turnstile 校验前先限制 IP，成功后才计入注册/找回的邮箱额度，避免无效挑战耗尽他人的邮箱额度。具体 [Cloudflare 服务端验证规则](https://developers.cloudflare.com/turnstile/get-started/server-side-validation/)指出 Token 约 5 分钟有效且只能使用一次；本地 D1 去重补足短时间内的重放收敛窗口。
 
-固定窗口限流保存在 `auth_rate_limits`，IP/邮箱键由 Secret 通过 HMAC 派生，Turnstile Token 另存 SHA-256 哈希；不保存原始 IP/邮箱/挑战 Token；仅信任 Cloudflare 的 `CF-Connecting-IP`，忽略客户端 `X-Forwarded-For`。注册：每 IP 10 次/小时、每邮箱 3 次/天；找回：每 IP 10 次/天、每邮箱 3 次/天；登录：每 IP 30 次/15 分钟、每邮箱 12 次/15 分钟；验证：每 IP 30 次/小时、每 Token POST 5 次/小时；重置与改密各有 IP 与 Token/账户额度。邮件链接 GET 只计 IP，不耗尽一次性 Token 的提交额度。超限返回 429。过期窗口在请求过程中分批清理。以上规则降低滥用，但不能替代 Cloudflare 平台监控与实际流量验收。
+固定窗口限流保存在 `auth_rate_limits`，IP/邮箱键由 Secret 通过 HMAC 派生，Turnstile Token 另存 SHA-256 哈希；不保存原始 IP/邮箱/挑战 Token；仅信任 Cloudflare 的 `CF-Connecting-IP`，忽略客户端 `X-Forwarded-For`。注册：每 IP 10 次/小时、每邮箱 3 次/天，另有同邮箱 60 秒冷却；找回：每 IP 10 次/天、每邮箱 3 次/天；登录：每 IP 30 次/15 分钟、每邮箱 12 次/15 分钟；验证码验证：每 IP 30 次/小时、每封验证码 5 次/小时，重发后新验证码有独立次数；旧链接验证仍按 Token 限流；重置与改密各有 IP 与 Token/账户额度。邮件链接 GET 只计 IP，不耗尽一次性 Token 的提交额度。超限返回 429。过期窗口在请求过程中分批清理。以上规则降低滥用，但不能替代 Cloudflare 平台监控与实际流量验收。
 
-数据库只保存密码派生值、Session Token 的 SHA-256 哈希和验证 Token 的 SHA-256 哈希；明文随机 Token 只发给浏览器或邮件，不入日志。邮箱由写入端规范化为小写，数据库再次约束唯一性。验证和 Session 查询始终从哈希查用户，忽略客户端提供的 `user_id`。
+数据库只保存已验证用户的密码派生值、Session Token 的 SHA-256 哈希、旧链接 Token 的 SHA-256 哈希及新验证码的 HMAC；明文随机 Token/验证码只发给浏览器或邮件，不入日志。邮箱由写入端规范化为小写，数据库再次约束唯一性。验证和 Session 查询始终从服务端记录查用户，忽略客户端提供的 `user_id`。
 
 ## 密码哈希选型与升级
 

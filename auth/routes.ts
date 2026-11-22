@@ -1,5 +1,6 @@
 import { MailError, sendMail } from '../mail/transport.js';
 import { hashPassword, verifyPassword } from './password.js';
+import { createEmailCode, hashEmailCode } from './email-code.js';
 import { limitRequest } from './rate-limit.js';
 import { verifyTurnstile } from './turnstile.js';
 import {
@@ -10,9 +11,10 @@ import {
 
 const HOUR = 3600000;
 const DAY = 24 * HOUR;
+const MINUTE = 60000;
 const SESSION_SECONDS = 30 * 24 * 3600;
 const IDLE_MS = 7 * DAY;
-const ACCEPTED = { message: '如果可以注册，我们会发送邮箱验证邮件。' };
+const ACCEPTED = { message: '如果该邮箱可以注册，我们会发送 6 位验证码。', resendAfterSeconds: 60 };
 const RESET_ACCEPTED = { message: '如果账户可以重置，我们会发送密码重置邮件。' };
 const TOKEN_PATTERN = /^[A-Za-z0-9_-]{43}$/;
 
@@ -32,35 +34,33 @@ export async function register(ctx: AuthContext, config: AuthConfig): Promise<Re
   requireSameOrigin(ctx, config);
   const mail = requireMailConfig(config);
   const body = await readBody(ctx.request);
-  onlyKeys(body, ['email', 'password', 'turnstileToken']);
+  onlyKeys(body, ['email', 'turnstileToken']);
   const email = normalizeEmail(body.email);
-  const password = validPassword(body.password);
   await limitRequest(ctx, config, 'register', email, 'ip');
   await verifyTurnstile(ctx, config, body.turnstileToken, 'register');
   await limitRequest(ctx, config, 'register', email, 'subject');
   const now = nowMs(ctx);
-  const passwordHash = await hashPassword(password);
   await config.db.prepare(`INSERT INTO users (id,email_normalized,password_hash,email_verified_at,status,created_at,updated_at)
     VALUES (?,?,?,NULL,'active',?,?) ON CONFLICT(email_normalized) DO NOTHING`)
-    .bind(crypto.randomUUID(), email, passwordHash, now, now).run();
+    .bind(crypto.randomUUID(), email, '!pending', now, now).run();
   const user = await config.db.prepare('SELECT id FROM users WHERE email_normalized=?')
     .bind(email).first<Pick<UserRecord, 'id'>>();
-  const token = randomToken();
-  const tokenHash = await hashToken(token);
+  const code = createEmailCode();
+  const tokenId = crypto.randomUUID();
+  const tokenHash = await hashEmailCode(config.rateLimitSecret!, user?.id ?? '', tokenId, code);
   const reserved = await config.db.prepare(`INSERT INTO auth_email_tokens (id,user_id,token_hash,purpose,created_at,expires_at,consumed_at)
     SELECT ?,id,?,'verify_email',?,?,NULL FROM users
     WHERE id=? AND status='active' AND email_verified_at IS NULL
     AND NOT EXISTS (SELECT 1 FROM auth_email_tokens WHERE user_id=users.id AND purpose='verify_email'
-      AND consumed_at IS NULL AND created_at>?)`)
-    .bind(crypto.randomUUID(), tokenHash, now, now + DAY, user?.id ?? '', now - HOUR).run();
+      AND token_hash LIKE 'otp:%' AND consumed_at IS NULL AND created_at>?)`)
+    .bind(tokenId, tokenHash, now, now + 10 * MINUTE, user?.id ?? '', now - MINUTE).run();
   const delivery = Promise.resolve().then(async () => {
     if (!user || !reserved.meta.changes) return;
-    const url = `${config.origin}/api/auth/verify-email?token=${encodeURIComponent(token)}`;
     try {
       await sendMail(mail, {
-        from: mail.from, to: [email], subject: '验证 AI News Hub 账户邮箱',
-        text: `请打开以下链接，设置账户密码并确认邮箱。链接 24 小时内有效。\n\n${url}\n\n如果不是你申请的账户，请忽略此邮件。`,
-        html: `<p>请设置 AI News Hub 账户密码并确认邮箱。链接 24 小时内有效。</p><p><a href="${url}">设置密码并确认邮箱</a></p><p>如果不是你申请的账户，请忽略此邮件。</p>`,
+        from: mail.from, to: [email], subject: 'AI News Hub 注册验证码',
+        text: `你的 AI News Hub 注册验证码：${code}\n\n验证码 10 分钟内有效。请在注册页面输入验证码并设置密码。\n\n如果不是你申请的账户，请忽略此邮件。`,
+        html: `<p>你的 AI News Hub 注册验证码：</p><p><strong style="font-size:24px;letter-spacing:4px">${code}</strong></p><p>验证码 10 分钟内有效。请在注册页面输入验证码并设置密码。</p><p>如果不是你申请的账户，请忽略此邮件。</p>`,
       }, `auth/verify/${user.id}/${now}`, ctx.fetcher);
     } catch (error) {
       try {
@@ -75,6 +75,39 @@ export async function register(ctx: AuthContext, config: AuthConfig): Promise<Re
   if (ctx.waitUntil) ctx.waitUntil(delivery);
   else await delivery;
   return json(ACCEPTED, 202);
+}
+
+export async function verifyEmailCode(ctx: AuthContext, config: AuthConfig): Promise<Response> {
+  requireSameOrigin(ctx, config);
+  const body = await readBody(ctx.request);
+  onlyKeys(body, ['email', 'code', 'password']);
+  const email = normalizeEmail(body.email);
+  if (typeof body.code !== 'string' || !/^[0-9]{6}$/.test(body.code)) throw new AuthError('invalid_request');
+  const password = validPassword(body.password);
+  const now = nowMs(ctx);
+  const user = await config.db.prepare(`SELECT id FROM users WHERE email_normalized=? AND status='active' AND email_verified_at IS NULL`)
+    .bind(email).first<Pick<UserRecord, 'id'>>();
+  const latest = await config.db.prepare(`SELECT id,token_hash FROM auth_email_tokens WHERE user_id=?
+    AND purpose='verify_email' AND token_hash LIKE 'otp:%' AND consumed_at IS NULL AND expires_at>?
+    ORDER BY created_at DESC,id DESC LIMIT 1`)
+    .bind(user?.id ?? '', now).first<{ id: string; token_hash: string }>();
+  await limitRequest(ctx, config, 'verify_email', latest?.id ?? email);
+  const candidate = await hashEmailCode(config.rateLimitSecret!, user?.id ?? '', latest?.id ?? '', body.code);
+  if (!latest || candidate !== latest.token_hash) return json({ error: 'invalid_code' }, 400);
+  const passwordHash = await hashPassword(password);
+  const results = await config.db.batch([
+    config.db.prepare(`UPDATE auth_email_tokens SET consumed_at=? WHERE id=? AND token_hash=?
+      AND purpose='verify_email' AND consumed_at IS NULL AND expires_at>?
+      AND id=(SELECT id FROM auth_email_tokens WHERE user_id=? AND purpose='verify_email'
+        AND token_hash LIKE 'otp:%' AND consumed_at IS NULL AND expires_at>?
+        ORDER BY created_at DESC,id DESC LIMIT 1)`).bind(now, latest.id, candidate, now, user!.id, now),
+    config.db.prepare(`UPDATE users SET password_hash=?,email_verified_at=?,updated_at=? WHERE id=?
+      AND status='active' AND email_verified_at IS NULL
+      AND EXISTS (SELECT 1 FROM auth_email_tokens WHERE id=? AND user_id=users.id AND token_hash=? AND consumed_at=?)`)
+      .bind(passwordHash, now, now, user!.id, latest.id, candidate, now),
+  ]);
+  return results[0].meta.changes === 1 && results[1].meta.changes === 1
+    ? json({ verified: true }) : json({ error: 'invalid_code' }, 400);
 }
 
 export async function verifyEmail(ctx: AuthContext, config: AuthConfig): Promise<Response> {
@@ -236,7 +269,8 @@ export async function login(ctx: AuthContext, config: AuthConfig): Promise<Respo
   }
   const user = await config.db.prepare('SELECT id,email_normalized,password_hash,email_verified_at,status FROM users WHERE email_normalized=?')
     .bind(email).first<UserRecord>();
-  const valid = user ? await verifyPassword(password, user.password_hash) : (await hashPassword(password), false);
+  const valid = user && user.password_hash !== '!pending'
+    ? await verifyPassword(password, user.password_hash) : (await hashPassword(password), false);
   if (!valid || !user || user.status !== 'active' || user.email_verified_at === null) throw new AuthError('invalid_credentials', 401);
   const now = nowMs(ctx);
   const token = randomToken();
