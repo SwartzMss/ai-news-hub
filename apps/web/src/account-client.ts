@@ -98,6 +98,30 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
     return;
   }
   if (state.kind === "user" && kind === "login") { navigate(returnPath ?? "/account/"); return; }
+  const sendStep = form.querySelector<HTMLElement>("[data-register-send]");
+  const verifyStep = form.querySelector<HTMLElement>("[data-register-verify]");
+  const emailInput = form.elements.namedItem("email") as HTMLInputElement;
+  let isVerification = false;
+  const setRegisterStep = (verify: boolean) => {
+    if (kind !== "register" || !sendStep || !verifyStep) return;
+    isVerification = verify;
+    sendStep.hidden = verify;
+    verifyStep.hidden = !verify;
+    verifyStep.querySelectorAll<HTMLInputElement>("input").forEach(input => { input.disabled = !verify; });
+    emailInput.readOnly = verify;
+    form.action = verify ? "/api/auth/verify-email-code" : "/api/auth/register";
+    submit.textContent = verify ? "确认邮箱并创建账户" : "发送验证码";
+    if (verify) verifyStep.querySelector<HTMLInputElement>('input[name="code"]')?.focus();
+    else emailInput.focus();
+  };
+  if (kind === "register") {
+    form.querySelector<HTMLButtonElement>("[data-register-have-code]")?.addEventListener("click", () => {
+      if (emailInput.reportValidity()) { setRegisterStep(true); status.textContent = "请输入邮件中的验证码并设置密码。"; }
+    });
+    const backToEmail = () => { setRegisterStep(false); status.textContent = "请完成人机验证后重新发送验证码。"; };
+    form.querySelector<HTMLButtonElement>("[data-register-resend]")?.addEventListener("click", backToEmail);
+    form.querySelector<HTMLButtonElement>("[data-register-back]")?.addEventListener("click", backToEmail);
+  }
   let widget: Widget | undefined;
   let token = "";
   let challenge: Promise<void> | undefined;
@@ -121,19 +145,30 @@ export async function mountAccount(auth: Promise<AuthState>, navigate: (path: st
   form.addEventListener("submit", async event => {
     event.preventDefault();
     if (pending || !form.reportValidity()) return;
-    const email = form.elements.namedItem("email") as HTMLInputElement;
+    const email = emailInput;
     const password = form.elements.namedItem("password") as HTMLInputElement | null;
     const confirm = form.elements.namedItem("confirm-password") as HTMLInputElement | null;
-    if (confirm && password?.value !== confirm.value) {
+    if (isVerification && confirm && password?.value !== confirm.value) {
       confirm.setCustomValidity("两次输入的密码不一致"); confirm.reportValidity(); confirm.setCustomValidity(""); return;
     }
-    if (kind !== "login" && !token) { status.textContent = "请先完成人机验证。"; return; }
+    if (kind !== "login" && !isVerification && !token) { status.textContent = "请先完成人机验证。"; return; }
     pending = true; submit.disabled = true; status.textContent = "正在提交…";
     try {
-      const body = { email: email.value.trim(), ...(password ? { password: password.value } : {}), ...(token ? { turnstileToken: token } : {}) };
+      const body = isVerification
+        ? { email: email.value.trim(), code: (form.elements.namedItem("code") as HTMLInputElement).value.trim(), password: password!.value }
+        : { email: email.value.trim(), ...(kind === "login" ? { password: password!.value } : {}), ...(token ? { turnstileToken: token } : {}) };
       await api(form.action.replace(location.origin, ""), "POST", body);
       if (kind === "login") navigate(returnPath ?? "/account/");
-      else { status.textContent = kind === "register" ? "如果可以注册，我们会发送验证邮件。请查收邮箱。" : "如果账户可以重置，我们会发送重置邮件。请查收邮箱。"; form.reset(); }
+      else if (isVerification) navigate(returnPath ? `/account/login/?return=${encodeURIComponent(returnPath)}` : "/account/login/");
+      else if (kind === "register") {
+        setRegisterStep(true);
+        status.textContent = "如果该邮箱可以注册，请查收最近一封验证码邮件；60 秒内不会重复发送。";
+        const resend = form.querySelector<HTMLButtonElement>("[data-register-resend]");
+        if (resend) {
+          resend.disabled = true; resend.textContent = "60 秒后可重发";
+          window.setTimeout(() => { resend.disabled = false; resend.textContent = "重新发送验证码"; }, 60000);
+        }
+      } else { status.textContent = "如果账户可以重置，我们会发送重置邮件。请查收邮箱。"; form.reset(); }
     } catch (error) {
       status.textContent = requestMessage(error);
       if (kind === "login" && error instanceof ApiError && error.code === "turnstile_required") {

@@ -535,6 +535,8 @@ Pages Functions 的 Newsletter 并发批次修复依赖独立的 D1 migration 00
 
 Workers PBKDF2 兼容修复随 Pages Functions 代码部署，不需要 D1 迁移、域名 DNS 变更或新增环境变量。部署前保持 `AUTH_ENABLED=0`；部署成功后在目标环境设为 `1` 并再次部署，使用自己的邮箱完整测试发送验证邮件、确认邮箱、登录、退出、找回/重置密码，查看 Pages Functions 的 CPU 与错误日志。若出现 CPU 超限，选择能够运行 6 轮密码派生的 Cloudflare 计划；不能只降低迭代次数。确认后再开放注册。详见 [密码哈希与验收](AUTH.md#密码哈希选型与升级)。
 
+注册验证码流程的部署只需把新代码合入并等待 Cloudflare Pages Production 部署成功；现有 `USER_DB`、`AUTH_RATE_LIMIT_SECRET`、Turnstile 和 Resend 配置继续使用，不添加 D1 迁移、变量、Binding 或域名解析。若 Production `AUTH_ENABLED=0`，要测试时将其设为 `1`、保存并重新部署；若已经是 `1`，不需改变量。用自己的邮箱测试“发送验证码 → 输入最新 6 位码和密码 → 登录”，再测 60 秒重发、10 分钟过期和错误码限制；查看 Functions CPU/错误日志，不把验证码或密码贴到 Issue。旧验证链接仅在原有效期内兼容。详见 [公共用户认证](AUTH.md)。
+
 开源项目五方向研究升级：部署 Backend 与公开站构建代码后，在后台编辑已有「每日开源项目」任务，重新选择 `daily-opensource` v1 模板并保存，再手动运行和审核新日报。模板版本仍为 v1；新运行输出五方向分类与 `kind=project` 详情，新发布话题归档采用统一 v1 Schema。旧任务 Prompt 和历史 Run 不会自动改写；公开站只读取统一 v1 topic-scoped 归档，并按 details.kind 显示项目详情。
 
 永久收藏 API 部署前，在对应环境 `USER_DB` 执行尚未应用的 `users/migrations/0003.sql`，随后重新构建并部署公共站及 Pages Functions。构建会在 `/data/articles/<key>.json` 输出当前公开文章；收藏时 Function 从同部署静态资源读取并保存独立快照。生产 `AUTH_ENABLED` 在认证真实端到端与 CPU 验收完成前保持关闭；不修改 Linux Backend、Newsletter D1 或域名配置。见 [收藏 API](FAVORITES.md) 与 [#160](https://github.com/SwartzMss/ai-news-hub/issues/160)。

@@ -1,11 +1,11 @@
 import type { PublicData, Page } from "./types";
 import { Shell } from "./Shell";
 
-function PasswordField({ id, label, autocomplete }: { id: string; label: string; autocomplete: "current-password" | "new-password" }) {
+function PasswordField({ id, label, autocomplete, disabled = false }: { id: string; label: string; autocomplete: "current-password" | "new-password"; disabled?: boolean }) {
   return <div className="account-field">
     <label htmlFor={id}>{label}</label>
     <div className="account-password">
-      <input id={id} name={id} type="password" autoComplete={autocomplete} minLength={12} maxLength={128} required aria-invalid="false" />
+      <input id={id} name={id} type="password" autoComplete={autocomplete} minLength={12} maxLength={128} required aria-invalid="false" disabled={disabled} />
       <button type="button" data-password-toggle={id} aria-controls={id} aria-pressed="false">显示</button>
     </div>
   </div>;
@@ -23,17 +23,37 @@ function AuthForm({ kind }: { kind: "login" | "register" | "forgot-password" }) 
   const actions = { login: "/api/auth/login", register: "/api/auth/register", "forgot-password": "/api/auth/forgot-password" };
   return <main id="content" className="account-layout account-auth-layout">
     <div className="account-intro"><span>AI News Hub 账户</span><h1>{titles[kind]}</h1>
-      <p>{kind === "login" ? "登录后，跨设备查看你保存的文章。" : kind === "register" ? "用邮箱创建账户，把值得回看的文章留在自己的收藏里。" : "输入注册邮箱，我们会发送密码重置链接。"}</p></div>
+      <p>{kind === "login" ? "登录后，跨设备查看你保存的文章。" : kind === "register" ? "先收取邮箱验证码，再设置密码，保存值得回看的文章。" : "输入注册邮箱，我们会发送密码重置链接。"}</p></div>
     <div className="account-panel">
     <form className="account-form" data-account-form={kind} method="post" action={actions[kind]}>
       <EmailField />
-      {kind !== "forgot-password" && <PasswordField id="password" label="密码" autocomplete={kind === "login" ? "current-password" : "new-password"} />}
-      {kind === "register" && <><PasswordField id="confirm-password" label="确认密码" autocomplete="new-password" />
-        <p className="account-help">密码需为 12–128 个字符；验证邮件中还需再次设置最终密码。</p></>}
-      {kind !== "login" && <div className="account-challenge" data-turnstile-host aria-label="人机验证" />}
+      {kind === "login" && <PasswordField id="password" label="密码" autocomplete="current-password" />}
+      {kind === "register" && <>
+        <section data-register-send aria-labelledby="register-send-title">
+          <h2 id="register-send-title" className="account-step-title">第 1 步 · 获取验证码</h2>
+          <p className="account-help">我们会发送 6 位验证码，有效期 10 分钟；同一邮箱 60 秒内只能发送一次。</p>
+          <div className="account-challenge" data-turnstile-host aria-label="人机验证" />
+          <button className="account-text-button" type="button" data-register-have-code>已有验证码？输入验证码</button>
+        </section>
+        <section className="account-verify-step" data-register-verify aria-labelledby="register-verify-title" hidden>
+          <h2 id="register-verify-title" className="account-step-title">第 2 步 · 确认邮箱并设置密码</h2>
+          <div className="account-field"><label htmlFor="email-code">邮箱验证码</label>
+            <p id="email-code-help" className="account-help">请输入邮件中的 6 位数字验证码。</p>
+            <input id="email-code" name="code" type="text" inputMode="numeric" autoComplete="one-time-code" pattern="[0-9]{6}" maxLength={6} aria-describedby="email-code-help" required disabled />
+          </div>
+          <PasswordField id="password" label="设置密码" autocomplete="new-password" disabled />
+          <PasswordField id="confirm-password" label="确认密码" autocomplete="new-password" disabled />
+          <p className="account-help">密码需为 12–128 个字符。</p>
+          <div className="account-verify-actions">
+            <button className="account-text-button" type="button" data-register-resend>重新发送验证码</button>
+            <button className="account-text-button" type="button" data-register-back>修改邮箱</button>
+          </div>
+        </section>
+      </>}
+      {kind === "forgot-password" && <div className="account-challenge" data-turnstile-host aria-label="人机验证" />}
       {kind === "login" && <div className="account-challenge" data-turnstile-host hidden aria-label="人机验证" />}
       <p className="account-status" data-account-status role="status" aria-live="polite" />
-      <button className="account-primary" type="submit">{kind === "login" ? "登录账户" : kind === "register" ? "发送验证邮件" : "发送重置邮件"}</button>
+      <button className="account-primary" type="submit">{kind === "login" ? "登录账户" : kind === "register" ? "发送验证码" : "发送重置邮件"}</button>
     </form>
     <nav className="account-switch" aria-label="账户操作">
       {kind !== "login" && <a href="/account/login/" data-preserve-return>已有账户？登录</a>}

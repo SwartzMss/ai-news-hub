@@ -35,6 +35,7 @@ export async function readAuth(): Promise<AuthState> {
 export function requestMessage(error: unknown): string {
   if (error instanceof ApiError) {
     if (error.code === "turnstile_required") return "请先完成人机验证，再重新登录。";
+    if (error.code === "invalid_code") return "验证码错误或已过期，请检查邮件或重新获取。";
     if (error.status === 401) return "登录已失效，或邮箱和密码不正确。";
     if (error.status === 403) return "请求未通过验证，请刷新页面后重试。";
     if (error.status === 404) return "内容已不存在，请刷新页面。";

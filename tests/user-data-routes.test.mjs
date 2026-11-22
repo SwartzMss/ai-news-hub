@@ -5,11 +5,11 @@ import { onRequest } from '../dist/functions/api/auth/[[path]].js';
 
 const PASSWORD = 'correct horse battery staple';
 const request = (f, action, options) => onRequest(f.context(action, options));
-const tokenFrom = f => new URL(f.messages.at(-1).payload.text.match(/https:\/\/\S+/)[0]).searchParams.get('token');
+const codeFrom = f => f.messages.at(-1).payload.text.match(/验证码：([0-9]{6})/)[1];
 const cookieFrom = response => response.headers.get('set-cookie')?.match(/__Host-anh_session=([^;]+)/)?.[1];
 async function activeUser(f, email = 'reader@example.com') {
-  await request(f, 'register', { body: { email, password: PASSWORD } });
-  await request(f, 'verify-email', { body: { token: tokenFrom(f), password: PASSWORD } });
+  await request(f, 'register', { body: { email } });
+  await request(f, 'verify-email-code', { body: { email, code: codeFrom(f), password: PASSWORD } });
   const login = await request(f, 'login', { body: { email, password: PASSWORD } });
   return { cookie: `__Host-anh_session=${cookieFrom(login)}`, id: (await login.json()).user.id };
 }
