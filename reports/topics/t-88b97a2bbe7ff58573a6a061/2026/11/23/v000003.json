@@ -1,0 +1,335 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "22842a92-ccd4-435b-9507-5c403f50fea0",
+  "report_date": "2026-11-23",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月23日｜截至北京时间08:11",
+  "collected_at": "2026-11-23T00:22:07.055Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-23T00:22:07.064Z",
+  "reviewed_content_sha256": "4ebf63841bcb5a3a533e7713944d1b53faa515093bd5ce76191001e65de6b6ff",
+  "items": [
+    {
+      "id": "8416d8aca5342d32bc8d6838ccca15a2ddd61d757e0a9b0884e05d2c6e2f5d75",
+      "category": "optical_communications",
+      "importance": 4,
+      "fact_summary": "Keysight在FY2026第四季度官方讲稿中称，有线业务订单再创新高，收入同比实现三位数增长；模块厂商使用其分析仪扩大800G及1.6T生产，共封装与近封装光学已贡献收入。公司未单列光通信订单或收入金额。业绩会时间为北京时间11月20日05:30，纳入7天补充窗口。",
+      "analysis": "测试设备端的经营披露为高速光互连扩产提供了直接需求证据，但尚不足以量化模块行业整体出货或CPO商业化规模。",
+      "evidence_quote": "Wireline delivered record orders again this quarter",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量为季度经营披露：800G/1.6T生产测试需求扩大，CPO/NPO测试已有收入；不是新增光模块采购合同。",
+        "metrics": [
+          {
+            "name": "商业通信业务收入",
+            "value": "11.45",
+            "unit": "亿美元",
+            "period": "FY2026第四季度",
+            "comparison": "同比增长73%；包含有线与无线业务，不能全部归为光通信",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Keysight（KEYS，NYSE）：高速电光互连测试设备",
+            "direction": "需求增长",
+            "reason": "公司称模块厂商使用其分析仪扩大800G及1.6T生产；未披露客户名单和采购额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "模块量产及互连速率升级增加测试需求，推动Keysight订单；订单转为设备交付并完成回款后，才体现为收入和经营现金流。该链条依赖客户扩产持续及公司供货能力。",
+        "watchpoints": [
+          "有线业务订单向收入转化速度；CPO/NPO收入规模及制造测试占比。"
+        ],
+        "risks": [
+          "研发测试收入不等于终端量产；集团及商业通信增速均包含其他业务，不能直接外推光模块需求。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Keysight FY2026第四季度官方讲稿",
+            "url": "https://s22.q4cdn.com/444849635/files/doc_earnings/2026/q4/transcript/Q4-FY2026-Prepared-Remarks.pdf",
+            "supports": "有线订单、800G/1.6T制造测试、CPO/NPO收入及商业通信业务数据。"
+          },
+          {
+            "id": "e2",
+            "name": "Keysight官方业绩会页面",
+            "url": "https://investor.keysight.com/investor-news-and-events/prior-presentations-and-webcasts/event-details/2026/Q4-FY26-Keysight-Technologies-Inc-Earnings-Conference-Call/default.aspx",
+            "supports": "业绩会安排为11月19日13:30美国太平洋时间，即北京时间11月20日05:30。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "s22.q4cdn.com",
+        "original_url": "https://s22.q4cdn.com/444849635/files/doc_earnings/2026/q4/transcript/Q4-FY2026-Prepared-Remarks.pdf",
+        "canonical_url": "https://s22.q4cdn.com/444849635/files/doc_earnings/2026/q4/transcript/Q4-FY2026-Prepared-Remarks.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "132774c9fa6a2ff518a0bd022701759d20ec0958ddd48c50838761ad9b88e9f4",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Credo于11月17日宣布，与Marvell就AEC技术相关专利权达成协议，双方亦同意解决Marvell在USPTO提出的专利挑战。协议条款保密，未披露许可费、赔偿或财务影响。原文未列精确时刻，纳入7天补充窗口。",
+      "analysis": "协议有望降低AEC业务的知识产权争议风险，但不能据此认定专利有效性获裁决确认或利润将增加。",
+      "evidence_quote": "Credo Reaches Settlement in Patent Dispute",
+      "details": {
+        "kind": "investment",
+        "background": "AEC属于AI数据中心铜缆电互连，按主要受影响环节归入AI网络供应链。新增事实为争议解决协议，不是产品订单。",
+        "supplyChain": [
+          {
+            "segment": "Credo（CRDO，NASDAQ）：AEC及高速互连方案供应商",
+            "direction": "专利争议风险可能下降",
+            "reason": "公司为协议当事方，其专利是相关USPTO挑战的对象。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Marvell（MRVL，NASDAQ）：高速互连芯片供应商",
+            "direction": "专利争议解决",
+            "reason": "公司为协议当事方及相关USPTO挑战提出方；不代表新增供货合作。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若协议终结相关程序，可减少诉讼执行成本和商业不确定性；但潜在许可支付也可能影响成本。条款未公开，无法量化两家公司毛利率或现金流变化。",
+        "watchpoints": [
+          "USPTO程序终结记录；后续财报是否披露许可义务或一次性费用。"
+        ],
+        "risks": [
+          "和解不等于专利实体裁决；保密条款可能包含持续支付义务，亦不改变AEC市场竞争。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Credo官方AEC专利和解公告",
+            "url": "https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Reaches-Settlement-in-Patent-Dispute/default.aspx",
+            "supports": "协议当事方、AEC专利范围、解决USPTO挑战的约定及条款保密。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.credosemi.com",
+        "original_url": "https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Reaches-Settlement-in-Patent-Dispute/default.aspx",
+        "canonical_url": "https://investors.credosemi.com/news-events/news/news-details/2026/Credo-Reaches-Settlement-in-Patent-Dispute/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8aa7b513d0207ab4415d2e339f13180715141bf9b475165208629eddf47a01f0",
+      "category": "optical_communications",
+      "importance": 3,
+      "fact_summary": "Applied Optoelectronics在11月17日招股补充文件中披露，已签署最高5.5亿美元普通股ATM发行协议，资金可能用于偿债、营运资金、资本开支及收购。发行额度不等于募资到账，也不能全部视为光模块扩产资金。原文未列精确发布时间，纳入7天补充窗口。",
+      "analysis": "新增融资渠道可能缓解扩产资金约束，但实际资金用途与发行执行尚不确定，须同时评估股本摊薄。",
+      "evidence_quote": "Shares of our common stock having an aggregate offering price of up to $550,000,000.",
+      "details": {
+        "kind": "investment",
+        "background": "新增事实是ATM融资协议及发行文件，不是已完成融资或新增订单。文件日期为美国当地11月17日，未取得精确公开时刻。",
+        "metrics": [
+          {
+            "name": "ATM发行总价上限",
+            "value": "5.5",
+            "unit": "亿美元",
+            "period": "2026年11月17日发行安排",
+            "comparison": "融资授权上限；实际销售规模未确定",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Applied Optoelectronics（AAOI，NASDAQ）：光模块及光器件制造商",
+            "direction": "融资能力增加",
+            "reason": "公司为发行主体；文件允许将募集资金用于资本开支等用途，但未指定扩产项目。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若发行执行且资金投入有效产能，融资现金流可支持设备和营运资金支出；收入兑现仍需客户认证、良率及订单交付。新增股份同时提高每股盈利所需的利润规模。",
+        "watchpoints": [
+          "实际发行股数、募资净额、资本开支用途及新增产能上线时间。"
+        ],
+        "risks": [
+          "文件不保证售出任何股份；资金可能用于偿债等其他用途，扩产回报也可能低于股本摊薄成本。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "AAOI SEC 424B5招股补充文件",
+            "url": "https://www.sec.gov/Archives/edgar/data/1158114/000110465926129051/tm2629531-1_424b5.htm",
+            "supports": "发行协议、5.5亿美元上限、资金用途、执行不确定性及公司上市代码。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/Archives/edgar/data/1158114/000110465926129051/tm2629531-1_424b5.htm",
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/1158114/000110465926129051/tm2629531-1_424b5.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c85de63f4da58bbcf79192b27802a62208dd5df4136193cf9e15f3df4740884b",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "TeraWulf公司公开帖文称，面向Anthropic的Justified园区开始首批钢结构吊装，基础桩已完成超过50%，CB-1大部分钢结构已交付。新增事实是施工阶段推进，不是新增租约或容量交付。原帖仅显示相对时间，11月20日媒体已报道该进展；保守纳入7天补充窗口。",
+      "analysis": "主体施工启动提高了项目进度的可观察性，但距离可收费算力设施交付仍有设备安装、供电及验收等关键环节。",
+      "evidence_quote": "Crews have now driven more than 50% of the foundation piles",
+      "details": {
+        "kind": "investment",
+        "background": "本次为基础工程转入钢结构施工的进展。公司原帖未提供绝对发布时间；不将相对时间换算为精确日期，也不重计此前租约。",
+        "metrics": [
+          {
+            "name": "基础桩完成比例",
+            "value": ">50",
+            "unit": "%",
+            "period": "本次公司施工更新",
+            "comparison": "仅为基础桩进度，不是项目整体完工率",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "TeraWulf（WULF，NASDAQ）：AI数据中心开发运营商",
+            "direction": "建设推进",
+            "reason": "公司确认Justified为客户Anthropic建设。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Fluor（FLR，NYSE）：EPC工程承包商",
+            "direction": "项目执行",
+            "reason": "TeraWulf原帖明确其为该项目EPC合作方；未披露新增合同额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "主体施工推进首先体现为工程执行和资本支出；只有设施按租约条件交付并起租，才转化为TeraWulf租金收入及现金流。本次未证明交付时间提前。",
+        "watchpoints": [
+          "主体封顶、机电设备到货、通电验收及首批设施起租。"
+        ],
+        "risks": [
+          "基础桩比例不能外推整体进度；供电、设备、施工成本或验收延迟可能推迟现金回收。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "TeraWulf公司Justified施工更新",
+            "url": "https://www.linkedin.com/posts/first-structural-steel-is-going-up-at-our-ugcPost-7529226380220493824-vZ15/",
+            "supports": "钢结构吊装、基础桩进度、钢材交付及Anthropic、Fluor项目关系。"
+          },
+          {
+            "id": "e2",
+            "name": "DCD：Justified钢结构施工报道",
+            "url": "https://www.datacenterdynamics.com/en/news/terawulf-starts-construction-at-kentucky-data-center-campus/",
+            "supports": "11月20日已公开报道该公司更新；引用同一帖文，不构成独立施工验证。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.linkedin.com",
+        "original_url": "https://www.linkedin.com/posts/first-structural-steel-is-going-up-at-our-ugcPost-7529226380220493824-vZ15/",
+        "canonical_url": "https://www.linkedin.com/posts/first-structural-steel-is-going-up-at-our-ugcPost-7529226380220493824-vZ15/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8183b458eb2b92f0762a9a5d64e0e9d1f4ccfcf27cacfd59e623f9883a312889",
+      "category": "ai_industry_chain",
+      "importance": 2,
+      "fact_summary": "阿里云11月19日宣布，柔佛公共云区域第三座数据中心已可用，使马来西亚数据中心总数达到六座，并称新增设施服务本地云及AI工作负载。未披露新增MW、GPU数量或投资金额。本次为设施可用性进展，与已收录集团资本开支事件区分；纳入7天补充窗口，原文未列时刻。",
+      "analysis": "设施可用为区域云需求商业化增加承载能力，但缺少容量、利用率和AI硬件配置，暂难量化盈利贡献。",
+      "evidence_quote": "Alibaba Cloud announced the availability of its third data centre in its Johor public cloud region",
+      "details": {
+        "kind": "investment",
+        "background": "来源日期与当地事件日期均为11月19日，吉隆坡与北京时间同为UTC+8。新增的是可用设施，不将历史投资计划重复计为本次新增资本开支。",
+        "metrics": [
+          {
+            "name": "马来西亚数据中心总数",
+            "value": "6",
+            "unit": "座",
+            "period": "2026年11月19日公告",
+            "comparison": "柔佛区域第三座宣布可用；数量不能换算为算力或MW",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "阿里巴巴（BABA，NYSE）：旗下阿里云提供云及AI基础设施",
+            "direction": "区域可售容量增加",
+            "reason": "阿里云官方确认新增设施可用；未确认服务器、芯片或光模块供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "新增本地设施扩大可承接工作负载的空间；客户使用及付费增长后才形成云收入。折旧和运营支出可能先于收入爬坡，利用率决定增量利润及现金回收速度。",
+        "watchpoints": [
+          "新增容量、AI硬件配置、客户迁入与区域利用率，以及折旧和云利润率变化。"
+        ],
+        "risks": [
+          "设施数量不代表AI专用容量；需求不足或客户部署延后可能拖累回报，出口许可也可能限制硬件配置。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "阿里云官方马来西亚基础设施更新",
+            "url": "https://www.alibabacloud.com/blog/alibaba-cloud-advances-ai-adoption-in-malaysia-with-nationwide-youth-contest-and-industry-collaborations_603793",
+            "supports": "柔佛第三座数据中心可用、马来西亚合计六座及服务云和AI工作负载。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.alibabacloud.com",
+        "original_url": "https://www.alibabacloud.com/blog/alibaba-cloud-advances-ai-adoption-in-malaysia-with-nationwide-youth-contest-and-industry-collaborations_603793",
+        "canonical_url": "https://www.alibabacloud.com/blog/alibaba-cloud-advances-ai-adoption-in-malaysia-with-nationwide-youth-contest-and-industry-collaborations_603793",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
