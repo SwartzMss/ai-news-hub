@@ -1,0 +1,679 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "3afde382-3d09-4d6c-bf61-39c1fd2e2d53",
+  "report_date": "2026-11-23",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-23｜统计：2026-11-20 08:08—2026-11-23 08:08（北京时间，含持续维护项目发现）",
+  "collected_at": "2026-11-23T00:20:12.818Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-23T00:20:12.829Z",
+  "reviewed_content_sha256": "cc54d7380c4ece940ad10fdd5342a22a4f4601bf02daac3f564c9e61f869d756",
+  "items": [
+    {
+      "id": "3e9f3715115871e5af7f4ef98be7d6ef3e96d420f3a449f2f9e8ed955da9c6d9",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Mirage 官方仓库称，它将 shell、虚拟文件系统、CLI 与计算机器解耦，让 Agent 以统一终端接口访问不同服务，并按 profile 控制文件、命令与凭据。本次作为持续维护项目发现收录；11月22日仍有搜索优化提交，首次公开时间未确认。[项目仓库](https://github.com/strukto-ai/mirage)",
+      "analysis": "统一终端语义有助于减少跨服务自动化中的接口切换，适合需要组合存储、通信服务和远程计算的 Agent。配置权限与实际隔离效果仍需结合所选后端评估，不能据此假定获得容器级隔离。",
+      "evidence_quote": "The World's First Virtual Terminal for AI Agents",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "通过统一终端接口组织不同服务的数据、命令和计算资源。",
+        "technical": [
+          {
+            "description": "虚拟文件系统统一挂载服务，计算命令可路由至进程内、沙箱或远程机器。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          },
+          {
+            "description": "profile 控制文件可见性及命令权限，命令记录可导出为 OpenTelemetry trace。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建跨对象存储、消息服务与远程计算的 Agent 自动化。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "Mirage 仓库代码。",
+          "evidenceRefs": [
+            "b2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "discovery：11月22日有存储搜索优化提交，证明近期仍在维护。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "b3"
+            ]
+          },
+          {
+            "description": "适合验证统一工具接口的可组合性；隔离边界需要按后端评估。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "b1",
+            "name": "Mirage 官方仓库",
+            "url": "https://github.com/strukto-ai/mirage",
+            "supports": "虚拟终端、服务挂载、机器路由与权限能力。"
+          },
+          {
+            "id": "b2",
+            "name": "Mirage LICENSE",
+            "url": "https://github.com/strukto-ai/mirage/blob/main/LICENSE",
+            "supports": "Apache-2.0 授权。"
+          },
+          {
+            "id": "b3",
+            "name": "Mirage 官方提交记录",
+            "url": "https://github.com/strukto-ai/mirage/commits",
+            "supports": "2026年11月22日维护活动。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/strukto-ai/mirage",
+        "canonical_url": "https://github.com/strukto-ai/mirage",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4bdc26fb87f803ab1bbf4f5376cf3f348c61e5ef03a2a4ca42fb132b5aa09571",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "OpenAI Agents SDK 官方宣布，v1.0.0-alpha.1 预览版增加可选 Codex provider，通过 Python wheel 内嵌 Codex Core，支持 SDK 工具、交接、审批和类型化输出。发布页标注11月20日；适合研究 Python Agent 编排与原生执行的结合，目前仅通过 GitHub Releases 分发。[项目仓库](https://github.com/openai/openai-agents-python)",
+      "analysis": "值得关注的是 Python 编排与 Codex 执行能力的直接衔接，适合已有 SDK 工作流的集成实验。当前仍为预览版，原生命令审批会结束本次模型调用，接入时需要处理这一边界。",
+      "evidence_quote": "Agents SDK v1.0.0-alpha.1",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为 Python Agent 工作流提供可选的 Codex 模型与执行接口。",
+        "change": {
+          "summary": "update：发布首个 Codex provider 预览版，支持 SDK 工具、交接、审批和类型化输出。",
+          "version": "v1.0.0-alpha.1",
+          "type": "release",
+          "publishedAt": "2026-11-20",
+          "evidenceRefs": [
+            "a1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "通过 PyO3 内嵌 Codex Core，直接调用而无需启动 app-server 或使用 JSON-RPC。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          },
+          {
+            "description": "SDK session 管理历史；原生命令遵循 Codex 沙箱与审批设置。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在 Python 编排中组合专业 Agent 交接、工具审批与原生执行。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "SDK 仓库代码；内嵌组件和依赖另按各自授权。",
+          "evidenceRefs": [
+            "a2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "属于预发布版本，原生审批提示会结束模型调用。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "a1",
+            "name": "Agents SDK v1.0.0-alpha.1 发布说明",
+            "url": "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1",
+            "supports": "版本、11月20日发布时间、嵌入机制、工具能力与预览限制。"
+          },
+          {
+            "id": "a2",
+            "name": "SDK LICENSE",
+            "url": "https://github.com/openai/openai-agents-python/blob/main/LICENSE",
+            "supports": "SDK 仓库采用 MIT 许可证。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1",
+        "canonical_url": "https://github.com/openai/openai-agents-python/releases/tag/v1.0.0-alpha.1",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b5545247abc6890260eb531197dc2725e569982003852e0b3ebb552707236844",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Nushell 官方仓库称，它以结构化数据组织 shell 管道，可将 TOML 等文件读取为记录和表格，并通过插件扩展处理能力。本次作为成熟 Rust 工程工具发现收录；11月10日的0.117.0提供近期维护证据，可用于配置分析和跨平台自动化脚本。[项目仓库](https://github.com/nushell/nushell)",
+      "analysis": "对经常处理配置文件、表格及命令输出的团队，结构化管道可减少文本解析环节。适合从独立数据处理任务开始评估；已有 shell 脚本的语法和行为仍需逐项检查。",
+      "evidence_quote": "Nu views data as either structured or unstructured.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "使用结构化管道处理文件与命令数据，减少依赖文本切割的脚本逻辑。",
+        "technical": [
+          {
+            "description": "识别支持的文件格式并加载为结构化数据；插件沿用内置命令的数据模型。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "读取 TOML 配置并进行字段查询、过滤和数据转换。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "Nushell 项目代码。",
+          "evidenceRefs": [
+            "c2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "discovery：0.117.0发布页标注11月10日，关联2026年11月9日公告。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "c3"
+            ]
+          },
+          {
+            "description": "适合配置与表格处理；脚本迁移需要检查语法和命令行为。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "c1",
+            "name": "Nushell 官方仓库",
+            "url": "https://github.com/nushell/nushell",
+            "supports": "结构化文件读取、管道、插件与跨平台能力。"
+          },
+          {
+            "id": "c2",
+            "name": "Nushell LICENSE",
+            "url": "https://github.com/nushell/nushell/blob/main/LICENSE",
+            "supports": "MIT 授权。"
+          },
+          {
+            "id": "c3",
+            "name": "Nushell 0.117.0 发布页",
+            "url": "https://github.com/nushell/nushell/releases/tag/0.117.0",
+            "supports": "近期发行维护证据。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/nushell/nushell",
+        "canonical_url": "https://github.com/nushell/nushell",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e3350689ac619657e58e005c3aaa5344b6b07e32d4ab228ada3cc562b2a1fa7b",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Czkawka 官方仓库称，它提供重复文件、相似图片与视频、损坏文件和无效符号链接扫描，并提供 CLI 与可复用核心库。本次作为成熟文件治理工具发现收录；11月15日仍有维护提交，官方同时提示旧 GTK 前端已由 Krokiet 接替。[项目仓库](https://github.com/qarmin/czkawka)",
+      "analysis": "适合整理素材库、归档目录和重复备份，CLI 也便于纳入定期扫描流程。选用时需要区分前端支持状态和授权范围，相似文件识别结果仍应由使用者判断。",
+      "evidence_quote": "Multi functional app to find duplicates, empty folders, similar images etc.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "扫描冗余、相似和异常文件，辅助整理本地文件库。",
+        "technical": [
+          {
+            "description": "重复检测支持按名称、大小或哈希判断，另提供相似媒体和损坏文件检查。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          },
+          {
+            "description": "提供 CLI 自动化入口和可在其他应用复用的核心库。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "扫描素材和归档目录，整理重复文件与相似媒体。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "evaluation": [
+          {
+            "description": "discovery：11月15日仍有维护提交；旧 GTK 前端不再提供新发行二进制。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d1",
+              "d2"
+            ]
+          },
+          {
+            "description": "README 区分代码、前端及媒体素材授权；未取得明确授权文件，本条不统一填写许可证。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "d1",
+            "name": "Czkawka 官方仓库",
+            "url": "https://github.com/qarmin/czkawka",
+            "supports": "扫描机制、CLI与核心库、前端迁移及分项授权声明。"
+          },
+          {
+            "id": "d2",
+            "name": "Czkawka 官方提交记录",
+            "url": "https://github.com/qarmin/czkawka/commits",
+            "supports": "2026年11月15日维护活动。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/qarmin/czkawka",
+        "canonical_url": "https://github.com/qarmin/czkawka",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "86dc180b8a1c39b80c5b1c821b212986d44fa89fc0e7d2aa8333802c2080c922",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "OpenMontage 官方文档称，它由 Coding Agent 读取流水线清单、调用媒体工具并保存检查点，组合字幕、剪辑与视频合成流程。本次作为持续维护项目发现收录；架构文档标注10月25日更新，维护者11月3日仍在招募 Studio 早期用户。[项目仓库](https://github.com/OpenMontageInc/OpenMontage)",
+      "analysis": "值得关注的是把媒体工具、生产步骤和中间状态组织为可继续执行的流程，适合探索多阶段视频自动化。具体能力依赖所选工具与服务，仓库代码授权也不能替代模型、素材及外部服务的授权。",
+      "evidence_quote": "OpenMontage is an agent-orchestrated video production platform.",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "协调视频生产中的媒体工具、步骤及中间产物。",
+        "technical": [
+          {
+            "description": "Coding Agent 读取 YAML 流水线与阶段说明，调用工具并写入 JSON 检查点。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "description": "合成层可选择 Remotion、HyperFrames 或 FFmpeg，所选运行时不可静默替换。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "组织包含字幕、素材处理和合成的视频生产流程。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "AGPL-3.0",
+          "scope": "仓库代码；不延伸至外部服务、模型、素材或第三方组件。",
+          "evidenceRefs": [
+            "e2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "discovery：文档标注2026年10月25日更新；11月3日有维护者早期用户招募公告。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1",
+              "e3"
+            ]
+          },
+          {
+            "description": "适合验证可恢复的媒体自动化；落地能力取决于实际配置的工具与服务。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "OpenMontage 官方架构文档",
+            "url": "https://github.com/OpenMontageInc/OpenMontage/blob/main/docs/ARCHITECTURE.md",
+            "supports": "能力、检查点机制、合成运行时与文档日期。"
+          },
+          {
+            "id": "e2",
+            "name": "OpenMontage LICENSE",
+            "url": "https://github.com/OpenMontageInc/OpenMontage/blob/main/LICENSE",
+            "supports": "AGPL 第3版许可证文本。"
+          },
+          {
+            "id": "e3",
+            "name": "维护者 Studio 早期用户公告",
+            "url": "https://github.com/OpenMontageInc/OpenMontage/discussions/892",
+            "supports": "2026年11月3日项目活动。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/OpenMontageInc/OpenMontage/blob/main/docs/ARCHITECTURE.md",
+        "canonical_url": "https://github.com/OpenMontageInc/OpenMontage/blob/main/docs/ARCHITECTURE.md",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "368b880430e9e59b858987b1ab8dd32c44239f25bdf12342a26ba5699aec5cff",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Tracy 官方发布说明称，0.15 重写锁事件处理并增加死锁检测，同时新增 Linux monitor 工具，可附加到未插桩程序进行采样分析。本次作为成熟性能工具发现收录；11月5日的版本提供近期维护证据，适合并发锁行为与程序热点排查。[项目仓库](https://github.com/wolfpld/tracy)",
+      "analysis": "锁事件分析与无需重新编译的采样入口，分别覆盖深入诊断和快速定位场景。适合并发程序排障；两类采集能力应分别评估，采样输出质量仍取决于目标程序可用的调试信息。",
+      "evidence_quote": "Tracy Profiler 0.15",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "采集并分析程序执行与锁事件，辅助定位性能和并发问题。",
+        "technical": [
+          {
+            "description": "重写锁事件处理并支持死锁检测。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          },
+          {
+            "description": "Linux monitor 可启动或附加未插桩程序进行采样。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "分析并发程序中的锁行为，或快速采样运行中程序。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "BSD-3-Clause",
+          "scope": "Tracy Profiler 项目代码。",
+          "evidenceRefs": [
+            "g2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "discovery：0.15发布页标注11月5日；未插桩采样的输出质量取决于调试信息。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "g1",
+            "name": "Tracy Profiler 0.15 发布说明",
+            "url": "https://github.com/wolfpld/tracy/releases/tag/v0.15.0",
+            "supports": "版本、维护时间、锁分析、monitor 能力与限制。"
+          },
+          {
+            "id": "g2",
+            "name": "Tracy LICENSE",
+            "url": "https://github.com/wolfpld/tracy/blob/master/LICENSE",
+            "supports": "BSD 三条款授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/wolfpld/tracy/releases/tag/v0.15.0",
+        "canonical_url": "https://github.com/wolfpld/tracy/releases/tag/v0.15.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a286055adc93f56600e14f1d7b1ef4d53b3b16eae8181cc9b1c61f440e01011d",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "zizmor 官方宣布，v1.33.0 新增 dangerous-checkout 审计，初始覆盖 actions/checkout 的危险使用模式，并让部分审计识别 workflow lockfile。11月22日发布的更新还修复多类 YAML 输入异常，可用于 GitHub Actions 工作流的安全配置审查。[项目仓库](https://github.com/zizmorcore/zizmor)",
+      "analysis": "CI 工作流往往具有代码读取与凭据权限，增加 checkout 模式检查具有直接工程价值。适合接入工作流变更审查，但新规则当前只覆盖 actions/checkout，不能替代对整个执行链的检查。",
+      "evidence_quote": "detects dangerous Git checkout patterns.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "审计 GitHub Actions 工作流中的危险配置。",
+        "change": {
+          "summary": "update：新增 dangerous-checkout 审计，完善 lockfile 识别并修复 YAML 处理异常。",
+          "version": "v1.33.0",
+          "type": "release",
+          "publishedAt": "2026-11-22",
+          "evidenceRefs": [
+            "f1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "新增 checkout 模式审计，初始实现限于 actions/checkout。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          },
+          {
+            "description": "impostor-commit 与 ref-confusion 审计增加 workflow lockfile 感知。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "检查仓库 CI 工作流变更中的 checkout 和引用配置。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "zizmor 项目代码。",
+          "evidenceRefs": [
+            "f2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "新审计初始覆盖范围限于 actions/checkout。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "f1",
+            "name": "zizmor v1.33.0 发布说明",
+            "url": "https://github.com/zizmorcore/zizmor/releases/tag/v1.33.0",
+            "supports": "11月22日正式发布、新规则、覆盖限制及修复。"
+          },
+          {
+            "id": "f2",
+            "name": "zizmor LICENSE",
+            "url": "https://github.com/zizmorcore/zizmor/blob/main/LICENSE",
+            "supports": "MIT 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/zizmorcore/zizmor/releases/tag/v1.33.0",
+        "canonical_url": "https://github.com/zizmorcore/zizmor/releases/tag/v1.33.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "704c1e9fb4c630126e880af7714d2df391f1331bbc18820decd4e52114c3b026",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Peerbit 官方已于11月20日合并 PR #1561：本地写入导致重连清单扫描重启时，保留对端已确认持有的条目，减少重复询问与后续规划。该项目提供加密、分片和搜索等 P2P 数据库能力；本次按已合并代码进展收录，对应发行版本尚未确认。[项目仓库](https://github.com/dao-xyz/peerbit)",
+      "analysis": "这一改动针对重连期间持续写入引发的重复同步工作，适合关注实时 P2P 数据应用。其价值在于缩减冗余处理，尚不能据此推导整体吞吐提升，采用前仍需确认实际发行包是否包含该提交。",
+      "evidence_quote": "perf(shared-log): keep entry inventory confirmations across local writes",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "基于 libp2p 提供支持加密、分片和搜索的 P2P 数据库框架。",
+        "change": {
+          "summary": "update：PR #1561已合并，跨本地写入保留清单确认；对应发行版本未确认。",
+          "type": "technical",
+          "publishedAt": "2026-11-20",
+          "evidenceRefs": [
+            "h1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "在同一清单作用域保存对端已确认的哈希，重启扫描时先跳过这些条目。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "改善持续写入场景下的 P2P 数据库重连同步。",
+            "evidenceRefs": [
+              "h1",
+              "h2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "根 LICENSE 所覆盖代码；子包和第三方代码按各自声明。",
+          "evidenceRefs": [
+            "h3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "PR于2026年11月20日合并，不能等同于已确认发行。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "h1"
+            ]
+          },
+          {
+            "description": "值得关注同步冗余的减少，但不能据此推导整体性能增幅。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "h1",
+            "name": "Peerbit PR #1561",
+            "url": "https://github.com/dao-xyz/peerbit/pull/1561",
+            "supports": "机制、11月20日合并状态与代码进展。"
+          },
+          {
+            "id": "h2",
+            "name": "Peerbit 官方仓库",
+            "url": "https://github.com/dao-xyz/peerbit",
+            "supports": "P2P 数据库、libp2p、加密、分片与搜索能力。"
+          },
+          {
+            "id": "h3",
+            "name": "Peerbit LICENSE",
+            "url": "https://github.com/dao-xyz/peerbit/blob/master/LICENSE",
+            "supports": "根授权文件采用 Apache-2.0。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/dao-xyz/peerbit/pull/1561",
+        "canonical_url": "https://github.com/dao-xyz/peerbit/pull/1561",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
