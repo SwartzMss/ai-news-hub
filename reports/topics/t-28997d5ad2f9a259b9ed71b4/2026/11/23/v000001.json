@@ -1,0 +1,178 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "68a177ef-0f72-4a81-881e-347e487fdb91",
+  "report_date": "2026-11-23",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月23日",
+  "collected_at": "2026-11-23T00:17:12.808Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-23T00:17:12.815Z",
+  "reviewed_content_sha256": "27ecd800528f4b19e2615dc176ea05d0f7dc7a55b0cfa53cb6a13ce991fc68ea",
+  "items": [
+    {
+      "id": "73c42d2b096742f441ae269947093263eb6e8a7058db21d788960f74b528db99",
+      "category": "tech_digital",
+      "importance": 5,
+      "fact_summary": "MIT数学家Andrew Sutherland的黎曼猜想证明核验页于北京时间11月23日00:20更新，称Alpöge公开的Lean源码全部175187个模块编译通过，多个独立检查器接受导出的证明。页面还列出将该证明与Robin、Lagarias算术判据结合后的检查结果，同时注明原证明导出文件的部分Lean内核检查仍在运行。",
+      "analysis": "这些结果加强了形式化证明的可信度，但检查所确认的是形式命题在指定定义和公理下成立。解释证明中的数学思想，仍需要数学研究者进一步工作。",
+      "evidence_quote": "Verification files for the Lean proof of the Riemann Hypothesis",
+      "details": {
+        "kind": "news",
+        "background": "Alpöge于11月20日宣布与Claude合作找到黎曼猜想证明，并公开Lean源码。Lean与Mathlib社区随后发布联合声明，表示对证明正确性有充分信心。",
+        "keyFacts": [
+          {
+            "name": "编译通过的模块",
+            "value": "175187",
+            "unit": "个",
+            "period": "核验页2026年11月22日16:20 UTC更新版本",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "追加的算术检查",
+            "value": "页面称，将证明与Robin1984形式化项目结合，得到Robin及Lagarias两个不等式；多个独立检查器接受了相应证明。",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1",
+              "e3"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-23T00:20:00+08:00",
+            "precision": "datetime",
+            "event": "Sutherland核验页更新，列出形式化检查结果及仍在运行的检查。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "Lean与Mathlib社区",
+            "statement": "联合声明称，对Alpöge的黎曼猜想证明正确性有充分信心，并说明了命题核对、编译及独立检查器验证等依据。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "核验页注明，原证明导出文件的Lean默认内核、paranoid内核及端到端comparator检查尚未全部完成。",
+          "形式化检查依赖所用检查器、公理及Mathlib定义符合预期。"
+        ],
+        "watchpoints": [
+          "剩余检查的最终结果。",
+          "对证明中新数学思想的解释。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Andrew Sutherland：黎曼猜想Lean证明核验记录",
+            "url": "https://math.mit.edu/~drew/grh/",
+            "supports": "页面更新时间、模块编译结果、独立检查器结果、算术判据检查及尚未完成的项目。"
+          },
+          {
+            "id": "e2",
+            "name": "Lean与Mathlib社区联合声明",
+            "url": "https://leanprover-community.github.io/blog/posts/riemann-hypothesis/",
+            "supports": "社区对形式化证明的判断及其所列验证依据。"
+          },
+          {
+            "id": "e3",
+            "name": "算术组合证明的con-leche检查日志",
+            "url": "https://math.mit.edu/~drew/grh/arith-con-leche-master.log",
+            "supports": "检查器接受组合证明中的声明，进程退出状态为0。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "math.mit.edu",
+        "original_url": "https://math.mit.edu/~drew/grh/",
+        "canonical_url": "https://math.mit.edu/~drew/grh/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4eb0ffacf44a3c841f2d43792a50064720ceaa56bb15a18c6585a6bff0d739f3",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "据凤凰网刊载的昭阳融媒消息，云南昭通洒渔镇政府11月23日凌晨通报果园带货纠纷调查结果：主播受另一果农邀请，找错地点误入相邻果园，并切开苹果展示品质；双方见证下现场称量，损毁苹果共181斤。通报称，双方已于22日就赔偿达成一致，主播方负责人已当面道歉并赔偿经济损失。",
+      "analysis": null,
+      "evidence_quote": "百万粉丝主播被指私闯果园带货糟蹋苹果，官方凌晨通报：系误入",
+      "details": {
+        "kind": "news",
+        "background": "果园主人此前指称，一名带货主播未经许可进入其苹果园，切开、采摘苹果并造成损失。当地警方和政府介入处理。",
+        "keyFacts": [
+          {
+            "name": "损毁苹果重量",
+            "value": "181",
+            "unit": "斤",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "进入果园原因",
+            "value": "通报称，主播应果农常某某邀请前往直播，因邀请人未到现场而找错地点，误入陈某某果园。",
+            "period": "2026年11月9日至10日",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-22",
+            "precision": "date",
+            "event": "据通报，双方就赔偿达成一致，主播方负责人当面道歉并赔偿损失。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "time": "2026年11月23日凌晨",
+            "precision": "approximate",
+            "event": "洒渔镇政府发布调查处理情况通报。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "通报未披露最终赔偿金额。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "昭阳融媒消息：洒渔镇政府通报果园带货纠纷",
+            "url": "https://news.ifeng.com/c/8yH9EfdFqZ1",
+            "supports": "误入果园的调查结论、损毁重量及22日达成赔偿的处理结果。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8yH9EfdFqZ1",
+        "canonical_url": "https://news.ifeng.com/c/8yH9EfdFqZ1",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
