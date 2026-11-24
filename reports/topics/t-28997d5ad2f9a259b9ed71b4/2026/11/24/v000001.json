@@ -1,0 +1,338 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "e40f02dd-1664-4f75-a8b5-50e9d101d889",
+  "report_date": "2026-11-24",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月24日",
+  "collected_at": "2026-11-24T00:16:37.072Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-24T00:16:37.082Z",
+  "reviewed_content_sha256": "33eff23bc5c0d98de7889226b826ab2378cff403ba269671ab16aa3e0cf42f7a",
+  "items": [
+    {
+      "id": "5d303c05e66c43e3ac1d4e2992c365a11c6f3c65bb015214fc5bbd40f6132c33",
+      "category": "finance_consumption",
+      "importance": 4,
+      "fact_summary": "据财新11月23日报道，上海地铁新票价方案确定于12月1日起实施：起乘价保持3元，起乘间距由0—6公里缩短为0—4公里，后续里程加价规则同步调整。方案不适用于磁浮线、金山铁路、市域机场线及以后开通的市域线。",
+      "analysis": "不同乘客的实际支出变化取决于乘车距离、频次及优惠适用情况，不能仅凭起乘价不变判断通勤成本不变。",
+      "evidence_quote": "上海地铁涨价方案落地 12月1日起实施",
+      "details": {
+        "kind": "news",
+        "background": "上海原票价起乘价为3元、覆盖0—6公里。本次调整同时涉及里程计价及配套优惠。",
+        "keyFacts": [
+          {
+            "name": "新起乘价与距离",
+            "value": "3元，覆盖0—4公里",
+            "period": "2026年12月1日起",
+            "nature": "reported",
+            "evidenceRefs": [
+              "sh1"
+            ]
+          },
+          {
+            "name": "计次票",
+            "value": "设置35次190元、45次210元、60次270元、90次390元四档，激活后30个自然日内有效",
+            "nature": "reported",
+            "evidenceRefs": [
+              "sh2"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-23",
+            "precision": "date",
+            "event": "上海市发改委公开新票价机制相关信息。",
+            "evidenceRefs": [
+              "sh1",
+              "sh2"
+            ]
+          },
+          {
+            "time": "2026-12-01",
+            "precision": "date",
+            "event": "新票价机制计划开始执行。",
+            "evidenceRefs": [
+              "sh1"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "计次票与其他优惠的适用条件，以及具体通勤路线的实际费用变化。"
+        ],
+        "evidence": [
+          {
+            "id": "sh1",
+            "name": "财新：上海地铁涨价方案落地",
+            "url": "https://companies.caixin.com/2026-11-23/102508096.html",
+            "supports": "新票价规则、实施日期及适用范围。"
+          },
+          {
+            "id": "sh2",
+            "name": "21世纪经济报道：上海地铁票价调整及优惠措施",
+            "url": "https://finance.eastmoney.com/a/202611233937625676.html",
+            "supports": "方案公开时间、原票价及计次票安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "companies.caixin.com",
+        "original_url": "https://companies.caixin.com/2026-11-23/102508096.html",
+        "canonical_url": "https://companies.caixin.com/2026-11-23/102508096.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cc09aa261d48b96855ff109288a142ee6fb67b7dab2dac25e7db973df968a179",
+      "category": "tech_digital",
+      "importance": 4,
+      "fact_summary": "英伟达11月23日宣布，董事会一致决定恢复黄仁勋的总裁、首席执行官及董事职务，即刻生效。公司同时表示，独立董事委员会的调查将继续进行，并将招聘首席合规官；科莱特·克雷斯结束临时CEO职责，继续担任首席财务官。",
+      "analysis": null,
+      "evidence_quote": "NVIDIA Board Reinstates Jensen Huang as President, CEO and Board Director",
+      "details": {
+        "kind": "news",
+        "background": "黄仁勋此前离职后，英伟达由首席财务官科莱特·克雷斯临时领导。公司已成立独立董事委员会调查有关报道。",
+        "keyFacts": [
+          {
+            "name": "恢复职务",
+            "value": "总裁、首席执行官及董事",
+            "period": "2026年11月23日起",
+            "nature": "statement",
+            "evidenceRefs": [
+              "nv1"
+            ]
+          },
+          {
+            "name": "调查安排",
+            "value": "独立董事委员会调查将继续进行直至得出结论",
+            "nature": "statement",
+            "evidenceRefs": [
+              "nv1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "英伟达董事会",
+            "statement": "董事会称，决策过程中听取了美国政府高层意见，并据此认为黄仁勋复职不构成国家安全风险。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "nv1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "公司公告未披露独立调查结论或完成日期。"
+        ],
+        "watchpoints": [
+          "独立调查结论及首席合规官招聘进展。"
+        ],
+        "evidence": [
+          {
+            "id": "nv1",
+            "name": "英伟达投资者关系公告",
+            "url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Board-Reinstates-Jensen-Huang-as-President-CEO-and-Board-Director/default.aspx",
+            "supports": "复职决定、管理层安排、调查继续及新增合规职位。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investor.nvidia.com",
+        "original_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Board-Reinstates-Jensen-Huang-as-President-CEO-and-Board-Director/default.aspx",
+        "canonical_url": "https://investor.nvidia.com/news/press-release-details/2026/NVIDIA-Board-Reinstates-Jensen-Huang-as-President-CEO-and-Board-Director/default.aspx",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "f81f7da3de1fb7c0c8e7b4a58aac16db6aea6dd17e5b6f6e8a08f00d44b07eb1",
+      "category": "tech_digital",
+      "importance": 4,
+      "fact_summary": "据央视新闻11月23日调查报道，部分视频制作网店在购物平台内拒绝AI换脸需求，转到电话或微信沟通后却表示可承接仿冒明星带货视频，报价约200元。有商家在记者明确表示没有授权后仍同意接单，并声称后续侵权不负责。报道中的平台客服表示，此类平台内引流、平台外交易违反管理规定。",
+      "analysis": "调查样本显示，仅限制平台内的商品关键词和聊天内容，仍可能留下转移交易渠道后继续接单的空间。",
+      "evidence_quote": "平台内严肃拒绝 私下里积极接单 AI仿冒名人带货缘何屡禁不止？",
+      "details": {
+        "kind": "news",
+        "background": "AI换脸和拟声技术可能被用于冒用公众人物形象制作带货内容，使消费者误以为相关人物参与推荐。",
+        "keyFacts": [
+          {
+            "name": "调查中的制作报价",
+            "value": "约200元",
+            "unit": "元",
+            "nature": "reported",
+            "evidenceRefs": [
+              "ai1"
+            ]
+          },
+          {
+            "name": "接单方式",
+            "value": "平台内拒绝，转至电话或微信后承接",
+            "nature": "reported",
+            "evidenceRefs": [
+              "ai1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "报道中的购物平台客服",
+            "statement": "平台内引流、平台外接单属于违规行为，具体处置可能包括整改、下架商品或关闭店铺。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "ai1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "约200元为调查商家的报价，不代表统一市场价格；报道未披露涉事店铺后续实际处罚结果。"
+        ],
+        "watchpoints": [
+          "涉事店铺的处置结果及对平台外接单行为的治理措施。"
+        ],
+        "evidence": [
+          {
+            "id": "ai1",
+            "name": "央视新闻调查，中新网刊载",
+            "url": "https://www.chinanews.com/sh/2026/11-23/10736564.shtml",
+            "supports": "记者询价与接单测试、商家表述及平台客服回应。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.chinanews.com",
+        "original_url": "https://www.chinanews.com/sh/2026/11-23/10736564.shtml",
+        "canonical_url": "https://www.chinanews.com/sh/2026/11-23/10736564.shtml",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9d5d9560883e676bf7e88c83ae90dcd1abc879b44e00fb804013c089e439cbd5",
+      "category": "sports",
+      "importance": 3,
+      "fact_summary": "据北京日报11月24日凌晨报道，U17世界杯小组赛第二轮，中国队在赵松源梅开二度、一度2比0领先的情况下，被摩洛哥队连追两球，最终2比2战平。中国队此前首轮负于西班牙，本场取得本届赛事首个积分。",
+      "analysis": null,
+      "evidence_quote": "北京高中生赵松源独中两元",
+      "details": {
+        "kind": "news",
+        "background": "中国队首轮以0比5负于西班牙，本场对阵摩洛哥是小组赛第二轮。",
+        "keyFacts": [
+          {
+            "name": "比赛结果",
+            "value": "中国U17队2比2摩洛哥U17队",
+            "period": "北京时间2026年11月24日凌晨",
+            "nature": "reported",
+            "evidenceRefs": [
+              "sp1"
+            ]
+          },
+          {
+            "name": "中国队进球",
+            "value": "赵松源在第2分钟和第57分钟各进一球",
+            "nature": "reported",
+            "evidenceRefs": [
+              "sp1"
+            ]
+          }
+        ],
+        "impacts": [
+          {
+            "description": "中国队取得本届赛事首个积分。",
+            "status": "observed",
+            "evidenceRefs": [
+              "sp1"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "小组赛末轮表现及最终晋级形势。"
+        ],
+        "evidence": [
+          {
+            "id": "sp1",
+            "name": "北京日报：北京高中生赵松源独中两元",
+            "url": "https://k.sina.com.cn/article_1893892941_m70e2834d0330259er.html",
+            "supports": "最终比分、进球过程、首轮结果及本场取得积分。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "k.sina.com.cn",
+        "original_url": "https://k.sina.com.cn/article_1893892941_m70e2834d0330259er.html",
+        "canonical_url": "https://k.sina.com.cn/article_1893892941_m70e2834d0330259er.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6abfde66f6431bd736e9e1fc2ab11d2c6c0d8472370807de1d03bb703dd12e2a",
+      "category": "finance_consumption",
+      "importance": 2,
+      "fact_summary": "据界面新闻11月23日晚报道，河南许昌被称为“treetree炸鸡店”的披萨炸鸡店发布暂停营业通知，表示需要休息几天，提醒顾客不要跑空，重新开门时间将提前通知。通知还表示，希望长期经营，不做“一波流”。",
+      "analysis": null,
+      "evidence_quote": "外卖小哥带火的treetree炸鸡店主动暂停营业",
+      "details": {
+        "kind": "news",
+        "background": "这家位于许昌的披萨炸鸡店此前因外卖员的视频受到关注。",
+        "keyFacts": [
+          {
+            "name": "营业调整",
+            "value": "暂停营业，休息几天",
+            "period": "2026年11月23日晚发布通知",
+            "nature": "reported",
+            "evidenceRefs": [
+              "tr1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "店方",
+            "statement": "休息几天，请勿跑空。",
+            "form": "quote",
+            "evidenceRefs": [
+              "tr1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "通知未给出具体恢复营业日期。"
+        ],
+        "watchpoints": [
+          "店方后续公布的恢复营业时间。"
+        ],
+        "evidence": [
+          {
+            "id": "tr1",
+            "name": "界面新闻：treetree炸鸡店主动暂停营业",
+            "url": "https://cj.sina.com.cn/articles/view/5182171545/134e1a99902002lrkn",
+            "supports": "暂停营业通知、发布时间及恢复营业另行通知的安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "cj.sina.com.cn",
+        "original_url": "https://cj.sina.com.cn/articles/view/5182171545/134e1a99902002lrkn",
+        "canonical_url": "https://cj.sina.com.cn/articles/view/5182171545/134e1a99902002lrkn",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
