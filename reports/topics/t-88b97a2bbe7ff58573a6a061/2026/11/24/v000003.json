@@ -1,0 +1,478 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "a2a6b48f-8adc-4b90-baf1-57dcc8e50c95",
+  "report_date": "2026-11-24",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月24日｜截至北京时间08:10",
+  "collected_at": "2026-11-24T00:22:18.053Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-24T00:22:18.063Z",
+  "reviewed_content_sha256": "7d6536c93fc5646bf453b125376b9d66540b4f52161ff7c8ffa4acc0f20bb0e8",
+  "items": [
+    {
+      "id": "02f2d6f7c1ce9b5044dd99ac012125ee7288ae0697e436e9434636210255b4ea",
+      "category": "optical_communications",
+      "importance": 5,
+      "fact_summary": "Semtech于美国当地11月23日披露FY2027第三季度初步业绩：集团收入4.230亿美元，环比增长24%、同比增长58%；公司称FiberEdge、CopperEdge及photonics订单储备创纪录。下一季度收入指引4.80亿美元±500万美元，但该季度增加一周，且包含完整季度的待出售蜂窝模块业务。光通信收入及订单金额未单列。纳入24小时窗口，原文未列精确发布时间。",
+      "analysis": "互连产品订单信号与集团盈利改善相互支持，但尚不能将全部增长归因于光通信；额外一周也影响下一季度增长的可比性。",
+      "evidence_quote": "Semtech Announces Third Quarter of Fiscal Year 2027 Results",
+      "details": {
+        "kind": "investment",
+        "background": "集团数据含非数据中心业务；业绩为初步未经审计数字，待10-Q最终确认。",
+        "metrics": [
+          {
+            "name": "集团收入",
+            "value": "4.230",
+            "unit": "亿美元",
+            "period": "FY2027 Q3，截至2026年10月25日",
+            "comparison": "环比+24%，同比+58%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GAAP毛利率",
+            "value": "58.6",
+            "unit": "%",
+            "period": "FY2027 Q3",
+            "comparison": "前季53.8%，上年同期51.9%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "集团收入指引",
+            "value": "4.80±0.05",
+            "unit": "亿美元",
+            "period": "FY2027 Q4，截至2027年1月31日",
+            "comparison": "14周，前述比较季度为13周；含完整季度蜂窝模块业务",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Semtech（SMTC，NASDAQ）：高速光电互连及信号完整性芯片供应商",
+            "direction": "订单及收入增长",
+            "reason": "公司披露相关产品订单储备创新高，未披露客户身份。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "互连订单转化为出货→扩大收入并改善产品组合→在费用受控时提高营业利润；现金流兑现还需订单交付及回款，不能用集团收入替代光通信收入。",
+        "watchpoints": [
+          "互连业务分项收入、订单交付期及剔除额外一周后的增长。"
+        ],
+        "risks": [
+          "客户集中、订单递延；光学与铜互连贡献不明；初步财报调整。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Semtech：FY2027第三季度业绩SEC附件",
+            "url": "https://www.sec.gov/Archives/edgar/data/88941/000008894126000045/smtc-10252026x8k991.htm",
+            "supports": "初步业绩、相关产品订单储备、季度指引及14周口径。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.sec.gov",
+        "original_url": "https://www.sec.gov/Archives/edgar/data/88941/000008894126000045/smtc-10252026x8k991.htm",
+        "canonical_url": "https://www.sec.gov/Archives/edgar/data/88941/000008894126000045/smtc-10252026x8k991.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ec0a2d279717109977d36bb0fe9eb869735a2131d97e22a5b7354c54a8641ab5",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "Applied Digital于美国当地11月23日宣布，与未具名投资级超大规模云客户签订18年、150 MW关键IT容量租约，基础租期合同收入约54亿美元，定价高于此前租约。公司预计2028年上半年开始交付，仍取决于开发、电力及审批条件。合同金额不等于已实现收入。原文未列精确时刻，纳入24小时窗口。",
+      "analysis": "新增长租约提高远期收入可见度，但近期现金流仍取决于建设融资和资本投入，盈利兑现存在较长时滞。",
+      "evidence_quote": "Applied Digital Secures New 150 MW, 18-Year Lease with Tier-One Investment-Grade Hyperscaler, Bringing Contracted Base-Term Revenue Above $41 Billion",
+      "details": {
+        "kind": "investment",
+        "background": "新增事实为已签租约及更高定价；交付尚未开始，续租选择权不计入基础合同收入。",
+        "metrics": [
+          {
+            "name": "新增签约关键IT容量",
+            "value": "150",
+            "unit": "MW",
+            "period": "2026年11月23日披露",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "基础租期合同收入",
+            "value": "54",
+            "unit": "亿美元",
+            "period": "18年基础租期",
+            "comparison": "公司称定价高于此前租约；非当期收入",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "开始交付时间",
+            "value": "2028年上半年",
+            "unit": "时间",
+            "period": "新增租约",
+            "comparison": "附开发、电力及监管条件",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Applied Digital（APLD，NASDAQ）：AI数据中心开发及出租方",
+            "direction": "长期合同储备增加",
+            "reason": "公司确认新增租约；租户未具名，不能归属任何特定云厂商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "租约锁定未来容量需求与租金条款→支持项目融资及建设→按期交付后形成租赁收入和经营现金流；成立条件是融资成本、建设成本和交付进度未侵蚀项目回报。",
+        "watchpoints": [
+          "项目融资交割、交付里程碑及实际租金起算时间。"
+        ],
+        "risks": [
+          "电力或审批延误；建设超支及融资成本上升；续租选择权未行使。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Applied Digital：新增150 MW长租约公告",
+            "url": "https://ir.applieddigital.com/_assets/_fd6b69ab052c3d450e233a0a1507ceeb/appliedblockchaininc/news/2026-11-23_Applied_Digital_Secures_New_150_MW_18_Year_Lease_165.pdf",
+            "supports": "租约容量、期限、合同收入、更高定价及预计交付时间。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.applieddigital.com",
+        "original_url": "https://ir.applieddigital.com/_assets/_fd6b69ab052c3d450e233a0a1507ceeb/appliedblockchaininc/news/2026-11-23_Applied_Digital_Secures_New_150_MW_18_Year_Lease_165.pdf",
+        "canonical_url": "https://ir.applieddigital.com/_assets/_fd6b69ab052c3d450e233a0a1507ceeb/appliedblockchaininc/news/2026-11-23_Applied_Digital_Secures_New_150_MW_18_Year_Lease_165.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a8350a43ff7a1a9e16d928829dc328a09ed1e88b25d342b8c714a0b4bc4f7fb4",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "Apollo与Goldman Sachs于美国当地11月20日宣布，约440亿美元高级及次级票据完成定价，用于SpaceX采购GPU及相关设备，明确涉及NVIDIA Vera Rubin地面算力建设。公告预计租赁安排随设备于2027年上半年交付而开始。融资定价不等于资金全部到账或设备已交付，金额也不能全部计作芯片收入。原文未列时刻，保守纳入7天补充窗口。",
+      "analysis": "融资定价为大规模算力采购增加资金支持，但芯片供应商的实际收入仍受交割、设备构成和交付节奏约束。",
+      "evidence_quote": "Apollo and Goldman Sachs Announce Pricing of $44 Billion SpaceX GPU Financing",
+      "details": {
+        "kind": "investment",
+        "background": "新增进展为采购融资完成定价；芯片型号及用途由融资方公告确认，未取得独立交付证据。",
+        "metrics": [
+          {
+            "name": "完成定价的票据规模",
+            "value": "约440",
+            "unit": "亿美元",
+            "period": "2026年11月20日披露",
+            "comparison": "覆盖GPU及相关设备，非芯片收入",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "预计交付并启动租赁",
+            "value": "2027年上半年",
+            "unit": "时间",
+            "period": "本次设备融资",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "NVIDIA（NVDA，NASDAQ）：AI芯片供应商",
+            "direction": "采购需求获融资支持",
+            "reason": "公告指定Vera Rubin；未披露芯片数量及采购金额拆分。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "SpaceX（SPCX，NASDAQ）：地面算力设备使用方",
+            "direction": "算力建设融资推进",
+            "reason": "融资方公告列明设备用途及上市代码。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Apollo（APO，NYSE）：融资组织方",
+            "direction": "资产融资业务落地",
+            "reason": "共同牵头定价，公告未披露收益。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Goldman Sachs（GS，NYSE）：融资组织及结构安排方",
+            "direction": "融资安排推进",
+            "reason": "共同协调并担任独家结构安排方。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "票据定价→采购融资可执行性提高→设备交付后形成供应商收入及客户租赁付款；融资规模不能直接映射为芯片订单价值。",
+        "watchpoints": [
+          "融资交割、设备数量及2027年上半年交付进度。"
+        ],
+        "risks": [
+          "交付或融资延期；设备构成不明；算力利用率不足影响租赁偿付。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Apollo：SpaceX GPU融资定价公告",
+            "url": "https://ir.apollo.com/_assets/_fcaa80295e8e3a1c2ba1f57a4fc91b69/apollo/news/2026-11-20_Apollo_and_Goldman_Sachs_Announce_Pricing_of_44_662.pdf",
+            "supports": "融资金额、参与方、Vera Rubin用途及预计交付时间。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.apollo.com",
+        "original_url": "https://ir.apollo.com/_assets/_fcaa80295e8e3a1c2ba1f57a4fc91b69/apollo/news/2026-11-20_Apollo_and_Goldman_Sachs_Announce_Pricing_of_44_662.pdf",
+        "canonical_url": "https://ir.apollo.com/_assets/_fcaa80295e8e3a1c2ba1f57a4fc91b69/apollo/news/2026-11-20_Apollo_and_Goldman_Sachs_Announce_Pricing_of_44_662.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d59f82300a87a7a621ed4d5105d1e6e338a4430c29c9b56e1b9ad257d5c89065",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "VNET于11月23日财报中称，第三季度取得领先云服务商60 MW批发IDC订单；批发收入人民币12.2亿元，同比增长27.6%。截至9月底批发利用率70.7%，前季73.9%；公司同时将2026年资本开支预期调整为80亿至100亿元。订单客户及AI专用比例未披露。原文仅列日期，保守纳入72小时窗口。",
+      "analysis": "签约增长支持后续收入，但利用率下降与持续资本投入表明，订单兑现为自由现金流仍需要上架和融资效率改善。",
+      "evidence_quote": "VNET Reports Unaudited Third Quarter 2026 Financial Results",
+      "details": {
+        "kind": "investment",
+        "background": "公司将批发业务增长与AI需求联系；60 MW订单发生于第三季度，本次财报披露，不能视作11月新增订单。",
+        "metrics": [
+          {
+            "name": "新增云客户订单",
+            "value": "60",
+            "unit": "MW",
+            "period": "2026年第三季度",
+            "comparison": "客户未具名，非已使用容量",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "批发IDC收入",
+            "value": "12.2",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "comparison": "同比+27.6%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "批发容量利用率",
+            "value": "70.7",
+            "unit": "%",
+            "period": "2026年9月30日",
+            "comparison": "6月末73.9%，上年同期74.3%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "资本开支预期",
+            "value": "80—100",
+            "unit": "亿元人民币",
+            "period": "2026全年",
+            "comparison": "本次更新口径",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "世纪互联（VNET，NASDAQ）：数据中心运营商",
+            "direction": "云客户订单与批发收入增长",
+            "reason": "公司确认订单，未披露客户名称及GPU供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "批发订单→客户上架和计费→收入覆盖新增折旧及电费→经营现金流增长；若建设快于上架，资本开支可能继续压低自由现金流。",
+        "watchpoints": [
+          "60 MW交付计费时间、爬坡容量利用率及资本开支执行。"
+        ],
+        "risks": [
+          "上架延迟、融资负担及电费上涨；未经审计数据可能调整。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "VNET：2026年第三季度原始财报",
+            "url": "https://ir.21vianet.com/static-files/e9b6d5fe-698b-43d1-8c87-ab430048c7dc",
+            "supports": "云客户订单、批发收入、利用率及全年资本开支预期。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.21vianet.com",
+        "original_url": "https://ir.21vianet.com/static-files/e9b6d5fe-698b-43d1-8c87-ab430048c7dc",
+        "canonical_url": "https://ir.21vianet.com/static-files/e9b6d5fe-698b-43d1-8c87-ab430048c7dc",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8cb27e5a378e1665d9a6dafd116835579a1b67fc665f7ede8d0a3c5d1fc25762",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "AMD于11月17日宣布完成专用AI推理芯片企业Taalas收购，计划将其技术纳入加速器路线图，并与Instinct GPU开发系统级方案。新增事实是收购完成，技术整合仍为计划；公告未披露完整对价、量产时间或收入贡献。来源未列精确时刻，纳入7天补充窗口。",
+      "analysis": "收购增加专用推理芯片技术选择，但缺少商业化和财务数据，尚不足以调整近期盈利预期。",
+      "evidence_quote": "AMD Completes Acquisition of Taalas to Advance AI Inference Innovation",
+      "details": {
+        "kind": "investment",
+        "background": "事件归入芯片设计环节；收购完成与后续产品整合、量产和销售是不同阶段。",
+        "supplyChain": [
+          {
+            "segment": "AMD（AMD，NASDAQ）：AI加速器设计商及收购方",
+            "direction": "推理芯片技术组合扩充",
+            "reason": "AMD确认完成Taalas收购，并披露整合计划。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "获得专用推理芯片技术→研发整合及客户验证→若性能、成本和软件适配达标，才可能形成新增产品收入；短期先受整合及研发开支影响。",
+        "watchpoints": [
+          "产品路线图、客户验证、量产节点及收购财务披露。"
+        ],
+        "risks": [
+          "技术整合与软件适配不及预期；商业化延后；缺少独立性能及成本验证。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "AMD：完成Taalas收购公告",
+            "url": "https://newsroom.amd.com/news/amd-completes-acquisition-taalas-advance-ai-inference-innovation/",
+            "supports": "收购完成、目标企业业务及纳入加速器路线图的计划。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.amd.com",
+        "original_url": "https://newsroom.amd.com/news/amd-completes-acquisition-taalas-advance-ai-inference-innovation/",
+        "canonical_url": "https://newsroom.amd.com/news/amd-completes-acquisition-taalas-advance-ai-inference-innovation/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ac3b2c7f6bfcaf1cf119e838a959c0823d485e009f1af2276aa63e5f6a73c95f",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "KLA于11月20日宣布，新加坡Building 22B已全面运营，新增约21万平方英尺运营空间，支持先进制程控制设备制造，覆盖先进封装、硅光和AI应用。另一期扩建仍取决于土地安排和审批。新增事实是设施进入运营，未披露新增设备台数产能或订单。来源未列时刻，纳入7天补充窗口。",
+      "analysis": "设施启用提高设备交付的供给保障，但尚无依据量化收入增量；若需求吸收不足，新增固定成本会先影响利润率。",
+      "evidence_quote": "KLA celebrates Building 22B opening in Singapore and outlines plans for further expansion",
+      "details": {
+        "kind": "investment",
+        "background": "JTC刊载并明确注明由KLA发布的新闻稿；本次为2024年公布扩建的第二阶段投运。",
+        "metrics": [
+          {
+            "name": "新增运营空间",
+            "value": "约210000",
+            "unit": "平方英尺",
+            "period": "2026年11月20日全面运营",
+            "comparison": "与22A合计约420000平方英尺；面积不等于产能",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "KLA（KLAC，NASDAQ）：半导体检测与量测设备供应商",
+            "direction": "制造及交付能力扩充",
+            "reason": "公司确认设施运营及先进封装、硅光设备用途；未指定客户。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "新增制造空间→支持先进检测设备生产→在客户订单充分时增加交付及收入；盈利贡献取决于利用率、人员效率及固定成本吸收。",
+        "watchpoints": [
+          "新增设施利用率、设备交付量及毛利率；下一期土地和审批进展。"
+        ],
+        "risks": [
+          "未披露有效产能；订单不足或客户验收延迟；计划扩建尚未获批。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "JTC刊载KLA新加坡Building 22B启用公告",
+            "url": "https://www.jtc.gov.sg/about-jtc/news-and-stories/industry-news/kla-celebrates-building-22b-opening-in-singapore-and-outlines-plans-for-further-expansion",
+            "supports": "启用日期、全面运营状态、面积、设备用途及下一期扩建条件。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.jtc.gov.sg",
+        "original_url": "https://www.jtc.gov.sg/about-jtc/news-and-stories/industry-news/kla-celebrates-building-22b-opening-in-singapore-and-outlines-plans-for-further-expansion",
+        "canonical_url": "https://www.jtc.gov.sg/about-jtc/news-and-stories/industry-news/kla-celebrates-building-22b-opening-in-singapore-and-outlines-plans-for-further-expansion",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
