@@ -1,0 +1,773 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "ecec524d-071c-470c-aa37-5f6d67b72f31",
+  "report_date": "2026-11-24",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-24｜统计：2026-11-23 08:08—11-24 08:08（北京时间）；更新回溯至11-21 08:08，项目发现参考近90天维护",
+  "collected_at": "2026-11-24T00:19:48.565Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-24T00:19:48.585Z",
+  "reviewed_content_sha256": "dc424d7d634ce6254f188a8cfc0e29b28fbff50e36898a9673654c49c3163404",
+  "items": [
+    {
+      "id": "191947403d65ccc38b8cc6add8905e526b77fc3866f6fabaebd4561fd325c9b0",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Deep Agents 官方仓库称，它将子 Agent、文件系统、上下文管理、持久记忆和工具审批整合为面向长任务的执行框架，可替换后端并接入 MCP 工具。本次作为持续维护项目发现收录；11月20日的0.7.41提供维护证据，早于本轮72小时更新窗口。[项目仓库](https://github.com/langchain-ai/deepagents)",
+      "analysis": "适合需要多步执行、上下文整理和任务委派的应用，可减少自行拼接执行组件的工作。其默认行为较多，采用前应核对状态持久化、工具审批与沙箱后端的具体配置。",
+      "evidence_quote": "The batteries-included agent harness.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为长任务提供规划、上下文管理和任务委派等组合能力。",
+        "technical": [
+          {
+            "description": "子Agent使用隔离上下文；长线程可摘要，工具输出可卸载到磁盘。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          },
+          {
+            "description": "文件系统后端可替换，支持工具调用前的人工审批。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建需要文件处理、子任务分工和跨会话记忆的研究或自动化Agent。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "b3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "0.7.41于11月20日发布，修复消息通道处理。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "b2"
+            ]
+          },
+          {
+            "description": "适合需要完整执行框架的应用；简单工具循环可能无需全部组件。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "b1",
+            "name": "官方仓库",
+            "url": "https://github.com/langchain-ai/deepagents",
+            "supports": "项目能力、机制与适用范围"
+          },
+          {
+            "id": "b2",
+            "name": "0.7.41发行说明",
+            "url": "https://github.com/langchain-ai/deepagents/releases/tag/deepagents==0.7.41",
+            "supports": "近期维护日期与消息处理修复"
+          },
+          {
+            "id": "b3",
+            "name": "LICENSE",
+            "url": "https://github.com/langchain-ai/deepagents/blob/main/LICENSE",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/langchain-ai/deepagents",
+        "canonical_url": "https://github.com/langchain-ai/deepagents",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "23746973c38c4e68bc892f81c95397e82f64f098e54f1e03aebb80f9f785129d",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "agent-desktop 官方仓库称，它通过操作系统无障碍树读取和操作桌面应用，以 JSON 和元素引用向 Agent 提供交互接口，并提供 CLI 与 C 库。本次作为项目发现收录；11月13日的 v1.3.1 提供近期维护证据，首次公开日期未确认。[项目仓库](https://github.com/vercel-labs/agent-desktop)",
+      "analysis": "适合为已有 Agent 接入桌面自动化，结构化元素引用有望减少截图定位的复杂度。实际效果取决于目标应用暴露的无障碍信息，仍需按应用验证。",
+      "evidence_quote": "Computer use for AI agents: see and operate desktop apps on macOS, Windows, and Linux through the OS accessibility tree.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为 Agent 提供桌面应用的结构化读取与操作接口。",
+        "technical": [
+          {
+            "description": "读取无障碍树并返回 JSON 与可操作元素引用；提供 CLI 和 C 库。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "将桌面应用操作接入已有 Agent 的读取、行动、再检查循环。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "a3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v1.3.1 于11月13日发布，包含沙箱启动器退出后的运行状态修复。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "a2"
+            ]
+          },
+          {
+            "description": "适合先选定目标应用验证元素覆盖与引用稳定性。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "a1",
+            "name": "官方仓库与能力说明",
+            "url": "https://github.com/vercel-labs/agent-desktop",
+            "supports": "无障碍树、JSON元素引用、CLI与C库"
+          },
+          {
+            "id": "a2",
+            "name": "v1.3.1发行说明",
+            "url": "https://github.com/vercel-labs/agent-desktop/releases/tag/v1.3.1",
+            "supports": "近期维护日期与修复"
+          },
+          {
+            "id": "a3",
+            "name": "LICENSE",
+            "url": "https://github.com/vercel-labs/agent-desktop/blob/main/LICENSE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/vercel-labs/agent-desktop",
+        "canonical_url": "https://github.com/vercel-labs/agent-desktop",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2949befaab5a71aad6b44fd31c419f15112eec87aa78efea2641363ac74de452",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "datarig 官方宣布，v0.41.7 修复 MariaDB 的 ANALYZE 包裹数据修改语句时绕过所需确认的问题，现按实际执行语句判断。这个 Rust 数据库 TUI 提供查询、结果编辑和事务化修改；11月22日发布的补丁直接涉及写操作保护。[项目仓库](https://github.com/DokaDev/datarig)",
+      "analysis": "对使用 MariaDB 的交互式数据库工作流有直接价值，尤其适合依赖客户端危险语句确认的场景。Windows 发行物尚缺实际使用验证，不宜将构建和测试通过等同于平台成熟。",
+      "evidence_quote": "A patch release with one fix to how statements are judged on MariaDB.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "通过终端界面完成数据库浏览、SQL编辑和数据修改。",
+        "change": {
+          "summary": "正式发布，修复MariaDB ANALYZE对内部修改语句的确认绕过。",
+          "version": "v0.41.7",
+          "type": "release",
+          "publishedAt": "2026-11-22",
+          "evidenceRefs": [
+            "c1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "MariaDB ANALYZE按内部实际执行语句接受确认与拒绝判断。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          },
+          {
+            "description": "网格修改先展示待执行SQL，再以一个事务应用。",
+            "evidenceRefs": [
+              "c2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在终端审阅SQL后执行数据库记录修改。",
+            "evidenceRefs": [
+              "c2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库提供的MIT授权文件",
+          "evidenceRefs": [
+            "c3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "官方说明Windows构建经过CI构建和测试，但尚无人实际使用验证。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "c1",
+            "name": "v0.41.7发行说明",
+            "url": "https://github.com/DokaDev/datarig/releases/tag/v0.41.7",
+            "supports": "发布日期、安全修复与Windows验证限制"
+          },
+          {
+            "id": "c2",
+            "name": "官方仓库",
+            "url": "https://github.com/DokaDev/datarig",
+            "supports": "Rust实现、数据库TUI与事务化编辑"
+          },
+          {
+            "id": "c3",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/DokaDev/datarig/blob/main/LICENSE-MIT",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/DokaDev/datarig/releases/tag/v0.41.7",
+        "canonical_url": "https://github.com/DokaDev/datarig/releases/tag/v0.41.7",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "41bc0a5bf4432b6ccfecc5616e75818a9c047f3471dcfac39df96ba899dcc7b5",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Zellij 官方仓库称，它提供终端工作空间、多窗格、布局自动化、多人协作和 WebAssembly 插件，并内置浏览器客户端。本次作为成熟 Rust 工具发现收录；11月11日的 v0.46.0 增加桌面终端模式，为近期维护证据，不作为今日发布。[项目仓库](https://github.com/zellij-org/zellij)",
+      "analysis": "适合需要固定工作布局、多会话和共享终端的开发运维场景。桌面模式扩大了使用入口，但发行包存在差异：官方说明 musl 构建不包含桌面终端，选择安装包时需留意。",
+      "evidence_quote": "Zellij includes a built-in web-client, making a terminal optional.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "以多窗格、布局和共享会话组织终端工作。",
+        "technical": [
+          {
+            "description": "提供浮动与堆叠窗格、布局自动化和WebAssembly插件。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "保存开发运维布局，并通过共享会话开展协作。",
+            "evidenceRefs": [
+              "d1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "d3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月11日发布的v0.46.0增加桌面终端；musl构建不包含该模式。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "d1",
+            "name": "官方仓库",
+            "url": "https://github.com/zellij-org/zellij",
+            "supports": "终端工作空间与插件能力"
+          },
+          {
+            "id": "d2",
+            "name": "v0.46.0发行说明",
+            "url": "https://github.com/zellij-org/zellij/releases/tag/v0.46.0",
+            "supports": "维护日期、桌面模式和构建限制"
+          },
+          {
+            "id": "d3",
+            "name": "LICENSE.md",
+            "url": "https://github.com/zellij-org/zellij/blob/main/LICENSE.md",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/zellij-org/zellij",
+        "canonical_url": "https://github.com/zellij-org/zellij",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "45e70fd4f88effe2e31a48c7a2aa2f378bb0bf00e8bfe28ecd9acc91e7b7bb39",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "sherpa-onnx 官方宣布，v2.0.3 为离线说话人分离增加 CreateStream 和 Process 接口，调整聚类时的干净语音筛选，并向 Rust 识别结果暴露 Whisper 语言概率。11月22日发布的版本可供语音转写、说话人标注和本地音频应用集成参考。[项目仓库](https://github.com/k2-fsa/sherpa-onnx)",
+      "analysis": "值得语音应用开发者关注的是接口和结果字段变化，便于组合说话人标注与语言识别。升级前仍需核对绑定层兼容性；代码许可证不能直接覆盖所下载模型的权重授权。",
+      "evidence_quote": "Add CreateStream() and Process(stream) to OfflineSpeakerDiarization",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "提供本地语音识别、合成和说话人分离等处理能力。",
+        "change": {
+          "summary": "正式发布，增加说话人分离接口并扩展Rust识别结果字段。",
+          "version": "v2.0.3",
+          "type": "release",
+          "publishedAt": "2026-11-22",
+          "evidenceRefs": [
+            "e1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "OfflineSpeakerDiarization增加CreateStream()与Process(stream)。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "description": "Rust OfflineRecognizerResult暴露Whisper的lang与lang_probs。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建带说话人标注与语言识别结果的离线音频处理流程。",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码；不代表各模型权重授权",
+          "evidenceRefs": [
+            "e3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "发行说明还包含NuGet发布和Linux x64 Node扩展构建修复。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "v2.0.3发行说明",
+            "url": "https://github.com/k2-fsa/sherpa-onnx/releases/tag/v2.0.3",
+            "supports": "发布日期、接口变化与构建修复"
+          },
+          {
+            "id": "e2",
+            "name": "官方仓库",
+            "url": "https://github.com/k2-fsa/sherpa-onnx",
+            "supports": "本地语音处理能力"
+          },
+          {
+            "id": "e3",
+            "name": "LICENSE",
+            "url": "https://github.com/k2-fsa/sherpa-onnx/blob/master/LICENSE",
+            "supports": "代码Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/k2-fsa/sherpa-onnx/releases/tag/v2.0.3",
+        "canonical_url": "https://github.com/k2-fsa/sherpa-onnx/releases/tag/v2.0.3",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6bce49da3cab6dac2a6aed0225837aba2a56e6062e1b4bc05fbe54a30447ad1c",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "VoiceStudio 官方宣布，v0.5.9-beta.9 支持从 SRT 创建纯语音配音任务，为纯人声素材跳过背景分离，并改进长配音的音频混合处理。该本地语音创作应用于11月23日发布此预发布版本，可供字幕驱动配音和有声书工作流参考。[项目仓库](https://github.com/debpalash/VoiceStudio)",
+      "analysis": "字幕直接创建配音任务可减少预处理步骤，适合已经完成字幕整理的制作流程。当前为Beta版本，宜先用短项目验证字幕时序与导出；应用代码和外部语音模型的授权应分别检查。",
+      "evidence_quote": "v0.5.9-beta.9 — VoiceStudio",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "整合本地语音创作、配音和有声书制作流程。",
+        "change": {
+          "summary": "预发布，支持SRT创建纯语音配音任务并改善配音流程。",
+          "version": "v0.5.9-beta.9",
+          "type": "release",
+          "publishedAt": "2026-11-23",
+          "evidenceRefs": [
+            "f1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "验证SRT后创建纯语音任务；纯人声录制可跳过背景分离。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          },
+          {
+            "description": "减少长配音背景音混合时的内存复制。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "将已整理字幕转换为配音任务。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "AGPL-3.0",
+          "scope": "仓库代码；外部模型权重不由此统一授权",
+          "evidenceRefs": [
+            "f2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "GitHub将该版本标记为Pre-release。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "f1"
+            ]
+          },
+          {
+            "description": "适合先以短素材验证时序和导出，再用于长项目。",
+            "nature": "analysis"
+          }
+        ],
+        "evidence": [
+          {
+            "id": "f1",
+            "name": "v0.5.9-beta.9发行说明",
+            "url": "https://github.com/debpalash/VoiceStudio/releases/tag/v0.5.9-beta.9",
+            "supports": "预发布状态、日期和配音变化"
+          },
+          {
+            "id": "f2",
+            "name": "LICENSE",
+            "url": "https://github.com/debpalash/VoiceStudio/blob/main/LICENSE",
+            "supports": "AGPL第三版授权文本"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/debpalash/VoiceStudio/releases/tag/v0.5.9-beta.9",
+        "canonical_url": "https://github.com/debpalash/VoiceStudio/releases/tag/v0.5.9-beta.9",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5566b7ce38a02548771b2b544334e4baf5770f2a8427af63aabcf9b8fc03df0e",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "hyperfine 官方仓库称，它为命令行程序提供多轮统计、预热、异常值检测和参数化基准，并支持多种性能指标与结果导出。本次作为成熟性能工具发现收录；10月7日的 v2.0.0 提供近90天维护证据，可用于比较程序和参数调整前后的表现。[项目仓库](https://github.com/sharkdp/hyperfine)",
+      "analysis": "适合将临时耗时比较整理为可重复的命令基准。多指标有助于观察时间与资源消耗的差异，但不能替代热点分析；缓存状态、后台负载及指标平台支持仍会影响结果解释。",
+      "evidence_quote": "A command-line benchmarking tool.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "通过重复执行、统计和参数化比较命令行程序性能。",
+        "technical": [
+          {
+            "description": "支持预热、每轮准备命令、统计异常值检测和参数化基准。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          },
+          {
+            "description": "2.0支持峰值内存与硬件计数器等指标，并调整JSON导出结构。",
+            "evidenceRefs": [
+              "g2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "比较不同实现或线程参数下的命令性能，并导出结果。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库提供的可选MIT授权",
+          "evidenceRefs": [
+            "g3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v2.0.0于10月7日发布；默认直接执行命令，旧脚本需检查Shell行为与JSON迁移。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "g2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "g1",
+            "name": "官方仓库",
+            "url": "https://github.com/sharkdp/hyperfine",
+            "supports": "统计机制、参数化和结果导出"
+          },
+          {
+            "id": "g2",
+            "name": "v2.0.0发行说明",
+            "url": "https://github.com/sharkdp/hyperfine/releases/tag/v2.0.0",
+            "supports": "维护日期、多指标与迁移变化"
+          },
+          {
+            "id": "g3",
+            "name": "LICENSE-MIT原文",
+            "url": "https://raw.githubusercontent.com/sharkdp/hyperfine/master/LICENSE-MIT",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/sharkdp/hyperfine",
+        "canonical_url": "https://github.com/sharkdp/hyperfine",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "2303616314696cdd541cab71fef7ef0b1af31db858cce4d7f03a53cd72b96331",
+      "category": "security",
+      "importance": 3,
+      "fact_summary": "Trivy 官方仓库称，它可扫描容器镜像、文件系统和代码仓库中的漏洞、秘密、错误配置及软件许可证，并识别软件清单。本次作为成熟安全工具发现收录；11月5日的 v0.76.2 修复自身依赖和发行镜像中的安全问题，提供近期维护证据。[项目仓库](https://github.com/aquasecurity/trivy)",
+      "analysis": "适合将依赖漏洞、秘密和配置检查接入同一工程流程。扫描器本身也需要版本治理；结果覆盖取决于识别能力与漏洞数据，发现条目后仍需结合部署路径判断实际影响。",
+      "evidence_quote": "Trivy has scanners that look for security issues, and targets where it can find those issues.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "对软件依赖、镜像和配置执行多类安全检查。",
+        "technical": [
+          {
+            "description": "扫描目标包含容器镜像、文件系统和远程Git仓库。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          },
+          {
+            "description": "检查漏洞、秘密、错误配置、许可证和软件清单。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在依赖引入和镜像交付流程中集中执行安全检查。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "h3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月5日的v0.76.2更新自身依赖与容器基础包，官方建议升级并重新部署镜像。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "h2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "h1",
+            "name": "官方仓库",
+            "url": "https://github.com/aquasecurity/trivy",
+            "supports": "扫描目标和检查类型"
+          },
+          {
+            "id": "h2",
+            "name": "v0.76.2发行说明",
+            "url": "https://github.com/aquasecurity/trivy/releases/tag/v0.76.2",
+            "supports": "维护日期和自身安全更新"
+          },
+          {
+            "id": "h3",
+            "name": "LICENSE",
+            "url": "https://github.com/aquasecurity/trivy/blob/main/LICENSE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/aquasecurity/trivy",
+        "canonical_url": "https://github.com/aquasecurity/trivy",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "547c31bd8ecb32e715da95d9b506d5cd6848331fa2a7cbaa60f9ea30e4c78ada",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "iroh 官方仓库称，它以公钥寻址、QUIC、NAT 穿透和中继回退为应用建立 P2P 连接，并可组合内容寻址传输等上层协议。本次作为持续维护项目发现收录；11月19日的 v1.5.0 修复连接泄漏、代理凭据日志和异常数据报处理问题。[项目仓库](https://github.com/n0-computer/iroh)",
+      "analysis": "适合跨网络设备通信、文件传输和协作应用的连接层研究，可减少应用自行处理地址变化与穿透的工作。直连失败仍依赖中继服务，应结合部署环境评估可用性与运营成本。",
+      "evidence_quote": "Iroh gives you an API for dialing by public key.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "为地址变化和NAT后的设备提供按公钥连接的P2P通信接口。",
+        "technical": [
+          {
+            "description": "基于QUIC建立连接，尝试NAT穿透，失败时回退至中继。",
+            "evidenceRefs": [
+              "i1"
+            ]
+          },
+          {
+            "description": "可组合iroh-blobs内容寻址传输和iroh-gossip发布订阅协议。",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为跨网络设备通信或P2P文件传输提供连接层。",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库提供的可选MIT授权",
+          "evidenceRefs": [
+            "i3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月19日发布的v1.5.0修复握手连接可能泄漏、代理凭据调试日志及空数据报断连。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "i2"
+            ]
+          },
+          {
+            "description": "采用时应评估直连失败后的中继依赖。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "i1",
+            "name": "官方仓库",
+            "url": "https://github.com/n0-computer/iroh",
+            "supports": "公钥寻址、QUIC、穿透、中继和上层协议"
+          },
+          {
+            "id": "i2",
+            "name": "v1.5.0发行说明",
+            "url": "https://github.com/n0-computer/iroh/releases/tag/v1.5.0",
+            "supports": "维护日期与连接处理修复"
+          },
+          {
+            "id": "i3",
+            "name": "LICENSE-MIT",
+            "url": "https://github.com/n0-computer/iroh/blob/main/LICENSE-MIT",
+            "supports": "MIT授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/n0-computer/iroh",
+        "canonical_url": "https://github.com/n0-computer/iroh",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
