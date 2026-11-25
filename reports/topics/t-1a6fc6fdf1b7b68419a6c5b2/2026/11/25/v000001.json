@@ -1,0 +1,681 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "c9f95b23-7074-4f92-a121-dbbad15cbd53",
+  "report_date": "2026-11-25",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日开源项目｜2026-11-25｜统计：北京时间2026-11-24 08:08—11-25 08:08；更新回溯至11-22 08:08",
+  "collected_at": "2026-11-25T00:17:53.554Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-25T00:17:53.587Z",
+  "reviewed_content_sha256": "d723f26779de0ab87d29eeee1b732277b3277eda51333c0fd2e3eb844c93c332",
+  "items": [
+    {
+      "id": "b96d8738b446b8e65c96c7db2895a1a66e529852fd179baa1dbd86465c19ff0c",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Browser Use 官方宣布，1.0.8 将运行结果评判改为追加一轮请求以利用缓存，并避免 bu.type 输出密码字段值，同时修复连接已有浏览器页面的行为。该版本于11月22日发布，属于72小时内更新，涉及浏览器自动化的会话复用与敏感信息处理。[项目仓库](https://github.com/browser-use/browser-use)",
+      "analysis": "适合已将浏览器 Agent 接入业务流程的团队关注，尤其是长任务的评判成本和密码输入日志。缓存收益取决于模型服务，密码输出修复也不能代表整条执行链均不会泄露敏感信息。",
+      "evidence_quote": "browser-use 1.0.8",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "让 Agent 执行浏览器任务，并对运行结果进行评判。",
+        "change": {
+          "summary": "正式发布1.0.8，调整评判请求、密码输出和CDP页面连接行为。",
+          "version": "1.0.8",
+          "type": "release",
+          "publishedAt": "2026-11-22",
+          "evidenceRefs": [
+            "b1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "judge作为运行的追加轮次请求；CDP连接复用已经打开的页面。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "复用已有浏览器会话执行自动化任务。",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件代码，不代表外部模型或云服务授权。",
+          "evidenceRefs": [
+            "b2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "bu.type不再打印密码字段值。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "b1"
+            ]
+          },
+          {
+            "description": "适合复查浏览器自动化的敏感输出路径。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "b1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "b1",
+            "name": "Browser Use 1.0.8发布说明",
+            "url": "https://github.com/browser-use/browser-use/releases/tag/1.0.8",
+            "supports": "版本、发布时间及功能修复。"
+          },
+          {
+            "id": "b2",
+            "name": "Browser Use LICENSE",
+            "url": "https://github.com/browser-use/browser-use/blob/main/LICENSE",
+            "supports": "MIT代码许可。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/browser-use/browser-use/releases/tag/1.0.8",
+        "canonical_url": "https://github.com/browser-use/browser-use/releases/tag/1.0.8",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "29b7cece55a2be6d787e0f6b5ab45afd5f5933d8b65c34c672adad5b4e8b4c7e",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "IronHive.Agent 官方仓库称，它为.NET应用提供流式Agent循环、上下文压缩、MCP插件和工具权限管理，并支持Plan、Work与人工介入模式。作为持续维护项目发现收录，官方组织列表显示11月24日更新；首次公开时间未确认。[项目仓库](https://github.com/iyulab/ironhive-agent)",
+      "analysis": "适合需要在.NET产品中嵌入Agent执行能力的团队考察。上下文管理与工具中间件可以减少重复集成工作，但权限过滤不能直接视为操作系统级沙箱，稳定性仍需结合自身任务验证。",
+      "evidence_quote": "Reusable agent engine for AI-powered CLI tools.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为.NET应用提供可复用的Agent执行与上下文管理组件。",
+        "technical": [
+          {
+            "description": "压缩发送给模型的消息，同时保留完整History；工具调用经过有序中间件。",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为.NET命令行应用接入MCP工具与人工审批。",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件代码。",
+          "evidenceRefs": [
+            "i2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "官方组织列表显示11月24日仍有更新，首次公开时间未确认。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "i3"
+            ]
+          },
+          {
+            "description": "适合已有.NET技术栈的团队评估，权限系统应与执行隔离分别审查。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "i1",
+            "name": "IronHive.Agent官方仓库",
+            "url": "https://github.com/iyulab/ironhive-agent",
+            "supports": "执行循环、上下文、MCP、模式与工具中间件能力。"
+          },
+          {
+            "id": "i2",
+            "name": "IronHive.Agent LICENSE",
+            "url": "https://github.com/iyulab/ironhive-agent/blob/main/LICENSE",
+            "supports": "MIT代码许可。"
+          },
+          {
+            "id": "i3",
+            "name": "iyulab官方仓库列表",
+            "url": "https://github.com/orgs/iyulab/repositories",
+            "supports": "11月24日更新记录。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/iyulab/ironhive-agent",
+        "canonical_url": "https://github.com/iyulab/ironhive-agent",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "61bd52114ee91e32d054ce8cad1c6ef5b91fbcb739ed7ee6292a800828f23c9c",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Hurl 官方仓库称，它使用Rust与libcurl，通过纯文本文件执行HTTP请求，并对状态码、响应头和JSONPath、XPath结果作断言。作为成熟项目发现收录；10月28日发布的8.1.0提供近90天维护证据，适合API回归测试与CI集成。[项目仓库](https://github.com/Orange-OpenSource/hurl)",
+      "analysis": "请求与断言可以跟随代码一起审查，适合需要可读、可版本管理的HTTP测试用例。它依赖libcurl等原生组件，部署前应核对目标环境，不能仅凭Rust实现推断完全静态或无外部依赖。",
+      "evidence_quote": "Hurl, run and test HTTP requests with plain text.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "将HTTP请求和响应检查写入可版本管理的文本测试文件。",
+        "technical": [
+          {
+            "description": "Rust实现，HTTP引擎基于libcurl；支持JSONPath、XPath及响应头断言。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在CI中执行API回归测试。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "Hurl代码；原生依赖另有授权。",
+          "evidenceRefs": [
+            "h3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "8.1.0正文版本日期为10月27日，GitHub显示10月28日发布。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "h2"
+            ]
+          },
+          {
+            "description": "文本用例便于审查；原生依赖需要纳入部署规划。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "h1",
+            "name": "Hurl官方仓库",
+            "url": "https://github.com/Orange-OpenSource/hurl",
+            "supports": "Rust、libcurl与HTTP测试能力。"
+          },
+          {
+            "id": "h2",
+            "name": "Hurl 8.1.0发布说明",
+            "url": "https://github.com/Orange-OpenSource/hurl/releases/tag/8.1.0",
+            "supports": "近期维护与版本日期。"
+          },
+          {
+            "id": "h3",
+            "name": "Hurl LICENSE",
+            "url": "https://github.com/Orange-OpenSource/hurl/blob/master/LICENSE",
+            "supports": "Apache-2.0许可。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/Orange-OpenSource/hurl",
+        "canonical_url": "https://github.com/Orange-OpenSource/hurl",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "67653ebe3ff3a41f7283fa2f332dc8fd20489ce2d49e4bb2d2cec4db8f09f8e3",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Subtitle Edit 官方文档称，它整合字幕编辑、时间同步、语音转写、语音合成、OCR和批量转换，并支持Windows、Linux与macOS。作为成熟项目发现收录；11月24日的5.5.0-beta13自动构建提供维护证据，不作为新的稳定版功能发布。[项目仓库](https://github.com/SubtitleEdit/subtitleedit)",
+      "analysis": "适合把语音转写、人工校对和字幕交付放在同一工作流中。所接入的本地或云端语音引擎有不同运行条件和授权，编辑器的MIT许可不能直接延伸到模型权重、服务或视频素材。",
+      "evidence_quote": "Subtitle Edit is a free, open-source editor for video subtitles.",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "提供从音频转写到字幕校对、同步与格式交付的工具。",
+        "technical": [
+          {
+            "description": "支持多种语音识别引擎、图像字幕OCR及波形辅助时间同步。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "转写录制音频后校对字幕，并批量转换交付格式。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "编辑器代码；模型、媒体依赖和素材授权分别适用。",
+          "evidenceRefs": [
+            "s3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "beta13为预发布自动构建，构建时间为2026-11-24 09:02:15 UTC。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "s2"
+            ]
+          },
+          {
+            "description": "可减少字幕流程中的工具切换，语音引擎仍需单独选择。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "Subtitle Edit功能概览",
+            "url": "https://github.com/SubtitleEdit/subtitleedit/blob/main/docs/overview.md",
+            "supports": "字幕、语音、OCR与跨平台能力。"
+          },
+          {
+            "id": "s2",
+            "name": "Subtitle Edit beta13",
+            "url": "https://github.com/SubtitleEdit/subtitleedit/releases/tag/v5.5.0-beta13",
+            "supports": "预发布性质及维护时间。"
+          },
+          {
+            "id": "s3",
+            "name": "Subtitle Edit LICENSE",
+            "url": "https://github.com/SubtitleEdit/subtitleedit/blob/main/LICENSE",
+            "supports": "MIT代码许可。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/SubtitleEdit/subtitleedit/blob/main/docs/overview.md",
+        "canonical_url": "https://github.com/SubtitleEdit/subtitleedit/blob/main/docs/overview.md",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "1f095f568cb0307bb014d6644ba4453e160f5b61854df40bcdaa9f74f431224b",
+      "category": "security",
+      "importance": 5,
+      "fact_summary": "cargo-deny 官方宣布，0.22.1修复特定多版本依赖与scope配置下unsound、unmaintained通告可能漏报的问题，并新增patched诊断，提示已忽略通告存在兼容补丁。11月24日发布的更新涉及Rust依赖审计结果及修复跟进。[项目仓库](https://github.com/EmbarkStudios/cargo-deny)",
+      "analysis": "依赖审计工具自身的漏报修复值得优先关注，尤其是同一crate存在多个版本的工作空间。受影响的是说明中列出的通告类型和配置组合，不能据此推断所有漏洞检查都会漏报。",
+      "evidence_quote": "by always emitting the same exit code regardless of the format of the output.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "为Cargo依赖提供通告与许可证等检查。",
+        "change": {
+          "summary": "正式发布0.22.1，修复通告漏报、输出格式相关退出码及依赖误判。",
+          "version": "0.22.1",
+          "type": "release",
+          "publishedAt": "2026-11-24",
+          "evidenceRefs": [
+            "c1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "patched诊断检查被忽略通告是否存在兼容所有依赖者的补丁。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在Rust工作空间的CI中检查依赖风险。",
+            "evidenceRefs": [
+              "c2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库提供的MIT许可选项。",
+          "evidenceRefs": [
+            "c3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "多版本crate中，前一版本因scope未报告时，后一应报告版本此前也可能被跳过。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "c1"
+            ]
+          },
+          {
+            "description": "使用相关配置的团队可优先复查既有审计结果。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "c1",
+            "name": "cargo-deny 0.22.1发布说明",
+            "url": "https://github.com/EmbarkStudios/cargo-deny/releases/tag/0.22.1",
+            "supports": "版本日期、漏报修复与patched诊断。"
+          },
+          {
+            "id": "c2",
+            "name": "cargo-deny官方仓库",
+            "url": "https://github.com/EmbarkStudios/cargo-deny",
+            "supports": "Cargo依赖检查定位。"
+          },
+          {
+            "id": "c3",
+            "name": "cargo-deny MIT许可",
+            "url": "https://github.com/EmbarkStudios/cargo-deny/blob/main/LICENSE-MIT",
+            "supports": "MIT许可选项。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/EmbarkStudios/cargo-deny/releases/tag/0.22.1",
+        "canonical_url": "https://github.com/EmbarkStudios/cargo-deny/releases/tag/0.22.1",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b31448baed313e2d49e317f67e224c53414d8818b7793c14db9cf37491219fba",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "py-spy 官方仓库称，它可附加到运行中的Python进程进行采样，生成火焰图、展示函数热点和线程调用栈，无需修改目标代码。作为成熟性能工具发现收录；11月19日的0.4.4加入free-threaded Python支持，提供近期维护证据。[项目仓库](https://github.com/benfred/py-spy)",
+      "analysis": "适合排查难以重启或重新插桩的Python服务，先用采样缩小热点范围。使用前需要核对进程读取权限、解释器版本和原生扩展采样支持；项目的低开销表述不代表本轮进行了独立测试。",
+      "evidence_quote": "py-spy: Sampling profiler for Python programs",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "通过进程外采样定位Python程序热点和线程停滞。",
+        "technical": [
+          {
+            "description": "读取目标进程内存获取调用栈，提供record、top和dump接口。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "附加到运行服务生成火焰图，或查看卡顿时的线程栈。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "py-spy软件代码。",
+          "evidenceRefs": [
+            "p3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月19日发布的0.4.4支持free-threaded解释器；早于本轮72小时窗口。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "p2"
+            ]
+          },
+          {
+            "description": "适合先观察再定位问题，运行权限与平台能力需预先核对。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "p1",
+            "name": "py-spy官方仓库",
+            "url": "https://github.com/benfred/py-spy",
+            "supports": "采样机制、命令与平台限制。"
+          },
+          {
+            "id": "p2",
+            "name": "py-spy 0.4.4",
+            "url": "https://github.com/benfred/py-spy/releases/tag/v0.4.4",
+            "supports": "版本日期及维护进展。"
+          },
+          {
+            "id": "p3",
+            "name": "py-spy LICENSE",
+            "url": "https://github.com/benfred/py-spy/blob/master/LICENSE",
+            "supports": "MIT许可。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/benfred/py-spy",
+        "canonical_url": "https://github.com/benfred/py-spy",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ceb3bace4b78fe6651933f8007e3d73940cc83ff1131b879e0504dd2dc065198",
+      "category": "opensource",
+      "importance": 5,
+      "fact_summary": "Kubo 官方宣布，0.43.2通过升级go-libp2p修复入站连接资源预留泄漏，避免配额耗尽后节点拒绝新连接并影响AutoNAT可达性判断。这个IPFS节点实现于11月24日发布正式补丁，涉及长期运行公共节点的可靠性。[项目仓库](https://github.com/ipfs/kubo)",
+      "analysis": "对持续接受入站连接的公共节点，这类泄漏可能表现为连接数不高却无法接入新对端。更新价值在于消除资源累计原因；曾用提高配额或定时重启缓解问题的部署，可在升级后复查这些措施。",
+      "evidence_quote": "Nodes no longer stop accepting inbound connections",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "运行IPFS节点并参与内容交换与对端连接。",
+        "change": {
+          "summary": "正式发布0.43.2，升级go-libp2p至0.52.0以修复入站连接资源预留泄漏。",
+          "version": "0.43.2",
+          "type": "release",
+          "publishedAt": "2026-11-24",
+          "evidenceRefs": [
+            "k1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "修复安全握手后、交付节点前关闭连接时未释放的连接及文件描述符预留。",
+            "evidenceRefs": [
+              "k1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "维护持续接受入站连接的公共IPFS节点。",
+            "evidenceRefs": [
+              "k1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT / Apache-2.0",
+          "scope": "按贡献历史适用MIT或双许可，旧代码存在MIT-only范围。",
+          "evidenceRefs": [
+            "k2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "预留配额耗尽会拒绝新入站连接，并影响AutoNAT回拨。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "k1"
+            ]
+          },
+          {
+            "description": "长期运行的公共节点应优先评估该补丁。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "k1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "k1",
+            "name": "Kubo 0.43.2发布说明",
+            "url": "https://github.com/ipfs/kubo/releases/tag/v0.43.2",
+            "supports": "发布日期、故障机制、修复及运维建议。"
+          },
+          {
+            "id": "k2",
+            "name": "Kubo LICENSE",
+            "url": "https://github.com/ipfs/kubo/blob/master/LICENSE",
+            "supports": "许可转换及历史代码适用范围。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ipfs/kubo/releases/tag/v0.43.2",
+        "canonical_url": "https://github.com/ipfs/kubo/releases/tag/v0.43.2",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "59a842266b8083d5af72587a0a13f77df2c3647775c05b596a155da4735f9dc7",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "rust-libp2p 官方仓库称，它提供Rust的libp2p网络栈，以传输层、流多路复用和Swarm接口组合P2P应用协议。作为成熟项目发现收录；10月15日的0.57.1纳入peer-store组件，提供近90天维护证据，不作为今日发布。[项目仓库](https://github.com/libp2p/rust-libp2p)",
+      "analysis": "适合需要自行组合P2P通信能力的Rust应用，模块划分便于按需求选择传输与协议。它提供网络栈而非完整存储产品，对端管理、协议选择和应用层数据一致性仍需要工程设计。",
+      "evidence_quote": "The Rust Implementation of the libp2p networking stack.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "为Rust应用提供可组合的P2P网络基础组件。",
+        "technical": [
+          {
+            "description": "Transport、StreamMuxer与Swarm分层；应用协议基于NetworkBehaviour等接口构建。",
+            "evidenceRefs": [
+              "l1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "构建具有自定义应用协议的Rust点对点服务。",
+            "evidenceRefs": [
+              "l1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库LICENSE覆盖的软件代码。",
+          "evidenceRefs": [
+            "l3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "10月15日的0.57.1将libp2p-peer-store 0.1.0作为feature纳入。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "l2"
+            ]
+          },
+          {
+            "description": "适合需要协议组合能力的团队，完整应用仍需自行设计。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "l1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "l1",
+            "name": "rust-libp2p官方仓库",
+            "url": "https://github.com/libp2p/rust-libp2p",
+            "supports": "网络栈定位、模块结构及协议接口。"
+          },
+          {
+            "id": "l2",
+            "name": "rust-libp2p 0.57.1",
+            "url": "https://github.com/libp2p/rust-libp2p/releases/tag/v0.57.1",
+            "supports": "维护日期及peer-store组件。"
+          },
+          {
+            "id": "l3",
+            "name": "rust-libp2p LICENSE",
+            "url": "https://github.com/libp2p/rust-libp2p/blob/master/LICENSE",
+            "supports": "MIT许可条款。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/libp2p/rust-libp2p",
+        "canonical_url": "https://github.com/libp2p/rust-libp2p",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
