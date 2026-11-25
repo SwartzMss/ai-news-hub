@@ -366,6 +366,7 @@ export function RunDetail({
           {data.run.error_code === "auth_required"
             ? "Codex 认证失效，请在服务账户下重新登录。"
             : `执行异常：${data.run.error_code}`}
+          {data.run.error_message && <> — {data.run.error_message}</>}
         </p>
       )}
       <div className="run-layout">

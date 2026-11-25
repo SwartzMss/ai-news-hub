@@ -2,6 +2,13 @@ export class AppError extends Error {
   constructor(public readonly code: string, message = code) { super(message); }
 }
 
+export class ReportSchemaError extends AppError {
+  constructor(public readonly fieldPath: string, public readonly reason: string) {
+    super('report_schema_invalid');
+  }
+  get diagnostic(): string { return `${this.fieldPath}：${this.reason}`; }
+}
+
 export class HttpError extends AppError {
   constructor(public readonly statusCode: number, code: string) { super(code); }
 }

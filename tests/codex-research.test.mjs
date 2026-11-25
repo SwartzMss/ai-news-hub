@@ -71,6 +71,7 @@ test('topic and prompt are required; failed finalization can be corrected in the
     await s.post('/runs/' + id + '/turns', { idempotencyKey: 'bad', input: '生成', finalize: true }); await s.call(2);
     const bad = proposal(); bad.items[0].importance = 99; s.adapter.succeed(1, JSON.stringify(bad));
     const failed = await s.settle(id); assert.equal(failed.run.error_code, 'report_schema_invalid');
+    assert.match(failed.run.error_message,/items\[0\]\.importance/);
     assert.equal((await s.get('/news/reports')).reports.length, 0); assert.equal((await s.get('/news/articles')).articles.length, 0);
     await s.post('/runs/' + id + '/turns', { idempotencyKey: 'retry', input: '使用原文准确引用后重新生成', finalize: true });
     await s.call(3); s.adapter.succeed(2, JSON.stringify(proposal())); assert.equal((await s.settle(id)).run.status, 'succeeded');

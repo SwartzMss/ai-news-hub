@@ -9,7 +9,7 @@ import { NEWS_CHANNEL, NEWS_TASK_ID } from "./source.js";
 import {sourceUrl,type SourceFetch} from "./sources.js";
 import { HEADLINES_RESEARCH_SCHEMA, OPEN_SOURCE_RESEARCH_SCHEMA, RESEARCH_SCHEMA, TECHNOLOGY_RESEARCH_SCHEMA, type ProposalItem } from "./report-schema.js";
 import { CODEX_HEADLINES_RESEARCH_SCHEMA, CODEX_OPEN_SOURCE_RESEARCH_SCHEMA, CODEX_RESEARCH_SCHEMA, CODEX_TECHNOLOGY_RESEARCH_SCHEMA, normalizeResearchOutput } from "./structured-output-schema.js";
-import { buildReport, reportMarkdown } from "./report.js";
+import { buildReport, reportMarkdown, reportSchemaError } from "./report.js";
 import type { ArticleCandidate } from "./types.js";
 import { getPromptTemplate } from "../tasks/prompt-templates.js";
 
@@ -91,6 +91,9 @@ export class NewsWorkflow implements TaskWorkflow {
     const projectRules=final&&openSource
       ? '\n项目详情 evaluation 中 nature=fact 时 evidenceRefs 必须包含本条 evidence 中的有效 id；没有来源证据的项目事实应省略。历史去重状态是任务内部信息，不要写入任何项目的 evaluation。'
       : '';
+    const headlineTimeRules=final&&headlines
+      ? '\n时间线格式：precision=date 时 time 只写 YYYY-MM-DD；precision=datetime 时必须使用带明确时区的 ISO 时间，例如 2026-11-24T09:00:00+08:00。只有原始来源明确时区才填写 datetime；来源未明确时区，保留来源的时间表述并使用 precision=approximate，不要推测或补写时区。'
+      : '';
     const topicName = template?.topic ?? String(snapshot.topic);
     const topicSeed = managed ? run.task_id : JSON.stringify([run.task_id, topicName]);
     const topic = {
@@ -103,7 +106,7 @@ export class NewsWorkflow implements TaskWorkflow {
       forbidTools: true,
       webSearch: true,
       developerInstructions: managed
-        ? `${instructions}\n研究主题：${topicName}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? '这是模板定义的最终 Prompt；本轮回复使用给定日报 JSON Schema。Schema 中无依据或不适用的可选字段填 null，不得编造内容。' : '这是模板定义的研究 Prompt；保留研究结果以供后续模板轮次使用。'}${projectRules}${priorContext}`
+        ? `${instructions}\n研究主题：${topicName}\n当前 UTC 时间：${this.now().toISOString()}\n${final ? '这是模板定义的最终 Prompt；本轮回复使用给定日报 JSON Schema。Schema 中无依据或不适用的可选字段填 null，不得编造内容。' : '这是模板定义的研究 Prompt；保留研究结果以供后续模板轮次使用。'}${projectRules}${headlineTimeRules}${priorContext}`
         : instructions,
       metadata: { topic: String(snapshot.topic), mode: context.mode },
       ...(final
@@ -116,7 +119,7 @@ export class NewsWorkflow implements TaskWorkflow {
                 throw new AppError("report_invalid_json");
               }
               if (!activeValidate(proposal))
-                throw new AppError("report_schema_invalid");
+                throw reportSchemaError(activeValidate.errors);
               if (openSource) {
                 const areaCounts = new Map<string, number>();
                 for (const item of proposal.items) {

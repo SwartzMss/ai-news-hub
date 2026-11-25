@@ -107,6 +107,15 @@ test("managed results default to the report view and label system finalization i
   expect(screen.queryByText("第 2 轮")).toBeNull();
   expect(screen.queryByLabelText("下一轮 prompt")).toBeNull();
 });
+test("run detail shows the validation field path beside the error code", async () => {
+  const api = vi.fn().mockImplementation(async (path: string) =>
+    path.includes("/events") ? { events: [] }
+      : path.startsWith("/news/runs/") ? { newsRun: { report_id: null } }
+        : { run: { ...run, error_code: "report_schema_invalid", error_message: "items[1].details.timeline[0].time：datetime 需要明确时区" }, turns: [] },
+  );
+  render(<RunDetail api={api} taskId="task-one" runId="run-one" />);
+  expect(await screen.findByText(/items\[1\]\.details\.timeline\[0\]\.time/)).toBeTruthy();
+});
 
 test("manual publication in progress is shown independently of the completed research run", async () => {
   const api = vi.fn().mockImplementation(async (path: string) =>

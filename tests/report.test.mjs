@@ -36,6 +36,12 @@ test('news details reject missing evidence references, duplicate IDs and unsafe 
   assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata));
  }
 });
+test('invalid news datetime identifies the exact timeline field without inventing a timezone',()=>{
+ const p=proposal();p.items[0].category='social_event';p.items[0].details=newsDetails();
+ p.items[0].details.timeline[0]={...p.items[0].details.timeline[0],time:'2026-11-24 09:00',precision:'datetime'};
+ assert.throws(()=>buildReport(JSON.stringify(p),candidates,metadata,'verified','headlines'),error=>
+   error.code==='report_schema_invalid'&&error.fieldPath==='items[0].details.timeline[0].time'&&/时区/.test(error.reason));
+});
 test('investment details survive report construction and appear in Markdown',()=>{
  const p=proposal();p.items[0].details=investmentDetails();
  const report=buildReport(JSON.stringify(p),candidates,metadata);
