@@ -1,4 +1,4 @@
-import { AppError } from '../errors.js';
+import { ReportSchemaError } from '../errors.js';
 import { sourceUrl } from './sources.js';
 
 export const HEADLINE_CATEGORIES = [
@@ -59,22 +59,23 @@ export const HEADLINES_DETAILS_SCHEMA={
   },
 };
 
-export function validateNewsDetails(details:NewsDetails):void {
-  if(Buffer.byteLength(JSON.stringify(details))>6000)throw new AppError('report_schema_invalid');
+export function validateNewsDetails(details:NewsDetails,path='details'):void {
+  const fail=(field:string,reason:string):never=>{throw new ReportSchemaError(`${path}${field}`,reason);};
+  if(Buffer.byteLength(JSON.stringify(details))>6000)fail('','超过 6000 字节');
   const ids=new Set<string>();
-  for(const evidence of details.evidence??[]){
-    if(ids.has(evidence.id))throw new AppError('report_schema_invalid');
+  for(const [index,evidence] of (details.evidence??[]).entries()){
+    if(ids.has(evidence.id))fail(`.evidence[${index}].id`,'来源 ID 重复');
     ids.add(evidence.id);
     sourceUrl(evidence.url);
   }
   const validRefs=(refs:string[]|undefined)=>!refs?.some(id=>!ids.has(id));
-  for(const fact of details.keyFacts??[])if(!validRefs(fact.evidenceRefs))throw new AppError('report_schema_invalid');
-  for(const item of details.timeline??[]){
-    if(!validRefs(item.evidenceRefs))throw new AppError('report_schema_invalid');
-    if(item.precision==='date'&&!/^\d{4}-\d{2}-\d{2}$/.test(item.time))throw new AppError('report_schema_invalid');
-    if(item.precision==='datetime'&&!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})$/.test(item.time))throw new AppError('report_schema_invalid');
+  for(const [index,fact] of (details.keyFacts??[]).entries())if(!validRefs(fact.evidenceRefs))fail(`.keyFacts[${index}].evidenceRefs`,'引用了不存在的来源 ID');
+  for(const [index,item] of (details.timeline??[]).entries()){
+    if(!validRefs(item.evidenceRefs))fail(`.timeline[${index}].evidenceRefs`,'引用了不存在的来源 ID');
+    if(item.precision==='date'&&!/^\d{4}-\d{2}-\d{2}$/.test(item.time))fail(`.timeline[${index}].time`,'date 需要 YYYY-MM-DD');
+    if(item.precision==='datetime'&&!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}(?::\d{2})?(?:Z|[+-]\d{2}:\d{2})$/.test(item.time))fail(`.timeline[${index}].time`,'datetime 需要带明确时区的 ISO 时间');
   }
-  for(const position of details.positions??[])if(!validRefs(position.evidenceRefs))throw new AppError('report_schema_invalid');
-  for(const impact of details.impacts??[])
-    if(impact.status==='observed'&&!impact.evidenceRefs?.length||!validRefs(impact.evidenceRefs))throw new AppError('report_schema_invalid');
+  for(const [index,position] of (details.positions??[]).entries())if(!validRefs(position.evidenceRefs))fail(`.positions[${index}].evidenceRefs`,'引用了不存在的来源 ID');
+  for(const [index,impact] of (details.impacts??[]).entries())
+    if(impact.status==='observed'&&!impact.evidenceRefs?.length||!validRefs(impact.evidenceRefs))fail(`.impacts[${index}].evidenceRefs`,'已观察影响需要有效来源 ID');
 }

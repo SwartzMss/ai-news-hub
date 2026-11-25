@@ -33,7 +33,7 @@ export interface RunRecord {
   id: string; task_id: string; idempotency_key: string; status: RunStatus;
   thread_id: string | null; turn_id: string | null;
   started_at: string | null; finished_at: string | null;
-  error_code: string | null; created_at: string; updated_at: string;
+  error_code: string | null; error_message?: string | null; created_at: string; updated_at: string;
 }
 export interface TurnRecord {
   mode: 'default' | 'research' | 'finalize';

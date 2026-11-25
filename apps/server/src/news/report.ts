@@ -1,7 +1,8 @@
 import { Ajv } from 'ajv';
 import addFormats from 'ajv-formats';
 import type { FormatsPlugin } from 'ajv-formats';
-import { AppError } from '../errors.js';
+import { AppError, ReportSchemaError } from '../errors.js';
+import type { ErrorObject } from 'ajv';
 import { proposalSchema, headlinesProposalSchema, REPORT_SCHEMA, HEADLINES_REPORT_SCHEMA, TECHNOLOGY_REPORT_SCHEMA, TECHNOLOGY_CATEGORIES, RESEARCH_AREAS, type Proposal, type ProposalItem, type ResearchArea } from './report-schema.js';
 import { validateInvestmentDetails, type InvestmentDetails } from './investment-details.js';
 import { validateNewsDetails, type NewsDetails } from './news-details.js';
@@ -16,6 +17,15 @@ const validateTechnologyReport = ajv.compile(TECHNOLOGY_REPORT_SCHEMA);
 const validateProposal = ajv.compile<Proposal>(proposalSchema());
 const validateHeadlinesProposal = ajv.compile<Proposal>(headlinesProposalSchema());
 const validateTechnologyProposal = ajv.compile<Proposal>(proposalSchema(undefined, TECHNOLOGY_CATEGORIES));
+export function reportSchemaError(errors: ErrorObject[] | null | undefined): ReportSchemaError {
+  const issue = errors?.[0];
+  const path = issue?.instancePath.replace(/~1/g, '/').replace(/~0/g, '~').replace(/\/(\d+)/g, '[$1]').replace(/\/([^/[]+)/g, '.$1').replace(/^\./, '') || 'report';
+  const extraField = issue?.keyword === 'required' ? issue.params.missingProperty
+    : issue?.keyword === 'additionalProperties' ? issue.params.additionalProperty : undefined;
+  const fieldPath = typeof extraField === 'string'
+    ? `${path === 'report' ? '' : `${path}.`}${extraField}` : path;
+  return new ReportSchemaError(fieldPath, issue?.message ?? '不符合日报格式');
+}
 export interface ReportItem extends ProposalItem {
   verification: 'source_only' | 'codex_reported';
   source: { name: string; originalUrl: string; canonicalUrl: string; publishedAt: string | null; eventAt: string | null; fetchedAt: string | null };
@@ -32,12 +42,12 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
   let proposal: unknown;
   try { proposal = JSON.parse(output); } catch { throw new AppError('report_invalid_json'); }
   const validProposal = categoryScope==='headlines' ? validateHeadlinesProposal : categoryScope==='technology' ? validateTechnologyProposal : validateProposal;
-  if (!validProposal(proposal)) throw new AppError('report_schema_invalid');
+  if (!validProposal(proposal)) throw reportSchemaError(validProposal.errors);
   const typed = proposal;
   const byId = new Map(candidates.map((article) => [article.id, article]));
   const seen = new Set<string>();
-  const items = typed.items.map((item): ReportItem => {
-    if(item.details){if(item.details.kind==='news')validateNewsDetails(item.details);else if(item.details.kind==='project')validateProjectDetails(item.details);else validateInvestmentDetails(item.details);}
+  const items = typed.items.map((item, index): ReportItem => {
+    if(item.details){if(item.details.kind==='news')validateNewsDetails(item.details, `items[${index}].details`);else if(item.details.kind==='project')validateProjectDetails(item.details);else validateInvestmentDetails(item.details);}
     const article = byId.get(item.articleId);
     if (!article) throw new AppError('report_unknown_article');
     if (seen.has(item.articleId)) throw new AppError('report_duplicate_article');
@@ -58,7 +68,7 @@ export function buildReport(output: string, candidates: ArticleCandidate[], meta
   });
   const report: DailyReport = { schemaVersion: 1, ...metadata, channel: 'opensource', reviewStatus: 'pending', title: typed.title, items };
   const validReport = categoryScope==='headlines' ? validateHeadlinesReport : categoryScope==='technology' ? validateTechnologyReport : validateReport;
-  if (!validReport(report)) throw new AppError('report_schema_invalid');
+  if (!validReport(report)) throw reportSchemaError(validReport.errors);
   return report;
 }
 function markdownText(value: string): string {

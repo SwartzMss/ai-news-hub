@@ -210,6 +210,8 @@ test('daily headlines template binds its reader-facing news schema',async()=>{
   assert.equal(discovery.input.outputSchema,undefined);
   s.adapter.succeed(0,'已完成候选话题发现。');
   const final=await s.wait(()=>s.adapter.calls[1]);
+  assert.match(final.input.developerInstructions,/2026-11-24T09:00:00\+08:00/);
+  assert.match(final.input.developerInstructions,/未明确时区.*approximate/);
   const itemSchema=final.input.outputSchema.properties.items.items;
   assert.ok(itemSchema.required.includes('details'));
   assert.deepEqual(itemSchema.properties.category.enum,['social_event','entertainment','tech_digital','sports','film_animation','gaming','finance_consumption','internet_culture','lifestyle_emotion','international_topic','other']);

@@ -6,7 +6,7 @@ import { dateInTimezone, taskInput, nextOccurrence } from './configuration.js';
 import { randomUUID } from 'node:crypto';
 import type { DatabaseSync } from 'node:sqlite';
 import type { RunEvent, RunRecord, RunStatus, TaskRecord, TaskConfiguration, TurnRecord } from '../../../../packages/shared/src/index.js';
-import { AppError, HttpError } from '../errors.js';
+import { AppError, HttpError, ReportSchemaError } from '../errors.js';
 import { AgentError, type AgentAdapter, type AgentEvent } from '../agent/types.js';
 import type { TaskWorkflow } from './workflow.js';
 import { NEWS_TASK_ID } from '../news/source.js';
@@ -362,10 +362,10 @@ export class TaskEngine {
     });
     this.queue.push({runId:run.id,turnId,input,threadId:run.thread_id!});
   }
-  private finish(work: Work, status: RunStatus, code?: string, output?: string, save?: () => void): void {
+  private finish(work: Work, status: RunStatus, code?: string, output?: string, save?: () => void, diagnostic?: string): void {
     this.transaction(() => {
       save?.();
-      this.db.prepare('UPDATE task_runs SET status=?,error_code=?,finished_at=?,updated_at=? WHERE id=?').run(status, code ?? null, now(), now(), work.runId);
+      this.db.prepare('UPDATE task_runs SET status=?,error_code=?,error_message=?,finished_at=?,updated_at=? WHERE id=?').run(status, code ?? null, diagnostic ?? null, now(), now(), work.runId);
       this.db.prepare('UPDATE run_turns SET status=?,error_code=?,output_text=?,finished_at=? WHERE id=?').run(status, code ?? null, output ?? null, now(), work.turnId);
       this.event(work.runId, work.turnId, 'finished', { status, ...(code ? { code } : {}) });
     });
@@ -432,7 +432,7 @@ export class TaskEngine {
       }
       const code = slot.reason ?? (error instanceof AgentError || error instanceof AppError ? error.code : 'event_persistence_failed');
       const status = code === 'cancelled' ? 'cancelled' : code === 'interrupted' || code === 'backend_stopped' ? 'interrupted' : 'failed';
-      this.finish(work, status, code, proposedOutput);
+      this.finish(work, status, code, proposedOutput, undefined, error instanceof ReportSchemaError ? error.diagnostic : undefined);
     } finally { settled = true; clearTimeout(timer); }
   }
   private persist(work: Work, event: AgentEvent): void {
