@@ -1,0 +1,369 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "ac6f8f6f-0723-40a9-bc81-9698b37ca4dd",
+  "report_date": "2026-11-25",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日科技投资简报｜2026年11月25日｜截至北京时间08:10",
+  "collected_at": "2026-11-25T00:20:00.530Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-25T00:20:00.576Z",
+  "reviewed_content_sha256": "9871a04ffa31107d6e6ab01c22b160c411b98a5d76074612e18b80344ee3e617",
+  "items": [
+    {
+      "id": "96cb2282f812533f07beb370b543edb55fbe554b7ad102de7a784c285a223c69",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "Dell于美国当地11月24日披露FY2027第三季度业绩：AI优化服务器收入220亿美元，同比增长291%；季度AI订单602亿美元，期末AI积压订单1,323亿美元。公司将全年AI服务器收入指引由740亿上调至780亿美元。订单及积压订单不等于已实现收入，ISG利润也不能全部归属于AI服务器。原文未列精确发布时间，保守纳入72小时窗口。",
+      "analysis": "推断：实际收入增长与全年指引上调共同强化AI服务器商业化证据；盈利兑现仍取决于积压订单交付、客户融资及回款质量。",
+      "evidence_quote": "Dell Technologies Delivers Third Quarter Fiscal 2027 Financial Results",
+      "details": {
+        "kind": "investment",
+        "background": "本次新增为截至2026年10月30日季度经营结果及全年指引更新，订单、收入和指引分开记录。",
+        "metrics": [
+          {
+            "name": "AI优化服务器收入",
+            "value": "220",
+            "unit": "亿美元",
+            "period": "FY2027第三季度",
+            "comparison": "同比增长291%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "dell"
+            ]
+          },
+          {
+            "name": "AI订单／期末积压订单",
+            "value": "602／1323",
+            "unit": "亿美元",
+            "period": "FY2027第三季度／季末",
+            "basis": "actual",
+            "evidenceRefs": [
+              "dell"
+            ]
+          },
+          {
+            "name": "全年AI优化服务器收入",
+            "value": "780",
+            "unit": "亿美元",
+            "period": "FY2027",
+            "comparison": "此前指引740亿美元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "dell"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Dell Technologies（DELL，NYSE）：AI服务器及整机架供应商",
+            "direction": "公司自身经营数据已证实",
+            "reason": "原始财报直接披露AI服务器收入及订单；未指定上游芯片厂商份额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "dell"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：积压订单在供货、客户场地和电力条件具备后转为交付验收，推动服务器收入；利润和现金流还需扣除采购成本及营运资金占用，不能按订单金额直接外推。",
+        "watchpoints": [
+          "积压订单转收入速度及取消情况",
+          "AI服务器利润率、应收账款与经营现金流"
+        ],
+        "risks": [
+          "客户融资或机房准备延迟导致交付推迟",
+          "产品组合和采购成本变化削弱利润转化"
+        ],
+        "evidence": [
+          {
+            "id": "dell",
+            "name": "Dell FY2027第三季度业绩附件",
+            "url": "https://investors.delltechnologies.com/sec-filings/all-sec-filings/content/0001571996-26-000050/exhibit991earnings8kq3fy27.htm",
+            "supports": "AI服务器收入、订单、积压订单及全年指引更新。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.delltechnologies.com",
+        "original_url": "https://investors.delltechnologies.com/sec-filings/all-sec-filings/content/0001571996-26-000050/exhibit991earnings8kq3fy27.htm",
+        "canonical_url": "https://investors.delltechnologies.com/sec-filings/all-sec-filings/content/0001571996-26-000050/exhibit991earnings8kq3fy27.htm",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "bd98baafa98989b9deb81e588130d6bad805c601e3d7dc2d9407d248bb3f1fff",
+      "category": "optical_communications",
+      "importance": 5,
+      "fact_summary": "AAOI于美国当地11月24日宣布，与现有一级超大规模数据中心客户签订长期协议：最低采购承诺包括2027年约15亿美元800G光模块，以及2028—2029年约7亿美元激光二极管。公司称部分激光器预计自2028年用于CPO。超过100亿美元的四年需求预测不属于额外采购承诺或收入指引；客户未承诺投入资本。原文未列时刻，保守纳入72小时窗口。",
+      "analysis": "推断：明确的年度采购承诺提升800G及激光器收入可见度，但扩产、认证与资金支出可能先于回款，合同金额不能直接等同利润。",
+      "evidence_quote": "AOI Announces Multi-Year Long-Term Agreement with Tier-1 Hyperscale Datacenter Customer",
+      "details": {
+        "kind": "investment",
+        "background": "新增为第二家超大规模客户的长期采购协议，与此前融资公告不同；客户身份未披露，CPO用途仍为公司预期。",
+        "metrics": [
+          {
+            "name": "800G最低采购承诺",
+            "value": "约15",
+            "unit": "亿美元",
+            "period": "2027年",
+            "comparison": "合同承诺，尚非已实现收入",
+            "basis": "actual",
+            "evidenceRefs": [
+              "aoi"
+            ]
+          },
+          {
+            "name": "激光二极管最低采购承诺",
+            "value": "约7",
+            "unit": "亿美元",
+            "period": "2028—2029年",
+            "comparison": "合同承诺，尚非已实现收入",
+            "basis": "actual",
+            "evidenceRefs": [
+              "aoi"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Applied Optoelectronics（AAOI，NASDAQ）：800G光模块及激光器供应商",
+            "direction": "供应协议已由公司公告确认",
+            "reason": "直接客户未具名；不能据此认定任何特定云厂商为买方。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "aoi"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：最低采购承诺支持产能规划；认证通过、美国制造能力投产并完成交付后才形成销售。产品组合改善能否提升利润，取决于ASP、良率及新增折旧；客户未投入资本意味着扩产资金仍需另行安排。",
+        "watchpoints": [
+          "认证完成及2027年美国制造产品交付",
+          "扩产资本开支、良率与毛利率",
+          "合同取消、定价及验收条款"
+        ],
+        "risks": [
+          "扩产或认证延期",
+          "需求预测未转为额外订单",
+          "客户集中与融资稀释风险"
+        ],
+        "evidence": [
+          {
+            "id": "aoi",
+            "name": "AAOI超大规模客户长期协议公告",
+            "url": "https://newsroom.ao-inc.com/news-releases/aoi-announces-multi-year-long-term-agreement-with-tier-1-hyperscale-datacenter-customer/",
+            "supports": "最低采购承诺、产品年度安排、客户无资本承诺及需求预测边界。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.ao-inc.com",
+        "original_url": "https://newsroom.ao-inc.com/news-releases/aoi-announces-multi-year-long-term-agreement-with-tier-1-hyperscale-datacenter-customer/",
+        "canonical_url": "https://newsroom.ao-inc.com/news-releases/aoi-announces-multi-year-long-term-agreement-with-tier-1-hyperscale-datacenter-customer/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "4da65a691d255c2a675b251184c416110148ae4c7505b8f725009dfc07a530ad",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "Applied Digital于北京时间11月24日21:00宣布，Polaris Forge 2园区首栋150 MW建筑的首期75 MW基础设施已完成调试，其中首个25 MW数据厅完成整体装修并达到Ready for Service。余下50 MW仍需装修及客户交付。新增为建设交付里程碑，与此前150 MW新租约事件区分；达到可服务状态不代表已正式计租。纳入24小时窗口。",
+      "analysis": "推断：实物交付推进有助于缩短签约容量向租金现金流转化的距离，但客户验收和计租启动尚缺明确证据。",
+      "evidence_quote": "Within this phase, the Company has completed the integrated fit-out of the first 25 MW data hall and achieved Ready for Service on schedule.",
+      "details": {
+        "kind": "investment",
+        "background": "Polaris Forge 2位于北达科他州Harwood。公司公告确认该建筑属于既有客户200 MW长期租约；本次没有新增租约金额。",
+        "metrics": [
+          {
+            "name": "达到Ready for Service的数据厅容量",
+            "value": "25",
+            "unit": "MW",
+            "period": "2026年11月24日公告",
+            "comparison": "该园区首次达到此状态",
+            "basis": "actual",
+            "evidenceRefs": [
+              "apld"
+            ]
+          },
+          {
+            "name": "完成基础设施调试的阶段容量",
+            "value": "75",
+            "unit": "MW",
+            "period": "2026年11月24日公告",
+            "comparison": "其中50 MW仍待装修及交付",
+            "basis": "actual",
+            "evidenceRefs": [
+              "apld"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Applied Digital（APLD，NASDAQ）：AI数据中心开发运营商",
+            "direction": "既有租约下的建设里程碑已确认",
+            "reason": "园区租予未具名超大规模客户，不能推断客户身份或GPU供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "apld"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：数据厅完成装修和调试后，仍须满足租约交付及验收条件才能启动相应租金；后续50 MW交付扩大可计租基础，现金流贡献还取决于建设尾款、运维成本与融资成本。",
+        "watchpoints": [
+          "首个25 MW客户验收和计租日期",
+          "后续50 MW交付及实际租金贡献"
+        ],
+        "risks": [
+          "电力协议、设备或客户准备条件延误",
+          "建设成本及融资成本上升",
+          "可服务容量未转化为计租容量"
+        ],
+        "evidence": [
+          {
+            "id": "apld",
+            "name": "Applied Digital Polaris Forge 2交付进展公告",
+            "url": "https://ir.applieddigital.com/news-events/press-releases/detail/166/applied-digital-achieves-initial-25-mw-ready-for-service-in",
+            "supports": "25 MW可服务状态、75 MW基础调试完成及后续交付阶段。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.applieddigital.com",
+        "original_url": "https://ir.applieddigital.com/news-events/press-releases/detail/166/applied-digital-achieves-initial-25-mw-ready-for-service-in",
+        "canonical_url": "https://ir.applieddigital.com/news-events/press-releases/detail/166/applied-digital-achieves-initial-25-mw-ready-for-service-in",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6d21564eb19ae4fea6d2de0d77d14408c5e1d94720bc31c13e0987584b49f8ce",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "AMD于11月23日披露，Microsoft在Azure研究实验室启动首套Helios机架系统，正在运行早期验证负载。系统采用MI455X GPU、第六代EPYC处理器及Pensando网络。新增为客户验证进展，规模部署仍属计划；未披露采购金额、部署数量或商用时间。来源未列精确时刻，保守纳入72小时窗口。",
+      "analysis": "推断：客户实际运行负载降低了平台停留在规划阶段的不确定性，但实验室验证不足以证明商业收入规模或推理经济性。",
+      "evidence_quote": "Microsoft Running Workload Validation with AMD Helios Rackscale Solution",
+      "details": {
+        "kind": "investment",
+        "background": "公告称Microsoft于今年秋季接收系统；本次新增是上电并执行验证负载。主要投资影响落在GPU及配套芯片采用，归入半导体。",
+        "supplyChain": [
+          {
+            "segment": "Advanced Micro Devices（AMD，NASDAQ）：GPU、CPU及网络芯片供应商",
+            "direction": "Helios客户验证关系已由AMD确认",
+            "reason": "原文列明系统芯片配置及Microsoft实验室验证进展。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "amd"
+            ]
+          },
+          {
+            "segment": "Microsoft（MSFT，NASDAQ）：Azure云平台及系统客户",
+            "direction": "已接收验证系统；规模部署尚为计划",
+            "reason": "AMD公告明确描述客户接收及运行负载，未披露约束性采购规模。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "amd"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：验证通过并获得客户规模采购后，才能推动MI455X及配套芯片出货和收入；实际盈利取决于系统稳定性、软件适配、供货能力及成本。当前证据不支持量化增量利润。",
+        "watchpoints": [
+          "验证完成及客户可用服务上线",
+          "规模采购数量、出货与收入确认",
+          "真实工作负载性能及成本"
+        ],
+        "risks": [
+          "验证或软件适配延误",
+          "实验室进展未转为规模采购",
+          "单方公告缺少客户独立披露及性能复测"
+        ],
+        "evidence": [
+          {
+            "id": "amd",
+            "name": "AMD：Microsoft Helios负载验证进展",
+            "url": "https://newsroom.amd.com/news/microsoft-running-workload-validation-amd-helios-rackscale-solution/",
+            "supports": "客户接收系统、早期负载验证、芯片配置及后续部署计划。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "newsroom.amd.com",
+        "original_url": "https://newsroom.amd.com/news/microsoft-running-workload-validation-amd-helios-rackscale-solution/",
+        "canonical_url": "https://newsroom.amd.com/news/microsoft-running-workload-validation-amd-helios-rackscale-solution/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "55dcc81fc50b77ab23666553719f9362338c656a493dcdaf0dc33cebd53261d3",
+      "category": "optical_communications",
+      "importance": 3,
+      "fact_summary": "AIXTRON于北京时间11月24日15:30宣布，Nokia追加数笔G10-AsP设备订单，计划于2027年陆续交付，扩大InP光子集成电路制造能力。公告未披露台数、金额、增量产能或实际良率；设备支持150毫米InP晶圆不等于新增产能已投产。纳入24小时窗口。",
+      "analysis": "推断：重复采购提供光子器件扩产的实质证据，但尚无法量化其对Nokia光通信收入或单位成本的贡献。",
+      "evidence_quote": "AIXTRON and Nokia expand collaboration to scale InP photonics for AI infrastructure",
+      "details": {
+        "kind": "investment",
+        "background": "新增为首套设备安装后的重复订单。按主要受影响的InP光子器件环节归入光通信；原文市场规模预测及编辑残留不作为投资依据。",
+        "supplyChain": [
+          {
+            "segment": "Nokia（NOK，NYSE）：光通信设备及InP PIC制造商",
+            "direction": "设备采购关系已由供应商公告确认",
+            "reason": "公告明确追加订单，并载有Nokia管理人员对扩产的评论。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "aix"
+            ]
+          },
+          {
+            "segment": "AIXTRON（AIXA，OTHER：法兰克福）：化合物半导体外延设备供应商",
+            "direction": "重复设备订单已确认",
+            "reason": "公司直接披露G10-AsP订单及2027年交付计划。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "aix"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：设备交付验收影响AIXTRON收入时点；Nokia完成安装、工艺认证并爬坡后，才能增加有效PIC产出。单位成本改善还取决于良率、产能利用率及折旧，不能从设备能力直接推定。",
+        "watchpoints": [
+          "设备交付验收及投产时间",
+          "有效产能、良率和单位成本"
+        ],
+        "risks": [
+          "订单金额未披露，业绩重要性难量化",
+          "交付或工艺爬坡延误",
+          "扩产后利用率不足"
+        ],
+        "evidence": [
+          {
+            "id": "aix",
+            "name": "AIXTRON：Nokia追加InP光子制造设备订单",
+            "url": "https://www.aixtron.com/en/investors/news/AIXTRON%20and%20Nokia%C2%A0expand%20collaboration%20to%20scale%C2%A0%20InP%C2%A0photonics%20for%20AI%20infrastructure_n8087995",
+            "supports": "重复订单、2027年交付计划及InP PIC扩产用途。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.aixtron.com",
+        "original_url": "https://www.aixtron.com/en/investors/news/AIXTRON%20and%20Nokia%C2%A0expand%20collaboration%20to%20scale%C2%A0%20InP%C2%A0photonics%20for%20AI%20infrastructure_n8087995",
+        "canonical_url": "https://www.aixtron.com/en/investors/news/AIXTRON%20and%20Nokia%C2%A0expand%20collaboration%20to%20scale%C2%A0%20InP%C2%A0photonics%20for%20AI%20infrastructure_n8087995",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
