@@ -1,0 +1,525 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "e71bef93-56a8-48fa-9b6f-853a5c3ceeee",
+  "report_date": "2026-11-26",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-26｜统计：2026-11-25 08:07:51—11-26 08:07:51（北京时间）；更新回溯至11-23 08:07:51",
+  "collected_at": "2026-11-26T00:16:56.425Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-26T00:16:56.440Z",
+  "reviewed_content_sha256": "4b957caf67fbb807a6a885806b81158ad440ddfbf5fb9d14e659d6301102ee55",
+  "items": [
+    {
+      "id": "824283cf95f0a1c656bb60f37b16aff1de556f61b36071898573a285c262385c",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Codex 官方宣布，0.172.0 将已有工具列表缓存的可选 stdio MCP 服务延迟至首次调用时启动，并修复恢复执行时的沙箱权限、工作目录与工作区根目录还原。发布页显示11月24日发布，属于本轮72小时回溯更新。[项目仓库](https://github.com/openai/codex)",
+      "analysis": "这次变化值得运行多个 MCP 服务、经常中断并恢复任务的团队关注：它可能减少不必要的服务启动，并改善恢复执行的一致性。延迟启动有明确前提，不能推及全部 MCP 服务。",
+      "evidence_quote": "Optional stdio MCP servers with cached tool lists now start on their first tool call by default.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "提供终端中的 Coding Agent 执行与工具集成，支持恢复已保存的任务。",
+        "change": {
+          "summary": "正式版增加有条件的 MCP 延迟启动，并修复恢复任务时执行环境的还原。",
+          "version": "0.172.0",
+          "type": "release",
+          "publishedAt": "2026-11-24",
+          "evidenceRefs": [
+            "c1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "可选 stdio MCP 服务在已有工具列表缓存时默认首次调用才启动。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          },
+          {
+            "description": "codex exec resume 在未显式覆盖时恢复已保存的沙箱权限、工作目录与工作区根目录。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "恢复中断的编码任务，继续使用先前保存的执行环境。",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "c2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "适合检查长任务恢复及多 MCP 服务工作流；启动收益仍需结合实际配置评估。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "c1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "c1",
+            "name": "Codex 0.172.0 发布说明",
+            "url": "https://github.com/openai/codex/releases/tag/rust-v0.172.0",
+            "supports": "正式发布、11月24日发布时间、MCP启动条件及恢复执行修复"
+          },
+          {
+            "id": "c2",
+            "name": "Codex LICENSE",
+            "url": "https://github.com/openai/codex/blob/main/LICENSE",
+            "supports": "Apache-2.0代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/openai/codex/releases/tag/rust-v0.172.0",
+        "canonical_url": "https://github.com/openai/codex/releases/tag/rust-v0.172.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c25db5e779d58aa13ba2a797314826a223777c67123f81c37e718b6ae1cac0d8",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "QuoteMem 官方仓库称，它为 Agent 的长期记忆保留原文引句和事实旧版本，并提供跨工具共享的本地记忆服务。作者11月25日发布项目介绍；本次作为项目发现收录，首次公开日期尚未确认。[项目仓库](https://github.com/edsml-jz2321/QuoteMem)",
+      "analysis": "它适合研究记忆可追溯性：用户可以追问一条记忆来自哪段话，以及事实何时改变。遗忘效果目前仍是作者声明，跨客户端集成和旧信息重新进入记忆的边界需要验证。",
+      "evidence_quote": "QuoteMem is a long-term memory service for AI agents that keeps the exact words behind every memory.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为跨会话、跨工具的 Agent 记忆提供原文溯源和事实版本记录。",
+        "technical": [
+          {
+            "description": "每条记忆通过字节范围关联来源原文；事实变化时保留并标记被替代的旧版本。",
+            "evidenceRefs": [
+              "q1"
+            ]
+          },
+          {
+            "description": "多个客户端连接同一本地服务，共享记忆及遗忘操作。",
+            "evidenceRefs": [
+              "q1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "跨 Coding Agent 复用用户背景，并追查记忆依据。",
+            "evidenceRefs": [
+              "q1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "q3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "作者于2026年11月25日介绍项目；该日期不能证明首次公开时间。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "q2"
+            ]
+          },
+          {
+            "description": "值得用于记忆溯源实验；遗忘机制的完整性仍需场景验证。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "q1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "q1",
+            "name": "QuoteMem 官方仓库说明",
+            "url": "https://github.com/edsml-jz2321/QuoteMem",
+            "supports": "记忆引句、版本保留、遗忘及客户端共享机制"
+          },
+          {
+            "id": "q2",
+            "name": "作者项目介绍",
+            "url": "https://github.com/deepseek-ai/deepseek-harness/discussions/14298",
+            "supports": "作者身份声明及11月25日介绍时间"
+          },
+          {
+            "id": "q3",
+            "name": "QuoteMem LICENSE",
+            "url": "https://github.com/edsml-jz2321/QuoteMem/blob/main/LICENSE",
+            "supports": "MIT代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/edsml-jz2321/QuoteMem",
+        "canonical_url": "https://github.com/edsml-jz2321/QuoteMem",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cbbbc0ee0e720d1390f1dfd4d677b0e6d096d077d36e090eff9dd61d0c828710",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "ripgrep 官方仓库称，它提供遵守忽略规则的递归正则搜索，默认跳过隐藏文件和二进制文件。11月22日发布的16.0.0增加文件清单输入与反向glob参数；本次作为成熟Rust工具发现收录，不作为72小时内更新。[项目仓库](https://github.com/BurntSushi/ripgrep)",
+      "analysis": "它适合源码检索和脚本中的批量文件检查；文件清单输入让搜索更容易与上游筛选步骤组合。默认过滤会影响搜索范围，处理隐藏文件或需要完整扫描时应明确调整参数。",
+      "evidence_quote": "ripgrep is a line-oriented search tool that recursively searches the current directory for a regex pattern.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "为目录和文件提供可脚本化的正则搜索，并按忽略规则控制扫描范围。",
+        "technical": [
+          {
+            "description": "默认遵守gitignore，并跳过隐藏文件、隐藏目录及二进制文件。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          },
+          {
+            "description": "16.0.0提供--in/--in0读取文件路径清单，以及-G/--glob-not反向匹配。",
+            "evidenceRefs": [
+              "r2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在源代码目录检索模式，或对预先生成的文件清单执行批量检查。",
+            "evidenceRefs": [
+              "r1",
+              "r2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Unlicense",
+          "scope": "仓库代码，二选一授权",
+          "evidenceRefs": [
+            "r3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "16.0.0于2026年11月22日发布，提供近期维护证据，早于本轮72小时窗口。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "r2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "r1",
+            "name": "ripgrep 官方仓库",
+            "url": "https://github.com/BurntSushi/ripgrep",
+            "supports": "搜索能力、默认过滤及Rust实现"
+          },
+          {
+            "id": "r2",
+            "name": "ripgrep 16.0.0 发布说明",
+            "url": "https://github.com/BurntSushi/ripgrep/releases/tag/16.0.0",
+            "supports": "发布时间、文件清单输入与反向glob参数"
+          },
+          {
+            "id": "r3",
+            "name": "ripgrep COPYING",
+            "url": "https://github.com/BurntSushi/ripgrep/blob/master/COPYING",
+            "supports": "MIT或Unlicense双重授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/BurntSushi/ripgrep",
+        "canonical_url": "https://github.com/BurntSushi/ripgrep",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6e7b9633e870315d5636115359ff08a014750d221cd457feb1cce5806f04c0e9",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "AutoSubs 官方仓库称，它在本地将音视频转为带时间戳的字幕，提供说话人标记，并连接Resolve、Premiere和After Effects。作为成熟媒体工具发现收录；9月29日的v3.11.0提供近90天维护证据，可用于字幕生成和剪辑时间线回填。[项目仓库](https://github.com/tmoroney/auto-subs)",
+      "analysis": "它把转写、字幕编辑和剪辑软件连接到同一流程，适合希望减少云端上传的创作者。应先确认剪辑软件安装来源与集成条件；代码授权也不能直接代表所下载模型的授权。",
+      "evidence_quote": "On-device subtitle generation that connects directly to DaVinci Resolve, Premiere, and After Effects.",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "在本地生成、编辑和导出字幕，并将字幕接回剪辑软件。",
+        "technical": [
+          {
+            "description": "支持本地转写、说话人标记和SRT导出；Premiere接收字幕轨，After Effects创建文字图层。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为访谈或录制视频制作字幕，并回填Resolve时间线。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码；不据此推定下载模型的授权",
+          "evidenceRefs": [
+            "a3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "v3.11.0于2026年9月29日发布；官方明确不支持Mac App Store版Resolve。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "a1",
+              "a2"
+            ]
+          },
+          {
+            "description": "适合本地字幕工作流，但应先验证目标剪辑软件与素材的集成表现。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "a1",
+            "name": "AutoSubs 官方仓库",
+            "url": "https://github.com/tmoroney/auto-subs",
+            "supports": "本地字幕、导出、剪辑软件集成和Resolve限制"
+          },
+          {
+            "id": "a2",
+            "name": "AutoSubs v3.11.0 发布说明",
+            "url": "https://github.com/tmoroney/auto-subs/releases/tag/v3.11.0",
+            "supports": "9月29日维护证据"
+          },
+          {
+            "id": "a3",
+            "name": "AutoSubs LICENSE",
+            "url": "https://github.com/tmoroney/auto-subs/blob/main/LICENSE",
+            "supports": "MIT代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/tmoroney/auto-subs",
+        "canonical_url": "https://github.com/tmoroney/auto-subs",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "ffdc07203ba7d7b170bcc4c23ccb31b4a21a0df69855351c2dc41464034d61e3",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Syft 官方仓库称，它从容器镜像、文件系统和归档生成SBOM，支持CycloneDX、SPDX等输出，并可与Grype连接开展漏洞扫描。本次作为供应链工具发现收录；11月16日的v1.57.2改进许可证识别与清单稳定性，提供近期维护证据。[项目仓库](https://github.com/anchore/syft)",
+      "analysis": "它适合为构建产物建立可交换的软件清单，作为漏洞扫描和依赖治理的输入。清单质量依赖包识别覆盖，生成SBOM本身不能证明没有漏洞或完成了许可证合规审查。",
+      "evidence_quote": "CLI tool and library for generating a Software Bill of Materials from container images and filesystems",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "识别构建产物中的软件包并生成SBOM，为供应链检查提供输入。",
+        "technical": [
+          {
+            "description": "支持容器镜像、文件系统和归档，输出CycloneDX、SPDX及Syft JSON。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          },
+          {
+            "description": "可生成基于in-toto规范的签名SBOM证明，并与Grype衔接。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在构建流水线中保存镜像SBOM，交给漏洞扫描和依赖治理流程。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "s3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "2026年11月16日的v1.57.2修复PEP 639许可证目录识别，并稳定uv.lock extras排序。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "s2"
+            ]
+          },
+          {
+            "description": "适合作为供应链检查输入；清单完整性和合规结论仍需另行评估。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "Syft 官方仓库",
+            "url": "https://github.com/anchore/syft",
+            "supports": "扫描对象、SBOM格式、签名证明及Grype集成"
+          },
+          {
+            "id": "s2",
+            "name": "Syft v1.57.2 发布说明",
+            "url": "https://github.com/anchore/syft/releases/tag/v1.57.2",
+            "supports": "11月16日维护证据及识别修复"
+          },
+          {
+            "id": "s3",
+            "name": "Syft LICENSE",
+            "url": "https://github.com/anchore/syft/blob/main/LICENSE",
+            "supports": "Apache-2.0代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/anchore/syft",
+        "canonical_url": "https://github.com/anchore/syft",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "29e7fd0e6e62da17c52d55e3c7b6e1ea1d70b74229db7eb7fe56bab89b0aac26",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "Helia 官方仓库称，它提供模块化TypeScript IPFS实现，可组合UnixFS、IPNS和内容寻址对象，通过libp2p、Bitswap或HTTP网关获取数据。本次作为成熟项目发现收录；9月29日的UnixFS组件修复提供近90天维护证据。[项目仓库](https://github.com/ipfs/helia)",
+      "analysis": "它适合希望在应用内按需组合IPFS能力的团队，尤其是需要在P2P与HTTP获取方式之间选择的场景。模块化也意味着集成者需要自行评估存储、路由和各组件版本组合。",
+      "evidence_quote": "An implementation of IPFS in TypeScript",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "以可组合的TypeScript模块为应用提供IPFS数据组织和获取能力。",
+        "technical": [
+          {
+            "description": "P2P实现使用Bitswap、libp2p并以HTTP网关回退；另提供仅使用HTTP网关的轻量实现。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          },
+          {
+            "description": "UnixFS、IPNS、DAG-JSON及DAG-CBOR等能力由独立模块提供。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在TypeScript应用中保存内容寻址对象，或按需接入IPFS文件获取。",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码的MIT授权选项",
+          "evidenceRefs": [
+            "h3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "UnixFS v8.0.9于2026年9月29日发布，修复分片链接移除处理，提供近期维护证据。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "h2"
+            ]
+          },
+          {
+            "description": "适合按需嵌入IPFS；存储和网络配置仍是应用集成工作的一部分。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "h1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "h1",
+            "name": "Helia 官方仓库",
+            "url": "https://github.com/ipfs/helia",
+            "supports": "TypeScript实现、模块结构及P2P与HTTP获取方式"
+          },
+          {
+            "id": "h2",
+            "name": "Helia UnixFS v8.0.9 发布说明",
+            "url": "https://github.com/ipfs/helia/releases/tag/unixfs-v8.0.9",
+            "supports": "9月29日组件维护证据"
+          },
+          {
+            "id": "h3",
+            "name": "Helia LICENSE-MIT",
+            "url": "https://github.com/ipfs/helia/blob/main/LICENSE-MIT",
+            "supports": "MIT代码授权选项"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ipfs/helia",
+        "canonical_url": "https://github.com/ipfs/helia",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
