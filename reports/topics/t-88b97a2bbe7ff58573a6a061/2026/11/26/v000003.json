@@ -1,0 +1,413 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "26c7a067-fb87-467d-91d6-45da82ccf3d9",
+  "report_date": "2026-11-26",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月26日｜截至北京时间08:10",
+  "collected_at": "2026-11-26T00:19:02.936Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-26T00:19:02.948Z",
+  "reviewed_content_sha256": "b0c2210da1b42fe319a415d6e669cbf8b2b8755bb286c3bf1e3502dd4b053734",
+  "items": [
+    {
+      "id": "7e7f914347a17a7322ed4880db43752647774c748f187bdf5a4f1cbba9205e7f",
+      "category": "ai_industry_chain",
+      "importance": 5,
+      "fact_summary": "HPE在北京时间11月24日06:00开始的FY2026第四季度业绩会上称，季度AI系统订单45亿美元，同比增长超过130%；相关收入25亿美元，同比增长三位数。全年面向AI的网络订单增长近200%，期末积压订单17亿美元。公司同时预计AI服务器组合及成本变化将压低后续毛利率。纳入72小时窗口；订单不等于收入，集团利润不能全部归属于AI。",
+      "analysis": "推断：订单与交付同步增长支持后续收入兑现，但新增收入的利润转化可能受产品组合和组件成本约束。",
+      "evidence_quote": "In Q4, AI systems orders reached $4.5 billion, up over 130%, with revenue up triple digits to $2.5 billion.",
+      "details": {
+        "kind": "investment",
+        "background": "新增为季度经营结果及交付展望。官方讲稿列明业绩会时间，未提供文件上传时刻。",
+        "metrics": [
+          {
+            "name": "AI系统订单",
+            "value": "45",
+            "unit": "亿美元",
+            "period": "FY2026第四季度",
+            "comparison": "同比增长超过130%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "AI系统收入",
+            "value": "25",
+            "unit": "亿美元",
+            "period": "FY2026第四季度",
+            "comparison": "同比增长三位数",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "面向AI的网络积压订单",
+            "value": "17",
+            "unit": "亿美元",
+            "period": "FY2026期末",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "HPE（HPE，NYSE）：AI服务器及网络设备",
+            "direction": "订单及交付增长",
+            "reason": "公司直接披露自身业务；未据此认定其他上市公司的新增供货金额。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：积压需求经组件采购、系统交付及验收转为收入；若采购与回款节奏匹配，可改善现金周转。AI服务器占比提高亦可能稀释毛利率，因此需同时检验毛利额与现金流。",
+        "watchpoints": [
+          "AI系统订单转收入速度及网络交付进度。",
+          "毛利额、库存与经营现金流是否随收入改善。"
+        ],
+        "risks": [
+          "组件短缺和客户数据中心就绪时间可能延迟交付。",
+          "成本增幅超过定价、AI服务器组合变化可能削弱利润转化。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "HPE FY2026第四季度官方业绩会讲稿",
+            "url": "https://investors.hpe.com/~/media/Files/H/HP-Enterprise-IR/documents/q4-2026/q4-2026-earnings-transcript.pdf",
+            "supports": "业绩会时间、AI订单与收入、网络积压订单及毛利率展望。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.hpe.com",
+        "original_url": "https://investors.hpe.com/~/media/Files/H/HP-Enterprise-IR/documents/q4-2026/q4-2026-earnings-transcript.pdf",
+        "canonical_url": "https://investors.hpe.com/~/media/Files/H/HP-Enterprise-IR/documents/q4-2026/q4-2026-earnings-transcript.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "09d9fca741487996756d1ccbf708682866459ebfeba0dba8df4e569bb3d77d0b",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "Ambarella于北京时间11月25日05:05公布FY2027第三季度收入1.152亿美元，同比增长6.2%，GAAP毛利率57.8%，上年同期59.6%。公司称存储涨价与供应稀缺加剧，许多客户下调展望；下一季度收入指引为7,000万至7,500万美元。公司亦称消费IoT收入低于预期，不能将指引变化全部归因于存储或AI需求。纳入72小时窗口。",
+      "analysis": "推断：存储约束可能通过客户减产压低SoC出货，说明芯片需求增长未必能转为收入；恢复程度取决于客户库存和存储供应。",
+      "evidence_quote": "Ambarella, Inc. Announces Third Quarter Fiscal Year 2027 Financial Results",
+      "details": {
+        "kind": "investment",
+        "background": "财季截至2026年10月31日；纳入理由为存储供应对半导体订单兑现的直接影响，不延伸至终端产品更新。",
+        "metrics": [
+          {
+            "name": "收入",
+            "value": "1.152",
+            "unit": "亿美元",
+            "period": "FY2027第三季度",
+            "comparison": "同比增长6.2%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GAAP毛利率",
+            "value": "57.8",
+            "unit": "%",
+            "period": "FY2027第三季度",
+            "comparison": "上年同期59.6%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "收入指引",
+            "value": "7000—7500",
+            "unit": "万美元",
+            "period": "FY2027第四季度，截至2027年1月31日",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Ambarella（AMBA，NASDAQ）：边缘AI SoC设计",
+            "direction": "客户展望承压",
+            "reason": "公司直接披露存储涨价及稀缺影响客户；未具名存储供应商。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：存储供应限制客户整机生产，可减少配套SoC采购；较低出货规模可能削弱费用吸收和现金回笼。恢复链条需由存储可得性改善、客户订单回升及出货兑现共同验证。",
+        "watchpoints": [
+          "下一季度收入兑现及客户订单调整。",
+          "存储供应、边缘AI收入占比与库存变化。"
+        ],
+        "risks": [
+          "消费IoT需求偏弱也是独立因素，不能用存储解释全部变化。",
+          "若客户迅速获得替代供应，约束持续时间可能短于预期。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Ambarella FY2027第三季度官方财报",
+            "url": "https://investor.ambarella.com/node/17476/pdf",
+            "supports": "发布时间、收入与毛利率、第四季度指引及管理层对存储供应的表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investor.ambarella.com",
+        "original_url": "https://investor.ambarella.com/node/17476/pdf",
+        "canonical_url": "https://investor.ambarella.com/node/17476/pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "374be1187a49b39c9dccd471aabccf8669e29fb018156cf3b9f1b826248dad9f",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "ADI于北京时间11月24日20:01公布FY2026第四季度业绩：集团收入43.734亿美元，同比增长42%；GAAP毛利率69.3%，上年同期63.1%。公司称AI基础设施投资推动数据中心和ATE相关业务增长，但全年增长超过三分之二来自非AI市场。下一季度收入指引44亿美元±1.5亿美元。纳入72小时窗口；未单列AI收入或订单。",
+      "analysis": "推断：财报支持AI投资向模拟器件及测试环节传导，但缺少业务拆分，尚不足以量化AI对盈利的独立贡献。",
+      "evidence_quote": "Analog Devices Reports Record Fourth Quarter and Fiscal 2026 Financial Results",
+      "details": {
+        "kind": "investment",
+        "background": "财季截至2026年10月31日；来源明确发布时间。业绩及指引均为集团口径。",
+        "metrics": [
+          {
+            "name": "集团收入",
+            "value": "43.734",
+            "unit": "亿美元",
+            "period": "FY2026第四季度",
+            "comparison": "同比增长42%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GAAP毛利率",
+            "value": "69.3",
+            "unit": "%",
+            "period": "FY2026第四季度",
+            "comparison": "上年同期63.1%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "集团收入指引",
+            "value": "44±1.5",
+            "unit": "亿美元",
+            "period": "FY2027第一季度",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Analog Devices（ADI，NASDAQ）：模拟及电源管理半导体",
+            "direction": "数据中心及ATE相关需求增长",
+            "reason": "管理层直接确认AI基础设施投资对相关业务的推动；未确认具体客户供货增量。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：数据中心和测试设备投资增加可扩大相关芯片需求；只有新增收入维持产品利润率、且产能投入与回款匹配，才能转为持续盈利和自由现金流。集团其他市场增长需单独评估。",
+        "watchpoints": [
+          "数据中心及ATE收入、订单和产能利用率拆分。",
+          "后续收入指引兑现及毛利率变化。"
+        ],
+        "risks": [
+          "集团业绩主要增量不能全部归因于AI。",
+          "客户库存及非AI需求变化可能抵消相关业务增长。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "ADI FY2026第四季度及全年财报",
+            "url": "https://analogdevices.gcs-web.com/news-releases/news-release-details/analog-devices-reports-record-fourth-quarter-and-fiscal-2026",
+            "supports": "发布时间、收入、毛利率、下一季度指引及AI增长归属限制。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "analogdevices.gcs-web.com",
+        "original_url": "https://analogdevices.gcs-web.com/news-releases/news-release-details/analog-devices-reports-record-fourth-quarter-and-fiscal-2026",
+        "canonical_url": "https://analogdevices.gcs-web.com/news-releases/news-release-details/analog-devices-reports-record-fourth-quarter-and-fiscal-2026",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "dfe25bf32e604910609204f580b027d55f24ae2fd351034718a494a9728076d2",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "Applied Digital披露，11月23日宣布完成3亿美元高级有担保过桥融资安排，用于Delta Forge 1建设；11月24日另将Series G可转换优先股购买协议总承诺额度由20亿美元增至25亿美元，剩余可用额度10.35亿美元。过桥贷款期限364天、利率SOFR加300基点，提款附条件。新增为融资进展，不重复此前租约；额度不等于到账。原文仅列日期，保守纳入72小时窗口。",
+      "analysis": "推断：融资安排增加建设资金来源，但短期债务与可转换优先股使交付、再融资和摊薄风险同时上升。",
+      "evidence_quote": "Applied Digital Announces $300 Million Senior Secured Bridge Facility Led by a Leading Global Financial Institution",
+      "details": {
+        "kind": "investment",
+        "background": "建设融资及股权资金承诺合并记录；协议增加可用资金渠道，并未确认全部资金已提取。",
+        "metrics": [
+          {
+            "name": "过桥融资额度",
+            "value": "3",
+            "unit": "亿美元",
+            "period": "2026年11月23日公告",
+            "comparison": "364天；SOFR加300基点；延迟提款",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "优先股购买协议总承诺额度",
+            "value": "25",
+            "unit": "亿美元",
+            "period": "2026年11月24日修订",
+            "comparison": "此前20亿美元；修订后剩余10.35亿美元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Applied Digital（APLD，NASDAQ）：AI数据中心开发运营",
+            "direction": "增加建设融资渠道",
+            "reason": "公告确认过桥贷款支持Delta Forge 1，优先股协议涉及公司自身融资。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：满足提款条件后，贷款可支付施工支出，支持园区达到交付及计租条件；但建设完成仍需追加融资，现金流改善取决于按期交付、客户付款及长期资金接续。",
+        "watchpoints": [
+          "实际提款、电价审批及施工里程碑。",
+          "后续建设资金缺口、长期融资成本及优先股转换情况。"
+        ],
+        "risks": [
+          "提款附施工、审批、贷款人同意及财务约束条件。",
+          "短期到期压力及优先股转换可能增加融资成本或摊薄普通股。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Applied Digital 11月24日8-K及融资附件",
+            "url": "https://ir.applieddigital.com/sec-filings/all-sec-filings/content/0001493152-26-054002/0001493152-26-054002.pdf",
+            "supports": "优先股承诺额度修订、过桥贷款用途、期限、利率及提款条件。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.applieddigital.com",
+        "original_url": "https://ir.applieddigital.com/sec-filings/all-sec-filings/content/0001493152-26-054002/0001493152-26-054002.pdf",
+        "canonical_url": "https://ir.applieddigital.com/sec-filings/all-sec-filings/content/0001493152-26-054002/0001493152-26-054002.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a0485a9085632e7c639d6232841bab61c43f10b33f77270607fdb72963f8841f",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "SCHMID于11月23日宣布推出面向先进封装玻璃芯基板的QuantumLine P+通孔铜填充平台，计划12月起接受订单。公司宣称支持最高50:1深宽比，并提供客户送样和工艺演示。新增为设备发布，未披露该平台订单、客户认证、ASP或量产良率；技术性能属厂商表述。原文未列精确时刻，保守纳入72小时窗口。",
+      "analysis": "推断：平台补充可能扩大玻璃基板设备机会，但投资价值仍取决于客户认证和商业订单，现阶段不宜计入量产收入。",
+      "evidence_quote": "SCHMID Launches QuantumLine P+ for Void-Free Bottom-Up Copper Filling of Through-Glass Vias",
+      "details": {
+        "kind": "investment",
+        "background": "产品针对AI/HPC先进封装玻璃芯基板的TGV金属化环节；公告所述此前湿法设备订单不等于本平台订单。",
+        "metrics": [
+          {
+            "name": "宣称支持的最高通孔深宽比",
+            "value": "50:1",
+            "unit": "比例",
+            "period": "2026年11月发布规格",
+            "comparison": "厂商技术表述，非客户量产良率",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "计划接受订单时间",
+            "value": "2026年12月",
+            "unit": "月份",
+            "period": "产品商业化计划",
+            "comparison": "尚非已获订单或出货",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "SCHMID Group（SHMD，NASDAQ）：先进封装基板工艺设备",
+            "direction": "扩充玻璃基板设备产品组合",
+            "reason": "公司确认平台发布；未披露具名客户认证或采购关系。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：若工艺验证成功并进入客户产线，平台可形成设备订单，再经交付验收转为收入与回款；盈利贡献取决于ASP、制造成本、验收周期及售后支出，当前无法量化。",
+        "watchpoints": [
+          "首批订单金额、客户验证及交付验收。",
+          "持续生产良率、稳定性与单位加工成本。"
+        ],
+        "risks": [
+          "玻璃芯基板采用节奏可能慢于公司预期。",
+          "厂商测试不代表客户量产表现；竞争工艺可能限制订单和利润率。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "SCHMID QuantumLine P+官方发布公告",
+            "url": "https://schmidgroup.gcs-web.com/news-releases/news-release-details/schmid-launches-quantumline-p-void-free-bottom-copper-filling",
+            "supports": "发布日期、产品用途、宣称规格、送样及接受订单计划。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "schmidgroup.gcs-web.com",
+        "original_url": "https://schmidgroup.gcs-web.com/news-releases/news-release-details/schmid-launches-quantumline-p-void-free-bottom-copper-filling",
+        "canonical_url": "https://schmidgroup.gcs-web.com/news-releases/news-release-details/schmid-launches-quantumline-p-void-free-bottom-copper-filling",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
