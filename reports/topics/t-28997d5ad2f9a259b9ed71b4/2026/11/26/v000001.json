@@ -1,0 +1,324 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "df6f22ab-60ea-4579-b81c-440c2a5eabc5",
+  "report_date": "2026-11-26",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月26日",
+  "collected_at": "2026-11-26T00:14:40.888Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-26T00:14:40.913Z",
+  "reviewed_content_sha256": "303bcb6ff6b2fb89219ca74366bc666a5212be0b60b0233b137d7bc0a65a832f",
+  "items": [
+    {
+      "id": "599c0cc736ed3131e9299b7548b90a3468bb95a90fdeac2e8ed541953bbcfc77",
+      "category": "tech_digital",
+      "importance": 5,
+      "fact_summary": "中国载人航天工程办公室宣布，神舟二十四号于11月25日北京时间08:18发射成功，11:56与空间站完成对接，乘组于14:35进驻“天宫”。这是中国首次有外籍航天员参与的载人飞行任务，中国空间站首次迎来外籍航天员。",
+      "analysis": null,
+      "evidence_quote": "神舟二十四号航天员乘组顺利进驻“天宫” 中外航天员实现首次“太空握手”",
+      "details": {
+        "kind": "news",
+        "background": "此次任务是中国空间站应用与发展阶段第8次载人飞行任务，乘组进驻后将与神舟二十三号乘组进行在轨轮换。",
+        "keyFacts": [
+          {
+            "name": "科学实验安排",
+            "value": "计划开展90项实（试）验项目，其中包括4项中巴合作科学实验",
+            "period": "神舟二十四号飞行任务期间",
+            "nature": "statement",
+            "evidenceRefs": [
+              "s4"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-25T08:18:00+08:00",
+            "precision": "datetime",
+            "event": "火箭点火发射，约10分钟后飞船进入预定轨道。",
+            "evidenceRefs": [
+              "s2"
+            ]
+          },
+          {
+            "time": "2026-11-25T11:56:00+08:00",
+            "precision": "datetime",
+            "event": "飞船对接于天和核心舱前向端口。",
+            "evidenceRefs": [
+              "s3"
+            ]
+          },
+          {
+            "time": "2026-11-25T14:35:00+08:00",
+            "precision": "datetime",
+            "event": "神舟二十四号乘组进驻空间站，中外航天员实现首次太空握手。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "中国载人航天工程办公室：乘组顺利进驻天宫",
+            "url": "https://www.cmse.gov.cn/xwzx/202611/t20261125_57903.html",
+            "supports": "进驻时间、首次迎来外籍航天员及后续在轨轮换。"
+          },
+          {
+            "id": "s2",
+            "name": "中国载人航天工程办公室：发射取得圆满成功",
+            "url": "https://www.cmse.gov.cn/xwzx/202611/t20261125_57891.html",
+            "supports": "发射时间、入轨情况及任务性质。"
+          },
+          {
+            "id": "s3",
+            "name": "中国载人航天工程办公室：完成自主快速交会对接",
+            "url": "https://www.cmse.gov.cn/xwzx/202611/t20261125_57897.html",
+            "supports": "对接时间、端口及过程历时。"
+          },
+          {
+            "id": "s4",
+            "name": "中国科学院：任务期间计划开展90项实（试）验项目",
+            "url": "https://www.cas.cn/sygz/202611/t20261125_5125007.shtml",
+            "supports": "科学实验计划及中巴合作项目安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.cmse.gov.cn",
+        "original_url": "https://www.cmse.gov.cn/xwzx/202611/t20261125_57903.html",
+        "canonical_url": "https://www.cmse.gov.cn/xwzx/202611/t20261125_57903.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6a963b7ebf54b1d082f76078edb5995dbee833e89b5983958c2c5c61ca2f4ce5",
+      "category": "entertainment",
+      "importance": 3,
+      "fact_summary": "据21世纪经济报道11月25日刊载的声明，王玉雯工作室回应与付智恩品牌合作的争议，称此次合作露出的产品主要为皮衣、派克服和美利奴类羊毛外套，并非主打皮草品类推广。工作室表示已与品牌沟通，将在既有合作框架下持续评估合作内容。",
+      "analysis": null,
+      "evidence_quote": "王玉雯女士此次商务合作露出的产品主要为该品牌的皮衣、派克服、美利奴类羊毛外套，并非主打皮草品类推广。",
+      "details": {
+        "kind": "news",
+        "background": "王玉雯与付智恩品牌的商务合作涉及皮草产品及动物福利方面的质疑，工作室就合作范围和后续安排作出说明。",
+        "timeline": [
+          {
+            "time": "2026-11-25",
+            "precision": "date",
+            "event": "工作室发布声明，解释出镜产品范围并表示将持续评估合作内容。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "王玉雯工作室",
+            "statement": "此次出镜产品主要为皮衣、派克服、美利奴类羊毛外套，并非主打皮草推广；善待生命是团队筛选商务合作的重要标准。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "s1"
+            ]
+          },
+          {
+            "actor": "王玉雯工作室",
+            "statement": "已第一时间与品牌沟通，将在既有合作框架下以更严格的标准持续评估合作内容。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "声明未宣布终止合作，也未披露具体调整措施。"
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "21世纪经济报道：王玉雯工作室、品牌方发声",
+            "url": "https://news.sina.cn/2026-11-25/detail-inizyqvt9269445.d.html?wm=3049_0015",
+            "supports": "工作室声明的合作范围、理念及后续评估安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.sina.cn",
+        "original_url": "https://news.sina.cn/2026-11-25/detail-inizyqvt9269445.d.html?wm=3049_0015",
+        "canonical_url": "https://news.sina.cn/2026-11-25/detail-inizyqvt9269445.d.html?wm=3049_0015",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "74366cbe9d26335937e6d79493fe8bc6072888b21944be30c638527d296aa2d7",
+      "category": "gaming",
+      "importance": 3,
+      "fact_summary": "据4Gamers报道，T1在11月25日举行的2027赛季阵容发布会上宣布，上路选手Zeus崔祐齐回归，合同持续至2029年。报道列出的新赛季阵容为Zeus、Oner、Faker、Peyz和Keria。",
+      "analysis": null,
+      "evidence_quote": "歡迎回家！T1宣布Zeus回歸，續簽三年合約牽手走到2029年",
+      "details": {
+        "kind": "news",
+        "background": "Zeus曾效力T1，离队后此次重新加盟，将担任2027赛季阵容的上路选手。",
+        "keyFacts": [
+          {
+            "name": "Zeus合同期限",
+            "value": "至2029年",
+            "nature": "reported",
+            "evidenceRefs": [
+              "s1"
+            ]
+          },
+          {
+            "name": "2027赛季阵容",
+            "value": "Zeus、Oner、Faker、Peyz、Keria",
+            "period": "2027赛季",
+            "nature": "reported",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-25",
+            "precision": "date",
+            "event": "T1在阵容发布会上宣布Zeus回归。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "4Gamers：T1宣布Zeus回归",
+            "url": "https://www.4gamers.com.tw/news/detail/83504/t1-welcome-back-home-zeus",
+            "supports": "宣布日期、合同期限及2027赛季阵容。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.4gamers.com.tw",
+        "original_url": "https://www.4gamers.com.tw/news/detail/83504/t1-welcome-back-home-zeus",
+        "canonical_url": "https://www.4gamers.com.tw/news/detail/83504/t1-welcome-back-home-zeus",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "44485b50c0469b28dade2932061e43fc52e132325588ce38986e81714dcee921",
+      "category": "lifestyle_emotion",
+      "importance": 2,
+      "fact_summary": "据潇湘晨报11月25日报道，沈阳商场保洁员陈景福当日发布视频，表示决定辞职，并称会站好最后一班岗。报道未说明离职原因及下一步工作安排。",
+      "analysis": null,
+      "evidence_quote": "沈阳高颜值保洁大叔宣布辞职",
+      "details": {
+        "kind": "news",
+        "background": "陈景福此前在辽宁沈阳一家商场从事保洁工作，曾接受媒体采访介绍自己的工作与生活。",
+        "timeline": [
+          {
+            "time": "2026-11-25",
+            "precision": "date",
+            "event": "陈景福发布视频宣布决定辞职。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "陈景福",
+            "statement": "决定辞职，会站好最后一班岗",
+            "form": "quote",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "离职原因、实际离岗日期及后续工作安排尚未披露。"
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "潇湘晨报：沈阳保洁员陈景福宣布辞职",
+            "url": "https://news.ifeng.com/c/8yLPAw8Mr1L",
+            "supports": "辞职声明的发布日期及本人关于交接工作的表述。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8yLPAw8Mr1L",
+        "canonical_url": "https://news.ifeng.com/c/8yLPAw8Mr1L",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9b5f6f26600e32e35a1aedf5aa8d885fba4c2e620991af9736820fb045110cb8",
+      "category": "sports",
+      "importance": 2,
+      "fact_summary": "据时事通信11月25日报道，前日本乒乓球运动员石川佳纯当日宣布，已与交往已久的对象结婚，希望建立充满笑容的家庭。报道未披露配偶身份及具体结婚日期。",
+      "analysis": null,
+      "evidence_quote": "石川佳純さんが結婚発表＝卓球",
+      "details": {
+        "kind": "news",
+        "background": "石川佳纯曾在伦敦、里约和东京三届奥运会获得团体奖牌，并于2023年5月宣布退役。",
+        "timeline": [
+          {
+            "time": "2026-11-25",
+            "precision": "date",
+            "event": "石川佳纯宣布已经结婚。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "石川佳纯",
+            "statement": "已与交往已久的对象结婚，希望建立充满笑容的家庭。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "配偶身份及具体结婚日期未在报道中披露。"
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "时事通信：石川佳纯宣布结婚",
+            "url": "https://www.nippon.com/ja/articles/-/57968",
+            "supports": "婚讯宣布日期、本人表述及运动生涯背景。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.nippon.com",
+        "original_url": "https://www.nippon.com/ja/articles/-/57968",
+        "canonical_url": "https://www.nippon.com/ja/articles/-/57968",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
