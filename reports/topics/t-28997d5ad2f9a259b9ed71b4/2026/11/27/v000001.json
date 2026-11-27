@@ -1,0 +1,393 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "216e4aa3-0682-4acf-a80f-16404a5adab1",
+  "report_date": "2026-11-27",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月27日",
+  "collected_at": "2026-11-27T00:15:45.932Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-27T00:15:45.942Z",
+  "reviewed_content_sha256": "ba110261589b2e5a4dda60c0258ce8b0285cd2d630a28885945c1fd64b45714a",
+  "items": [
+    {
+      "id": "37eb5a6ca356ef2f97f784ee53a5f0aa80c4a6023759161c37cfc0bdf2f135a8",
+      "category": "finance_consumption",
+      "importance": 4,
+      "fact_summary": "据新华社11月26日报道，市场监管总局食品生产经营司回应部分可口可乐瓶身仅标到期日、未标生产日期的问题，称这是企业提前执行新版食品安全国家标准。新标准允许保质期6个月及以上的预包装食品仅标示保质期和保质期到期日，将于2027年3月16日实施，企业可提前执行。",
+      "analysis": null,
+      "evidence_quote": "市场监管总局回应食品保质期标注问题",
+      "details": {
+        "kind": "news",
+        "background": "部分消费者发现可口可乐瓶身的日期标注方式变化，对是否遗漏生产日期提出疑问。",
+        "keyFacts": [
+          {
+            "name": "适用条件",
+            "value": "保质期6个月及以上的预包装食品，可仅标示保质期和保质期到期日。",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "标准及实施日期",
+            "value": "《食品安全国家标准 预包装食品标签通则》（GB 7718—2025）将于2027年3月16日实施，实施前允许企业提前执行。",
+            "period": "2027-03-16",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-26",
+            "precision": "date",
+            "event": "市场监管总局食品生产经营司解释相关日期标注方式。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "市场监管总局食品生产经营司",
+            "statement": "相关标注并非企业遗漏信息，而是提前执行新的食品安全国家标准。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新华社：市场监管总局回应食品保质期标注问题",
+            "url": "https://www.xinhuanet.com/fortune/20261126/9876376e748c425da615982909737161/c.html",
+            "supports": "监管回应、新标准的适用条件、正式实施日期及提前执行安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.xinhuanet.com",
+        "original_url": "https://www.xinhuanet.com/fortune/20261126/9876376e748c425da615982909737161/c.html",
+        "canonical_url": "https://www.xinhuanet.com/fortune/20261126/9876376e748c425da615982909737161/c.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7a9d0827457ab5cdd0fb1148816da5073cbbd51e3919c469e18ac2825e64de4b",
+      "category": "social_event",
+      "importance": 4,
+      "fact_summary": "据上海证券报11月26日转载的声明，三只松鼠就员工宿舍条件问题致歉，承认年货节期间临时启用的旺季用工周转宿舍存在设施配置简陋等问题。公司表示立即对相关人员进行妥善转移安置，确保居住条件符合标准，并完善住宿保障机制。",
+      "analysis": null,
+      "evidence_quote": "二、我司立即对相关人员进行妥善转移安置，确保居住条件符合标准，后续将完善住宿保障机制。",
+      "details": {
+        "kind": "news",
+        "background": "事件涉及三只松鼠为年货节旺季用工人员临时启用的周转宿舍及其基本居住条件。",
+        "keyFacts": [
+          {
+            "name": "公司承认的问题",
+            "value": "涉事周转宿舍存在设施配置简陋等问题。",
+            "period": "2026-11-26",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "安置及整改安排",
+            "value": "公司表示立即妥善转移安置相关人员，确保居住条件符合标准，后续完善住宿保障机制。",
+            "period": "2026-11-26",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-26",
+            "precision": "date",
+            "event": "三只松鼠发布员工宿舍问题致歉声明。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "声明未披露转移安置的具体人数、完成时间及新住宿地点。"
+        ],
+        "watchpoints": [
+          "员工转移安置及住宿条件改善的落实情况。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "上海证券报：三只松鼠，致歉（东方财富转载）",
+            "url": "https://finance.eastmoney.com/a/202611263940994429.html",
+            "supports": "公司致歉声明、涉事宿舍用途、承认的问题及转移安置安排。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.eastmoney.com",
+        "original_url": "https://finance.eastmoney.com/a/202611263940994429.html",
+        "canonical_url": "https://finance.eastmoney.com/a/202611263940994429.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b8031e1cd4c6e8c3975582418af83e778413386e426f521ce6d180d9770c38a0",
+      "category": "international_topic",
+      "importance": 4,
+      "fact_summary": "美国环保署11月26日更新爱荷华州陆军弹药厂叠氮化铅受控引爆后的监测情况，称实时空气监测设备截至公告时未检出空气中的铅，已收集超过1000份引爆后样本，预计最早次日开始收到实验室检测结果。公告同时表示，土壤、灰尘和水等介质的采样及检测仍在推进。",
+      "analysis": "实时空气监测未检出铅，不能直接推断土壤、灰尘和水体均未受影响；对污染范围的判断仍需结合实验室检测结果。",
+      "evidence_quote": "EPA Provides Update on Sampling Following Yesterday’s Controlled Detonation at Iowa Army Ammunition Plant",
+      "details": {
+        "kind": "news",
+        "background": "爱荷华州米德尔敦陆军弹药厂于美国当地11月25日实施叠氮化铅受控引爆，环保署随后开展环境监测与采样。",
+        "keyFacts": [
+          {
+            "name": "实时空气监测",
+            "value": "环保署称，Xact实时空气监测设备截至公告时未检出空气中的铅。",
+            "period": "截至2026-11-26公告时",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "引爆后采样",
+            "value": "超过1000",
+            "unit": "份样本",
+            "period": "截至2026-11-26公告时",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "实验室结果安排",
+            "value": "预计最早于美国当地11月27日开始收到引爆后样本的实验室检测结果。",
+            "period": "2026-11-27",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "公告发布时，引爆后样本的实验室检测结果尚未返回，不能据实时空气读数认定所有环境介质均无污染。"
+        ],
+        "watchpoints": [
+          "引爆后空气、土壤、灰尘和水样的实验室检测结果。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "美国环保署：爱荷华陆军弹药厂受控引爆后采样更新",
+            "url": "https://www.epa.gov/newsreleases/epa-provides-update-sampling-following-yesterdays-controlled-detonation-iowa-army",
+            "supports": "实时监测表述、采样数量、检测介质和实验室结果预期。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.epa.gov",
+        "original_url": "https://www.epa.gov/newsreleases/epa-provides-update-sampling-following-yesterdays-controlled-detonation-iowa-army",
+        "canonical_url": "https://www.epa.gov/newsreleases/epa-provides-update-sampling-following-yesterdays-controlled-detonation-iowa-army",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "d34d6f52fe91010fbe53971fb1906bd1d2c4bccf45c9805010ad6a383f6dabd5",
+      "category": "social_event",
+      "importance": 4,
+      "fact_summary": "据新华社11月26日报道，武汉大学和安徽省委教育工委同日公布调查处理结果：曾某某、付某存在违规使用科研经费问题，受到党内严重警告及免职处理。武汉大学通报称，部分涉及二人关系的举报与事实不符或查无实据，相关学术不端举报与事实不符。",
+      "analysis": null,
+      "evidence_quote": "武汉大学教师曾某某被举报事件调查结果公布",
+      "details": {
+        "kind": "news",
+        "background": "此次调查涉及科研经费使用、师生同事交往边界、任职晋升及学术不端等不同事项，各项调查结论应分别理解。",
+        "keyFacts": [
+          {
+            "name": "科研经费问题",
+            "value": "通报称，曾某某将学生劳务费部分收回，指定学生保管并用于课题组集体支出；付某存在同类型问题。",
+            "nature": "statement",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "处分及职务调整",
+            "value": "曾某某被免去物理化学研究所副所长职务；付某被免去安徽大学党委常委、副校长职务；二人均受到党内严重警告处分。",
+            "period": "2026-11-26",
+            "nature": "reported",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-26",
+            "precision": "date",
+            "event": "武汉大学与安徽省委教育工委公布调查处理结果。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "武汉大学",
+            "statement": "将在全校范围内开展自查自纠，完善制度规定，对查出的问题集中整改。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "watchpoints": [
+          "科研经费和学生劳务费管理制度的后续整改措施。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新华社：武汉大学教师曾某某被举报事件调查结果公布",
+            "url": "https://www1.xinhuanet.com/politics/20261126/4884280024964b75b467477ecfd25a6f/c.html",
+            "supports": "调查结论、违规经费使用方式、处分及免职决定，以及学校整改表态。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www1.xinhuanet.com",
+        "original_url": "https://www1.xinhuanet.com/politics/20261126/4884280024964b75b467477ecfd25a6f/c.html",
+        "canonical_url": "https://www1.xinhuanet.com/politics/20261126/4884280024964b75b467477ecfd25a6f/c.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e1edb12b85c25d8c5976e536065d51a0183e5a70894a38c240ece2bcb804d10e",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "据封面新闻11月26日报道，蔡磊当日回应病情信息，称自己进入渐冻症终末期是从去年就已发生的事实，并非这两天突然恶化。他表示身体目前确实艰难，希望公众更多关注渐冻症本身，以及正在推进的基础研究和药物研发。",
+      "analysis": null,
+      "evidence_quote": "蔡磊回应“病情进入终末期”：去年已发生，并非近期突然恶化",
+      "details": {
+        "kind": "news",
+        "background": "蔡磊于2019年确诊肌萎缩侧索硬化，随后参与建立患者科研平台，推动渐冻症基础研究与药物研发。",
+        "timeline": [
+          {
+            "time": "2026-11-26",
+            "precision": "date",
+            "event": "蔡磊澄清进入终末期的时间，表示并非近日突然恶化。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "蔡磊",
+            "statement": "我的身体进入渐冻症病情的终末期，是从去年就已经发生的事实，并不是这两天突然恶化的。",
+            "form": "quote",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "actor": "蔡磊",
+            "statement": "希望公众更多关注渐冻症疾病本身、基础研究和药物管线。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "封面新闻：蔡磊回应病情信息（海报新闻转载）",
+            "url": "https://hb.dzwww.com/b/p3szuHKG8G9.html?f=00000v&r=j0X9",
+            "supports": "蔡磊11月26日的病情时间澄清、本人诉求及确诊背景。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "hb.dzwww.com",
+        "original_url": "https://hb.dzwww.com/b/p3szuHKG8G9.html?f=00000v&r=j0X9",
+        "canonical_url": "https://hb.dzwww.com/b/p3szuHKG8G9.html?f=00000v&r=j0X9",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "da8ac0c18f298434d66aa1714df333107ba739977414f27c75e58b4012298d09",
+      "category": "entertainment",
+      "importance": 2,
+      "fact_summary": "新浪财经11月26日报道，针对“炒股亏近1亿元、损失职业生涯八成家产”的传言，胡海泉接受求证时回应称，自己未听过传言中涉及的自媒体人士，并强调平时不炒股票。",
+      "analysis": null,
+      "evidence_quote": "炒股亏近1个亿？胡海泉辟谣",
+      "details": {
+        "kind": "news",
+        "background": "相关传言将具体投资损失金额及所谓向自媒体人士诉苦的情节归于胡海泉，本次新进展为其本人接受媒体求证后的回应。",
+        "timeline": [
+          {
+            "time": "2026-11-26",
+            "precision": "date",
+            "event": "新浪财经向胡海泉求证相关投资亏损传言并报道其回应。",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "胡海泉",
+            "statement": "未听过传言所涉及的自媒体人士，自己平时并不炒股票。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "新浪财经：炒股亏近1个亿？胡海泉辟谣",
+            "url": "https://zx.sina.cn/2026-11-26/zx-inizzsif8966050.d.html?wm=3049_0015",
+            "supports": "媒体11月26日向胡海泉求证及其本人回应。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "zx.sina.cn",
+        "original_url": "https://zx.sina.cn/2026-11-26/zx-inizzsif8966050.d.html?wm=3049_0015",
+        "canonical_url": "https://zx.sina.cn/2026-11-26/zx-inizzsif8966050.d.html?wm=3049_0015",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
