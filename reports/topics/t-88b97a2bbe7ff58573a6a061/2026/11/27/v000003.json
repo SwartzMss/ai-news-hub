@@ -1,0 +1,535 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "5901cc85-8c4c-4bc0-8a97-11d184941976",
+  "report_date": "2026-11-27",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜2026年11月27日｜截至北京时间08:10",
+  "collected_at": "2026-11-27T00:21:25.217Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-27T00:21:25.229Z",
+  "reviewed_content_sha256": "ff808ce0f9d289d9e159eda8518c204bf7fe706c8c5be777b2fb9a31a64ea8a9",
+  "items": [
+    {
+      "id": "3e23d025a14e2bc2b9d45ce980ecb608ce86a215cb9fd7bca6c37013b5eb309a",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "金山云11月24日宣布，2026年第三季度AI云总账单额16.83亿元人民币，同比增长115%；集团收入34.781亿元，同比增长40.4%。公司称既有AI云合同重新定价支持毛利率环比改善，集团GAAP毛利率15.5%，前季15.2%。总账单额不是GAAP收入，集团利润率不能全部归属于AI。纳入72小时窗口。",
+      "analysis": "推断：重新定价提供了算力需求向利润率传导的线索，但折旧与融资成本可能使业务增长无法同步转为净利润。",
+      "evidence_quote": "Kingsoft Cloud Announces Unaudited Third Quarter 2026 Financial Results",
+      "details": {
+        "kind": "investment",
+        "background": "新增为AI云经营数据及既有合同重新定价效果；未披露新增GPU订单或供应商。",
+        "metrics": [
+          {
+            "name": "AI云总账单额",
+            "value": "16.83",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "comparison": "同比增长115%；非GAAP收入指标",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "集团GAAP毛利率",
+            "value": "15.5",
+            "unit": "%",
+            "period": "2026年第三季度",
+            "comparison": "前季15.2%；上年同期15.4%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "集团净亏损",
+            "value": "1.181",
+            "unit": "亿元人民币",
+            "period": "2026年第三季度",
+            "comparison": "前季亏损0.930亿元",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "金山云／KC／NASDAQ；03896／HKEX：AI云运营",
+            "direction": "算力变现与成本同步扩大",
+            "reason": "公司披露AI云总账单额及合同重新定价，未确认具体硬件采购关系。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：合同重新定价若能持续覆盖机柜、短租设备和折旧成本，才会提高经营利润；还需扣除融资成本并完成回款，才能改善股东现金回报。",
+        "watchpoints": [
+          "AI云账单额与收入的调节、续约价格、回款和利息支出。"
+        ],
+        "risks": [
+          "公司将净亏损同比扩大部分归因于利息费用增加；集团毛利率改善幅度有限，不能据此推定AI业务单独盈利。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "金山云2026年第三季度业绩公告",
+            "url": "https://ir.ksyun.com/news-releases/news-release-details/kingsoft-cloud-announces-unaudited-third-quarter-2026-financial",
+            "supports": "AI云账单额、集团收入和利润率、重新定价及费用变化。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.ksyun.com",
+        "original_url": "https://ir.ksyun.com/news-releases/news-release-details/kingsoft-cloud-announces-unaudited-third-quarter-2026-financial",
+        "canonical_url": "https://ir.ksyun.com/news-releases/news-release-details/kingsoft-cloud-announces-unaudited-third-quarter-2026-financial",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "5e306464dfe6515f53e6814faa8a0f49f821b2ca67c890a1a359d212adfb689f",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "GDS在北京时间11月25日20:00业绩会上称，2026年前九个月新增订单686 MW，全年目标约1 GW，合同采用take-or-pay、平均入驻期12个月。公司将全年现金资本开支指引由人民币100亿元降至85亿元，解释为付款时间调整，预计当年实际发生资本开支约120亿元。两种口径不能相加，订单亦非已计费容量。纳入72小时窗口。",
+      "analysis": "推断：订单储备支持后续计费增长，但现金资本开支下调只能改善付款节奏，不能据此判断项目投资需求下降。盈利兑现仍取决于客户入驻和新增容量利用率。",
+      "evidence_quote": "GDS Third Quarter 2026 Earnings Conference Call",
+      "details": {
+        "kind": "investment",
+        "background": "本次增量为季度订单、入驻条款及现金资本开支指引更新；AI专用容量比例未单列。",
+        "metrics": [
+          {
+            "name": "新增订单容量",
+            "value": "686",
+            "unit": "MW",
+            "period": "2026年前九个月",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "现金资本开支",
+            "value": "85",
+            "unit": "亿元人民币",
+            "period": "2026全年",
+            "comparison": "此前指引100亿元；实际发生资本开支预计约120亿元",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "在运营面积利用率",
+            "value": "81.2",
+            "unit": "%",
+            "period": "2026年9月底",
+            "comparison": "2026年6月底79.2%",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "GDS／GDS／NASDAQ；09698／HKEX：数据中心开发运营",
+            "direction": "订单转化为计费容量",
+            "reason": "公司确认新增订单及入驻条款；具体客户未具名。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：建设完成并按合同入驻后，订单才转为租金和经营现金流；延期支付设备工程款会形成资本开支应付款，不能视为永久节省投资。",
+        "watchpoints": [
+          "新增计费MW、客户入驻进度及资本开支应付款变化。"
+        ],
+        "risks": [
+          "公司预计新容量投运后利用率可能暂降至70%区间；客户集中、入驻延迟或电费上涨可能抵消规模增长。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "GDS第三季度业绩会原文",
+            "url": "https://investors.gds-services.com/static-files/fa5fdafd-5b89-4271-9ce2-fb38444e5c69",
+            "supports": "686 MW订单、入驻条款、资本开支口径及利用率展望。"
+          },
+          {
+            "id": "e2",
+            "name": "GDS第三季度财报SEC附件",
+            "url": "https://www.sec.gov/Archives/edgar/data/1526125/000110465926131909/tm2630647d1_ex99-1.htm",
+            "supports": "上市信息、利用率及现金资本开支指引。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "investors.gds-services.com",
+        "original_url": "https://investors.gds-services.com/static-files/fa5fdafd-5b89-4271-9ce2-fb38444e5c69",
+        "canonical_url": "https://investors.gds-services.com/static-files/fa5fdafd-5b89-4271-9ce2-fb38444e5c69",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "6d37282f2d6e8d5ee1b8d7bde189504c215378a1e12269254f17d10777df0599",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "微盟11月26日宣布签署两份独立GPU采购协议，分别采购4,000块及1,000块NVIDIA RTX PRO 5500 Blackwell产品，对价约人民币3.44亿元及8,650万元，分批交付。第一份价格可随汇率和厂商报价调整。新增为采购签约，尚非交付或算力租赁收入。原文未列发布时间，保守纳入72小时窗口。",
+      "analysis": "推断：这提供了可量化的GPU渠道需求，但对美股供应链的盈利贡献取决于实际交货与渠道库存，不能把采购金额直接映射为芯片厂商新增收入。",
+      "evidence_quote": "PROCUREMENT OF GPU PRODUCTS",
+      "details": {
+        "kind": "investment",
+        "background": "采购拟优先支持微盟自身AI业务，第三方算力租赁及硬件转售仍属后续计划。",
+        "metrics": [
+          {
+            "name": "两份协议采购量",
+            "value": "4000；1000",
+            "unit": "块GPU",
+            "period": "2026年11月26日签约",
+            "comparison": "分别向英迈及上海赋欣采购",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "两份协议对价",
+            "value": "3.44；0.865",
+            "unit": "亿元人民币",
+            "period": "2026年11月26日签约",
+            "comparison": "第一份为约数且可调整；非已付款金额",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "微盟／02013／HKEX：算力采购方",
+            "direction": "增加GPU资源",
+            "reason": "全资子公司签署采购协议。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "Ingram Micro／INGM／NYSE：IT分销",
+            "direction": "渠道订单",
+            "reason": "第一供应商为其间接控制公司，关系由采购方公告确认。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "NVIDIA／NVDA／NASDAQ：GPU厂商",
+            "direction": "潜在出货贡献",
+            "reason": "产品品牌明确；直销、上游新订单及收入确认时点未获证实。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：分销方完成采购及交货后才可能确认销售并回收货款；微盟则先承担设备投入，后续服务收入须有利用率和客户付款支撑。",
+        "watchpoints": [
+          "预付款、分批交付、最终采购价及第三方客户签约。"
+        ],
+        "risks": [
+          "协议没有明确全部交付期限；供应和监管条件、库存来源及设备利用率影响现金回收。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "微盟GPU采购交易公告",
+            "url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1126/2026112600535.pdf",
+            "supports": "型号、数量、价格调整、付款交付条款及英迈控制关系。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www1.hkexnews.hk",
+        "original_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1126/2026112600535.pdf",
+        "canonical_url": "https://www1.hkexnews.hk/listedco/listconews/sehk/2026/1126/2026112600535.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "52d446f4aa396efa01a9f8b6c704d78f240c9b40ab30cd189a7ce796bad68ebc",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "神州数码11月25日落款公告称，神州鲲泰已收到中国移动AI超节点设备集采中标通知书，较此前候选人状态推进。公告列示投标报价116.6575亿元人民币、不含税，中标份额2,048卡，明确最终以实际订单为准，尚未签署正式合同。11月24日晚已有公开披露记录，纳入72小时窗口；报价不等于已签合同额。",
+      "analysis": "推断：中标提高服务器订单落地的可见度，但实际订单口径和项目毛利率仍不足以支持利润测算。",
+      "evidence_quote": "关于收到中标通知书的公告",
+      "details": {
+        "kind": "investment",
+        "background": "10月30日已披露候选人资格；本次实质增量仅为收到中标通知书。",
+        "metrics": [
+          {
+            "name": "投标报价",
+            "value": "11665750379.84",
+            "unit": "元人民币，不含税",
+            "period": "本次集采项目",
+            "comparison": "最终以实际订单为准，非正式合同金额",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "中标份额",
+            "value": "2048",
+            "unit": "卡",
+            "period": "2026—2027年集采项目",
+            "comparison": "项目总规模20480卡",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "神州数码／000034／SZSE：超节点服务器供应",
+            "direction": "中标状态推进",
+            "reason": "控股子公司神州鲲泰收到通知书。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "segment": "中国移动／600941／SSE；00941／HKEX：算力采购",
+            "direction": "设备采购",
+            "reason": "公告列为采购用户；尚无正式合同。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：实际下单、服务器交付和验收依次决定收入确认；项目毛利及采购垫资、客户账期共同决定利润和经营现金流。",
+        "watchpoints": [
+          "报价与中标份额的对应范围、正式合同、实际订单、验收及回款。"
+        ],
+        "risks": [
+          "合同条款尚未确定；不能用报价除以卡数推定GPU单价，也未确认具体芯片供应商。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "神州数码收到中标通知书公告",
+            "url": "https://static.cninfo.com.cn/finalpage/2026-11-25/1225686665.PDF",
+            "supports": "中标状态、投标报价、卡数及未签正式合同。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "static.cninfo.com.cn",
+        "original_url": "https://static.cninfo.com.cn/finalpage/2026-11-25/1225686665.PDF",
+        "canonical_url": "https://static.cninfo.com.cn/finalpage/2026-11-25/1225686665.PDF",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "c4f818da25d0f67fb8e29be5cc7b5d2dd7cd3478c3ff48e0c3be7cb5cd45bfea",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "首都在线11月25日落款公告称，甘肃首云已与四通科技签署人民币107,655,550元的高性能服务器及配套设备采购合同，主要布局AI推理。公告明确尚未交付，预计12月6日前交付。11月24日晚已公开报道，纳入72小时窗口；此前3.9亿元采购授权不是新增订单。",
+      "analysis": "推断：正式采购增加近期算力投放的可见度，但设备交付后能否形成足够计费需求，决定固定折旧能否被收入覆盖。",
+      "evidence_quote": "关于全资子公司购买算力设备的公告",
+      "details": {
+        "kind": "investment",
+        "background": "本次为独立采购合同，不能与8月向同一供应商采购的设备混同；芯片型号和数量未披露。",
+        "metrics": [
+          {
+            "name": "采购合同金额",
+            "value": "107655550",
+            "unit": "元人民币",
+            "period": "本次已签采购合同",
+            "comparison": "非已付款或已交付金额",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "预计交付截止日",
+            "value": "2026-12-06",
+            "unit": "日期",
+            "period": "本次采购",
+            "comparison": "公告时尚未交付",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "首都在线／300846／SZSE：AI算力采购运营",
+            "direction": "扩充推理设备",
+            "reason": "全资子公司甘肃首云向四通科技采购；未确认上市芯片厂商参与。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：设备验收并上架计费后才能形成服务收入；自有或自筹资金投入先于回款，利用率、租价和融资成本决定投资回收。",
+        "watchpoints": [
+          "12月交付验收、对应客户订单、上架利用率及付款进度。"
+        ],
+        "risks": [
+          "下游需求不足或租价下降会压低回报；设备折旧刚性，采购价格及履约仍有风险。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "首都在线购买算力设备公告",
+            "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-25/12722421.PDF",
+            "supports": "合同金额、资金来源、未交付状态、预计交付日期及推理用途。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "file.finance.sina.com.cn",
+        "original_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-25/12722421.PDF",
+        "canonical_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-25/12722421.PDF",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "fc54ddd7a795015151935ad97bcaec9e2ee4b393da6e7f1c34a8f673b9cd203e",
+      "category": "optical_communications",
+      "importance": 3,
+      "fact_summary": "协创数据在11月26日15:40—17:00交流活动记录中称，控股子公司光为科技形成200G/400G/800G/1.6T产品矩阵，部分产品通过国家级超算中心验证并实现交付。新增为验证与交付披露，不重复此前算力云合同。未说明已交付产品速率、数量或金额，不能推定1.6T已量产交付。纳入24小时窗口。",
+      "analysis": "推断：外部客户交付比产品发布更接近收入兑现，但尚不足以判断高端产品放量或盈利贡献。",
+      "evidence_quote": "协创数据技术股份有限公司投资者关系活动记录表",
+      "details": {
+        "kind": "investment",
+        "background": "原文记录表日期为11月26日，未列上传时刻；客户验证和交付的实际发生日期未提供。",
+        "supplyChain": [
+          {
+            "segment": "协创数据／300857／SZSE：高速光模块及算力运营",
+            "direction": "部分产品完成验证并交付",
+            "reason": "公司确认光为科技为控股子公司；超算客户未具名。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：客户验证转为持续外部订单后，出货量、产品组合与良率才会影响收入和毛利；内部算力集群配套不能直接当作新增合并收入。",
+        "watchpoints": [
+          "外部客户名称、交付型号与数量、800G/1.6T收入、产能及良率。"
+        ],
+        "risks": [
+          "未披露订单金额、ASP或量产规模；NPO研发及标准推进不等于客户订单，亦未确认美股公司的供货关系。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "协创数据11月26日投资者活动记录表",
+            "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-26/12727182.PDF",
+            "supports": "活动时间、光为控股关系、产品矩阵、部分产品验证交付及NPO研发状态。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "file.finance.sina.com.cn",
+        "original_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-26/12727182.PDF",
+        "canonical_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-26/12727182.PDF",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "fdae664b1f0499b765a9019cf655d183a41191fc81e18cb0312b20e7eb9cd2a8",
+      "category": "optical_communications",
+      "importance": 2,
+      "fact_summary": "Avicena于美国当地11月24日宣布完成超过1亿美元C轮融资，投资方包括AMD Ventures，资金用于microLED光互连商业化。公司计划2027年推出首款产品，仍属展望；1 Tbps评估套件出货为此前事件，不重复计入增量。未披露AMD出资额或采购承诺。原文未列时刻，纳入72小时窗口。",
+      "analysis": "推断：融资有助于新型光互连继续验证和产品化，但目前只能视作技术路线投资，无法量化对上市公司近期盈利的影响。",
+      "evidence_quote": "Avicena Raises $100 Million Series C to Accelerate Commercialization of microLED Optical Interconnects for AI Infrastructure",
+      "details": {
+        "kind": "investment",
+        "background": "Avicena为未上市公司；本次新增为融资完成，产品性能优势仍主要来自厂商表述。",
+        "metrics": [
+          {
+            "name": "C轮融资额",
+            "value": ">100",
+            "unit": "百万美元",
+            "period": "2026年11月24日宣布",
+            "comparison": "未披露估值及各投资者出资额",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "AMD／AMD／NASDAQ：加速器厂商、产业投资方",
+            "direction": "参与光互连技术投资",
+            "reason": "Avicena公告确认AMD Ventures参与融资；未确认AMD采用或采购其产品。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "推断：融资支持研发及工程化，只有客户验证、设计导入和量产经济性成立，才可能形成供应收入或产业投资回报；目前没有AMD收入贡献测算依据。",
+        "watchpoints": [
+          "2027年产品推出、具名客户导入、可靠性、量产良率及单位链路成本。"
+        ],
+        "risks": [
+          "商业化可能延迟；评估套件不等于量产订单，低功耗优势也不保证系统总成本优势。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Avicena C轮融资及商业化公告",
+            "url": "https://avicena.tech/avicena-raises-100-million-series-c-to-accelerate-commercialization-of-microled-optical-interconnects-for-ai-infrastructure/",
+            "supports": "融资完成、AMD Ventures参与、资金用途及次年产品计划。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "avicena.tech",
+        "original_url": "https://avicena.tech/avicena-raises-100-million-series-c-to-accelerate-commercialization-of-microled-optical-interconnects-for-ai-infrastructure/",
+        "canonical_url": "https://avicena.tech/avicena-raises-100-million-series-c-to-accelerate-commercialization-of-microled-optical-interconnects-for-ai-infrastructure/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
