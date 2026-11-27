@@ -1,0 +1,623 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "e6b983cb-1516-4df6-a868-f88aad67a88b",
+  "report_date": "2026-11-27",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-27｜统计：北京时间2026-11-26 08:08—2026-11-27 08:08，更新回溯至11-24 08:08；项目发现参考近90天维护",
+  "collected_at": "2026-11-27T00:18:50.484Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-27T00:18:50.498Z",
+  "reviewed_content_sha256": "0673514aab8c8b816de7a5d691b9073b1f6786ff825a11d0b0c3124d23ba3cfb",
+  "items": [
+    {
+      "id": "62aecd16ee4809e265196637dd69b4b1d083a8c90d7f350322f2c9e24dd8a074",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "kiso 官方仓库称，它为长任务提供持久会话、崩溃恢复和终端、浏览器界面，执行结果不明的命令交由用户处理，避免静默重放。本次作为项目发现收录；11月19日的0.55.0提供近期维护证据，跨会话协作仍属默认关闭的预览能力。[项目仓库](https://github.com/vincemakes/kiso)",
+      "analysis": "值得关注的是对中断恢复和命令执行不确定性的显式处理，适合长时间运行的本地编码任务。当前文档限定macOS与Linux，跨会话协作仍需按预览功能评估。",
+      "evidence_quote": "A durable agent harness that picks up where it left off.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为长任务保存执行状态，并在进程中断后恢复Agent会话。",
+        "technical": [
+          {
+            "description": "提供追加式会话存储、Agent工厂与类型化事件流；结果不明的命令不会静默重放。",
+            "evidenceRefs": [
+              "k1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "恢复中断的本地编码任务，或将持久会话能力嵌入自建Agent。",
+            "evidenceRefs": [
+              "k1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "k3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "0.55.0加入跨会话消息与启动功能，默认关闭；作为近期维护证据。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "k2"
+            ]
+          },
+          {
+            "description": "README与发行页版本标记存在差异，采用前宜确认目标版本。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "k1",
+              "k2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "k1",
+            "name": "官方仓库与能力说明",
+            "url": "https://github.com/vincemakes/kiso",
+            "supports": "持久会话、恢复机制、SDK与运行平台"
+          },
+          {
+            "id": "k2",
+            "name": "0.55.0正式发布",
+            "url": "https://github.com/vincemakes/kiso/releases/tag/v0.55.0",
+            "supports": "11月19日维护记录与协作预览状态"
+          },
+          {
+            "id": "k3",
+            "name": "MIT授权文件",
+            "url": "https://github.com/vincemakes/kiso/blob/main/LICENSE",
+            "supports": "代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/vincemakes/kiso",
+        "canonical_url": "https://github.com/vincemakes/kiso",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b005c71f550d7209221ba392cd5b86ac67fcd5306b2916a99382dbaa47dca304",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "DBX 官方宣布，11月26日发布的0.6.75支持编辑MySQL表注释等元数据，并修复语句超时设置误中断写入和DDL的问题。这个采用Rust后端的数据库客户端提供桌面、CLI和独立MCP接口，可用于数据库查询与结构管理。[项目仓库](https://github.com/t8y2/dbx)",
+      "analysis": "这次更新的价值集中在数据库操作可靠性：读取超时与写入执行分开处理，适合经常执行长查询和结构变更的工作流。发行说明未逐一列出各数据库的修复覆盖范围。",
+      "evidence_quote": "语句超时设置只作用于查询读取，不再中断写入和 DDL 语句",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "提供多种数据库的查询、浏览和结构管理界面。",
+        "change": {
+          "summary": "正式版新增MySQL元数据编辑，修复超时设置中断写入和DDL。",
+          "version": "0.6.75",
+          "type": "release",
+          "publishedAt": "2026-11-26",
+          "evidenceRefs": [
+            "d1",
+            "d4"
+          ]
+        },
+        "technical": [
+          {
+            "description": "后端使用Rust；独立MCP服务可复用DBX中配置的数据库连接。",
+            "evidenceRefs": [
+              "d2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "查询业务数据并维护MySQL表注释等元数据。",
+            "evidenceRefs": [
+              "d1",
+              "d2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "仓库代码",
+          "evidenceRefs": [
+            "d3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "桌面应用与MCP服务独立分发，安装桌面端不会自动安装MCP程序。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "d1",
+            "name": "0.6.75发布说明",
+            "url": "https://github.com/t8y2/dbx/releases/tag/v0.6.75",
+            "supports": "正式发布与具体变化"
+          },
+          {
+            "id": "d2",
+            "name": "官方仓库",
+            "url": "https://github.com/t8y2/dbx",
+            "supports": "数据库能力、Rust后端和MCP分发方式"
+          },
+          {
+            "id": "d3",
+            "name": "Apache授权文件",
+            "url": "https://github.com/t8y2/dbx/blob/main/LICENSE",
+            "supports": "代码授权"
+          },
+          {
+            "id": "d4",
+            "name": "官方发行列表",
+            "url": "https://github.com/t8y2/dbx/releases",
+            "supports": "发布日期及2026年附件时间"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/t8y2/dbx/releases/tag/v0.6.75",
+        "canonical_url": "https://github.com/t8y2/dbx/releases/tag/v0.6.75",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "1b63d9fe1591eb6449e87fc617c9a60a6f8ff30d92b79716cdf402b309a10eec",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "fd 官方仓库称，它提供正则与glob文件查找、并行目录遍历和批量命令执行，可用于目录筛选与文件处理流水线。本次作为成熟Rust工具发现收录；11月7日的10.5.2修复管道输出中非UTF-8文件名字节被替换的问题，提供近期维护证据。[项目仓库](https://github.com/sharkdp/fd)",
+      "analysis": "适合把文件查找结果交给后续工具的脚本和批处理任务，特殊文件名字节的保留具有实际工程意义。它采用有取舍的默认行为，复杂find表达式仍需逐项确认能否替代。",
+      "evidence_quote": "Regular expression (default) and glob-based patterns.",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "通过简洁模式匹配查找文件系统条目，并衔接批量操作。",
+        "technical": [
+          {
+            "description": "支持正则、glob、并行目录遍历与并行命令执行。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "筛选目录中的目标文件，并交给其他命令批量处理。",
+            "evidenceRefs": [
+              "f1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Apache-2.0",
+          "scope": "仓库代码，双许可证",
+          "evidenceRefs": [
+            "f1",
+            "f3",
+            "f4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "2026年11月7日的10.5.2保留管道输出中的非UTF-8文件名字节；本次按项目发现收录。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "f2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "f1",
+            "name": "官方仓库",
+            "url": "https://github.com/sharkdp/fd",
+            "supports": "文件查找能力及双许可证声明"
+          },
+          {
+            "id": "f2",
+            "name": "官方发行列表",
+            "url": "https://github.com/sharkdp/fd/releases",
+            "supports": "10.5.2修复与2026年维护时间"
+          },
+          {
+            "id": "f3",
+            "name": "MIT授权文件",
+            "url": "https://github.com/sharkdp/fd/blob/master/LICENSE-MIT",
+            "supports": "MIT授权"
+          },
+          {
+            "id": "f4",
+            "name": "Apache授权文件",
+            "url": "https://github.com/sharkdp/fd/blob/master/LICENSE-APACHE",
+            "supports": "Apache-2.0授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/sharkdp/fd",
+        "canonical_url": "https://github.com/sharkdp/fd",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "efb911f7b62f7e76c31f907887135a8bacfd2e4c92acb2a796745700b6fc2b17",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "OpenCut for Premiere Pro 官方仓库称，它将静音裁切、字幕、音频修复和导出接入Premiere，并提供CLI与自动化接口。本次作为持续维护项目发现收录；11月17日的1.57.0加入按文字描述搜索素材画面，返回缩略图与素材时间。[项目仓库](https://github.com/SysAdminDoc/OpenCut)",
+      "analysis": "适合已有Premiere工作流、需要处理大量访谈或素材的创作者。它把本地分析结果接回剪辑环境；部分能力依赖额外工具和模型，应按具体功能确认就绪状态与授权。",
+      "evidence_quote": "OpenCut for Premiere Pro.",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "将本地媒体分析与自动剪辑接入Premiere素材和时间线工作流。",
+        "technical": [
+          {
+            "description": "CEP与UXP面板连接同一后端，并提供CLI和MCP入口。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          },
+          {
+            "description": "视觉搜索可按镜头描述返回项目视频中的相近画面、缩略图和时间。",
+            "evidenceRefs": [
+              "o2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "访谈静音粗剪、字幕生成和跨素材镜头检索。",
+            "evidenceRefs": [
+              "o1",
+              "o2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "项目代码；不代表依赖、模型或素材授权",
+          "evidenceRefs": [
+            "o3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "1.57.0于11月17日发布，提供近期维护证据；本次按项目发现收录。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "o2"
+            ]
+          },
+          {
+            "description": "功能存在依赖门槛，应按实际使用入口确认可用状态。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "o1",
+            "name": "官方仓库",
+            "url": "https://github.com/SysAdminDoc/OpenCut",
+            "supports": "剪辑能力、面板后端与依赖状态"
+          },
+          {
+            "id": "o2",
+            "name": "1.57.0正式发布",
+            "url": "https://github.com/SysAdminDoc/OpenCut/releases/tag/v1.57.0",
+            "supports": "视觉搜索及近期维护记录"
+          },
+          {
+            "id": "o3",
+            "name": "MIT授权文件",
+            "url": "https://github.com/SysAdminDoc/OpenCut/blob/main/LICENSE",
+            "supports": "代码授权"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/SysAdminDoc/OpenCut",
+        "canonical_url": "https://github.com/SysAdminDoc/OpenCut",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "00d70a2a5ba16cc24496e3f4fc1fdb7d27ed99197883a6439820ec684bc6be61",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Phosphene 官方宣布，11月26日发布的5.0.87修复翻唱识别失败、歌曲生成误报内存不足、失效图片入队及角色训练模型下载问题。相比此前上榜的镜像下载改进，本次新增价值在生成流程可靠性；应用面向Apple Silicon本地媒体创作。[项目仓库](https://github.com/mrbizarro/Phosphene)",
+      "analysis": "适合已经使用该应用进行本地歌曲和视频创作的用户关注，修复直接涉及任务失败与无效素材检查。代码许可不涵盖外部模型，选用模型时仍需分别查看其授权。",
+      "evidence_quote": "Phosphene 5.0.87: fixes for songs, pictures, Hailuo H3 and Train Character",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "在Apple Silicon上组合本地视频、图片、歌曲和语音创作。",
+        "change": {
+          "summary": "正式版修复翻唱、音乐内存误报、图片校验和训练模型下载。",
+          "version": "5.0.87",
+          "type": "release",
+          "publishedAt": "2026-11-26",
+          "evidenceRefs": [
+            "p1",
+            "p4"
+          ]
+        },
+        "technical": [
+          {
+            "description": "失效参考图片在任务入队前被检查；翻唱遇到部分难识别音符时重建旋律并继续。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在本地执行翻唱、歌曲生成和参考图片驱动的媒体任务。",
+            "evidenceRefs": [
+              "p1",
+              "p2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "项目自有代码；外部模型分别授权",
+          "evidenceRefs": [
+            "p2",
+            "p3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "相较历史5.0.76的镜像回退，本次涉及不同的生成流程修复。",
+            "nature": "analysis",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "p1",
+            "name": "5.0.87发布说明",
+            "url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.87",
+            "supports": "修复内容及正式发布"
+          },
+          {
+            "id": "p2",
+            "name": "官方仓库",
+            "url": "https://github.com/mrbizarro/Phosphene",
+            "supports": "本地创作能力与模型授权边界"
+          },
+          {
+            "id": "p3",
+            "name": "MIT授权文件",
+            "url": "https://github.com/mrbizarro/Phosphene/blob/main/LICENSE",
+            "supports": "代码授权"
+          },
+          {
+            "id": "p4",
+            "name": "官方Changelog",
+            "url": "https://phosphene.video/changelog/",
+            "supports": "2026年11月26日发布日期"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.87",
+        "canonical_url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.87",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "7bc6ab6f65340a9234235557a59a8f54e2dd5fdcd24776671aa7901b5e6e1c26",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "OSV-Scanner 官方仓库称，它将依赖清单与OSV漏洞数据关联，支持源码目录、容器、许可证和离线扫描，并提供调用分析辅助判断漏洞函数是否被使用。本次作为成熟安全工具发现收录；11月9日的2.7.1提供近期维护证据。[项目仓库](https://github.com/google/osv-scanner)",
+      "analysis": "适合将依赖漏洞识别与修复跟进接入CI，调用分析有助于补充包版本匹配结果。其结论受支持生态和漏洞数据覆盖影响，扫描通过不能替代完整安全评估。",
+      "evidence_quote": "Use OSV-Scanner to find existing vulnerabilities affecting your project's dependencies.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "识别项目依赖和容器中的已知漏洞，并提供许可证检查。",
+        "technical": [
+          {
+            "description": "结合OSV数据库与OSV-Scalibr提取依赖，支持调用分析和本地数据库离线扫描。",
+            "evidenceRefs": [
+              "s1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在CI中检查依赖漏洞，并生成供修复跟进的报告。",
+            "evidenceRefs": [
+              "s1",
+              "s2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "扫描器代码",
+          "evidenceRefs": [
+            "s3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "2.7.1发行附件明确标注2026年11月9日，满足近90天维护条件。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "s2",
+              "s4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "s1",
+            "name": "官方仓库",
+            "url": "https://github.com/google/osv-scanner",
+            "supports": "扫描能力、调用分析和离线模式"
+          },
+          {
+            "id": "s2",
+            "name": "2.7.1发布说明",
+            "url": "https://github.com/google/osv-scanner/releases/tag/v2.7.1",
+            "supports": "维护版本与报告改进"
+          },
+          {
+            "id": "s3",
+            "name": "Apache授权文件",
+            "url": "https://github.com/google/osv-scanner/blob/main/LICENSE",
+            "supports": "代码授权"
+          },
+          {
+            "id": "s4",
+            "name": "2.7.1官方发行附件",
+            "url": "https://github.com/google/osv-scanner/releases/expanded_assets/v2.7.1",
+            "supports": "2026年11月维护时间"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/google/osv-scanner",
+        "canonical_url": "https://github.com/google/osv-scanner",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "95b3c1e12bb7ae325a6db79ed721b838a62f87037f1e30f29e3781de5290b763",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Anywherelan 官方仓库称，awl通过libp2p为设备建立私有网络，结合DHT发现、NAT穿透与加密中继传输。本次作为成熟P2P工具发现收录；11月21日的0.21.0加入按设备ID派生地址和局域网直连，提供近期维护证据。[项目仓库](https://github.com/anywherelan/awl)",
+      "analysis": "适合跨网络访问个人设备或自建服务，也可用于研究直连与中继切换。严格NAT条件下仍需中继；升级涉及子网和MTU变化，已有部署需要核对网络配置。",
+      "evidence_quote": "automatic NAT traversal via libp2p; falls back to community relays when a direct path isn't possible",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "使用P2P连接将不同网络中的设备组成私有网络。",
+        "technical": [
+          {
+            "description": "虚拟网卡IP包封装进libp2p流，采用QUIC或TCP+TLS，并通过DHT发现对端。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          },
+          {
+            "description": "直连不可用时回退至中继；局域网路径可用时可切换为直连。",
+            "evidenceRefs": [
+              "a1",
+              "a2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "跨NAT访问个人设备与自建服务。",
+            "evidenceRefs": [
+              "a1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MPL-2.0",
+          "scope": "awl仓库代码",
+          "evidenceRefs": [
+            "a3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "0.21.0附件时间明确为2026年11月21日；升级说明涉及VPN子网与MTU。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "a2",
+              "a4"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "a1",
+            "name": "官方仓库",
+            "url": "https://github.com/anywherelan/awl",
+            "supports": "P2P网络机制、发现与中继"
+          },
+          {
+            "id": "a2",
+            "name": "0.21.0发布说明",
+            "url": "https://github.com/anywherelan/awl/releases/tag/v0.21.0",
+            "supports": "局域网直连及升级限制"
+          },
+          {
+            "id": "a3",
+            "name": "MPL授权文件",
+            "url": "https://github.com/anywherelan/awl/blob/master/LICENSE",
+            "supports": "代码授权"
+          },
+          {
+            "id": "a4",
+            "name": "0.21.0官方发行附件",
+            "url": "https://github.com/anywherelan/awl/releases/expanded_assets/v0.21.0",
+            "supports": "2026年11月维护时间"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/anywherelan/awl",
+        "canonical_url": "https://github.com/anywherelan/awl",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
