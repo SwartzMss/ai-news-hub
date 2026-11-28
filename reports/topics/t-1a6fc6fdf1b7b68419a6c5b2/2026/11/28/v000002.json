@@ -1,0 +1,882 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-1a6fc6fdf1b7b68419a6c5b2",
+    "name": "每日开源项目"
+  },
+  "report_id": "4975a279-2212-4bea-b0b9-cae579b2c776",
+  "report_date": "2026-11-28",
+  "channel": "opensource",
+  "version": 2,
+  "title": "每日开源项目｜2026-11-28｜统计：2026-11-27 08:13:34至2026-11-28 08:13:34（北京时间；更新回溯至11月25日08:13:34）",
+  "collected_at": "2026-11-28T00:38:14.792Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-28T00:38:14.805Z",
+  "reviewed_content_sha256": "a3e2ef3238a77003289aa42f002bb226f41a557d7e2ac499a9d48cfd1ebff44f",
+  "items": [
+    {
+      "id": "85770dc561132e9d0a57736fc0cb81168c1ca16fca4d811b06aac333da96f718",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "OpenSandbox 官方仓库称，它通过统一接口为 Agent 提供代码执行、文件操作和浏览器、桌面运行环境，并支持 SDK、CLI 与 MCP 接入。本次作为持续维护项目发现收录；11月4日的1.2.1-rc.1提供维护证据。[项目仓库](https://github.com/opensandbox-group/OpenSandbox)",
+      "analysis": "统一沙箱生命周期和操作接口，有助于复用 Coding Agent、浏览器自动化与评测环境。适合需要自主管理执行环境的团队，部署时仍应评估隔离配置和发行产物的签名覆盖。",
+      "evidence_quote": "Run AI agents in sandboxes on your own infrastructure.",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为 Agent 执行代码、命令及浏览器操作提供隔离环境和统一管理接口。",
+        "technical": [
+          {
+            "description": "以统一生命周期 API 连接本地 Docker 与 Kubernetes 部署。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          },
+          {
+            "description": "提供沙箱出站访问策略、Credential Vault，以及暴露命令和文件操作的 MCP 服务。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为自动化编程或 Agent 评测的每次试验配置独立执行环境。",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "项目代码。",
+          "evidenceRefs": [
+            "o2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "1.2.1-rc.1 是候选版本，仅发布镜像；SDK、CLI 包留待稳定版发布。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "o3"
+            ]
+          },
+          {
+            "description": "README 明确提示当前 umbrella 发行存在签名与溯源覆盖缺口。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "o1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "o1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/opensandbox-group/OpenSandbox",
+            "supports": "项目能力、部署方式、MCP 接口及签名覆盖限制。"
+          },
+          {
+            "id": "o2",
+            "name": "LICENSE",
+            "url": "https://github.com/opensandbox-group/OpenSandbox/blob/main/LICENSE",
+            "supports": "Apache-2.0 授权文本。"
+          },
+          {
+            "id": "o3",
+            "name": "1.2.1-rc.1 发布说明",
+            "url": "https://github.com/opensandbox-group/OpenSandbox/releases/tag/release-1.2.1-rc.1",
+            "supports": "11月4日维护证据及候选版本分发范围。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/opensandbox-group/OpenSandbox",
+        "canonical_url": "https://github.com/opensandbox-group/OpenSandbox",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "a99cb8ec0484dc820d64f272c3fe4b706985d2c1494c49c84c7cdada107bb636",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "Mastra 官方宣布，11月25日发布的 core 1.86.0 允许 Agent 原生选择持久执行引擎，并让数据集实验在崩溃或重新部署后接续运行。本次72小时回溯更新涉及长任务恢复和评测流水线。[项目仓库](https://github.com/mastra-ai/mastra)",
+      "analysis": "将恢复机制放进执行引擎，有望减少服务部署中断后的人工补跑，适合后台 Agent 和批量评测。实际接入仍应检查事件重投递条件，以及有外部副作用的工具能否安全重试。",
+      "evidence_quote": "Durable, crash-safe dataset experiments",
+      "research_area": "agent",
+      "details": {
+        "kind": "project",
+        "overview": "为 Agent 和评测工作流提供持久执行与故障恢复能力。",
+        "change": {
+          "summary": "正式发布 core 1.86.0，新增原生持久执行引擎选择及可恢复数据集实验。",
+          "version": "@mastra/core@1.86.0",
+          "type": "release",
+          "publishedAt": "2026-11-25",
+          "evidenceRefs": [
+            "m1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "通过 durable.executionEngine 选择 default 或 evented 引擎，保留现有模型输出接口。",
+            "evidenceRefs": [
+              "m1"
+            ]
+          },
+          {
+            "description": "持久实验将每个数据项作为工作流步骤，允许其他 worker 接续未确认的任务。",
+            "evidenceRefs": [
+              "m1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "运行需要跨进程恢复的 Agent 任务及批量数据集评测。",
+            "evidenceRefs": [
+              "m1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "非 ee 目录代码；ee 目录及第三方组件另按各自授权。",
+          "evidenceRefs": [
+            "m2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "实验跨 worker 接续依赖支持事件重投递的消息系统，例如 Redis Streams。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "m1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "m1",
+            "name": "core 1.86.0 发布说明",
+            "url": "https://github.com/mastra-ai/mastra/releases/tag/@mastra%2Fcore@1.86.0",
+            "supports": "发布日期、持久执行引擎、实验恢复机制及运行条件。"
+          },
+          {
+            "id": "m2",
+            "name": "该版本 LICENSE.md",
+            "url": "https://raw.githubusercontent.com/mastra-ai/mastra/@mastra%2Fcore@1.86.0/LICENSE.md",
+            "supports": "Apache-2.0 授权范围及 ee、第三方组件例外。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mastra-ai/mastra/releases/tag/@mastra%2Fcore@1.86.0",
+        "canonical_url": "https://github.com/mastra-ai/mastra/releases/tag/@mastra%2Fcore@1.86.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "3c656dd4fab8d00ac9bbcd2ce25538cde07b2d963e6db7aca9b6977a49aa112b",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Rustman 官方文档称，它以 Rust 提供原生 API 客户端，整合请求集合、OAuth、Mock、脚本和 CI 集合运行器，还能将请求暴露为 MCP 工具。本次作为项目发现收录；11月27日的v0.2.0主要提供打包与分发进展。[项目仓库](https://github.com/nhamtrieu/rustman)",
+      "analysis": "桌面调试与 CI 集合运行共用执行逻辑，值得已有 Postman 测试资产的团队评估。迁移前应核对脚本兼容范围，尤其不能假定 MCP 调用会复现集合运行器的全部行为。",
+      "evidence_quote": "A Postman-style API client written in Rust (egui + reqwest).",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "将 API 调试、请求集合测试与命令行自动化放进一个原生客户端。",
+        "technical": [
+          {
+            "description": "采用 egui 与 reqwest；集合运行器可通过 CLI 执行并输出 JSON、JUnit 报告。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          },
+          {
+            "description": "本地 Streamable HTTP MCP 服务将保存请求中的变量转为工具参数。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在桌面维护 Postman 集合，再放入 CI 执行并生成 JUnit 报告。",
+            "evidenceRefs": [
+              "r1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "项目代码；捆绑第三方库、字体等另有授权。",
+          "evidenceRefs": [
+            "r1",
+            "r3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "MCP Toolsets 发送请求时不运行脚本；部分 Postman API 和 Node 模块尚不支持。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "r1"
+            ]
+          },
+          {
+            "description": "11月27日的 v0.2.0 发布说明仅列出 Packaging，不据此认定全部能力为此次新增。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "r2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "r1",
+            "name": "官方英文 README",
+            "url": "https://github.com/nhamtrieu/rustman/blob/main/README.en.md",
+            "supports": "客户端能力、CI、MCP、兼容限制及第三方授权范围。"
+          },
+          {
+            "id": "r2",
+            "name": "v0.2.0 发布说明",
+            "url": "https://github.com/nhamtrieu/rustman/releases/tag/v0.2.0",
+            "supports": "11月27日发布及打包进展。"
+          },
+          {
+            "id": "r3",
+            "name": "LICENSE",
+            "url": "https://raw.githubusercontent.com/nhamtrieu/rustman/main/LICENSE",
+            "supports": "MIT 授权文本。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/nhamtrieu/rustman/blob/main/README.en.md",
+        "canonical_url": "https://github.com/nhamtrieu/rustman/blob/main/README.en.md",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "619d7cb4371d7ac18fba6f8c33ea7dab80ba93814408ff59058f172c771097cb",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "jql 官方仓库称，它以 Rust 提供 JSON 查询、筛选和重组，支持数组、对象及连续多个 JSON 文档输入，可用于 API 返回值与结构化日志处理。本次作为成熟工具发现收录；11月15日的9.0.5提供近期维护证据。[项目仓库](https://github.com/yamafaktory/jql)",
+      "analysis": "对于主要做字段选择、数组筛选和结果重组的脚本，较集中的查询语法值得评估。接入现有流水线时应先检查语法迁移与异常输入行为，不宜仅凭发布说明推断跨工具性能优势。",
+      "evidence_quote": "A JSON Query Language CLI tool",
+      "research_area": "rust",
+      "details": {
+        "kind": "project",
+        "overview": "在命令行流水线中提取、筛选和重新组织 JSON 数据。",
+        "technical": [
+          {
+            "description": "以选择器和操作符组合查询，支持对象键、数组范围和条件筛选。",
+            "evidenceRefs": [
+              "j1"
+            ]
+          },
+          {
+            "description": "可对连续输入的多个 JSON 文档逐一执行查询，并拒绝非文档尾随内容。",
+            "evidenceRefs": [
+              "j1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "从 API 响应或结构化日志中抽取字段，供后续脚本处理。",
+            "evidenceRefs": [
+              "j1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT OR Apache-2.0",
+          "scope": "项目代码，授权选项由 Cargo 元数据明确声明。",
+          "evidenceRefs": [
+            "j3",
+            "j4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月15日的9.0.5列出多键选择和集中输出优化，仅作为维护证据。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "j2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "j1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/yamafaktory/jql",
+            "supports": "查询机制、输入处理及使用示例。"
+          },
+          {
+            "id": "j2",
+            "name": "9.0.5 发布说明",
+            "url": "https://github.com/yamafaktory/jql/releases/tag/jql-v9.0.5",
+            "supports": "发布日期与近期维护内容。"
+          },
+          {
+            "id": "j3",
+            "name": "MIT 授权文本",
+            "url": "https://raw.githubusercontent.com/yamafaktory/jql/main/LICENSE-MIT",
+            "supports": "MIT 授权条件。"
+          },
+          {
+            "id": "j4",
+            "name": "Cargo 授权元数据",
+            "url": "https://raw.githubusercontent.com/yamafaktory/jql/main/Cargo.toml",
+            "supports": "MIT OR Apache-2.0 授权选项。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/yamafaktory/jql",
+        "canonical_url": "https://github.com/yamafaktory/jql",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "b240a40936e7152fb40f274ff514adb3903a6990c5735d7ec4ba06256e6c3bc4",
+      "category": "ai",
+      "importance": 4,
+      "fact_summary": "whisper.cpp 官方仓库称，它以 C/C++ 实现 Whisper 语音识别，提供本地转写、VAD、量化和应用集成接口。本次作为成熟语音工具发现收录；11月23日的1.9.6提供维护证据，适合离线录音转写及端侧语音应用。[项目仓库](https://github.com/ggml-org/whisper.cpp)",
+      "analysis": "对需要离线处理录音、控制数据流向或嵌入现有应用的团队，这种原生实现值得评估。落地时应按语言和设备选择模型，并先验证输入转换、识别质量与耗时。",
+      "evidence_quote": "Port of OpenAI's Whisper model in C/C++",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "为应用提供可本地运行的语音识别与音频转写组件。",
+        "technical": [
+          {
+            "description": "提供 C 风格 API、CPU 推理和整数模型量化支持。",
+            "evidenceRefs": [
+              "w1"
+            ]
+          },
+          {
+            "description": "提供 VAD，并支持 Metal、Core ML 等平台加速路径。",
+            "evidenceRefs": [
+              "w1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "批量转写本地录音，或将离线识别嵌入桌面、移动应用。",
+            "evidenceRefs": [
+              "w1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "仓库软件代码；不据此推定其他模型、数据集或素材的授权。",
+          "evidenceRefs": [
+            "w3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "README 提示 whisper-cli 示例当前仅接受16位 WAV，其他格式需先转换。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "w1"
+            ]
+          },
+          {
+            "description": "11月23日发布1.9.6，包含 WTS 输出修复，早于本轮72小时窗口。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "w2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "w1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/ggml-org/whisper.cpp",
+            "supports": "识别能力、集成接口、平台支持及输入限制。"
+          },
+          {
+            "id": "w2",
+            "name": "1.9.6 发布说明",
+            "url": "https://github.com/ggml-org/whisper.cpp/releases/tag/v1.9.6",
+            "supports": "发布日期与近期维护内容。"
+          },
+          {
+            "id": "w3",
+            "name": "LICENSE",
+            "url": "https://raw.githubusercontent.com/ggml-org/whisper.cpp/master/LICENSE",
+            "supports": "MIT 软件授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/ggml-org/whisper.cpp",
+        "canonical_url": "https://github.com/ggml-org/whisper.cpp",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0eb4e4088ad4cfc761776c65437b38000f1fdc4cdf8084fa9a7a3e7452dc88f3",
+      "category": "ai",
+      "importance": 3,
+      "fact_summary": "Phosphene 官方宣布，11月27日发布的5.0.89加入 Ming-Image 0.2 Design 免费预览，在 Apple Silicon 本地提供图文排版、单图编辑和透明背景图片生成。相比此前收录的5.0.87故障修复，本次新增了图像创作能力。[项目仓库](https://github.com/mrbizarro/Phosphene)",
+      "analysis": "把设计图生成与图片编辑接入现成本地应用，适合希望减少云端依赖的素材制作流程。试用前应评估模型下载体积和内存预算，真实16GB设备上的耗时仍需验证。",
+      "evidence_quote": "Phosphene 5.0.89: Ming-Image 0.2 Design (Free preview)",
+      "research_area": "multimedia",
+      "details": {
+        "kind": "project",
+        "overview": "在 Mac 上整合本地媒体生成，本次扩展设计图与图片编辑工作流。",
+        "change": {
+          "summary": "发布5.0.89，新增 Ming-Image 0.2 Design 免费预览，支持单图编辑及透明 RGBA 图片生成。",
+          "version": "5.0.89",
+          "type": "release",
+          "publishedAt": "2026-11-27",
+          "evidenceRefs": [
+            "p1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "通过磁盘层流式加载控制内存预算，并提供1MP、4MP档位。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          },
+          {
+            "description": "模型下载约33.9GB，并进行 SHA-256 校验。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "本地制作海报、网页视觉草图和透明背景图片素材。",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "MIT",
+          "scope": "Phosphene 项目代码；此授权结论不延伸至外部模型权重或素材。",
+          "evidenceRefs": [
+            "p2"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "功能仍为预览；16GB内存预算结果来自64GB机器，尚未在真实16GB Mac上计时。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "p1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "p1",
+            "name": "5.0.89 发布说明",
+            "url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.89",
+            "supports": "发布日期、新增功能、下载体积及设备测试限制。"
+          },
+          {
+            "id": "p2",
+            "name": "项目 LICENSE",
+            "url": "https://raw.githubusercontent.com/mrbizarro/Phosphene/main/LICENSE",
+            "supports": "项目代码的 MIT 授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.89",
+        "canonical_url": "https://github.com/mrbizarro/Phosphene/releases/tag/v5.0.89",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "8560986eb81c10c32e8d76eaac5fbe1678f5e77b220d61904e54fa3f99bec9e6",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "Grype 官方仓库称，它扫描容器镜像、文件系统和 SBOM 中的已知漏洞，并结合 EPSS、KEV 与 OpenVEX 辅助排序和过滤。本次作为成熟安全工具发现收录；11月18日的0.122.1修复版本比较及漏洞误匹配，提供维护证据。[项目仓库](https://github.com/anchore/grype)",
+      "analysis": "适合已有镜像交付或 SBOM 流程的团队补充漏洞处置环节。它能帮助缩小人工排查范围，但扫描命中仍应结合实际部署和可利用性判断，不能直接等同于需要立即修复的风险。",
+      "evidence_quote": "A vulnerability scanner for container images and filesystems.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "将容器、文件系统及软件清单中的组件关联到已知漏洞信息。",
+        "technical": [
+          {
+            "description": "支持操作系统及多种语言包生态，可直接扫描 SBOM。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          },
+          {
+            "description": "支持 EPSS、KEV 风险排序，以及 OpenVEX 过滤和补充扫描结果。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "在 CI 中扫描待交付镜像，或读取 Syft 生成的 SBOM 进行漏洞检查。",
+            "evidenceRefs": [
+              "g1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0",
+          "scope": "软件代码；项目标志另按CC-BY-4.0授权。",
+          "evidenceRefs": [
+            "g1",
+            "g3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "11月18日的0.122.1修复 JVM 版本比较及将 Airflow 漏洞匹配到 Python lightning 包的问题。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "g2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "g1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/anchore/grype",
+            "supports": "扫描目标、风险排序、OpenVEX及使用方式。"
+          },
+          {
+            "id": "g2",
+            "name": "0.122.1 发布说明",
+            "url": "https://github.com/anchore/grype/releases/tag/v0.122.1",
+            "supports": "发布日期与匹配修复。"
+          },
+          {
+            "id": "g3",
+            "name": "LICENSE",
+            "url": "https://raw.githubusercontent.com/anchore/grype/main/LICENSE",
+            "supports": "Apache-2.0 软件授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/anchore/grype",
+        "canonical_url": "https://github.com/anchore/grype",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "cb78f65195d58b918fb7e9edb2a36923dc892ea456f7d64cf5f0b9803c6a72bf",
+      "category": "security",
+      "importance": 4,
+      "fact_summary": "MCP Inspector 官方宣布，11月27日发布的2.17.0修复 NAT64 等 IPv6 地址绕过 SSRF 防护的问题，阻止特定网络环境中的云元数据访问。弃用的v1分支在1.0.7修复；影响涉及网页后端与CLI的请求目标校验。[项目仓库](https://github.com/modelcontextprotocol/inspector)",
+      "analysis": "这次修复值得使用云端或 IPv6 网络测试环境的团队核对，尤其是会连接外部 MCP 服务的部署。处置优先级应结合 NAT64/DNS64 出口条件判断，不能推断所有部署都同样暴露。",
+      "evidence_quote": "2.17.0 fixes one vulnerability reported privately against v2.",
+      "research_area": "performance_security",
+      "details": {
+        "kind": "project",
+        "overview": "修复 Inspector 请求目标校验中的云元数据访问绕过。",
+        "change": {
+          "summary": "正式发布2.17.0，修复 IPv4 嵌入式 IPv6 地址绕过；v1修复版本为1.0.7。",
+          "version": "2.17.0",
+          "type": "release",
+          "publishedAt": "2026-11-27",
+          "evidenceRefs": [
+            "i1",
+            "i2"
+          ]
+        },
+        "technical": [
+          {
+            "description": "按解析后的 IPv6 地址值检查目标，并重新检查 NAT64 等地址中嵌入的 IPv4 地址。",
+            "evidenceRefs": [
+              "i1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "检查并升级通过 NAT64/DNS64 出口连接外部 MCP 服务的 Inspector 环境。",
+            "evidenceRefs": [
+              "i2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0 AND MIT",
+          "scope": "代码按贡献分项授权：新代码及已获重授权同意的代码为Apache-2.0，其余历史代码保留MIT；非规范文档为CC-BY-4.0。",
+          "evidenceRefs": [
+            "i3"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "公告定级 Low、CVSS 3.7；攻击依赖 NAT64/DNS64 出口，无该出口的主机不受此路径影响。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "i2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "i1",
+            "name": "2.17.0 发布说明",
+            "url": "https://github.com/modelcontextprotocol/inspector/releases/tag/2.17.0",
+            "supports": "发布日期、修复机制及v1补丁版本。"
+          },
+          {
+            "id": "i2",
+            "name": "GHSA-v2gx-m79c-pvxj",
+            "url": "https://github.com/modelcontextprotocol/inspector/security/advisories/GHSA-v2gx-m79c-pvxj",
+            "supports": "受影响版本、利用条件与严重程度。"
+          },
+          {
+            "id": "i3",
+            "name": "2.17.0 LICENSE",
+            "url": "https://raw.githubusercontent.com/modelcontextprotocol/inspector/2.17.0/LICENSE",
+            "supports": "代码授权迁移规则及文档授权。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/modelcontextprotocol/inspector/releases/tag/2.17.0",
+        "canonical_url": "https://github.com/modelcontextprotocol/inspector/releases/tag/2.17.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "0039f9c5998b67c5e119d6f3e8bc03964e5c1c35bef39506a24ecf44cf32fc91",
+      "category": "opensource",
+      "importance": 4,
+      "fact_summary": "js-libp2p 官方仓库称，它以模块化 JavaScript 网络栈组合传输、加密、流复用、节点发现和路由，用于构建 P2P 应用。本次作为持续维护项目发现收录；11月23日发布的 utils 7.4.6提供连接清理与地址分类修复的维护证据。[项目仓库](https://github.com/libp2p/js-libp2p)",
+      "analysis": "清晰的协议接口适合需要组合浏览器与 Node.js 通信能力的 P2P 项目，能减少自行实现底层连接机制的工作。实际部署仍需按运行环境选择传输，并设置连接和资源限制。",
+      "evidence_quote": "A JavaScript Implementation of libp2p networking stack.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "以可组合协议组件降低 P2P 应用的网络连接与发现实现成本。",
+        "technical": [
+          {
+            "description": "包含 Noise 握手、Yamux流复用、Kad-DHT和mDNS发现组件。",
+            "evidenceRefs": [
+              "l1"
+            ]
+          },
+          {
+            "description": "提供TCP、WebRTC、WebSockets及WebTransport传输组件。",
+            "evidenceRefs": [
+              "l1"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "为浏览器与Node.js应用组合P2P连接、发现和自定义应用协议。",
+            "evidenceRefs": [
+              "l1"
+            ]
+          }
+        ],
+        "license": {
+          "code": "Apache-2.0 OR MIT",
+          "scope": "项目代码，两种授权任选。",
+          "evidenceRefs": [
+            "l1",
+            "l3",
+            "l4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "utils 7.4.6正文日期为11月20日、发布页日期为11月23日，早于本轮72小时更新窗口。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "l2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "l1",
+            "name": "官方仓库 README",
+            "url": "https://github.com/libp2p/js-libp2p",
+            "supports": "模块结构、传输与发现组件及授权选择。"
+          },
+          {
+            "id": "l2",
+            "name": "utils 7.4.6 发布说明",
+            "url": "https://github.com/libp2p/js-libp2p/releases/tag/utils-v7.4.6",
+            "supports": "维护日期、连接清理及IPv6地址分类修复。"
+          },
+          {
+            "id": "l3",
+            "name": "MIT 授权文本",
+            "url": "https://raw.githubusercontent.com/libp2p/js-libp2p/main/LICENSE-MIT",
+            "supports": "MIT授权条件。"
+          },
+          {
+            "id": "l4",
+            "name": "Apache-2.0 授权文本",
+            "url": "https://raw.githubusercontent.com/libp2p/js-libp2p/main/LICENSE-APACHE",
+            "supports": "Apache-2.0授权条件。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/libp2p/js-libp2p",
+        "canonical_url": "https://github.com/libp2p/js-libp2p",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "247b594bf16a5ec3a3b7f1489c2b6b9c9768827b6aebb06da0abd53e2e6b84c3",
+      "category": "opensource",
+      "importance": 3,
+      "fact_summary": "Outpace Engine 官方宣布，11月26日发布的1.3.0改进 DHT 引导恢复与直播启动，加入广播目录注册，并默认启用支持的 Ace Stream 兼容接口。这个 P2P 引擎提供直播接收、分发和 HLS 输出，可连接自托管节点与播放器。[项目仓库](https://github.com/outpace-stream/outpace-engine)",
+      "analysis": "适合研究 P2P 直播到 HLS 播放设备的衔接，恢复机制改进对不稳定节点连接尤其值得观察。接入前应检查兼容接口范围，并为缺少内建鉴权的 HTTP 接口安排访问边界。",
+      "evidence_quote": "Improved DHT bootstrap recovery and live playback startup.",
+      "research_area": "decentralized",
+      "details": {
+        "kind": "project",
+        "overview": "以开放实现连接 Ace Stream 对等网络与 HTTP、HLS 播放端。",
+        "change": {
+          "summary": "正式发布1.3.0，改进DHT恢复、直播启动，新增广播目录注册并默认开启兼容API子集。",
+          "version": "1.3.0",
+          "type": "release",
+          "publishedAt": "2026-11-26",
+          "evidenceRefs": [
+            "d1"
+          ]
+        },
+        "technical": [
+          {
+            "description": "通过 tracker 和 DHT 发现节点，验证签名分片，并为同一直播共享下载。",
+            "evidenceRefs": [
+              "d2"
+            ]
+          },
+          {
+            "description": "内置直播 HLS 打包，可通过守护进程或单次 CLI 调用输出媒体流。",
+            "evidenceRefs": [
+              "d2"
+            ]
+          }
+        ],
+        "useCases": [
+          {
+            "description": "将 P2P 直播提供给 VLC、mpv 或其他 HLS 播放设备。",
+            "evidenceRefs": [
+              "d2"
+            ]
+          }
+        ],
+        "license": {
+          "code": "AGPL-3.0-or-later",
+          "scope": "项目引擎代码。",
+          "evidenceRefs": [
+            "d3",
+            "d4"
+          ]
+        },
+        "evaluation": [
+          {
+            "description": "兼容API仅覆盖子集，HTTP API没有内建鉴权。",
+            "nature": "fact",
+            "evidenceRefs": [
+              "d2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "d1",
+            "name": "1.3.0 发布说明",
+            "url": "https://github.com/outpace-stream/outpace-engine/releases/tag/v1.3.0",
+            "supports": "发布日期、恢复改进及默认接口变化。"
+          },
+          {
+            "id": "d2",
+            "name": "官方仓库 README",
+            "url": "https://github.com/outpace-stream/outpace-engine",
+            "supports": "P2P机制、HLS、CLI与接口限制。"
+          },
+          {
+            "id": "d3",
+            "name": "LICENSE",
+            "url": "https://raw.githubusercontent.com/outpace-stream/outpace-engine/main/LICENSE",
+            "supports": "AGPLv3授权正文。"
+          },
+          {
+            "id": "d4",
+            "name": "Cargo 授权声明",
+            "url": "https://raw.githubusercontent.com/outpace-stream/outpace-engine/main/Cargo.toml",
+            "supports": "AGPL-3.0-or-later版本选项。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "github.com",
+        "original_url": "https://github.com/outpace-stream/outpace-engine/releases/tag/v1.3.0",
+        "canonical_url": "https://github.com/outpace-stream/outpace-engine/releases/tag/v1.3.0",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
