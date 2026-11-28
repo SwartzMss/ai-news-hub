@@ -1,0 +1,555 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-88b97a2bbe7ff58573a6a061",
+    "name": "每日科技投资简报"
+  },
+  "report_id": "e07398b7-efa7-452f-8145-0b46d8d0416e",
+  "report_date": "2026-11-28",
+  "channel": "opensource",
+  "version": 3,
+  "title": "每日科技投资简报｜截至2026-11-28 08:19:33（北京时间）",
+  "collected_at": "2026-11-28T00:46:29.331Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-28T00:46:29.342Z",
+  "reviewed_content_sha256": "2bd44a588a5ef086488f480d38c1d4be3ff3fa71eee525e03e37ebdc8bae475d",
+  "items": [
+    {
+      "id": "33d36425fb3c96896dd19d7c38e8f2364bdcc28d240f1ca655cd2363f36aa635",
+      "category": "ai_industry_chain",
+      "importance": 4,
+      "fact_summary": "Duos于美国当地11月24日新增披露，预计2026年第四季度集团收入超过3100万美元；已上线5 MW托管安排预计月收入超过650万美元，其中包含伙伴GPU租赁收入并承担较高成本。公司预计2027年才产生纯机柜托管收入。原文未列时刻，纳入7天补充窗口。",
+      "analysis": "推断：近季收入可见度提高，但GPU转租成本与一次性安排限制利润及持续性的判断。",
+      "evidence_quote": "Company Also Provides Additional Detail on 2026 Financial Outlook, Including Fourth Quarter Revenue Breakdown",
+      "details": {
+        "kind": "investment",
+        "background": "新增为第四季度收入拆分指引；5 MW上线发生在季初，全年展望此前已披露。原文日期2026-11-24，未列时刻，纳入7天补充窗口。",
+        "metrics": [
+          {
+            "name": "集团收入",
+            "value": ">3100",
+            "unit": "万美元",
+            "period": "2026年第四季度",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GPU托管安排月收入",
+            "value": ">650",
+            "unit": "万美元/月",
+            "period": "2026年第四季度",
+            "comparison": "包含伙伴GPU租赁收入",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "已上线托管容量",
+            "value": "5",
+            "unit": "MW",
+            "period": "2026年第四季度初",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "Duos Technologies（DUOT，NASDAQ）｜模块化数据中心及托管",
+            "direction": "收入可见度提高",
+            "reason": "公司确认Columbus项目及托管业务；GPU租赁伙伴未具名。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若季度指引兑现，托管业务将扩大收入基数；利润与经营现金流仍取决于GPU租赁成本、利用率及回款。纯机柜托管收入预计2027年才开始，当前收入强度不宜外推。",
+        "watchpoints": [
+          "第四季度实际收入、托管分部成本及回款。",
+          "2027年纯机柜托管开始计租的容量与利润贡献。"
+        ],
+        "risks": [
+          "该GPU托管安排具有一次性特征，不能直接年化。",
+          "GPU租赁带来较高成本，收入增长可能未转化为利润。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Duos：新增2026年第四季度展望",
+            "url": "https://ir.duostechnologies.com/news-events/press-releases/detail/863/duos-technologies-group-to-ring-the-nasdaq-stock-market",
+            "supports": "支持新增收入指引、5 MW托管、GPU收入及成本口径。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ir.duostechnologies.com",
+        "original_url": "https://ir.duostechnologies.com/news-events/press-releases/detail/863/duos-technologies-group-to-ring-the-nasdaq-stock-market",
+        "canonical_url": "https://ir.duostechnologies.com/news-events/press-releases/detail/863/duos-technologies-group-to-ring-the-nasdaq-stock-market",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "50698f45a298adf3d23b7a7e8b13f78d6ec93ff4af5a457c9c44457eed2eb310",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "精测电子11月26日落款公告称，控股子公司上海精测与既有客户签订人民币1.998亿元半导体前道量检测设备合同，约定订单生效后3—6个月交付。客户身份保密，合同尚需履行，不能视为已确认收入。原文未列披露时刻，保守纳入72小时窗口。",
+      "analysis": "推断：新增合同支持设备收入兑现，但利润与现金流贡献仍取决于验收、产品组合及回款。",
+      "evidence_quote": "关于签订日常经营性重大合同的公告",
+      "details": {
+        "kind": "investment",
+        "background": "上海精测与既有客户加深合作，订单标的是半导体前道量检测设备。客户因商业保密豁免披露，不能指定为某家晶圆厂。",
+        "metrics": [
+          {
+            "name": "已签合同金额",
+            "value": "199800000",
+            "unit": "人民币元",
+            "period": "2026年11月披露",
+            "comparison": "含税口径未注明",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "约定交付期",
+            "value": "3—6",
+            "unit": "个月",
+            "period": "订单生效后",
+            "comparison": "交付约定，非收入确认时点",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "精测电子（300567，SZSE）｜半导体量检测设备",
+            "direction": "订单增加",
+            "reason": "控股子公司上海精测为合同卖方；与未具名客户的合同关系已披露。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "合同经签字或盖章生效后进入交付周期；若顺利交付并满足收入确认条件，可增加设备收入，毛利与现金回笼取决于产品组合、验收及付款安排。",
+        "watchpoints": [
+          "定期报告中的交付、验收、收入确认及回款。",
+          "设备类型、台数、付款条件及合同毛利率。"
+        ],
+        "risks": [
+          "宏观、行业周期或政策变化可能影响执行。",
+          "尚未披露客户与产品结构，不能量化利润贡献。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "精测电子：重大设备销售合同公告",
+            "url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-27/12727073.PDF",
+            "supports": "支持合同金额、控股关系、客户保密及生效后3—6个月交付。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "file.finance.sina.com.cn",
+        "original_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-27/12727073.PDF",
+        "canonical_url": "https://file.finance.sina.com.cn/211.154.219.97:9494/MRGG/CNSESZ_STOCK/2026/2026-11/2026-11-27/12727073.PDF",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "9fe45cc2d3b9d1529f3e54c0aab69e20ec9b070e7b27aea58fd8ea12e2f63598",
+      "category": "semiconductor",
+      "importance": 4,
+      "fact_summary": "TrendForce于11月27日发布DRAM价格情景分析，称部分中国CSP减少服务器DRAM需求、北美CSP吸收释放供应。其基准情景预计2028年第一季度合约价转跌，悲观情景提前至2027年第四季度，均属机构预测。原文仅列日期，保守纳入72小时窗口。",
+      "analysis": "推断：远期持续涨价假设面临反证，但机构情景尚不足以确认存储周期见顶。",
+      "evidence_quote": "Limited Demand Visibility and Growing Supply Chain Caution Heighten Risk of DRAM Contract Price Declines in 2028, Says TrendForce",
+      "details": {
+        "kind": "investment",
+        "background": "2026-11-27原文仅列日期，保守纳入72小时。新增是2027—2028年价格情景；客户采购变化来自机构调研，尚无客户订单文件佐证。",
+        "metrics": [
+          {
+            "name": "基准情景合约价转跌起点",
+            "value": "2028Q1",
+            "unit": "季度",
+            "period": "2027—2028年情景预测",
+            "basis": "estimate",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "悲观情景常规DRAM转跌起点",
+            "value": "2027Q4",
+            "unit": "季度",
+            "period": "2027—2028年情景预测",
+            "comparison": "假设服务器采购及投资进一步放缓",
+            "basis": "estimate",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "美光（MU，NASDAQ）｜DRAM供应商",
+            "direction": "潜在ASP与盈利预期承压",
+            "reason": "行业价格情景映射；未证实美光客户减单。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "investmentLogic": "若服务器采购增长减速且位元供给持续扩张，美光DRAM ASP可能承压；在成本与产品组合未抵消降价的条件下，毛利及经营现金流面临下修。",
+        "watchpoints": [
+          "服务器DRAM合约价、客户库存与北美采购承接。",
+          "美光自身ASP、位元出货及成本变化。"
+        ],
+        "risks": [
+          "北美需求继续吸收供应或扩产落后，会削弱降价情景。",
+          "常规DRAM情景不能直接套用HBM；并非公司指引或一致预期。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "TrendForce：DRAM合约价两种情景",
+            "url": "https://www.trendforce.com/presscenter/news/20261127-13327.html",
+            "supports": "支持采购放缓调研及2028Q1、2027Q4价格转跌预测。"
+          },
+          {
+            "id": "e2",
+            "name": "美光2026-09-30 Form 8-K及附件",
+            "url": "https://d18rn0p25nwr6d.cloudfront.net/CIK-0000723125/c30c4f37-f3f8-45a7-8d4b-19343f2a2381.pdf",
+            "supports": "仅核对MU、NASDAQ及存储业务角色，不作本次新闻增量。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.trendforce.com",
+        "original_url": "https://www.trendforce.com/presscenter/news/20261127-13327.html",
+        "canonical_url": "https://www.trendforce.com/presscenter/news/20261127-13327.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "324822135c09958015f14238dcc163539dfbe632c86f84b13dba29c243f67363",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "BIS最终规则宣布将Megaspeed、Apex等七个实体列入Entity List，对所有受EAR管辖物项要求许可证，采用推定拒绝审查。规则于美国日期11月23日生效、11月25日正式刊登，纳入7天补充窗口。路透引述阿里巴巴声明称，Apex未转移受限芯片，公司将寻求法律救济。",
+      "analysis": "推断：正式列名可能拖慢相关主体获取算力，新增财务冲击仍取决于原有禁售、许可证和存量合同。",
+      "evidence_quote": "Additions to the Entity List",
+      "details": {
+        "kind": "investment",
+        "background": "正式规则美国日期2026-11-25刊登，11月23日生效；按首次公开检查纳入7天。政府列名理由为转移风险，阿里否认Apex转移芯片。",
+        "metrics": [
+          {
+            "name": "新增列名实体",
+            "value": "7",
+            "unit": "家",
+            "period": "2026-11-23生效",
+            "comparison": "覆盖马来西亚、新加坡、泰国",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "阿里巴巴（BABA，NYSE；9988，HKEX）｜云算力采购方",
+            "direction": "获取受EAR管辖技术受限",
+            "reason": "路透确认Apex为其子公司并引述公司回应；具体存量合同影响未披露。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          },
+          {
+            "segment": "英伟达（NVDA，NASDAQ）｜GPU供应商",
+            "direction": "新增收入影响不确定",
+            "reason": "政府确认与Megaspeed历史联系及2025年已禁售背景；本次新增收入损失仅属潜在影响。",
+            "relationship": "potential",
+            "evidenceRefs": [
+              "e3"
+            ]
+          }
+        ],
+        "investmentLogic": "新增列名使相关主体采购受EAR管辖物项需许可，并适用推定拒绝；若既有算力合同因此延期或重订，阿里巴巴的算力部署、预付款回收及资本效率可能承压。英伟达影响需扣除原有禁售范围。",
+        "watchpoints": [
+          "公司申诉、许可证、存量合同及预付款处置。",
+          "相关主体交付和部署是否实际受阻。"
+        ],
+        "risks": [
+          "列名理由不是司法定罪；阿里否认违规，争议未解决。",
+          "既有禁售与在途豁免可能降低本次新增财务冲击。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "BIS：新增七个Entity List实体",
+            "url": "https://www.federalregister.gov/documents/2026/11/25/2026-23999/additions-to-the-entity-list",
+            "supports": "支持实体名单、生效日期、EAR许可要求及推定拒绝。"
+          },
+          {
+            "id": "e2",
+            "name": "路透社报道（Investing刊载）：Apex列名及阿里回应",
+            "url": "https://www.investing.com/news/stock-market-news/us-to-blacklist-megaspeed-chip-firm-linked-to-nvidia-scandal-source-says-5046337",
+            "supports": "支持Apex子公司关系及阿里否认转移、拟寻求法律救济。"
+          },
+          {
+            "id": "e3",
+            "name": "美商务部及司法部2026-11-16联合声明",
+            "url": "https://www.justice.gov/opa/media/1472536/dl",
+            "supports": "仅核对英伟达与Megaspeed历史联系及2025年内部禁售，不计新增。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.federalregister.gov",
+        "original_url": "https://www.federalregister.gov/documents/2026/11/25/2026-23999/additions-to-the-entity-list",
+        "canonical_url": "https://www.federalregister.gov/documents/2026/11/25/2026-23999/additions-to-the-entity-list",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "52c27ede0a2e1e473f1faa4d57f106f01c80ce4f99ac480c1f4d04b7c203bd55",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "CleanSpark在11月24日财报中称，得州585 MW规划容量取得附条件Batch Zero Baseload资格；Brazoria二期最高300 MW取得不同类别的附条件Studied Load资格。Sealy与Brazoria排他期已届满，商业化洽谈继续。上述资格均不代表已投运。原文仅列日期，纳入7天补充窗口。",
+      "analysis": "推断：接入路径推进尚未消除商业化风险，排他期届满后能否落实正式租约决定开发资产兑现速度。",
+      "evidence_quote": "CleanSpark Reports Fiscal Fourth Quarter and Full Year 2026 Financial and Operating Results",
+      "details": {
+        "kind": "investment",
+        "background": "仅收录得州AI/HPC项目接入资格与商业化状态更新，不重复既有Sandersville租约及融资。原文2026-11-24未列时刻，纳入7天补充。",
+        "metrics": [
+          {
+            "name": "附条件Baseload资格覆盖规划容量",
+            "value": "585",
+            "unit": "MW",
+            "period": "2026-11-24披露",
+            "comparison": "Sealy 285 MW及Brazoria一期300 MW；非已投运",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "附条件Studied Load资格容量上限",
+            "value": "300",
+            "unit": "MW",
+            "period": "Brazoria二期",
+            "comparison": "与Baseload类别不同，非已投运",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "CleanSpark（CLSK，NASDAQ）｜AI/HPC数据中心开发",
+            "direction": "接入进展与签约风险并存",
+            "reason": "公司确认项目归属、附条件资格及排他期届满；客户未具名。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "附条件资格推进电力接入路径，但租赁商业化仍需新协议。若排他期届满后租约签署延后，建设资本占用将持续，租金及经营现金流启动可能后移。",
+        "watchpoints": [
+          "接入资格转为无条件、明确送电时间及TCEQ许可范围。",
+          "Sealy与Brazoria正式租约、预付款及融资落实。"
+        ],
+        "risks": [
+          "规划容量不能作为可计租容量，许可亦不等于通电。",
+          "若及时落实租约且接入条件满足，排他期届满的负面影响可能有限。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "CleanSpark：FY2026业绩及AI/HPC项目更新",
+            "url": "https://s21.q4cdn.com/978676932/files/doc_news/CleanSpark-Reports-Fiscal-Fourth-Quarter-and-Full-Year-2026-Financial-and-Operating-Results-2026.pdf",
+            "supports": "支持两类附条件接入资格、排他期届满及持续商业化洽谈。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "s21.q4cdn.com",
+        "original_url": "https://s21.q4cdn.com/978676932/files/doc_news/CleanSpark-Reports-Fiscal-Fourth-Quarter-and-Full-Year-2026-Financial-and-Operating-Results-2026.pdf",
+        "canonical_url": "https://s21.q4cdn.com/978676932/files/doc_news/CleanSpark-Reports-Fiscal-Fourth-Quarter-and-Full-Year-2026-Financial-and-Operating-Results-2026.pdf",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "968294e8ea1f27e87f87e96e20dfff1119fd10b7abb92862e165949073a48d39",
+      "category": "semiconductor",
+      "importance": 3,
+      "fact_summary": "铠侠于11月26日宣布，与NVIDIA以GB200 NVL72及144块7.68 TB XD8 SSD开展验证，提供约1.1 PB原始SSD容量。同日公布GP2开发进展，称512字节随机读取超过1800万IOPS，计划2027年底前提供评估样品。两份公告未列时刻，纳入72小时窗口；仍属技术验证与产品展望。",
+      "analysis": "推断：验证为GPU直连闪存提供潜在增量机会，尚不足以上调近期盈利或判断HBM被替代。",
+      "evidence_quote": "Kioxia and NVIDIA Collaborate to Expand Effective High-Bandwidth Memory Capacity with SSDs",
+      "details": {
+        "kind": "investment",
+        "background": "2026-11-26两份公告仅列日期，纳入72小时并合并。XD8概念验证与GP2开发路线不同，不能把GP2性能套用于该GB200验证系统。",
+        "metrics": [
+          {
+            "name": "概念验证原始SSD容量",
+            "value": "约1.1",
+            "unit": "PB",
+            "period": "2026-11-26披露",
+            "comparison": "144块7.68 TB XD8；不是HBM容量",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e1"
+            ]
+          },
+          {
+            "name": "GP2随机读取性能",
+            "value": ">1800",
+            "unit": "万IOPS",
+            "period": "开发验证",
+            "comparison": "512字节块、厂商测试，接近GP1两倍",
+            "basis": "actual",
+            "evidenceRefs": [
+              "e2"
+            ]
+          },
+          {
+            "name": "GP2评估样品计划",
+            "value": "2027年底前",
+            "unit": "时间",
+            "period": "面向选定客户",
+            "comparison": "功能评估样品，非量产承诺",
+            "basis": "guidance",
+            "evidenceRefs": [
+              "e2"
+            ]
+          }
+        ],
+        "supplyChain": [
+          {
+            "segment": "英伟达（NVDA，NASDAQ）｜GPU及机架平台",
+            "direction": "存储生态验证推进",
+            "reason": "铠侠公告确认双方以GB200 NVL72和SCADA开展验证；未披露采购承诺。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1"
+            ]
+          }
+        ],
+        "investmentLogic": "若SSD内存分层能在目标负载下提高GPU利用率并降低总成本，可能增加GPU平台的高性能SSD配置需求；收入与利润贡献仍需客户认证、量产和实际采购验证。",
+        "watchpoints": [
+          "端到端延迟、GPU利用率、能耗与每项任务成本。",
+          "GP2送样、客户认证、量产时间及采购合同。"
+        ],
+        "risks": [
+          "缺少可复现工作负载性能及经济性数据。",
+          "物理HBM未增加，不能据此推断HBM需求下降；开发性能可能变化。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "铠侠：与NVIDIA开展SSD内存扩展验证",
+            "url": "https://www.kioxia.com/en-jp/business/news/2026/20261126-1.html",
+            "supports": "支持联合验证关系、XD8配置及约1.1 PB原始SSD容量。"
+          },
+          {
+            "id": "e2",
+            "name": "铠侠：GP2 SSD开发及送样计划",
+            "url": "https://www.kioxia.com/en-jp/business/news/2026/20261126-2.html",
+            "supports": "支持512字节读取性能、测试口径及2027年底前评估送样计划。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.kioxia.com",
+        "original_url": "https://www.kioxia.com/en-jp/business/news/2026/20261126-1.html",
+        "canonical_url": "https://www.kioxia.com/en-jp/business/news/2026/20261126-1.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "f4f25860d8bf066174e64a59454c10dc2cd3c0398d3f06d0cb0f74e5adb2abb0",
+      "category": "ai_industry_chain",
+      "importance": 3,
+      "fact_summary": "Hut 8公开帖文称，Beacon Point二期取得TCEQ的Notice of Intent授权，场地准备已开始，并称整个1 GW规划园区可施工。原帖只显示相对时间，11月24日已有同期报道，保守纳入7天补充窗口。许可范围尚待监管文本核对，不代表已通电或开始计租。",
+      "analysis": "推断：施工阶段的不确定性有所下降，但送电与融资仍可能成为交付瓶颈。",
+      "evidence_quote": "Hut 8 has received a Notice of Intent authorization from the Texas Commission on Environmental Quality (TCEQ) for Beacon Point Phase 2.",
+      "details": {
+        "kind": "investment",
+        "background": "以公司公开帖文为核心证据。原帖只有相对时间；同期报道定位于2026-11-24，纳入7天补充。尚未取得监管许可全文。",
+        "supplyChain": [
+          {
+            "segment": "Hut 8（HUT，NASDAQ）｜AI数据中心开发运营",
+            "direction": "施工阶段推进",
+            "reason": "公司称Beacon Point二期获TCEQ授权并开始场地准备。",
+            "relationship": "confirmed",
+            "evidenceRefs": [
+              "e1",
+              "e2"
+            ]
+          }
+        ],
+        "investmentLogic": "施工授权使二期场地工程可以推进；若电网接入、项目融资与建设按期完成，才可能转化为交付及租金现金流。当前进展首先影响建设资本开支与资金占用。",
+        "watchpoints": [
+          "许可编号、项目类型、附带条件及可施工范围。",
+          "ERCOT接入、二期融资、通电和数据厅交付。"
+        ],
+        "risks": [
+          "公司声明尚无许可全文独立印证，授权范围可能有限。",
+          "施工许可不能证明获准送电；延期或融资成本上升会压低项目回报。"
+        ],
+        "evidence": [
+          {
+            "id": "e1",
+            "name": "Hut 8官方LinkedIn：Beacon Point二期授权",
+            "url": "https://ca.linkedin.com/company/hut8corp",
+            "supports": "直接支持公司称已获TCEQ Notice of Intent授权及场地准备开始。"
+          },
+          {
+            "id": "e2",
+            "name": "The Crypto Times：Hut 8二期进展",
+            "url": "https://www.cryptotimes.io/2026/11/24/hut-8-gets-construction-nod-for-19-6b-texas-ai-data-center/",
+            "supports": "仅补充11月24日披露日期及HUT市场代码；报道核心仍源于公司帖文。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "ca.linkedin.com",
+        "original_url": "https://ca.linkedin.com/company/hut8corp",
+        "canonical_url": "https://ca.linkedin.com/company/hut8corp",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
