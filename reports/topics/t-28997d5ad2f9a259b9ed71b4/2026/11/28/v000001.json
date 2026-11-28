@@ -1,0 +1,360 @@
+{
+  "schema_version": 1,
+  "topic": {
+    "id": "t-28997d5ad2f9a259b9ed71b4",
+    "name": "每日热点观察"
+  },
+  "report_id": "3b06bbaf-753a-486e-8d1f-7abb213bb0ca",
+  "report_date": "2026-11-28",
+  "channel": "opensource",
+  "version": 1,
+  "title": "每日热点观察｜2026年11月28日（北京时间08:05截止）",
+  "collected_at": "2026-11-28T00:31:30.128Z",
+  "review_status": "approved",
+  "approved_at": "2026-11-28T00:31:30.142Z",
+  "reviewed_content_sha256": "4b329a9071af3b9a0de86d7541c379d557a8bab08e617fc568303366ce9fd8cf",
+  "items": [
+    {
+      "id": "a2de30b207e954652ea94b6f68da48ae38ee01e797457bfe2543b60ad67f5963",
+      "category": "social_event",
+      "importance": 4,
+      "fact_summary": "济南市医疗保障局11月27日通报，针对“济南医保”直播间主播回复咨询时言语失当、冒犯网友一事，已按程序解除与该主播的劳动关系，并责令直播团队停播整顿。通报称，该局已主动向当事网友道歉，将进一步加强直播团队管理。",
+      "analysis": null,
+      "evidence_quote": "济南医保主播辱骂咨询者“脑子有病”，官方通报",
+      "details": {
+        "kind": "news",
+        "background": "事件发生于11月23日。华商报大风新闻采访记载，当事人在直播间咨询医保断缴后的待遇等待期，随后被主播点名辱骂。",
+        "keyFacts": [
+          {
+            "name": "涉事主播处理",
+            "value": "按相关程序解除劳动关系",
+            "period": "2026-11-27通报",
+            "nature": "statement",
+            "evidenceRefs": [
+              "jn1"
+            ]
+          },
+          {
+            "name": "直播团队处理",
+            "value": "停播整顿",
+            "period": "2026-11-27通报",
+            "nature": "statement",
+            "evidenceRefs": [
+              "jn1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-23",
+            "precision": "date",
+            "event": "据官方通报，主播在直播回复咨询时言语失当、冒犯网友。",
+            "evidenceRefs": [
+              "jn1"
+            ]
+          },
+          {
+            "time": "2026-11-27",
+            "precision": "date",
+            "event": "济南市医保局公布解除主播劳动关系、团队停播整顿等处理措施。",
+            "evidenceRefs": [
+              "jn1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "济南市医疗保障局",
+            "statement": "表示已向当事网友道歉，将加强直播团队管理，改善面向群众的服务。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "jn1"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "jn1",
+            "name": "济南市医保局情况通报及华商报采访（凤凰网刊载）",
+            "url": "https://news.ifeng.com/c/8yOq9SX8RHz",
+            "supports": "支持事件发生日期、官方处理措施及当事人此前咨询和投诉的背景。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "news.ifeng.com",
+        "original_url": "https://news.ifeng.com/c/8yOq9SX8RHz",
+        "canonical_url": "https://news.ifeng.com/c/8yOq9SX8RHz",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "359151ca3b0ef2cf0ad0fafa1ad9ff481bbb3b6073b8183109a322706f153f1b",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "据《百姓关注》11月27日报道，武汉果园经营者石先生就团体采摘后付款纠纷表示，武汉市公安局东西湖区分局已提级办理。石先生此前称，采摘者带走数百斤蜜橘，仅一人留下10元；柏泉派出所工作人员26日接受浪潮新闻采访时则称，实际损失没有其所说的那么多。",
+      "analysis": null,
+      "evidence_quote": "武汉市公安局东西湖区分局已提级办理此事。",
+      "details": {
+        "kind": "news",
+        "background": "纠纷源于11月14日的一次团体采摘。果园经营者称，采摘者以他人统一结账为由入园，离场后约定款项一直未付。此前警方作出终止调查决定，果农对此提出异议。",
+        "timeline": [
+          {
+            "time": "2026-11-25",
+            "precision": "date",
+            "event": "据浪潮新闻报道，石先生向法院提起行政诉讼，请求撤销终止案件调查决定并重新调查处置。",
+            "evidenceRefs": [
+              "wh2"
+            ]
+          },
+          {
+            "time": "2026-11-27",
+            "precision": "date",
+            "event": "石先生接受《百姓关注》采访时称，东西湖区公安分局已提级办理。",
+            "evidenceRefs": [
+              "wh1"
+            ]
+          }
+        ],
+        "positions": [
+          {
+            "actor": "果园经营者石先生",
+            "statement": "称采摘者带走数百斤蜜橘后未支付约定款项，27日表示警方已提级办理。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "wh1"
+            ]
+          },
+          {
+            "actor": "柏泉派出所工作人员",
+            "statement": "26日接受浪潮新闻采访时表示，实际损失没有果农所称的数百斤那么多，具体情况需向分局宣传部门了解。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "wh2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "被带走蜜橘的实际数量和价值存在分歧。",
+          "采摘者、组织者的付款责任及后续处理结果仍待明确。"
+        ],
+        "watchpoints": [
+          "警方后续调查结论、付款及赔偿处理。"
+        ],
+        "evidence": [
+          {
+            "id": "wh1",
+            "name": "百姓关注：武汉果园采摘付款纠纷新采访",
+            "url": "https://gztvbxgz.cn/news/890862851185500160",
+            "supports": "支持果农27日有关提级办理的表述及其对采摘经过的陈述。"
+          },
+          {
+            "id": "wh2",
+            "name": "浪潮新闻采访（大象新闻转述、 新浪刊载）",
+            "url": "https://finance.sina.cn/2026-11-27/detail-inkacvhq5587402.d.html",
+            "supports": "支持果农提起行政诉讼的报道，以及派出所工作人员对损失数量的不同说法。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "gztvbxgz.cn",
+        "original_url": "https://gztvbxgz.cn/news/890862851185500160",
+        "canonical_url": "https://gztvbxgz.cn/news/890862851185500160",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "601b1e2681bdc2d0f579d1862751b23500c60bb8e5e9e85421c0499aced6081f",
+      "category": "tech_digital",
+      "importance": 3,
+      "fact_summary": "据IT之家11月27日报道，小米汽车当日发布世界模型2.0。项目组公开资料称，模型支持1—7路摄像头视角，训练语料包括1260万段视频片段，面向驾驶和机器人场景生成、交互模拟及策略训练。",
+      "analysis": "从公布用途看，该模型可用于扩展训练与仿真场景；其实际道路安全收益仍取决于后续验证。",
+      "evidence_quote": "Xiaomi Auto World Model 2.0",
+      "details": {
+        "kind": "news",
+        "background": "项目组将多视角视频生成、物理交互建模、三维场景重建和动作建模结合，用于驾驶与具身智能研究。",
+        "keyFacts": [
+          {
+            "name": "支持摄像头视角",
+            "value": "1—7",
+            "unit": "路",
+            "period": "世界模型2.0",
+            "nature": "statement",
+            "evidenceRefs": [
+              "xm1"
+            ]
+          },
+          {
+            "name": "训练视频片段规模",
+            "value": "1260",
+            "unit": "万段",
+            "period": "世界模型2.0",
+            "nature": "statement",
+            "evidenceRefs": [
+              "xm1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-27",
+            "precision": "date",
+            "event": "据IT之家报道，小米汽车发布世界模型2.0。",
+            "evidenceRefs": [
+              "xm2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "项目组公布的基准测试与仿真结果不能直接说明量产车辆在真实道路上的安全表现。"
+        ],
+        "evidence": [
+          {
+            "id": "xm1",
+            "name": "小米汽车世界模型2.0官方项目页",
+            "url": "https://xiaomiautoworldmodel.github.io/CausalWorldModel/",
+            "supports": "支持模型能力、视角数量、训练语料规模及仿真研究用途的项目组表述。"
+          },
+          {
+            "id": "xm2",
+            "name": "IT之家：小米汽车世界模型2.0发布",
+            "url": "https://www.ithome.com/1/033/614.htm",
+            "supports": "支持11月27日发布这一时间及产品公告内容。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "xiaomiautoworldmodel.github.io",
+        "original_url": "https://xiaomiautoworldmodel.github.io/CausalWorldModel/",
+        "canonical_url": "https://xiaomiautoworldmodel.github.io/CausalWorldModel/",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "e39e215b2fd3ab278d5281c6485bfff759452b3e2b36d3eb31a5a6321ce906c3",
+      "category": "social_event",
+      "importance": 3,
+      "fact_summary": "据上海证券报11月27日报道，针对海康威视取消大小周、试行“965”工作安排并遭员工抵制的报道，公司回应称相关报道不属实，并表示反对以在岗时间替代价值贡献的无效内卷。",
+      "analysis": null,
+      "evidence_quote": "海康威视独家回应上海证券报称，此报道不属实。",
+      "details": {
+        "kind": "news",
+        "background": "此前报道涉及工作时间、午休和早晚餐补调整，以及部分员工对收入变化的担忧。这些具体说法与公司的否认回应之间仍有待厘清之处。",
+        "positions": [
+          {
+            "actor": "海康威视",
+            "statement": "否认相关报道，并表示应重视价值贡献，避免单纯延长在岗时间造成的无效劳动。",
+            "form": "paraphrase",
+            "evidenceRefs": [
+              "hk1",
+              "hk2"
+            ]
+          }
+        ],
+        "uncertainties": [
+          "具体工时、福利变化及不同岗位的适用情况尚不明确，公司回应未逐项说明被否认的具体内容。"
+        ],
+        "watchpoints": [
+          "公司对工时、餐补及加班安排的进一步说明。"
+        ],
+        "evidence": [
+          {
+            "id": "hk1",
+            "name": "上海证券报采访：海康威视回应相关报道（东方财富刊载）",
+            "url": "https://finance.eastmoney.com/a/202611273941645175.html",
+            "supports": "支持公司11月27日否认相关报道及反对无效内卷的表态。"
+          },
+          {
+            "id": "hk2",
+            "name": "潮新闻采访：海康威视回应工时调整报道",
+            "url": "https://m.sohu.com/a/1107240526_121627717",
+            "supports": "支持公司回应，并交代有关工作时间、餐补和员工收入担忧的报道背景。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "finance.eastmoney.com",
+        "original_url": "https://finance.eastmoney.com/a/202611273941645175.html",
+        "canonical_url": "https://finance.eastmoney.com/a/202611273941645175.html",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    },
+    {
+      "id": "fc022dfddb45c125bb6dc7bdd764295ee60ab71dacee37ffdcf4076592d2a0d8",
+      "category": "gaming",
+      "importance": 2,
+      "fact_summary": "Team Cherry在11月27日公告中宣布，《空洞骑士：丝之歌》首个大型内容更新《Sea of Sorrow》将于2026年12月11日免费推出。官方称，扩展将加入海洋主题区域、新角色、首领，以及Christopher Larkin创作的新音乐。",
+      "analysis": null,
+      "evidence_quote": "Arriving free for all players on December 11!",
+      "details": {
+        "kind": "news",
+        "background": "《Sea of Sorrow》是《空洞骑士：丝之歌》的内容扩展，玩家将在Pharloom的海域、岛屿、堡垒和水下洞穴展开冒险。",
+        "keyFacts": [
+          {
+            "name": "计划推出日期",
+            "value": "2026-12-11",
+            "nature": "statement",
+            "evidenceRefs": [
+              "ss1",
+              "ss2"
+            ]
+          },
+          {
+            "name": "扩展费用",
+            "value": "免费",
+            "nature": "statement",
+            "evidenceRefs": [
+              "ss1"
+            ]
+          }
+        ],
+        "timeline": [
+          {
+            "time": "2026-11-27",
+            "precision": "date",
+            "event": "Team Cherry公布扩展推出日期和免费安排。",
+            "evidenceRefs": [
+              "ss1",
+              "ss2"
+            ]
+          }
+        ],
+        "evidence": [
+          {
+            "id": "ss1",
+            "name": "Team Cherry官方公告：It’s Cherry Time!",
+            "url": "https://www.teamcherry.com.au/blog/its-cherry-time",
+            "supports": "支持免费推出安排、12月11日日期及扩展内容。"
+          },
+          {
+            "id": "ss2",
+            "name": "Insider Gaming：Sea of Sorrow扩展定于2026年12月推出",
+            "url": "https://insider-gaming.com/hollow-knights-free-sea-of-sorrow-dlc-releases-in-december/",
+            "supports": "支持公告发生于2026年11月27日，以及完整推出日期为2026年12月11日。"
+          }
+        ]
+      },
+      "verification": "codex_reported",
+      "source": {
+        "name": "www.teamcherry.com.au",
+        "original_url": "https://www.teamcherry.com.au/blog/its-cherry-time",
+        "canonical_url": "https://www.teamcherry.com.au/blog/its-cherry-time",
+        "published_at": null,
+        "event_at": null,
+        "fetched_at": null
+      }
+    }
+  ]
+}
